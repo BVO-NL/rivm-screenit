@@ -87,11 +87,11 @@ public class EmailConfiguratiePage extends ParameterisatieBasePage
 		{
 			super(id, model);
 			level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER_PARAMETERISATIE);
-			Actie actie = autorisatieService.getActieVoorMedewerker(getIngelogdeOrganisatieMedewerker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
+			var actie = autorisatieService.getActieVoorMedewerker(getIngelogdeOrganisatieMedewerker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
 				Recht.MEDEWERKER_BEHEER_PARAMETERISATIE);
 			inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
-			final TextArea<String> inactiverenemail = new TextArea<String>("inactiverenemail")
+			final var inactiverenemail = new TextArea<String>("inactiverenemail")
 			{
 
 				private static final long serialVersionUID = 1L;
@@ -108,7 +108,7 @@ public class EmailConfiguratiePage extends ParameterisatieBasePage
 			inactiverenemail.setEnabled(!inzien);
 			add(inactiverenemail);
 			add(ComponentHelper.addTextField(this, "inactiverenemailsubject", true, 2000, inzien));
-			final TextArea<String> geblokkeerdemail = new TextArea<String>("geblokkeerdemail")
+			final var geblokkeerdemail = new TextArea<String>("geblokkeerdemail")
 			{
 
 				private static final long serialVersionUID = 1L;
@@ -125,7 +125,7 @@ public class EmailConfiguratiePage extends ParameterisatieBasePage
 			add(geblokkeerdemail);
 			add(ComponentHelper.addTextField(this, "geblokkeerdemailsubject", true, 2000, inzien));
 
-			final TextArea<String> registrerenHuisartsmail = new TextArea<String>("registrerenhuisartsemail")
+			final var registrerenHuisartsmail = new TextArea<String>("registrerenhuisartsemail")
 			{
 
 				private static final long serialVersionUID = 1L;
@@ -142,7 +142,7 @@ public class EmailConfiguratiePage extends ParameterisatieBasePage
 			add(registrerenHuisartsmail);
 			add(ComponentHelper.addTextField(this, "registrerenhuisartsemailsubject", true, 2000, inzien));
 
-			final TextArea<String> wachtwoordHuisartsmail = new TextArea<String>("wachtwoordhuisartsemail")
+			final var wachtwoordHuisartsmail = new TextArea<String>("wachtwoordhuisartsemail")
 			{
 
 				private static final long serialVersionUID = 1L;
@@ -159,7 +159,7 @@ public class EmailConfiguratiePage extends ParameterisatieBasePage
 			add(wachtwoordHuisartsmail);
 			add(ComponentHelper.addTextField(this, "wachtwoordhuisartsemailsubject", true, 2000, inzien));
 
-			AjaxSubmitLink opslaan = new AjaxSubmitLink("opslaan")
+			var opslaan = new AjaxSubmitLink("opslaan")
 			{
 
 				private static final long serialVersionUID = 1L;

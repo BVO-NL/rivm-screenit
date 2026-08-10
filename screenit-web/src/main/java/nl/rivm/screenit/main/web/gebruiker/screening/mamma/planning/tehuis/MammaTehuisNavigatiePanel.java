@@ -25,7 +25,6 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.ClientInzienPage;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
-import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.service.mamma.MammaBaseDossierService;
 import nl.topicuszorg.wicket.hibernate.SimpleHibernateModel;
 
@@ -63,7 +62,7 @@ public class MammaTehuisNavigatiePanel extends GenericPanel<Client>
 			@Override
 			public boolean isVisible()
 			{
-				MammaDossier dossier = model.getObject().getMammaDossier();
+				var dossier = model.getObject().getMammaDossier();
 				return dossier.getDeelnamemodus() != Deelnamemodus.SELECTIEBLOKKADE &&
 					(baseDossierService.isAfspraakMakenMogelijk(dossier, false, false) || baseDossierService.isVerzettenMogelijk(dossier));
 			}

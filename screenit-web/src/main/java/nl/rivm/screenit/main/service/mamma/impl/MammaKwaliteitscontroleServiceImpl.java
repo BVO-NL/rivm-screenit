@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,8 +59,6 @@ import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaFotobespreking;
 import nl.rivm.screenit.model.mamma.MammaFotobesprekingOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaIKwaliteitscontrole;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaVisitatie;
 import nl.rivm.screenit.model.mamma.MammaVisitatieOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
@@ -174,7 +171,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 				{
 					try
 					{
-						String melding = verwerkRegel(fotobespreking, context);
+						var melding = verwerkRegel(fotobespreking, context);
 						if (isNotBlank(melding))
 						{
 							meldingen.add(melding);
@@ -227,8 +224,8 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 			fotobesprekingOnderzoek.setFotobespreking(fotobespreking);
 			fotobesprekingOnderzoek.setBeoordeling(beoordeling);
 			fotobesprekingOnderzoek.setStatus(MammaFotobesprekingOnderzoekStatus.NIET_BESPROKEN);
-			int volgnummer = onderzoeken.isEmpty() ? 1 : onderzoeken.stream().mapToInt(MammaFotobesprekingOnderzoek::getVolgnummer).max()
-														 .orElseThrow(NoSuchElementException::new) + 1;
+			var volgnummer = onderzoeken.isEmpty() ? 1 : onderzoeken.stream().mapToInt(MammaFotobesprekingOnderzoek::getVolgnummer).max()
+				.orElseThrow(NoSuchElementException::new) + 1;
 			fotobesprekingOnderzoek.setVolgnummer(volgnummer);
 			onderzoeken.add(fotobesprekingOnderzoek);
 			hibernateService.saveOrUpdateAll(fotobesprekingOnderzoek, fotobespreking);
@@ -250,7 +247,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	{
 		if (fotobesprekingOnderzoek.getStatus() == MammaFotobesprekingOnderzoekStatus.NIET_BESPROKEN)
 		{
-			MammaFotobespreking fotobespreking = fotobesprekingOnderzoek.getFotobespreking();
+			var fotobespreking = fotobesprekingOnderzoek.getFotobespreking();
 			fotobespreking.getOnderzoeken().remove(fotobesprekingOnderzoek);
 			hibernateService.delete(fotobesprekingOnderzoek);
 			hibernateService.saveOrUpdate(fotobespreking);
@@ -274,7 +271,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	{
 		if (visitatieOnderzoek.getStatus() == MammaVisitatieOnderzoekStatus.NIET_GEZIEN)
 		{
-			MammaVisitatie visitatie = visitatieOnderzoek.getVisitatie();
+			var visitatie = visitatieOnderzoek.getVisitatie();
 			visitatie.getOnderzoeken().remove(visitatieOnderzoek);
 			hibernateService.delete(visitatieOnderzoek);
 			hibernateService.saveOrUpdate(visitatie);
@@ -350,7 +347,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 		visitatieOnderzoek.setBeoordeling(beoordeling);
 		visitatieOnderzoek.setStatus(MammaVisitatieOnderzoekStatus.NIET_GEZIEN);
 		visitatieOnderzoek.setOnderdeel(visitatieOnderdeel);
-		int volgnummer = onderzoeken.stream().filter(o -> o.getOnderdeel() == visitatieOnderdeel).mapToInt(MammaVisitatieOnderzoek::getVolgnummer).max().orElse(0) + 1;
+		var volgnummer = onderzoeken.stream().filter(o -> o.getOnderdeel() == visitatieOnderdeel).mapToInt(MammaVisitatieOnderzoek::getVolgnummer).max().orElse(0) + 1;
 		visitatieOnderzoek.setVolgnummer(volgnummer);
 		onderzoeken.add(visitatieOnderzoek);
 		visitatieOnderzoekRepository.save(visitatieOnderzoek);
@@ -358,15 +355,15 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 
 	private String verwerkRegel(MammaFotobespreking fotobespreking, ClientenBestandVerwerkingContext context)
 	{
-		Client client = getCsvClient(context);
+		var client = getCsvClient(context);
 		return addFotobesprekingOnderzoek(fotobespreking, client);
 	}
 
 	private Client getCsvClient(ClientenBestandVerwerkingContext context)
 	{
-		String bsn = context.getBsnVanHuidigeRegel();
-		Date geboortedatum = context.getGeboortedatumVanHuidigeRegel();
-		Client client = clientService.getClientByBsn(context.getBsnVanHuidigeRegel());
+		var bsn = context.getBsnVanHuidigeRegel();
+		var geboortedatum = context.getGeboortedatumVanHuidigeRegel();
+		var client = clientService.getClientByBsn(context.getBsnVanHuidigeRegel());
 		if (client == null || !geboortedatum.equals(client.getPersoon().getGeboortedatum()))
 		{
 			throw new IllegalStateException("Client met bsn " + bsn + " en geboortedatum " + Constants.getDateFormat().format(geboortedatum) + ": " + "niet gevonden.");
@@ -379,11 +376,11 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 
 	private MammaBeoordeling getBeoordeling(BeoordelingsEenheid beoordelingsEenheid, Client client)
 	{
-		String foutPrefix = "Client met bsn " + client.getPersoon().getBsn() + " en geboortedatum " + DateUtil.getGeboortedatum(client)
+		var foutPrefix = "Client met bsn " + client.getPersoon().getBsn() + " en geboortedatum " + DateUtil.getGeboortedatum(client)
 			+ ": ";
-		MammaScreeningRonde screeningRonde = baseScreeningrondeService.getLaatsteScreeningRondeMetUitslag(client);
+		var screeningRonde = baseScreeningrondeService.getLaatsteScreeningRondeMetUitslag(client);
 
-		MammaOnderzoek onderzoek = MammaScreeningRondeUtil.getLaatsteOnderzoek(screeningRonde);
+		var onderzoek = MammaScreeningRondeUtil.getLaatsteOnderzoek(screeningRonde);
 		if (onderzoek == null)
 		{
 			throw new IllegalStateException(foutPrefix + "geen onderzoek gevonden.");
@@ -392,10 +389,10 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 		{
 			throw new IllegalStateException(foutPrefix + "geen beelden beschikbaar");
 		}
-		MammaBeoordeling beoordeling = onderzoek.getLaatsteBeoordeling();
+		var beoordeling = onderzoek.getLaatsteBeoordeling();
 		if (beoordeling == null || !MammaBeoordelingStatus.isUitslagStatus(beoordeling.getStatus()))
 		{
-			String foutMelding = foutPrefix + "beoordeling van onderzoek is nog niet afgerond.";
+			var foutMelding = foutPrefix + "beoordeling van onderzoek is nog niet afgerond.";
 			LOG.error("Client met id " + client.getId() + ": Status " + (beoordeling != null ? beoordeling.getStatus() : "geen"));
 			throw new IllegalStateException(foutMelding);
 		}
@@ -433,12 +430,12 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 	@Transactional
 	public void herbeoordeelFotobesprekingOnderzoek(MammaFotobesprekingOnderzoek fotobesprekingOnderzoek)
 	{
-		MammaBeoordeling beoordeling = fotobesprekingOnderzoek.getBeoordeling();
+		var beoordeling = fotobesprekingOnderzoek.getBeoordeling();
 		if (baseBeoordelingService.isUitslagGunstig(beoordeling))
 		{
 			if (beoordeling.getOnderzoek().getLaatsteBeoordeling().equals(beoordeling))
 			{
-				MammaScreeningRonde screeningRonde = beoordeling.getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde();
+				var screeningRonde = beoordeling.getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde();
 				if (screeningRonde.equals(screeningRonde.getDossier().getLaatsteScreeningRonde()))
 				{
 					onderzoekService.voegNieuweBeoordelingToe(beoordeling.getOnderzoek());
@@ -781,7 +778,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 					{
 						try
 						{
-							String melding = verwerkRegel(visitatie, fileEntry.getKey(), context);
+							var melding = verwerkRegel(visitatie, fileEntry.getKey(), context);
 							if (isNotBlank(melding))
 							{
 								meldingen.add(String.format("%1$s (Bestand: %2$s)", melding, fileName));
@@ -796,7 +793,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 				}
 				catch (Exception e)
 				{
-					String melding = e instanceof IllegalStateException ? e.getMessage() : "Onbekende fout bij verwerking van clientenlijst bestand.";
+					var melding = e instanceof IllegalStateException ? e.getMessage() : "Onbekende fout bij verwerking van clientenlijst bestand.";
 					meldingen.add(String.format("%1$s (Bestand: %2$s)", melding, fileName));
 					if (!(e instanceof IllegalStateException))
 					{
@@ -829,7 +826,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 		}
 		catch (IllegalStateException | IOException e)
 		{
-			String errorMessage = "Onbekende fout bij verwerking van bijlagen.";
+			var errorMessage = "Onbekende fout bij verwerking van bijlagen.";
 			LOG.error(errorMessage, e);
 			messages.add(errorMessage);
 		}
@@ -838,7 +835,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 
 	private String verwerkRegel(MammaVisitatie visitatie, MammaVisitatieOnderdeel onderdeel, ClientenBestandVerwerkingContext context)
 	{
-		Client client = getCsvClient(context);
+		var client = getCsvClient(context);
 		return addVisitatieOnderzoek(visitatie, onderdeel, client);
 	}
 

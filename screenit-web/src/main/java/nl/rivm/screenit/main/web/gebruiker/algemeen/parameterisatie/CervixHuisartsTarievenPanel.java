@@ -91,12 +91,12 @@ public class CervixHuisartsTarievenPanel extends GenericPanel<CervixHuisartsTari
 		actie = autorisatieService.getActieVoorMedewerker(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
 			Recht.MEDEWERKER_CERVIX_HUISARTS_TARIEF);
 		level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_CERVIX_HUISARTS_TARIEF);
-		boolean magToevoegen = AutorisatieUtil.isMinimumActie(actie, Actie.TOEVOEGEN);
+		var magToevoegen = AutorisatieUtil.isMinimumActie(actie, Actie.TOEVOEGEN);
 
 		dialog = new BootstrapDialog("dialog");
 		add(dialog);
 
-		WebMarkupContainer toevoegenContainer = new WebMarkupContainer("toevoegenContainer");
+		var toevoegenContainer = new WebMarkupContainer("toevoegenContainer");
 		toevoegenContainer.setOutputMarkupId(true);
 		add(toevoegenContainer);
 		toevoegenContainer.add(new IndicatingAjaxLink<Void>("toevoegen")
@@ -130,7 +130,7 @@ public class CervixHuisartsTarievenPanel extends GenericPanel<CervixHuisartsTari
 					@Override
 					protected void opslaan(AjaxRequestTarget target, String melding)
 					{
-						String infoMelding = "Tarief succesvol opgeslagen. ";
+						var infoMelding = "Tarief succesvol opgeslagen. ";
 						if (!melding.isEmpty())
 						{
 							infoMelding += " Bijgewerkte bestaande tarieven: " + melding
@@ -154,7 +154,7 @@ public class CervixHuisartsTarievenPanel extends GenericPanel<CervixHuisartsTari
 
 	private WebMarkupContainer getTarievenContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("tarievenTableContainer");
+		var container = new WebMarkupContainer("tarievenTableContainer");
 		container.setOutputMarkupPlaceholderTag(true);
 
 		List<IColumn<CervixHuisartsTarief, String>> columns = new ArrayList<>();
@@ -169,7 +169,7 @@ public class CervixHuisartsTarievenPanel extends GenericPanel<CervixHuisartsTari
 				public void populateItem(Item<ICellPopulator<CervixHuisartsTarief>> cellItem, String componentId, IModel<CervixHuisartsTarief> rowModel)
 				{
 
-					CervixHuisartsTarief tarief = rowModel.getObject();
+					var tarief = rowModel.getObject();
 					if (tarief.getGeldigVanafDatum().after(currentDateSupplier.getDate()))
 					{
 						cellItem.add(new AjaxImageCellPanel<CervixHuisartsTarief>(componentId, rowModel, "icon-trash")
@@ -214,7 +214,7 @@ public class CervixHuisartsTarievenPanel extends GenericPanel<CervixHuisartsTari
 			});
 		}
 
-		ScreenitDataTable<CervixHuisartsTarief, String> table = new ScreenitDataTable<CervixHuisartsTarief, String>("tarievenTable", columns,
+		var table = new ScreenitDataTable<CervixHuisartsTarief, String>("tarievenTable", columns,
 			new CervixHuisartsTarievenDataProvider(), Model.of("Tarieven"));
 		container.add(table);
 
@@ -223,7 +223,7 @@ public class CervixHuisartsTarievenPanel extends GenericPanel<CervixHuisartsTari
 
 	private void replaceContainer(AjaxRequestTarget target)
 	{
-		WebMarkupContainer container = getTarievenContainer();
+		var container = getTarievenContainer();
 		tableContainer.replaceWith(container);
 		tableContainer = container;
 		target.add(container);

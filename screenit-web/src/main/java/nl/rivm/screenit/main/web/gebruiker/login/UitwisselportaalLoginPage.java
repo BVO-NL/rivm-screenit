@@ -36,7 +36,7 @@ public class UitwisselportaalLoginPage extends LoginBasePage
 
 	public UitwisselportaalLoginPage()
 	{
-		PageParameters parameters = new PageParameters();
+		var parameters = new PageParameters();
 		parameters.add(PAGE_PARAMETER_UITWISSELPORTAAL, Boolean.TRUE);
 		add(new BookmarkablePageLink<>("uzipasLogin", LoginUzipasZorgIdPage.class, parameters));
 	}

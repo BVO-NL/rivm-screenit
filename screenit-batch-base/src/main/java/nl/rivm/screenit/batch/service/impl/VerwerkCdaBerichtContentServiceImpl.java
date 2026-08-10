@@ -25,14 +25,12 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.Column;
@@ -41,7 +39,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
@@ -172,7 +169,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 					{
 						try
 						{
-							int codeValue = new BigDecimal(value).intValue();
+							var codeValue = new BigDecimal(value).intValue();
 							var code2Jaar = "13";
 							var code3Jaar = "14";
 							var code5Jaar = "15";
@@ -247,7 +244,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 
 		static ConceptExceptionHandler convertFromCode(String code, VerslagGeneratie generatie)
 		{
-			for (ConceptExceptionHandler handler : values())
+			for (var handler : values())
 			{
 				if (handler.shortConceptId.equals(code)
 					&& (handler.generaties == null || handler.generaties.length == 0 || Arrays.asList(handler.generaties).contains(generatie)))
@@ -288,7 +285,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 
 		static PostConceptValueConverter convertFromCode(String code, VerslagType verslagType)
 		{
-			for (PostConceptValueConverter converter : values())
+			for (var converter : values())
 			{
 				if (converter.shortConceptId.equals(code)
 					&& (converter.generatie == null || converter.generatie.equals(verslagType.getHuidigeGeneratie())))
@@ -311,19 +308,19 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 		try
 		{
 
-			DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance("com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl", null);
+			var domFactory = DocumentBuilderFactory.newInstance("com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl", null);
 			domFactory.setNamespaceAware(true);
-			DocumentBuilder builder = domFactory.newDocumentBuilder();
-			Document doc = builder.parse(IOUtils.toInputStream(verslag.getOntvangenBericht().getXmlBericht()));
+			var builder = domFactory.newDocumentBuilder();
+			var doc = builder.parse(IOUtils.toInputStream(verslag.getOntvangenBericht().getXmlBericht()));
 
-			XPathFactory factory = XPathFactory.newInstance();
-			XPath xpath = factory.newXPath();
+			var factory = XPathFactory.newInstance();
+			var xpath = factory.newXPath();
 			xpath.setNamespaceContext(new UniversalNamespaceCache(doc, "hl7"));
 
-			VerslagGeneratie generatie = VerslagProjectVersionMapping.get().getGeneratie(verslag.getOntvangenBericht().getProjectVersion(), verslag.getType());
+			var generatie = VerslagProjectVersionMapping.get().getGeneratie(verslag.getOntvangenBericht().getProjectVersion(), verslag.getType());
 
-			VerslagContent verslagContent = maakEnVulVerslagDeel(doc, xpath, rootClazz, verslag, "", verslag.getType(), generatie);
-			VerslagContent oldVerslagContent = verslag.getVerslagContent();
+			var verslagContent = maakEnVulVerslagDeel(doc, xpath, rootClazz, verslag, "", verslag.getType(), generatie);
+			var oldVerslagContent = verslag.getVerslagContent();
 			if (oldVerslagContent != null)
 			{
 				oldVerslagContent.setVerslag(null);
@@ -334,7 +331,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 			verslagContent.setVerslag(verslag);
 		}
 		catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | SAXException | IOException | ParserConfigurationException
-			   | XPathExpressionException e)
+		       | XPathExpressionException e)
 		{
 			LOG.error("Fout bij vertaling van bericht naar model classes", e);
 			throw new IllegalArgumentException("Fout bij vertaling van CDA bericht naar verslag in DB");
@@ -345,17 +342,17 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 	private <T, S> T maakEnVulVerslagDeel(Node node, XPath xpath, Class<T> rootClazz, S parent, String rootXPath, VerslagType verslagType, VerslagGeneratie generatie)
 		throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, XPathExpressionException
 	{
-		T verslagDeel = rootClazz.newInstance();
-		Field[] declaredFields = rootClazz.getDeclaredFields();
+		var verslagDeel = rootClazz.newInstance();
+		var declaredFields = rootClazz.getDeclaredFields();
 
-		for (Field declaredField : declaredFields)
+		for (var declaredField : declaredFields)
 		{
-			Class<?> declaringType = declaredField.getType();
-			String fieldName = declaredField.getName();
-			VraagElement vraagElement = declaredField.getAnnotation(VraagElement.class);
+			var declaringType = declaredField.getType();
+			var fieldName = declaredField.getName();
+			var vraagElement = declaredField.getAnnotation(VraagElement.class);
 			if (vraagElement != null && vraagElement.useInCda())
 			{
-				XPathMapping xpathMapping = getXpathMapping(vraagElement, verslagType, generatie);
+				var xpathMapping = getXpathMapping(vraagElement, verslagType, generatie);
 				if (declaredField.isAnnotationPresent(OneToOne.class))
 				{
 					PropertyUtils.setProperty(verslagDeel, fieldName, maakEnVulVerslagDeel(node, xpath, declaringType, verslagDeel, rootXPath, verslagType, generatie));
@@ -365,7 +362,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 				{
 					if (xpathMapping != null)
 					{
-						String nieuwRootXPath = xpathMapping.value();
+						var nieuwRootXPath = xpathMapping.value();
 						if (isRootPartOfCurrentXpath(rootXPath, nieuwRootXPath))
 						{
 							nieuwRootXPath = removeRootFromXpath(rootXPath, nieuwRootXPath);
@@ -374,26 +371,26 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 						{
 							LOG.warn("root xpath " + rootXPath + " niet in nieuwXpath " + nieuwRootXPath + " voor " + declaredField);
 						}
-						Object nodeSet = xpath.compile(nieuwRootXPath).evaluate(node, XPathConstants.NODESET);
-						Object property = PropertyUtils.getProperty(verslagDeel, fieldName);
+						var nodeSet = xpath.compile(nieuwRootXPath).evaluate(node, XPathConstants.NODESET);
+						var property = PropertyUtils.getProperty(verslagDeel, fieldName);
 						if (nodeSet instanceof NodeList && property instanceof List)
 						{
-							List list = (List) property;
-							NodeList nodeList = (NodeList) nodeSet;
+							var list = (List) property;
+							var nodeList = (NodeList) nodeSet;
 							Class paramType = getType(declaredField);
-							String extension = xpathMapping.extension();
+							var extension = xpathMapping.extension();
 
-							for (int i = 0; i < nodeList.getLength(); i++)
+							for (var i = 0; i < nodeList.getLength(); i++)
 							{
 								LOG.debug("element " + (i + 1) + " van " + nodeList.getLength() + " van veld " + declaredField);
-								Node itemNode = nodeList.item(i);
-								NamedNodeMap attributes = itemNode.getAttributes();
-								Node negationIndNode = attributes.getNamedItem("negationInd");
+								var itemNode = nodeList.item(i);
+								var attributes = itemNode.getAttributes();
+								var negationIndNode = attributes.getNamedItem("negationInd");
 								if (negationIndNode == null || !"true".equals(negationIndNode.getNodeValue()))
 								{
 									if (!HibernateObject.class.isAssignableFrom(paramType) || paramType.equals(DSValue.class))
 									{
-										Object value = getValue(itemNode, xpath, ".", extension, declaredField, verslagType);
+										var value = getValue(itemNode, xpath, ".", extension, declaredField, verslagType);
 										if (value != null)
 										{
 											list.add(value);
@@ -462,7 +459,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 		{
 
 			String xpath = null;
-			String[] xpaths = vraagElement.xpaths();
+			var xpaths = vraagElement.xpaths();
 			if (generatie != null && !generatie.isHuidigeGeneratie(verslagType) && xpaths.length == 2)
 			{
 				xpath = xpaths[1];
@@ -489,11 +486,11 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 
 	private Class<?> getType(Field declaredField)
 	{
-		Type type = declaredField.getGenericType();
+		var type = declaredField.getGenericType();
 		if (type instanceof ParameterizedType)
 		{
-			ParameterizedType pt = (ParameterizedType) type;
-			for (Type t : pt.getActualTypeArguments())
+			var pt = (ParameterizedType) type;
+			for (var t : pt.getActualTypeArguments())
 			{
 				return (Class<?>) t;
 			}
@@ -509,8 +506,8 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 		throws XPathExpressionException, InstantiationException, IllegalAccessException
 	{
 		Object returnValue = null;
-		VraagElement vraagElement = declaredField.getAnnotation(VraagElement.class);
-		XPathMapping xpathMapping = getXpathMapping(vraagElement, verslagType, generatie);
+		var vraagElement = declaredField.getAnnotation(VraagElement.class);
+		var xpathMapping = getXpathMapping(vraagElement, verslagType, generatie);
 		if (xpathMapping != null && StringUtils.isNotBlank(xpathMapping.value()))
 		{
 			var xpathValue = xpathMapping.value();
@@ -520,19 +517,19 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 			}
 			else if (!(node instanceof Document))
 			{
-				boolean correctionSuccess = false;
+				var correctionSuccess = false;
 
 				top:
-				for (XpathAlternativeMapping mapping : XpathAlternativeMapping.values())
+				for (var mapping : XpathAlternativeMapping.values())
 				{
-					Map<String, String> alternatives = mapping.getAlternatives();
-					for (Entry<String, String> altMapping : alternatives.entrySet())
+					var alternatives = mapping.getAlternatives();
+					for (var altMapping : alternatives.entrySet())
 					{
-						String alternativeXpath = altMapping.getKey();
+						var alternativeXpath = altMapping.getKey();
 						if (xpathValue.startsWith(alternativeXpath))
 						{
-							String referenceValue = xpath.compile(mapping.getXpathReferenceValue()).evaluate(node);
-							String alternativeReferenceValue = altMapping.getValue();
+							var referenceValue = xpath.compile(mapping.getXpathReferenceValue()).evaluate(node);
+							var alternativeReferenceValue = altMapping.getValue();
 							node = (Node) xpath.compile(alternativeXpath + "[" + alternativeReferenceValue + "='" + referenceValue + "']").evaluate(node.getOwnerDocument(),
 								XPathConstants.NODE);
 							xpathValue = xpathValue.substring(alternativeXpath.length() + 1);
@@ -548,7 +545,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 				}
 			}
 
-			ConceptExceptionHandler handler = ConceptExceptionHandler.convertFromCode(vraagElement.conceptId(), generatie);
+			var handler = ConceptExceptionHandler.convertFromCode(vraagElement.conceptId(), generatie);
 			if (handler != null)
 			{
 				returnValue = handler.getValue(new ConceptExceptionContext(verslagService, declaredField, xpath, node, xpathValue));
@@ -565,7 +562,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 		}
 		else
 		{
-			ConceptExceptionHandler handler = ConceptExceptionHandler.convertFromCode(vraagElement.conceptId(), generatie);
+			var handler = ConceptExceptionHandler.convertFromCode(vraagElement.conceptId(), generatie);
 			if (handler != null)
 			{
 				returnValue = handler.getValue(new ConceptExceptionContext(verslagService, declaredField, xpath, node, ""));
@@ -576,7 +573,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 			}
 		}
 
-		PostConceptValueConverter converter = PostConceptValueConverter.convertFromCode(vraagElement.conceptId(), verslagType);
+		var converter = PostConceptValueConverter.convertFromCode(vraagElement.conceptId(), verslagType);
 		if (converter != null)
 		{
 			returnValue = converter.getValue(returnValue);
@@ -593,15 +590,15 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 		throws XPathExpressionException, InstantiationException, IllegalAccessException
 	{
 		Object returnValue = null;
-		Class<?> type = getType(declaredField);
+		var type = getType(declaredField);
 		if (type.equals(Boolean.class))
 		{
-			Node booleanNode = (Node) xpath.compile(xpathValue).evaluate(node, XPathConstants.NODE);
+			var booleanNode = (Node) xpath.compile(xpathValue).evaluate(node, XPathConstants.NODE);
 			if (booleanNode != null)
 			{
-				NamedNodeMap attributes = booleanNode.getAttributes();
-				Node typeNode = attributes.getNamedItem("xsi:type");
-				Node valueNode = attributes.getNamedItem("value");
+				var attributes = booleanNode.getAttributes();
+				var typeNode = attributes.getNamedItem("xsi:type");
+				var valueNode = attributes.getNamedItem("value");
 				if (typeNode != null && valueNode != null && typeNode.getNodeValue().equals("BL")) 
 				{
 					returnValue = "true".equals(valueNode.getNodeValue());
@@ -631,8 +628,8 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 		}
 		else if (type.equals(Quantity.class))
 		{
-			Quantity quantity = (Quantity) type.newInstance();
-			Node quantityNode = (Node) xpath.compile(xpathValue).evaluate(node, XPathConstants.NODE);
+			var quantity = (Quantity) type.newInstance();
+			var quantityNode = (Node) xpath.compile(xpathValue).evaluate(node, XPathConstants.NODE);
 			quantity.setValue(xpath.compile("@value").evaluate(quantityNode));
 			quantity.setUnit(xpath.compile("@unit").evaluate(quantityNode));
 			if (StringUtils.isNotBlank(quantity.getValue()))
@@ -642,15 +639,15 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 		}
 		else if (type.equals(NullFlavourQuantity.class))
 		{
-			NullFlavourQuantity quantity = (NullFlavourQuantity) type.newInstance();
-			Node quantityNode = (Node) xpath.compile(xpathValue.replace("[not(@nullFlavor)]", "")).evaluate(node, XPathConstants.NODE);
+			var quantity = (NullFlavourQuantity) type.newInstance();
+			var quantityNode = (Node) xpath.compile(xpathValue.replace("[not(@nullFlavor)]", "")).evaluate(node, XPathConstants.NODE);
 			quantity.setValue(xpath.compile("@value").evaluate(quantityNode));
 			quantity.setUnit(xpath.compile("@unit").evaluate(quantityNode));
 			if (quantityNode != null && StringUtils.isBlank(quantity.getValue()))
 			{
 				quantity.setUnit(null);
 				quantity.setValue(null);
-				Boolean noNullFlavour = isNoNullFlavour(quantityNode.getAttributes());
+				var noNullFlavour = isNoNullFlavour(quantityNode.getAttributes());
 				quantity.setNullFlavour(!Boolean.TRUE.equals(noNullFlavour));
 			}
 			if (StringUtils.isNotBlank(quantity.getValue()) || quantity.getNullFlavour() != null)
@@ -660,9 +657,9 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 		}
 		else if (type.equals(DSValue.class))
 		{
-			DSValueSet dsValueSet = declaredField.getAnnotation(DSValueSet.class);
-			DSValue dsZoekObject = new DSValue();
-			Node dsNode = (Node) xpath.compile(xpathValue).evaluate(node, XPathConstants.NODE);
+			var dsValueSet = declaredField.getAnnotation(DSValueSet.class);
+			var dsZoekObject = new DSValue();
+			var dsNode = (Node) xpath.compile(xpathValue).evaluate(node, XPathConstants.NODE);
 			dsZoekObject.setCode(xpath.compile("@code").evaluate(dsNode));
 			dsZoekObject.setCodeSystem(xpath.compile("@codeSystem").evaluate(dsNode));
 			dsZoekObject.setValueSetName(dsValueSet.name());
@@ -681,14 +678,14 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 	private Boolean isNoNullFlavour(NamedNodeMap attributes)
 	{
 		Boolean returnValue;
-		Node nullFlavorNode = attributes.getNamedItem("nullFlavor");
+		var nullFlavorNode = attributes.getNamedItem("nullFlavor");
 		if (nullFlavorNode != null && ("UNK".equals(nullFlavorNode.getNodeValue()) || "NA".equals(nullFlavorNode.getNodeValue())))
 		{
 			returnValue = null;
 		}
 		else
 		{
-			Node negationIndNode = attributes.getNamedItem("negationInd");
+			var negationIndNode = attributes.getNamedItem("negationInd");
 			returnValue = !(negationIndNode != null && "true".equals(negationIndNode.getNodeValue()));
 		}
 		return returnValue;
@@ -720,7 +717,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 
 		if (zoekValue.getCode() != null)
 		{
-			VraagElement vraagElement = declaredField.getAnnotation(VraagElement.class);
+			var vraagElement = declaredField.getAnnotation(VraagElement.class);
 			switch (vraagElement.conceptId())
 			{
 			case "110":
@@ -776,7 +773,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 	private static Date getDateValue(Node node, XPath xpath, String xpathValue) throws XPathExpressionException
 	{
 		Date returnValue = null;
-		String dateValue = xpath.compile(xpathValue + "/@value").evaluate(node);
+		var dateValue = xpath.compile(xpathValue + "/@value").evaluate(node);
 		try
 		{
 			returnValue = CDAHelper.converCdaDateStringToDate(dateValue);

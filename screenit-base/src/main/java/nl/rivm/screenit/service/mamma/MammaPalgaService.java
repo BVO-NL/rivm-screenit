@@ -24,6 +24,7 @@ package nl.rivm.screenit.service.mamma;
 import java.io.IOException;
 import java.util.List;
 
+import nl.rivm.screenit.dto.mamma.MammaPalgaCsvExportClientProjectie;
 import nl.rivm.screenit.dto.mamma.MammaPalgaCsvImportDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Persoon;
@@ -31,9 +32,13 @@ import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.batch.popupconfig.MammaPalgaExportConfig;
 import nl.rivm.screenit.model.batch.popupconfig.MammaPalgaGrondslag;
 
+import org.hibernate.ScrollableResults;
+
 public interface MammaPalgaService
 {
-	List<Long> getClientenVoorPalga(MammaPalgaExportConfig exportConfig);
+	long getAantalClientenVoorPalgaExport(MammaPalgaExportConfig exportConfig);
+
+	ScrollableResults<MammaPalgaCsvExportClientProjectie> getClientProjectieVoorPalgaExportScrollable(MammaPalgaExportConfig exportConfig);
 
 	void deleteExports(String naam, Account ingelogdAccount);
 

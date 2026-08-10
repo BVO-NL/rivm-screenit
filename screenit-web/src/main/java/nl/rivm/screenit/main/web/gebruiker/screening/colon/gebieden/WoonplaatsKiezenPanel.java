@@ -22,8 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.gebieden;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.model.colon.UitnodigingsGebied;
 import nl.rivm.screenit.service.GemeenteService;
@@ -43,7 +41,7 @@ public class WoonplaatsKiezenPanel extends GenericPanel<UitnodigingsGebied>
 	public WoonplaatsKiezenPanel(String id, IModel<UitnodigingsGebied> model)
 	{
 		super(id, model);
-		List<String> woonplaatsen = gemeenteService.getWoonplaatsen(getModelObject());
+		var woonplaatsen = gemeenteService.getWoonplaatsen(getModelObject());
 		add(new ScreenitDropdown<>("woonplaats", woonplaatsen).setRequired(true));
 	}
 

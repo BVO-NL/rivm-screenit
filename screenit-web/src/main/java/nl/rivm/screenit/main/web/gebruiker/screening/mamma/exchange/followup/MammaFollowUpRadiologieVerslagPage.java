@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.exchange.followup;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -156,7 +155,7 @@ public class MammaFollowUpRadiologieVerslagPage extends MammaExchangeBasePage
 	@Override
 	protected void updateContent()
 	{
-		AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
+		var target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
 		if (clientOpt != null)
 		{
 			passport = new ClientPaspoortPanel("paspoort", clientOpt);
@@ -180,7 +179,7 @@ public class MammaFollowUpRadiologieVerslagPage extends MammaExchangeBasePage
 
 	private void createContentContainer(IModel<Client> clientOpt, AjaxRequestTarget target)
 	{
-		MammaScreeningRonde screeningRonde = screeningrondeService.getLaatsteScreeningRondeMetUitslag(clientOpt.getObject());
+		var screeningRonde = screeningrondeService.getLaatsteScreeningRondeMetUitslag(clientOpt.getObject());
 
 		WebMarkupContainer nieuwePanel;
 		if (screeningRonde == null)
@@ -230,7 +229,7 @@ public class MammaFollowUpRadiologieVerslagPage extends MammaExchangeBasePage
 
 		createDoorverwezenFilter();
 
-		MammaFollowUpRadiologieOrganisatieProvider followUpDataRegioProvider = new MammaFollowUpRadiologieOrganisatieProvider(organisatieModel, doorverwezenFilterOptieModel);
+		var followUpDataRegioProvider = new MammaFollowUpRadiologieOrganisatieProvider(organisatieModel, doorverwezenFilterOptieModel);
 
 		List<IColumn<MammaFollowUpRadiologieVerslag, String>> columns = new ArrayList<>();
 		columns.add(new PropertyColumn<>(Model.of("Bsn"), "screeningRonde.dossier.client.persoon.bsn"));
@@ -241,7 +240,7 @@ public class MammaFollowUpRadiologieVerslagPage extends MammaExchangeBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<MammaFollowUpRadiologieVerslag>> item, String componentId, IModel<MammaFollowUpRadiologieVerslag> rowModel)
 			{
-				Date urgentVanaf = DateUtil
+				var urgentVanaf = DateUtil
 					.toUtilDate(dateSupplier.getLocalDate().minusDays(preferenceService.getInteger(PreferenceKey.MAMMA_FOLLOW_UP_RADIOLOGIE_WERKLIJST_NA_DOWNLOADEN.name())));
 				if (rowModel.getObject().getAangemaaktOp().compareTo(urgentVanaf) <= 0)
 				{
@@ -254,7 +253,7 @@ public class MammaFollowUpRadiologieVerslagPage extends MammaExchangeBasePage
 			}
 		});
 
-		ScreenitDataTable<MammaFollowUpRadiologieVerslag, String> openstaandeRadiologieVerslagenTabel = new ScreenitDataTable<>(
+		var openstaandeRadiologieVerslagenTabel = new ScreenitDataTable<>(
 			"openstaandeRadiologieVerslagenTabel", columns,
 			followUpDataRegioProvider, 10, Model.of("radiologieverslag(en)"))
 		{
@@ -271,7 +270,7 @@ public class MammaFollowUpRadiologieVerslagPage extends MammaExchangeBasePage
 
 	private void createDoorverwezenFilter()
 	{
-		RadioChoice<MammaFollowUpDoorverwezenFilterOptie> doorverwezenFilter = new RadioChoice<>("doorverwezenFilter", doorverwezenFilterOptieModel,
+		var doorverwezenFilter = new RadioChoice<MammaFollowUpDoorverwezenFilterOptie>("doorverwezenFilter", doorverwezenFilterOptieModel,
 			Arrays.asList(MammaFollowUpDoorverwezenFilterOptie.values()),
 			new EnumChoiceRenderer<>(this));
 		doorverwezenFilter.setPrefix("<div class=\"span2\">\n" +
@@ -317,13 +316,13 @@ public class MammaFollowUpRadiologieVerslagPage extends MammaExchangeBasePage
 				@Override
 				public void onClick(AjaxRequestTarget target)
 				{
-					MammaScreeningRonde screeningRonde = (MammaScreeningRonde) GeenBeeldenGedownloadedPanel.this.getDefaultModelObject();
+					var screeningRonde = (MammaScreeningRonde) GeenBeeldenGedownloadedPanel.this.getDefaultModelObject();
 					IModel<MammaFollowUpRadiologieVerslag> model;
-					MammaFollowUpRadiologieVerslag followUpRadiologieVerslag = uitwisselportaalService.getFollowUpRadiologieVerslag(screeningRonde,
+					var followUpRadiologieVerslag = uitwisselportaalService.getFollowUpRadiologieVerslag(screeningRonde,
 						getIngelogdeOrganisatieMedewerker());
 					if (followUpRadiologieVerslag == null)
 					{
-						MammaFollowUpRadiologieVerslag radiologieVerslag = new MammaFollowUpRadiologieVerslag();
+						var radiologieVerslag = new MammaFollowUpRadiologieVerslag();
 						model = ModelUtil.ccModel(radiologieVerslag);
 						radiologieVerslag = model.getObject();
 						radiologieVerslag.setAangemaaktIn(ScreenitSession.get().getOrganisatie());
@@ -352,26 +351,26 @@ public class MammaFollowUpRadiologieVerslagPage extends MammaExchangeBasePage
 		public FormulierPanel(String id, IModel<MammaFollowUpRadiologieVerslag> verslagModel)
 		{
 			super(id, "formulier", fragments, verslagModel);
-			MammaFollowUpRadiologieVerslag followUpRadiologieVerslag = verslagModel.getObject();
+			var followUpRadiologieVerslag = verslagModel.getObject();
 
-			final Form<MammaFollowUpRadiologieVerslag> form = new Form<>("form", verslagModel);
+			final var form = new Form<MammaFollowUpRadiologieVerslag>("form", verslagModel);
 			add(form);
 
-			WebMarkupContainer valuesContainer = new WebMarkupContainer("valuesContainer");
+			var valuesContainer = new WebMarkupContainer("valuesContainer");
 			valuesContainer.setVisible(Boolean.TRUE.equals(followUpRadiologieVerslag.getInformatieBeschikbaar()));
 			valuesContainer.setOutputMarkupId(true);
 			valuesContainer.setOutputMarkupPlaceholderTag(true);
 			form.add(valuesContainer);
 
-			BigDecimalField tumorGrootte = (BigDecimalField) new BigDecimalField("radioloogTumorGrootte", 2, BigDecimal.ZERO,
+			var tumorGrootte = (BigDecimalField) new BigDecimalField("radioloogTumorGrootte", 2, BigDecimal.ZERO,
 				Constants.BK_MAXIMALE_TUMOR_GROOTTE).setRequired(false);
 			tumorGrootte.add(new OnChangeAjaxBehavior()
 			{
 				@Override
 				protected void onUpdate(AjaxRequestTarget ajaxRequestTarget)
 				{
-					BigDecimal tumorGrootteValue = tumorGrootte.getConvertedInput();
-					MammaFollowUpTumorGrootteClassificatie classificatie = tumorGrootteValue != null
+					var tumorGrootteValue = tumorGrootte.getConvertedInput();
+					var classificatie = tumorGrootteValue != null
 						? MammaFollowUpTumorGrootteClassificatie.getClassificatie(tumorGrootteValue)
 						: null;
 					verslagModel.getObject().setRadioloogTumorGrootteClassificatie(classificatie);
@@ -402,17 +401,17 @@ public class MammaFollowUpRadiologieVerslagPage extends MammaExchangeBasePage
 			valuesContainer.add(
 				new ScreenitDropdown<>("conclusieBirads", Arrays.asList(MammaFollowUpBIRADSWaarde.values()), new EnumChoiceRenderer<>()).setNullValid(false).setRequired(true));
 
-			TextArea<String> conclusieEersteUitslagRadiologie = new TextArea<>("conclusieEersteUitslagRadiologie");
+			var conclusieEersteUitslagRadiologie = new TextArea<String>("conclusieEersteUitslagRadiologie");
 			conclusieEersteUitslagRadiologie.add(StringValidator.maximumLength(HibernateMagicNumber.L1024));
 			conclusieEersteUitslagRadiologie.setRequired(true);
 			valuesContainer.add(conclusieEersteUitslagRadiologie);
 
-			AjaxCheckBox informatieBeschikbaar = new AjaxCheckBox("informatieBeschikbaar")
+			var informatieBeschikbaar = new AjaxCheckBox("informatieBeschikbaar")
 			{
 				@Override
 				protected void onUpdate(AjaxRequestTarget ajaxRequestTarget)
 				{
-					MammaFollowUpRadiologieVerslag followUpRadiologieVerslag = verslagModel.getObject();
+					var followUpRadiologieVerslag = verslagModel.getObject();
 					valuesContainer.setVisible(Boolean.TRUE.equals(followUpRadiologieVerslag.getInformatieBeschikbaar()));
 					ajaxRequestTarget.add(valuesContainer);
 				}
@@ -426,7 +425,7 @@ public class MammaFollowUpRadiologieVerslagPage extends MammaExchangeBasePage
 				protected void onSubmit(AjaxRequestTarget target)
 				{
 					super.onSubmit(target);
-					MammaFollowUpRadiologieVerslag verslag = form.getModelObject();
+					var verslag = form.getModelObject();
 					if (Boolean.FALSE.equals(verslag.getInformatieBeschikbaar()))
 					{
 						verslag.setPathologieUitgevoerd(null);
@@ -449,15 +448,15 @@ public class MammaFollowUpRadiologieVerslagPage extends MammaExchangeBasePage
 
 		private void addOrReplaceTumorVelden(AjaxRequestTarget ajaxRequestTarget, BigDecimalField tumorGrootte, WebMarkupContainer valuesContainer)
 		{
-			MammaFollowUpRadiologieVerslag verslag = (MammaFollowUpRadiologieVerslag) FormulierPanel.this.getDefaultModelObject();
+			var verslag = (MammaFollowUpRadiologieVerslag) FormulierPanel.this.getDefaultModelObject();
 			tumorGrootte.setVisible(Boolean.TRUE.equals(verslag.getPathologieUitgevoerd()));
 			addOrReplaceClassificatieLabel(valuesContainer, ajaxRequestTarget);
 		}
 
 		private void addOrReplaceClassificatieLabel(WebMarkupContainer valueForm, AjaxRequestTarget target)
 		{
-			EnumLabel<MammaFollowUpTumorGrootteClassificatie> classificatieLabel = new EnumLabel<>("radioloogTumorGrootteClassificatie");
-			MammaFollowUpRadiologieVerslag verslag = (MammaFollowUpRadiologieVerslag) FormulierPanel.this.getDefaultModelObject();
+			var classificatieLabel = new EnumLabel<MammaFollowUpTumorGrootteClassificatie>("radioloogTumorGrootteClassificatie");
+			var verslag = (MammaFollowUpRadiologieVerslag) FormulierPanel.this.getDefaultModelObject();
 
 			classificatieLabel.setVisible(verslag.getRadioloogTumorGrootteClassificatie() != null && Boolean.TRUE.equals(verslag.getInformatieBeschikbaar())
 				&& Boolean.TRUE.equals(verslag.getPathologieUitgevoerd()));

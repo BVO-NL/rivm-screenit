@@ -38,7 +38,6 @@ import nl.rivm.screenit.model.AfmeldingType;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.colon.ColonAfmelding;
-import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.enums.ColonAfmeldingReden;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -84,29 +83,29 @@ public class ProefBvoServiceImpl implements ProefBvoService
 		logService.logGebeurtenis(LogGebeurtenis.PROOF_ONDERZOEK_AFMELDING_START, ingelogdAccount, Bevolkingsonderzoek.COLON);
 
 		List<String> meldingen = new ArrayList<>();
-		int aantalAfgemeld = 0;
-		int regelNr = 0;
-		int totaalAantal = 0;
-		long start = System.currentTimeMillis();
+		var aantalAfgemeld = 0;
+		var regelNr = 0;
+		var totaalAantal = 0;
+		var start = System.currentTimeMillis();
 
-		try (CSVReader csvReader = new CSVReader(new FileReader(fileClientenBestand), ';'))
+		try (var csvReader = new CSVReader(new FileReader(fileClientenBestand), ';'))
 		{
-			List<String[]> allLines = csvReader.readAll();
+			var allLines = csvReader.readAll();
 			totaalAantal = allLines.size();
-			for (String[] line : allLines)
+			for (var line : allLines)
 			{
-				String meldingPrefix = "Regel #" + ++regelNr + " '" + StringUtils.join(line, ";") + "': ";
+				var meldingPrefix = "Regel #" + ++regelNr + " '" + StringUtils.join(line, ";") + "': ";
 				try
 				{
-					Client client = getClient(line, meldingPrefix, meldingen);
+					var client = getClient(line, meldingPrefix, meldingen);
 					if (client != null)
 					{
-						boolean magDefinitiefAfmelden = true;
-						ColonDossier colonDossier = client.getColonDossier();
+						var magDefinitiefAfmelden = true;
+						var colonDossier = client.getColonDossier();
 						magDefinitiefAfmelden = Boolean.TRUE.equals(colonDossier.getAangemeld());
 						if (magDefinitiefAfmelden)
 						{
-							ColonAfmelding afmelding = new ColonAfmelding();
+							var afmelding = new ColonAfmelding();
 							afmelding.setReden(ColonAfmeldingReden.PROEF_BEVOLKINGSONDERZOEK);
 							afmelding.setType(AfmeldingType.DEFINITIEF);
 							afmelding.setAfmeldingStatus(AanvraagBriefStatus.BRIEF);
@@ -114,7 +113,7 @@ public class ProefBvoServiceImpl implements ProefBvoService
 							afmelding.setAfmeldDatum(currentDateSupplier.getDate());
 							afmelding.setStatusAfmeldDatum(currentDateSupplier.getDate());
 
-							UploadDocument document = new UploadDocument();
+							var document = new UploadDocument();
 							document.setActief(Boolean.TRUE);
 							document.setContentType(contentType);
 							document.setFile(fileAfmeldingBrief);
@@ -148,10 +147,10 @@ public class ProefBvoServiceImpl implements ProefBvoService
 
 		meldingen.add(0, "Aantal gelezen regels: " + totaalAantal);
 		meldingen.add(1, "Aantal verwerkte regels: " + aantalAfgemeld);
-		long diff = System.currentTimeMillis() - start;
+		var diff = System.currentTimeMillis() - start;
 		LOG.debug("Totaal " + diff + " ms voor bestand clienten met proefbevolingsondezoek.");
 
-		String melding = maakMeldingVoorLogEvent(meldingen);
+		var melding = maakMeldingVoorLogEvent(meldingen);
 
 		logService.logGebeurtenis(LogGebeurtenis.PROOF_ONDERZOEK_AFMELDING_AFGEROND, ingelogdAccount, melding, Bevolkingsonderzoek.COLON);
 		return meldingen;
@@ -162,28 +161,28 @@ public class ProefBvoServiceImpl implements ProefBvoService
 		throws IOException
 	{
 		logService.logGebeurtenis(LogGebeurtenis.PROOF_ONDERZOEK_HERAANMELDING_START, ingelogdeOrganisatieMedewerker, Bevolkingsonderzoek.COLON);
-		long start = System.currentTimeMillis();
+		var start = System.currentTimeMillis();
 
-		ArrayList<String> meldingen = new ArrayList<>();
-		int aantalHeraangemeld = 0;
-		int regelNr = 0;
-		int totaalAantal = 0;
+		var meldingen = new ArrayList<String>();
+		var aantalHeraangemeld = 0;
+		var regelNr = 0;
+		var totaalAantal = 0;
 		UploadDocument handtekeningDoc = null;
-		try (CSVReader csvReader = new CSVReader(new FileReader(fileClientenBestand), ';'))
+		try (var csvReader = new CSVReader(new FileReader(fileClientenBestand), ';'))
 		{
 
-			List<String[]> allLines = csvReader.readAll();
+			var allLines = csvReader.readAll();
 			totaalAantal = allLines.size();
-			for (String[] line : allLines)
+			for (var line : allLines)
 			{
-				String meldingPrefix = "Regel #" + ++regelNr + " '" + StringUtils.join(line, ";") + "': ";
+				var meldingPrefix = "Regel #" + ++regelNr + " '" + StringUtils.join(line, ";") + "': ";
 				try
 				{
-					Client client = getClient(line, meldingPrefix, meldingen);
+					var client = getClient(line, meldingPrefix, meldingen);
 					if (client != null)
 					{
-						ColonDossier dossier = client.getColonDossier();
-						ColonAfmelding afmelding = dossier.getLaatsteAfmelding();
+						var dossier = client.getColonDossier();
+						var afmelding = dossier.getLaatsteAfmelding();
 						if (afmelding != null && ColonAfmeldingReden.PROEF_BEVOLKINGSONDERZOEK.equals(afmelding.getReden())
 							&& Boolean.FALSE.equals(client.getColonDossier().getAangemeld()))
 						{
@@ -224,10 +223,10 @@ public class ProefBvoServiceImpl implements ProefBvoService
 
 		meldingen.add(0, "Aantal gelezen regels: " + totaalAantal);
 		meldingen.add(1, "Aantal verwerkte regels: " + aantalHeraangemeld);
-		long diff = System.currentTimeMillis() - start;
+		var diff = System.currentTimeMillis() - start;
 		LOG.debug("Totaal " + diff + " ms voor bestand clienten met proefbevolingsondezoek.");
 
-		String melding = maakMeldingVoorLogEvent(meldingen);
+		var melding = maakMeldingVoorLogEvent(meldingen);
 
 		logService.logGebeurtenis(LogGebeurtenis.PROOF_ONDERZOEK_HERAANMELDING_AFGEROND, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.COLON);
 
@@ -244,12 +243,12 @@ public class ProefBvoServiceImpl implements ProefBvoService
 		Client result = null;
 		try
 		{
-			String anummer = line[0];
-			String geboortedatum = line[1];
+			var anummer = line[0];
+			var geboortedatum = line[1];
 			if (StringUtils.isNotBlank(anummer) && anummer.trim().length() == 10)
 			{
 				anummer = anummer.trim();
-				Client client = clientService.getClientByAnummer(anummer);
+				var client = clientService.getClientByAnummer(anummer);
 				if (client != null)
 				{
 					if (StringUtils.isNotBlank(geboortedatum) && geboortedatum.trim().length() == 8)

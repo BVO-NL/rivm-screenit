@@ -71,7 +71,7 @@ public class MammaFollowUpConclusieWerklijst extends AbstractMammaFollowUpPage
 	{
 		super.onInitialize();
 
-		MammaFollowUpConclusieProvider followUpConclusieProvider = new MammaFollowUpConclusieProvider(ModelUtil.sModel(ScreenitSession.get().getScreeningOrganisatie()));
+		var followUpConclusieProvider = new MammaFollowUpConclusieProvider(ModelUtil.sModel(ScreenitSession.get().getScreeningOrganisatie()));
 
 		refreshContainer = new WebMarkupContainer("refreshContainer");
 		refreshContainer.setOutputMarkupId(Boolean.TRUE);
@@ -84,7 +84,7 @@ public class MammaFollowUpConclusieWerklijst extends AbstractMammaFollowUpPage
 		columns.add(new PropertyColumn<>(Model.of("Geboortedatum"), "onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon.geboortedatum"));
 		columns.add(new PropertyColumn<>(Model.of("Bsn"), "onderzoek.afspraak.uitnodiging.screeningRonde.dossier.client.persoon.bsn"));
 
-		ScreenitDataTable<MammaBeoordeling, String> table = new ScreenitDataTable<MammaBeoordeling, String>("resultaten", columns, followUpConclusieProvider, 10,
+		var table = new ScreenitDataTable<MammaBeoordeling, String>("resultaten", columns, followUpConclusieProvider, 10,
 			Model.of("cliënt(en)"))
 		{
 			@Override

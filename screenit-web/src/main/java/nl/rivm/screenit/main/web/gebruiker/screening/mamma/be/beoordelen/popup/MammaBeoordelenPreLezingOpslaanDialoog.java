@@ -72,14 +72,14 @@ public abstract class MammaBeoordelenPreLezingOpslaanDialoog extends GenericPane
 
 		popupTitleModel = Model.of("");
 		updateTitle();
-		Label popupTitleLabel = new Label("popupTitle", popupTitleModel);
+		var popupTitleLabel = new Label("popupTitle", popupTitleModel);
 		popupTitleLabel.setOutputMarkupId(true);
 		add(popupTitleLabel);
 	}
 
 	public void updateTitle()
 	{
-		String popupTitle = (!allImagesSeen) ? "Nieuwe opnamen" : "";
+		var popupTitle = (!allImagesSeen) ? "Nieuwe opnamen" : "";
 		popupTitle += (!allImagesSeen && mbbSignalering) ? " & " : "";
 		popupTitle += (mbbSignalering) ? "MBB Signalering" : "";
 		popupTitleModel.setObject(popupTitle);
@@ -87,7 +87,7 @@ public abstract class MammaBeoordelenPreLezingOpslaanDialoog extends GenericPane
 
 	private void maakRadioloogOpmerkingTextArea(MammaBeoordelenHuidigeRondePanel beoordelingPanel)
 	{
-		final TextArea<String> opmerkingVoorRadioloog = new TextArea<>("opmerkingVoorRadioloog");
+		final var opmerkingVoorRadioloog = new TextArea<String>("opmerkingVoorRadioloog");
 		opmerkingVoorRadioloog.setModel(Model.of(beoordelingPanel.getModelObject().getOnderzoek().getOpmerkingVoorRadioloog()));
 		opmerkingVoorRadioloog.setEnabled(false);
 		mbbSignaleringContainer.add(opmerkingVoorRadioloog);

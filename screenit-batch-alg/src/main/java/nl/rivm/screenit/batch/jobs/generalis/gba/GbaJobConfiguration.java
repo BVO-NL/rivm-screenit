@@ -43,8 +43,8 @@ import nl.rivm.screenit.batch.jobs.generalis.gba.verwerk107step.VertrouwdVerbond
 import nl.rivm.screenit.batch.jobs.generalis.gba.verwerk107step.Vo107ItemReader;
 import nl.rivm.screenit.config.GbaConfig;
 import nl.rivm.screenit.model.enums.JobType;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo105Bericht;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo107Bericht;
+import nl.rivm.screenit.model.vertrouwdverbonden.Vo105Bericht;
+import nl.rivm.screenit.model.vertrouwdverbonden.Vo107Bericht;
 
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.ItemProcessListener;

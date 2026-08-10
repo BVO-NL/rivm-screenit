@@ -90,13 +90,13 @@ public class ColonTestPage extends TestenBasePage
 	{
 		if (testModel == null)
 		{
-			TestModel test = new TestModel();
+			var test = new TestModel();
 			test.setGeslacht(Geslacht.MAN);
 			testModel = new CompoundPropertyModel<>(test);
 		}
 
-		final Form<TestModel> form = new Form<>("testForm", getTestModel());
-		final TextField<String> bsnField = new TextField<>("bsn");
+		final var form = new Form<TestModel>("testForm", getTestModel());
+		final var bsnField = new TextField<String>("bsn");
 		bsnField.add(new BSNValidator(true, true));
 		bsnField.setRequired(true);
 		bsnField.setOutputMarkupId(true);
@@ -107,7 +107,7 @@ public class ColonTestPage extends TestenBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				TestModel object = getModelObject();
+				var object = getModelObject();
 				object.setBsn(TestBsnGenerator.getValideBsn());
 				target.add(bsnField);
 			}
@@ -141,15 +141,15 @@ public class ColonTestPage extends TestenBasePage
 
 		form.add(new EnumDropDownChoice<>("gbaStatus", GbaStatus.class, false).setOutputMarkupId(true));
 
-		final RadioGroup<ColonTest> testGroup = new RadioGroup<>("colonTestActies");
-		List<ColonTest> availableColonTestActies = Arrays.asList(ColonTest.values());
+		final var testGroup = new RadioGroup<ColonTest>("colonTestActies");
+		var availableColonTestActies = Arrays.asList(ColonTest.values());
 		testGroup.add(new ListView<>("testactie", availableColonTestActies)
 		{
 
 			@Override
 			protected void populateItem(ListItem<ColonTest> item)
 			{
-				Radio<ColonTest> radio = new Radio<>("radio", new Model<>(item.getModelObject()));
+				var radio = new Radio<ColonTest>("radio", new Model<>(item.getModelObject()));
 				item.add(radio);
 				item.add(new EnumLabel<>("label", item.getModelObject()));
 				item.setVisible(item.getModelObject().getActief());
@@ -158,14 +158,14 @@ public class ColonTestPage extends TestenBasePage
 		form.add(testGroup);
 		add(form);
 
-		IndicatingAjaxSubmitLink submit = new IndicatingAjaxSubmitLink("submit", form)
+		var submit = new IndicatingAjaxSubmitLink("submit", form)
 		{
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				String feedback = testStateService.setClientInState(getTestModel().getObject());
-				ColonTest colonTest = getTestModel().getObject().getColonTestActies();
+				var feedback = testStateService.setClientInState(getTestModel().getObject());
+				var colonTest = getTestModel().getObject().getColonTestActies();
 				if (colonTest == null)
 				{
 					error(feedback);
@@ -185,8 +185,8 @@ public class ColonTestPage extends TestenBasePage
 
 	private void maakMarkeerNietVerstuurdeUitnodigingenAlsVerstuurd()
 	{
-		final Model<String> aantalModel = Model.of("");
-		final Label aantalLabel = new Label("aantalGemarkeerdeUitnodigingen", aantalModel);
+		final var aantalModel = Model.of("");
+		final var aantalLabel = new Label("aantalGemarkeerdeUitnodigingen", aantalModel);
 		aantalLabel.setOutputMarkupId(true);
 		add(aantalLabel);
 
@@ -196,7 +196,7 @@ public class ColonTestPage extends TestenBasePage
 			@Override
 			public void onClick(AjaxRequestTarget ajaxRequestTarget)
 			{
-				final int aantal = colonTestService.markeerNogNietNaarInpakcentrumVerstuurdeUitnodigingenAlsVerstuurd();
+				final var aantal = colonTestService.markeerNogNietNaarInpakcentrumVerstuurdeUitnodigingenAlsVerstuurd();
 				aantalModel.setObject("Aantal als verstuurd gemarkeerde uitnodigingen: " + aantal);
 				ajaxRequestTarget.add(aantalLabel);
 			}

@@ -28,7 +28,7 @@ import nl.rivm.screenit.batch.jobs.generalis.gba.GbaConstants;
 import nl.rivm.screenit.batch.jobs.generalis.gba.exception.GbaImportException;
 import nl.rivm.screenit.batch.service.GbaService;
 import nl.rivm.screenit.model.gba.GbaVerwerkingsLog;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo107Bericht;
+import nl.rivm.screenit.model.vertrouwdverbonden.Vo107Bericht;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
@@ -51,9 +51,9 @@ public class ClientItemWriter implements ItemWriter<Vo107Bericht>
 	@Override
 	public void write(Chunk<? extends Vo107Bericht> chunk)
 	{
-		GbaVerwerkingsLog verwerkingsLog = (GbaVerwerkingsLog) stepExecution.getJobExecution().getExecutionContext().get(GbaConstants.RAPPORTAGEKEYGBA);
+		var verwerkingsLog = (GbaVerwerkingsLog) stepExecution.getJobExecution().getExecutionContext().get(GbaConstants.RAPPORTAGEKEYGBA);
 
-		for (Vo107Bericht vo107Bericht : chunk.getItems())
+		for (var vo107Bericht : chunk.getItems())
 		{
 			try
 			{

@@ -52,14 +52,14 @@ public class CervixTariefUtil
 
 	public static BigDecimal getLabBedrag(CervixBoekRegel boekRegel)
 	{
-		CervixTariefType tariefType = boekRegel.getVerrichting().getType();
-		CervixLabTarief tarief = (CervixLabTarief) Hibernate.unproxy(boekRegel.getTarief());
+		var tariefType = boekRegel.getVerrichting().getType();
+		var tarief = (CervixLabTarief) Hibernate.unproxy(boekRegel.getTarief());
 		return tariefType.getBedragVanTarief(tarief);
 	}
 
 	public static BigDecimal getHuisartsBedrag(CervixBoekRegel boekRegel)
 	{
-		CervixHuisartsTarief tarief = (CervixHuisartsTarief) Hibernate.unproxy(boekRegel.getTarief());
+		var tarief = (CervixHuisartsTarief) Hibernate.unproxy(boekRegel.getTarief());
 		return tarief.getTarief();
 	}
 
@@ -70,7 +70,7 @@ public class CervixTariefUtil
 
 	public static String getGeldigheidMelding(CervixTarief tarief)
 	{
-		String logMelding = " geldig vanaf " + DateUtil.formatShortDate(tarief.getGeldigVanafDatum());
+		var logMelding = " geldig vanaf " + DateUtil.formatShortDate(tarief.getGeldigVanafDatum());
 		if (tarief.getGeldigTotenmetDatum() != null)
 		{
 			logMelding += " t/m "

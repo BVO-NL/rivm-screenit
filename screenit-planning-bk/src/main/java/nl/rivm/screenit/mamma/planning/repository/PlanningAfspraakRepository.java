@@ -39,14 +39,14 @@ public interface PlanningAfspraakRepository extends BaseJpaRepository<MammaAfspr
 	@Query("""
 		SELECT c.id AS clientId, se.id AS screeningsEenheidId, a.vanaf AS afspraakMoment
 		FROM MammaMammografie m
-			JOIN m.onderzoek o
-			JOIN o.afspraak a
-			JOIN a.standplaatsPeriode sp
-			JOIN sp.screeningsEenheid se
-			JOIN a.uitnodiging u
-			JOIN u.screeningRonde sr
-			JOIN sr.dossier d
-			JOIN d.client c
+			JOIN MammaOnderzoek o ON o.mammografie = m
+			JOIN MammaAfspraak a ON a.onderzoek = o
+			JOIN MammaStandplaatsPeriode sp ON sp = a.standplaatsPeriode
+			JOIN MammaScreeningsEenheid se ON se = sp.screeningsEenheid
+			JOIN MammaUitnodiging u ON u = a.uitnodiging
+			JOIN MammaScreeningRonde sr ON sr = u.screeningRonde
+			JOIN MammaDossier d ON d = sr.dossier
+			JOIN client c ON c.mammaDossier = d
 		WHERE a.vanaf < :prognoseVanafDatum
 			AND sp.id IN :teLezenStandplaatsPeriodeIds
 			AND a.vanaf >= :plannenVanafDatum""")

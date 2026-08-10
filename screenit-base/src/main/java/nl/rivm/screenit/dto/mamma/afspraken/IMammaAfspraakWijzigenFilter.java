@@ -22,7 +22,6 @@ package nl.rivm.screenit.dto.mamma.afspraken;
  */
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.model.Client;

@@ -46,7 +46,7 @@ public class CervixPrimaireParametersPanel extends BasePrimaireParametersPanel
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
 		form.add(new TextField<>("uitstelBijZwangerschapCervix", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 
 		form.add(new TextField<>("cervixWachttijdUitstrijkjeOntbreektAnaloog", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));

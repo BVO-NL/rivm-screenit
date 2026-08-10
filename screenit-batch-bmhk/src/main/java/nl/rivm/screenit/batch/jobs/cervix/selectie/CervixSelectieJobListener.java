@@ -77,8 +77,8 @@ public class CervixSelectieJobListener extends BaseLogListener
 	protected LogEvent eindLogging(JobExecution jobExecution)
 	{
 		var context = jobExecution.getExecutionContext();
-		long aantal = context.getLong(CervixSelectieConstants.SELECTIE_AANTAL_KEY, 0);
-		long aantalVooraankondiging = context.getLong(CervixSelectieConstants.VOORAANKONDIGING_SELECTIE_AANTAL_KEY, 0);
+		var aantal = context.getLong(CervixSelectieConstants.SELECTIE_AANTAL_KEY, 0);
+		var aantalVooraankondiging = context.getLong(CervixSelectieConstants.VOORAANKONDIGING_SELECTIE_AANTAL_KEY, 0);
 
 		var rapportage = new CervixSelectieRapportage();
 		rapportage.setDatumVerwerking(dateSupplier.getDate());

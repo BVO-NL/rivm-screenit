@@ -50,8 +50,8 @@ public class MammaClientContactAfmeldenPanel extends AbstractClientContactAfmeld
 	@Override
 	protected IModel<MammaAfmelding> getAfmeldingModel(List<Object> extraPanelParams)
 	{
-		IModel<MammaAfmelding> afmeldingModel = ModelUtil.cModel(new MammaAfmelding());
-		MammaAfmelding afmelding = afmeldingModel.getObject();
+		var afmeldingModel = ModelUtil.cModel(new MammaAfmelding());
+		var afmelding = afmeldingModel.getObject();
 		afmelding.setAfmeldingStatus((AanvraagBriefStatus) extraPanelParams.stream().filter(p -> p instanceof AanvraagBriefStatus).findFirst().orElse(null));
 		return afmeldingModel;
 	}
@@ -59,8 +59,8 @@ public class MammaClientContactAfmeldenPanel extends AbstractClientContactAfmeld
 	@Override
 	protected void setRedenenContainerVisible(AjaxRequestTarget target, MammaAfmelding afmelding)
 	{
-		boolean voorwaardeBijEenmalig = AfmeldingType.EENMALIG.equals(afmelding.getType());
-		boolean voorwaardeBijDefinitief = AfmeldingType.DEFINITIEF.equals(afmelding.getType()) && ClientContactManier.DIRECT.equals(afmelding.getManier());
+		var voorwaardeBijEenmalig = AfmeldingType.EENMALIG.equals(afmelding.getType());
+		var voorwaardeBijDefinitief = AfmeldingType.DEFINITIEF.equals(afmelding.getType()) && ClientContactManier.DIRECT.equals(afmelding.getManier());
 		redenenContainer.setVisible(voorwaardeBijEenmalig || voorwaardeBijDefinitief);
 		target.add(redenenContainer);
 
@@ -97,7 +97,7 @@ public class MammaClientContactAfmeldenPanel extends AbstractClientContactAfmeld
 	@Override
 	public List<String> getOpslaanMeldingen()
 	{
-		List<String> meldingen = super.getOpslaanMeldingen();
+		var meldingen = super.getOpslaanMeldingen();
 		if (clientContactService.heeftOpenMammaAfspraak(clientModel.getObject()))
 		{
 			meldingen.add("client heeft een mammografie afspraak. Deze wordt direct geannuleerd.");

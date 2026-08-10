@@ -31,8 +31,6 @@ import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.panels.UploadDocumentFormComponentPanel;
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
-import nl.rivm.screenit.model.PostcodeCoordinaten;
-import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.FileType;
 import nl.rivm.screenit.model.enums.Recht;
@@ -83,8 +81,8 @@ public abstract class MammaStandplaatsEditLocatieAdresPanel extends GenericPanel
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		boolean tijdelijkeLocatie = Boolean.TRUE.equals(getModelObject().getTijdelijk());
-		String titel = getString("titel.locatie");
+		var tijdelijkeLocatie = Boolean.TRUE.equals(getModelObject().getTijdelijk());
+		var titel = getString("titel.locatie");
 		if (tijdelijkeLocatie)
 		{
 			titel = getString("titel.tijdelijke.locatie");
@@ -93,7 +91,7 @@ public abstract class MammaStandplaatsEditLocatieAdresPanel extends GenericPanel
 		add(locatieForm);
 
 		locatieForm.add(new Label("titel", titel));
-		boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
+		var magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
 		ComponentHelper.addTextField(locatieForm, "straat", true, 43, !magAanpassen);
 		ComponentHelper.addTextField(locatieForm, "huisnummer", true, 10, Integer.class, !magAanpassen);
 		ComponentHelper.addTextField(locatieForm, "huisnummerToevoeging", false, 2, !magAanpassen);
@@ -106,15 +104,15 @@ public abstract class MammaStandplaatsEditLocatieAdresPanel extends GenericPanel
 		locatieForm.add(ComponentHelper.newCheckBox("brievenApartPrinten"));
 		locatieForm.add(ComponentHelper.newCheckBox("toonHuisnummerInBrieven"));
 
-		FileValidator validator = new FileValidator(FileType.WORD_NIEUW);
+		var validator = new FileValidator(FileType.WORD_NIEUW);
 
-		UploadDocumentFormComponentPanel uploadDocumentFormComponentPanel = new UploadDocumentFormComponentPanel("upload",
+		var uploadDocumentFormComponentPanel = new UploadDocumentFormComponentPanel("upload",
 			new PropertyModel<>(getModel(), "standplaatsLocatieBijlage"), validator);
 		locatieForm.add(uploadDocumentFormComponentPanel);
 
-		MammaStandplaatsLocatie oudeLocatie = tijdelijkeLocatie ? standplaatsModel.getObject().getTijdelijkeLocatie() : standplaatsModel.getObject().getLocatie();
-		final String oudeAdres = AdresUtil.getVolledigeAdresString(oudeLocatie);
-		final Range<Date> oudePeriode = tijdelijkeLocatie && (oudeLocatie.getStartDatum() != null && oudeLocatie.getEindDatum() != null)
+		var oudeLocatie = tijdelijkeLocatie ? standplaatsModel.getObject().getTijdelijkeLocatie() : standplaatsModel.getObject().getLocatie();
+		final var oudeAdres = AdresUtil.getVolledigeAdresString(oudeLocatie);
+		final var oudePeriode = tijdelijkeLocatie && (oudeLocatie.getStartDatum() != null && oudeLocatie.getEindDatum() != null)
 			? Range.closed(DateUtil.startDag(oudeLocatie.getStartDatum()), DateUtil.eindDag(oudeLocatie.getEindDatum()))
 			: null;
 
@@ -124,18 +122,18 @@ public abstract class MammaStandplaatsEditLocatieAdresPanel extends GenericPanel
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				String waarschuwing = "";
-				MammaStandplaatsLocatie locatie = MammaStandplaatsEditLocatieAdresPanel.this.getModelObject();
+				var waarschuwing = "";
+				var locatie = MammaStandplaatsEditLocatieAdresPanel.this.getModelObject();
 				if (StringUtils.isNotBlank(locatie.getLocatieBeschrijving()))
 				{
-					String locatieBeschrijving = locatie.getLocatieBeschrijving();
-					String[] regels = locatieBeschrijving.split("\n");
+					var locatieBeschrijving = locatie.getLocatieBeschrijving();
+					var regels = locatieBeschrijving.split("\n");
 					if (regels.length > 2)
 					{
 						error(getString("max.regels.locatiebeschrijving.overschreden"));
 					}
 				}
-				MammaStandplaats standplaats = standplaatsModel.getObject();
+				var standplaats = standplaatsModel.getObject();
 				if (locatie.getTijdelijk())
 				{
 					if (locatie.getStartDatum() == null || locatie.getEindDatum() == null)
@@ -153,7 +151,7 @@ public abstract class MammaStandplaatsEditLocatieAdresPanel extends GenericPanel
 				}
 				else
 				{
-					PostcodeCoordinaten coordinaten = coordinatenService.getCoordinaten(locatie);
+					var coordinaten = coordinatenService.getCoordinaten(locatie);
 					locatie.setPostcodeCoordinaten(coordinaten);
 					if (coordinaten == null)
 					{
@@ -164,12 +162,12 @@ public abstract class MammaStandplaatsEditLocatieAdresPanel extends GenericPanel
 				}
 				if (!hasErrorMessage())
 				{
-					UploadDocument documentFromSelectedFile = uploadDocumentFormComponentPanel.getUploadDocumentFromSelectedFile();
+					var documentFromSelectedFile = uploadDocumentFormComponentPanel.getUploadDocumentFromSelectedFile();
 					if (locatie.getStandplaatsLocatieBijlage() != null && locatie.getStandplaatsLocatieBijlage().getActief() || documentFromSelectedFile != null)
 					{
 						locatie.setBrievenApartPrinten(true);
 					}
-					boolean changed = standplaatsService.saveOrUpdateStandplaatsLocatie(locatie, documentFromSelectedFile, standplaats,
+					var changed = standplaatsService.saveOrUpdateStandplaatsLocatie(locatie, documentFromSelectedFile, standplaats,
 						ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), oudeAdres, oudePeriode);
 					if (changed)
 					{
@@ -206,7 +204,7 @@ public abstract class MammaStandplaatsEditLocatieAdresPanel extends GenericPanel
 		BasePage.markeerFormulierenOpgeslagen(target);
 		if (uploadDocumentFormComponentPanel.isVerwijderd())
 		{
-			UploadDocument bijlage = getModelObject().getStandplaatsLocatieBijlage();
+			var bijlage = getModelObject().getStandplaatsLocatieBijlage();
 			if (bijlage != null && bijlage.getId() != null && Boolean.FALSE.equals(bijlage.getActief()))
 			{
 				bijlage.setActief(true);

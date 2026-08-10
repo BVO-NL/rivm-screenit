@@ -64,7 +64,7 @@ public class ConfiguratieServiceImpl implements ConfiguratieService
 	@Override
 	public void insertOrUpdateConfiguratieValues(Map<SeConfiguratieKey, String> parameters)
 	{
-		for (Map.Entry<SeConfiguratieKey, String> parameter : parameters.entrySet())
+		for (var parameter : parameters.entrySet())
 		{
 			insertOrUpdateConfiguratieValue(parameter.getKey(), parameter.getValue());
 		}

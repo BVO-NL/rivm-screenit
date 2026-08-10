@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.service.mamma.impl;
 
 import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,7 +50,6 @@ import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag;
 import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag_;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaFollowUpConclusieStatus;
 import nl.rivm.screenit.model.mamma.verslag.MammaVerslag;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
@@ -134,7 +132,7 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void saveOrUpdateRadiologie(MammaFollowUpRadiologieVerslag verslag, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		MammaScreeningRonde screeningRonde = verslag.getScreeningRonde();
+		var screeningRonde = verslag.getScreeningRonde();
 		verslag.setIngevoerdDoor(ingelogdeOrganisatieMedewerker);
 		verslag.setIngevoerdOp(dateSupplier.getDate());
 		verslag.setScreeningRonde(screeningRonde);
@@ -151,7 +149,7 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 	public void saveFollowUpConclusieStatus(MammaScreeningRonde screeningRonde, MammaFollowUpConclusieStatus followUpConclusieStatus,
 		Account ingelogdeOrganisatieMedewerker)
 	{
-		Date nu = dateSupplier.getDate();
+		var nu = dateSupplier.getDate();
 
 		screeningRonde.setFollowUpConclusieStatus(followUpConclusieStatus);
 		screeningRonde.setFollowUpConclusieStatusGewijzigdOp(nu);
@@ -184,7 +182,7 @@ public class MammaFollowUpServiceImpl implements MammaFollowUpService
 	@Override
 	public MammaFollowUpConclusieStatus bepaalFollowUpConclusie(MammaScreeningRonde screeningRonde, MammaFollowUpConclusieChoice conclusieEnum)
 	{
-		MammaBeoordelingStatus laatsteBeoordelingStatus = screeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak().getOnderzoek()
+		var laatsteBeoordelingStatus = screeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak().getOnderzoek()
 			.getLaatsteBeoordeling().getStatus();
 		MammaFollowUpConclusieStatus conclusieStatus = null;
 

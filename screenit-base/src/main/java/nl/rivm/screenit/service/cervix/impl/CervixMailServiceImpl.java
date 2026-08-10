@@ -104,7 +104,7 @@ public class CervixMailServiceImpl implements CervixMailService
 	{
 		var content = getBaseMailContent(PreferenceKey.CERVIX_HUISARTS_AAN_UITSTRIJKJE_GEKOPPELD_MAIL, uitstrijkje);
 		var subject = preferenceService.getString(PreferenceKey.CERVIX_HUISARTS_AAN_UITSTRIJKJE_GEKOPPELD_MAIL_SUBJECT.name());
-		CervixOmissiesLabproces omissie = appContext.getBean(CervixOmissiesLabproces.class, uitstrijkje);
+		var omissie = appContext.getBean(CervixOmissiesLabproces.class, uitstrijkje);
 		content = content.replace("{aantalWerkdagenTotInsturen}", String.valueOf(omissie.omissieWachtOpCytologieUitslag().bepaalWerkdagenTotOmissie()));
 
 		var basicMelding = "Huisarts gekoppeld aan uitstrijkje mail is" + BASIC_LOGMELDING_VERSTUURD_SUFFIX;
@@ -162,7 +162,7 @@ public class CervixMailServiceImpl implements CervixMailService
 
 	private String datumVerslagMergeField(CervixMonster monster)
 	{
-		String datumVerslag = "";
+		var datumVerslag = "";
 		if (monster instanceof CervixUitstrijkje cervixUitstrijkje)
 		{
 			datumVerslag = cervixUitstrijkje.getCytologieVerslag() != null && cervixUitstrijkje.getCytologieVerslag().getDatumVerwerkt() != null
@@ -179,7 +179,7 @@ public class CervixMailServiceImpl implements CervixMailService
 
 	private String orderVerstuurdMergeField(CervixMonster monster)
 	{
-		String orderVerstuurd = "";
+		var orderVerstuurd = "";
 		if (monster instanceof CervixUitstrijkje cervixUitstrijkje)
 		{
 			orderVerstuurd = cervixUitstrijkje.getCytologieOrder() != null ? Constants.getDateFormat().format(cervixUitstrijkje.getCytologieOrder().getStatusDatum()) : "";

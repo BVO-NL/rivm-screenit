@@ -114,14 +114,14 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 
 		add(new Label("wijzeHeraanmelding", getWijzeVanHeraanmeldenTekst()));
 
-		WebMarkupContainer verstuurdFormulierContainer = new WebMarkupContainer("formulierVerstuurdContainer");
+		var verstuurdFormulierContainer = new WebMarkupContainer("formulierVerstuurdContainer");
 		add(verstuurdFormulierContainer);
 		verstuurdFormulierContainer.add(new ListView<>("brievenLijst", creatieDatumCreaterHeraanmelding())
 		{
 			@Override
 			protected void populateItem(ListItem<String> item)
 			{
-				String tekst = item.getModelObject();
+				var tekst = item.getModelObject();
 				item.add(new Label("brief", Model.of(tekst)));
 			}
 
@@ -144,7 +144,7 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 		}
 		else
 		{
-			EmptyPanel empty = new EmptyPanel("heraanmeldformulierHandImg");
+			var empty = new EmptyPanel("heraanmeldformulierHandImg");
 			empty.setVisible(false);
 			add(empty);
 		}
@@ -155,7 +155,7 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 
 	private void addButtons()
 	{
-		ClientBrief laatsteBrief = getLaatsteBrief();
+		var laatsteBrief = getLaatsteBrief();
 
 		add(new AjaxLink<Void>("nogmaalsVersturen")
 		{
@@ -164,7 +164,7 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				ClientBrief brief = getLaatsteBrief();
+				var brief = getLaatsteBrief();
 				briefHerdrukkenService.opnieuwAanmaken(brief, ScreenitSession.get().getIngelogdAccount());
 
 				info(getString("info.heraanmeldingnogmaalsverstuurd"));
@@ -243,7 +243,7 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 
 	private List<String> creatieDatumCreaterHeraanmelding()
 	{
-		A afmelding = getModelObject();
+		var afmelding = getModelObject();
 		List<? extends ClientBrief> brieven = briefService.getBrievenVanAfmelding(afmelding, true);
 		return BriefOmschrijvingUtil.getBrievenOmschrijvingen(brieven);
 	}
@@ -251,8 +251,8 @@ public abstract class HeraanmeldingInzienPopupPanel<A extends Afmelding<?, ?, ?>
 	private String getWijzeVanHeraanmeldenTekst()
 	{
 		String wijzeHeraanmelding = null;
-		A afmelding = getModelObject();
-		GebeurtenisBron bron = dossierService.bepaalGebeurtenisBron(afmelding);
+		var afmelding = getModelObject();
+		var bron = dossierService.bepaalGebeurtenisBron(afmelding);
 
 		switch (afmelding.getBevolkingsonderzoek())
 		{

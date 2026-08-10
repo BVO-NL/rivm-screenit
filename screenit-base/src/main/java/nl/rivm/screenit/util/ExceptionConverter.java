@@ -67,9 +67,9 @@ public final class ExceptionConverter
 			jdbException = exception;
 			if (jdbException.getSQLException() != null)
 			{
-				String message = jdbException.getSQLException().getMessage();
-				int startTriggerMessage = message.indexOf("[" + Constants.EXCEPTION_GEBRUIKERMELDING_MARKER);
-				int endTriggerMessage = message.indexOf(Constants.EXCEPTION_GEBRUIKERMELDING_MARKER + "]");
+				var message = jdbException.getSQLException().getMessage();
+				var startTriggerMessage = message.indexOf("[" + Constants.EXCEPTION_GEBRUIKERMELDING_MARKER);
+				var endTriggerMessage = message.indexOf(Constants.EXCEPTION_GEBRUIKERMELDING_MARKER + "]");
 				if (startTriggerMessage > 0 && endTriggerMessage > startTriggerMessage)
 				{
 					uiMessage = " "
@@ -91,7 +91,7 @@ public final class ExceptionConverter
 
 	public static String convertExceptionToJson(RuntimeException e, String keyValue)
 	{
-		ExceptieOmschrijving exceptieOmschrijving = new ExceptieOmschrijving(keyValue, ExceptionConverter.getMedewerkerMeldingUitTriggerMessage(e));
+		var exceptieOmschrijving = new ExceptieOmschrijving(keyValue, ExceptionConverter.getMedewerkerMeldingUitTriggerMessage(e));
 		try
 		{
 			return OBJECTMAPPER.writeValueAsString(exceptieOmschrijving);

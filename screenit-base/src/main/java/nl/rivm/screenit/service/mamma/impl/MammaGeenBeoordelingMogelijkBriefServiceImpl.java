@@ -24,13 +24,10 @@ package nl.rivm.screenit.service.mamma.impl;
 import java.io.File;
 import java.util.Comparator;
 
-import nl.rivm.screenit.model.BriefDefinitie;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaBrief;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.ClientService;
@@ -70,27 +67,27 @@ public class MammaGeenBeoordelingMogelijkBriefServiceImpl implements MammaGeenBe
 	@Override
 	public File maakFileVoorPdfViewer(MammaBeoordeling beoordeling) throws Exception
 	{
-		Document document = genereerBrief(beoordeling);
+		var document = genereerBrief(beoordeling);
 		return briefService.genereerPdf(document, "geenBeoordelingMogelijkBrief", false);
 	}
 
 	private Document genereerBrief(MammaBeoordeling beoordeling) throws Exception
 	{
-		MailMergeContext context = maakMailMergeContext(beoordeling);
+		var context = maakMailMergeContext(beoordeling);
 
-		File briefTemplate = haalBriefTemplateOp();
+		var briefTemplate = haalBriefTemplateOp();
 
 		return asposeService.processDocumentWithCreator(context, briefTemplate, new MammaGeenBeoordelingMogelijkBriefCreator(), true);
 	}
 
 	private MailMergeContext maakMailMergeContext(MammaBeoordeling beoordeling)
 	{
-		MailMergeContext context = new MailMergeContext();
+		var context = new MailMergeContext();
 
-		Client client = beoordelingService.getClientVanBeoordeling(beoordeling);
+		var client = beoordelingService.getClientVanBeoordeling(beoordeling);
 		context.setClient(client);
-		MammaScreeningRonde screeningRonde = beoordelingService.getScreeningRonde(beoordeling);
-		MammaBrief brief = screeningRonde.getBrieven().stream()
+		var screeningRonde = beoordelingService.getScreeningRonde(beoordeling);
+		var brief = screeningRonde.getBrieven().stream()
 			.filter(mammaBrief -> briefType.equals(mammaBrief.getBriefType()))
 			.max(Comparator.comparing(MammaBrief::getCreatieDatum))
 			.orElseThrow(() -> new IllegalStateException("Geen brief gevonden van type MAMMA_GEEN_BEOORDELING_MOGELIJK"));
@@ -102,7 +99,7 @@ public class MammaGeenBeoordelingMogelijkBriefServiceImpl implements MammaGeenBe
 
 	private File haalBriefTemplateOp()
 	{
-		BriefDefinitie definitie = briefService.getNieuwsteBriefDefinitie(briefType);
+		var definitie = briefService.getNieuwsteBriefDefinitie(briefType);
 
 		return uploadDocumentService.load(definitie.getDocument());
 	}

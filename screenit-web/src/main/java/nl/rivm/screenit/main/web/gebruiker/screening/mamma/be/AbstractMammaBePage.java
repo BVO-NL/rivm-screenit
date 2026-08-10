@@ -42,7 +42,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MammaBeo
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MammaDiscrepantieWerklijstPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MammaVerslagenWerklijstPage;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.enums.Recht;
@@ -79,13 +78,13 @@ public abstract class AbstractMammaBePage extends MammaScreeningBasePage
 	protected AbstractMammaBePage()
 	{
 		heeftToegangTotOnderzoektypeFilter = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_BE_ONDERZOEKTYPE_FILTER, Actie.INZIEN);
-		PollingAbstractAjaxTimerBehavior timer = new PollingAbstractAjaxTimerBehavior(Duration.ofSeconds(5))
+		var timer = new PollingAbstractAjaxTimerBehavior(Duration.ofSeconds(5))
 		{
 			@Override
 			protected void onTimer(AjaxRequestTarget target)
 			{
 				super.onTimer(target);
-				for (Component comp : postfixes)
+				for (var comp : postfixes)
 				{
 					var parentPage = comp.findParent(Page.class);
 					if (parentPage != null)
@@ -144,12 +143,12 @@ public abstract class AbstractMammaBePage extends MammaScreeningBasePage
 
 	private Component getAantalPostfixLabel(String id, List<MammaBeoordelingStatus> beoordelingStatussen)
 	{
-		Label label = new Label(id, new LoadableDetachableModel<String>()
+		var label = new Label(id, new LoadableDetachableModel<String>()
 		{
 			@Override
 			protected String load()
 			{
-				MammaBeWerklijstZoekObject zoekObject = new MammaBeWerklijstZoekObject();
+				var zoekObject = new MammaBeWerklijstZoekObject();
 				zoekObject.setBeoordelingStatussen(beoordelingStatussen);
 				zoekObject.setBeoordelingsEenheid((BeoordelingsEenheid) ScreenitSession.get().getOrganisatie());
 
@@ -183,12 +182,12 @@ public abstract class AbstractMammaBePage extends MammaScreeningBasePage
 	{
 		if (isMammaBeoordelaar())
 		{
-			boolean heeftOnderzoekenInWerklijst = heeftOnderzoekenInWerklijst();
-			boolean heeftVerslagenTeBevestigen = heeftVerslagenTeBevestigen();
+			var heeftOnderzoekenInWerklijst = heeftOnderzoekenInWerklijst();
+			var heeftVerslagenTeBevestigen = heeftVerslagenTeBevestigen();
 			if (heeftOnderzoekenInWerklijst || heeftVerslagenTeBevestigen)
 			{
-				MammaLogoutConfirmationDialog mammaLogoutConfirmationDialog = maakMammaLogoutConfimationDialoog(heeftOnderzoekenInWerklijst, heeftVerslagenTeBevestigen);
-				AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
+				var mammaLogoutConfirmationDialog = maakMammaLogoutConfimationDialoog(heeftOnderzoekenInWerklijst, heeftVerslagenTeBevestigen);
+				var target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
 				dialog.openWith(target, mammaLogoutConfirmationDialog);
 				return;
 			}
@@ -198,17 +197,17 @@ public abstract class AbstractMammaBePage extends MammaScreeningBasePage
 
 	public boolean heeftOnderzoekenInWerklijst()
 	{
-		ScreenitSession screenitSession = ScreenitSession.get();
-		OrganisatieMedewerker organisatieMedewerker = screenitSession.getIngelogdeOrganisatieMedewerker();
-		BeoordelingsEenheid beoordelingsEenheid = (BeoordelingsEenheid) screenitSession.getOrganisatie();
+		var screenitSession = ScreenitSession.get();
+		var organisatieMedewerker = screenitSession.getIngelogdeOrganisatieMedewerker();
+		var beoordelingsEenheid = (BeoordelingsEenheid) screenitSession.getOrganisatie();
 
 		return beWerklijstService.heeftOnderzoekenInWerklijst(organisatieMedewerker, beoordelingsEenheid);
 	}
 
 	public boolean heeftVerslagenTeBevestigen()
 	{
-		ScreenitSession screenitSession = ScreenitSession.get();
-		OrganisatieMedewerker organisatieMedewerker = screenitSession.getIngelogdeOrganisatieMedewerker();
+		var screenitSession = ScreenitSession.get();
+		var organisatieMedewerker = screenitSession.getIngelogdeOrganisatieMedewerker();
 
 		return beWerklijstService.is1eOf2eLezingenTeBevestigen(organisatieMedewerker);
 	}

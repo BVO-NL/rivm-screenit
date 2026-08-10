@@ -26,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.BagAdres;
-import nl.rivm.screenit.model.PostcodeCoordinaten;
 import nl.rivm.screenit.service.CoordinatenService;
 import nl.rivm.screenit.util.AdresUtil;
 
@@ -43,7 +42,7 @@ public class PostcodeCoordinatenClientKoppelWriter extends BaseWriter<BagAdres>
 	@Override
 	protected void write(BagAdres item)
 	{
-		PostcodeCoordinaten coordinaten = coordinatenService.getCoordinaten(item);
+		var coordinaten = coordinatenService.getCoordinaten(item);
 		item.setPostcodeCoordinaten(coordinaten);
 		if (coordinaten != null)
 		{

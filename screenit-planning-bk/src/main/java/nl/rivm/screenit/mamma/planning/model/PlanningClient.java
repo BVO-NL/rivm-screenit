@@ -167,7 +167,7 @@ public final class PlanningClient extends PlanningEntiteit
 		}
 		else
 		{
-			PlanningPostcodeReeks postcodeReeks = PlanningPostcodeReeksIndex.get(postcode);
+			var postcodeReeks = PlanningPostcodeReeksIndex.get(postcode);
 			return postcodeReeks == null ? null : postcodeReeks.getStandplaats();
 		}
 	}

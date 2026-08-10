@@ -171,11 +171,11 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 			addVerwijderenButton(organisatie, actie);
 			addAnnulerenButton();
 
-			boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
-			boolean isSo = organisatieType.equals(OrganisatieType.SCREENINGSORGANISATIE);
-			boolean isCe = organisatieType.equals(OrganisatieType.CENTRALE_EENHEID);
-			boolean isSoOfCe = isSo || isCe;
-			boolean isIntakeLocatie = organisatieType.equals(OrganisatieType.INTAKELOCATIE);
+			var inzien = !isMinimumActie(actie, Actie.AANPASSEN);
+			var isSo = organisatieType.equals(OrganisatieType.SCREENINGSORGANISATIE);
+			var isCe = organisatieType.equals(OrganisatieType.CENTRALE_EENHEID);
+			var isSoOfCe = isSo || isCe;
+			var isIntakeLocatie = organisatieType.equals(OrganisatieType.INTAKELOCATIE);
 			var organisatieNaam = ComponentHelper.addTextField(this, "naam", true, 50, inzien).setLabel(Model.of("Naam"));
 
 			if (isSoOfCe && organisatie.getAntwoordnummerAdres() == null)
@@ -264,7 +264,7 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 				public void onClick(AjaxRequestTarget target)
 				{
 					var organisatie = (Organisatie) Hibernate.unproxy(OrganisatieEditForm.this.getModelObject());
-					String feedbackMessageId = bepaalFeedback(organisatie);
+					var feedbackMessageId = bepaalFeedback(organisatie);
 
 					if (StringUtils.isNotBlank(feedbackMessageId))
 					{
@@ -334,7 +334,7 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 				{
 					var organisatie = getModelObject();
 
-					boolean nieuw = organisatie.getId() == null;
+					var nieuw = organisatie.getId() == null;
 					organisatieService.saveOrUpdate(organisatie);
 					BasePage.markeerFormulierenOpgeslagen(target);
 					if (nieuw)
@@ -348,7 +348,7 @@ public class OrganisatieBasisgegevens extends OrganisatieBeheer
 						logAction(LogGebeurtenis.ORGANISATIE_WIJZIG, organisatie);
 					}
 
-					String keyOpslaanGelukt = "action.save.organisatie";
+					var keyOpslaanGelukt = "action.save.organisatie";
 					if (organisatie instanceof ColonIntakelocatie)
 					{
 						var intakelocatie = (ColonIntakelocatie) organisatie;

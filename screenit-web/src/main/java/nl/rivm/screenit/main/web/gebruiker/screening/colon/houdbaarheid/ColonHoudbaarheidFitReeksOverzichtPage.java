@@ -50,7 +50,7 @@ public class ColonHoudbaarheidFitReeksOverzichtPage extends HoudbaarheidOverzich
 	@Override
 	protected List<IColumn<ColonHoudbaarheidFitReeks, String>> createColumns()
 	{
-		List<IColumn<ColonHoudbaarheidFitReeks, String>> columns = super.createColumns();
+		var columns = super.createColumns();
 		columns.add(new PropertyColumn<ColonHoudbaarheidFitReeks, String>(new Model<String>("Type"), "type", "type"));
 		return columns;
 	}

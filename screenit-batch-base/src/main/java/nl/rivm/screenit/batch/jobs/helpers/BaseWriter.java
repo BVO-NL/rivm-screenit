@@ -94,12 +94,12 @@ public abstract class BaseWriter<S extends HibernateObject> implements ItemWrite
 
 	public void writeItems(List<? extends Long> items) throws Exception
 	{
-		Class<S> entityClass = getEntityClass(getClass());
-		for (Long item : items)
+		var entityClass = getEntityClass(getClass());
+		for (var item : items)
 		{
 			if (HibernateObject.class.isAssignableFrom(entityClass))
 			{
-				S entity = hibernateService.get(entityClass, item);
+				var entity = hibernateService.get(entityClass, item);
 				if (entity != null)
 				{
 					write(entity);
@@ -182,7 +182,7 @@ public abstract class BaseWriter<S extends HibernateObject> implements ItemWrite
 
 	protected void aantalContextOphogen(String key)
 	{
-		ExecutionContext context = getExecutionContext();
+		var context = getExecutionContext();
 		if (!context.containsKey(key))
 		{
 			context.putLong(key, 1L);

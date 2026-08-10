@@ -21,7 +21,6 @@ package nl.rivm.screenit.config.hibernate;
  * =========================LICENSE_END==================================
  */
 
-import java.util.ArrayList;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -30,7 +29,6 @@ import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.impl.HibernateServiceImpl;
 
 import org.hibernate.cfg.AvailableSettings;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
 import org.springframework.context.annotation.Bean;
@@ -48,8 +46,6 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableTransactionManagement
 public class BaseHibernateConfig
 {
-	public static final String BASE_ORM_MAPPING_RESOURCE = "META-INF/screenit-base-orm.xml";
-
 	@ConfigurationProperties(prefix = "spring.datasource.hikari")
 	@Bean
 	@Profile("!cucumber & !test")
@@ -60,14 +56,12 @@ public class BaseHibernateConfig
 
 	@Bean(name = { "entityManagerFactory" })
 	@Profile("!test & !cucumber")
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource,
-		ObjectProvider<HibernateOrmMappingResourceProvider> ormMappingResourceProvider)
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource)
 	{
 		var entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 		entityManagerFactoryBean.setDataSource(dataSource);
 		entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 		entityManagerFactoryBean.setPackagesToScan("nl.rivm.screenit.model", "nl.topicuszorg.organisatie.model");
-		entityManagerFactoryBean.setMappingResources(maakOrmMappingResources(ormMappingResourceProvider.getIfAvailable()));
 		var properties = new Properties();
 
 		properties.put(AvailableSettings.DIALECT, ScreenITPostgreSQLDialect.class.getName());
@@ -79,24 +73,11 @@ public class BaseHibernateConfig
 		return entityManagerFactoryBean;
 	}
 
-	public static String[] maakOrmMappingResources(HibernateOrmMappingResourceProvider ormMappingResourceProvider)
-	{
-		var ormMappingResources = new ArrayList<String>();
-		ormMappingResources.add(BASE_ORM_MAPPING_RESOURCE);
-		if (ormMappingResourceProvider != null)
-		{
-			ormMappingResources.addAll(ormMappingResourceProvider.getOrmMappingResources());
-		}
-		return ormMappingResources.toArray(String[]::new);
-	}
-
 	@Bean
 	@Profile("!test")
-	HibernateService hibernateService(ObjectProvider<HibernateOrmMappingResourceProvider> ormMappingResourceProvider)
+	HibernateService hibernateService()
 	{
-		var hibernateService = new HibernateServiceImpl();
-		hibernateService.setOrmMappingResourceProvider(ormMappingResourceProvider.getIfAvailable());
-		return hibernateService;
+		return new HibernateServiceImpl();
 	}
 
 	@Bean

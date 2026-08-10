@@ -126,7 +126,7 @@ public class CervixBetaalOpdrachtSpecificatieDocumentCreator extends BaseDocumen
 	private DataTable createLabTabel()
 	{
 		var labTable = getOrCreateDataTable(betaalOpdracht, TABLE_LABS, TABLE_LABS + ID, FIELD_TOTAAL, FIELD_NAAM, FIELD_IBAN);
-		String[] columns = {
+		var columns = new String[] {
 			TABLE_LAB_SPECIFICATIE + ID,
 			TABLE_LABS,
 			FIELD_VERRICHTING,
@@ -144,7 +144,7 @@ public class CervixBetaalOpdrachtSpecificatieDocumentCreator extends BaseDocumen
 
 	private DataTable createHuisartsTabel()
 	{
-		String[] columns = {
+		var columns = new String[] {
 			TABLE_HA_SPECIFICATIE + ID,
 			FIELD_VERRICHTING,
 			FIELD_IBAN,

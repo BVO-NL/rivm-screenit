@@ -58,9 +58,9 @@ public class ClientenBestandVerwerkingContext extends BaseBestandVerwerkingConte
 		var headers = getHuidigeRegel();
 		if (CollectionUtils.isNotEmpty(headers))
 		{
-			for (String header : headers)
+			for (var header : headers)
 			{
-				String geformatteerdeHeader = header.toLowerCase().trim();
+				var geformatteerdeHeader = header.toLowerCase().trim();
 				if (BSN.equals(geformatteerdeHeader))
 				{
 					bsnColumn = headers.indexOf(header);
@@ -79,10 +79,10 @@ public class ClientenBestandVerwerkingContext extends BaseBestandVerwerkingConte
 
 	public Date getGeboortedatumVanHuidigeRegel() throws IllegalStateException
 	{
-		String value = huidigeLine[geboortedatumColumn];
+		var value = huidigeLine[geboortedatumColumn];
 		if (StringUtils.isNotBlank(value))
 		{
-			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+			var format = new SimpleDateFormat("dd-MM-yyyy");
 			try
 			{
 				return format.parse(value);

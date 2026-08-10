@@ -35,8 +35,8 @@ public abstract class CervixMonsterBezwaarDialog<M extends CervixMonster> extend
 	public CervixMonsterBezwaarDialog(String contentId, IModel<M> model, boolean geenGebruikLichaamsMateriaal, boolean geenSignaleringAdvies)
 	{
 		super(contentId, model);
-		WebMarkupContainer bezwaarlichaamsmateriaal = new WebMarkupContainer("bezwaarlichaamsmateriaal");
-		WebMarkupContainer verwijsadvies = new WebMarkupContainer("verwijsadvies");
+		var bezwaarlichaamsmateriaal = new WebMarkupContainer("bezwaarlichaamsmateriaal");
+		var verwijsadvies = new WebMarkupContainer("verwijsadvies");
 		bezwaarlichaamsmateriaal.setVisible(geenGebruikLichaamsMateriaal);
 		verwijsadvies.setVisible(geenSignaleringAdvies);
 		bezwaarlichaamsmateriaal.add(new Label("monsterId", getModelObject().getMonsterId()));

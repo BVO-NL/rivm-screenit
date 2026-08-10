@@ -57,8 +57,8 @@ public class VrijSlotZonderKamerDataProvider extends SortableDataProvider<VrijSl
 	@Override
 	public Iterator<? extends VrijSlotZonderKamer> iterator(long first, long count)
 	{
-		String sortProperty = "vanaf";
-		boolean asc = true;
+		var sortProperty = "vanaf";
+		var asc = true;
 		if (getSort() != null)
 		{
 			sortProperty = getSort().getProperty();

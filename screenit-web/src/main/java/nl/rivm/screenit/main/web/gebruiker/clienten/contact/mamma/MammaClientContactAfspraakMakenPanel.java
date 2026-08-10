@@ -33,7 +33,6 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
-import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -60,7 +59,7 @@ public class MammaClientContactAfspraakMakenPanel extends AbstractClientContactA
 			@Override
 			public void afspraakAanmaken(AjaxRequestTarget target, IModel<Client> clientModel)
 			{
-				MammaAfspraakKiezenPanel newAfspraakWijzigenPanel = new MammaAfspraakKiezenPanel("afspraakWijzigenPanel", clientModel);
+				var newAfspraakWijzigenPanel = new MammaAfspraakKiezenPanel("afspraakWijzigenPanel", clientModel);
 				newAfspraakWijzigenPanel.setOutputMarkupId(true);
 
 				afspraakWijzigenPanel.replaceWith(newAfspraakWijzigenPanel);
@@ -71,7 +70,7 @@ public class MammaClientContactAfspraakMakenPanel extends AbstractClientContactA
 			@Override
 			public void uitstellen(AjaxRequestTarget target, IModel<Client> clientModel)
 			{
-				MammaUitstelKiezenPanel newAfspraakWijzigenPanel = new MammaUitstelKiezenPanel("afspraakWijzigenPanel", clientModel);
+				var newAfspraakWijzigenPanel = new MammaUitstelKiezenPanel("afspraakWijzigenPanel", clientModel);
 				newAfspraakWijzigenPanel.setOutputMarkupId(true);
 
 				afspraakWijzigenPanel.replaceWith(newAfspraakWijzigenPanel);
@@ -82,7 +81,7 @@ public class MammaClientContactAfspraakMakenPanel extends AbstractClientContactA
 			@Override
 			public boolean magUitstellen()
 			{
-				ClientContactActieType contactActieType = MammaClientContactAfspraakMakenPanel.this.getModelObject().getType();
+				var contactActieType = MammaClientContactAfspraakMakenPanel.this.getModelObject().getType();
 				return afspraakService.magUitstellen(client.getObject().getMammaDossier(), ClientContactActieType.MAMMA_AFSPRAAK_MAKEN_FORCEREN.equals(contactActieType));
 			}
 
@@ -130,11 +129,11 @@ public class MammaClientContactAfspraakMakenPanel extends AbstractClientContactA
 	@Override
 	public List<String> getOpslaanMeldingen()
 	{
-		List<String> opslaanMeldingen = super.getOpslaanMeldingen();
+		var opslaanMeldingen = super.getOpslaanMeldingen();
 		if (afspraakWijzigenPanel instanceof MammaAfspraakKiezenPanel)
 		{
-			MammaAfspraak afspraak = ((MammaAfspraakKiezenPanel) afspraakWijzigenPanel).getNieuweAfspraak();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE dd-MM-yyyy HH:mm");
+			var afspraak = ((MammaAfspraakKiezenPanel) afspraakWijzigenPanel).getNieuweAfspraak();
+			var dateFormat = new SimpleDateFormat("EEEE dd-MM-yyyy HH:mm");
 			opslaanMeldingen.add(String.format("De afspraak wordt gemaakt op %s in %s met %s", dateFormat.format(afspraak.getVanaf()),
 				afspraak.getStandplaatsPeriode().getStandplaatsRonde().getStandplaats().getNaam(),
 				afspraak.getCapaciteitBlok().getScreeningsEenheid().getNaam()));
@@ -150,7 +149,7 @@ public class MammaClientContactAfspraakMakenPanel extends AbstractClientContactA
 	@Override
 	public Map<ExtraOpslaanKey, Object> getOpslaanObjecten()
 	{
-		Map<ExtraOpslaanKey, Object> opslaanObjecten = super.getOpslaanObjecten();
+		var opslaanObjecten = super.getOpslaanObjecten();
 		if (afspraakWijzigenPanel instanceof AbstractClientContactActiePanel)
 		{
 			opslaanObjecten.putAll(((AbstractClientContactActiePanel) afspraakWijzigenPanel).getOpslaanObjecten());

@@ -48,7 +48,7 @@ public class PostcodeRangePanel extends GenericPanel<UitnodigingsGebied>
 	public PostcodeRangePanel(String id, IModel<UitnodigingsGebied> model, Form<UitnodigingsGebied> form)
 	{
 		super(id, model);
-		TextField<String> vanPostcode = new TextField<String>("postcodeGebied.vanPostcode")
+		var vanPostcode = new TextField<String>("postcodeGebied.vanPostcode")
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -67,7 +67,7 @@ public class PostcodeRangePanel extends GenericPanel<UitnodigingsGebied>
 		vanPostcode.add(new PostcodeValidator<>()).setRequired(true);
 		add(vanPostcode);
 
-		TextField<String> totPostcode = new TextField<String>("postcodeGebied.totPostcode")
+		var totPostcode = new TextField<String>("postcodeGebied.totPostcode")
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -113,13 +113,13 @@ public class PostcodeRangePanel extends GenericPanel<UitnodigingsGebied>
 		@Override
 		public void validate(Form<?> form)
 		{
-			PostcodeGebied postcodeGebied = getModelObject().getPostcodeGebied();
+			var postcodeGebied = getModelObject().getPostcodeGebied();
 			if (postcodeGebied == null)
 			{
 				postcodeGebied = new PostcodeGebied();
 			}
 
-			int result = vanPostcode.getConvertedInput().compareTo(totPostcode.getConvertedInput());
+			var result = vanPostcode.getConvertedInput().compareTo(totPostcode.getConvertedInput());
 			if (result > 0)
 			{
 				error(vanPostcode, "vanIsGroter");

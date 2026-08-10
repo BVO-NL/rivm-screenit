@@ -87,7 +87,7 @@ public class DiskFileServiceImpl implements FileService
 
 		try
 		{
-			File file = new File(fullFilePath);
+			var file = new File(fullFilePath);
 			file.getParentFile().mkdirs();
 			if (!file.createNewFile())
 			{

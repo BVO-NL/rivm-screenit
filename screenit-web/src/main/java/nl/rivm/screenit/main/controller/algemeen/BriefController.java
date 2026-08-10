@@ -36,9 +36,7 @@ import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.service.AsposeService;
 import nl.rivm.screenit.service.BaseBriefService;
-import nl.rivm.screenit.service.UploadDocumentService;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -67,10 +65,6 @@ public class BriefController
 
 	private final BaseBriefService baseBriefService;
 
-	private final UploadDocumentService uploadDocumentService;
-
-	private final AsposeService asposeService;
-
 	@GetMapping("/{briefType}/{id}/acties")
 	@Operation(summary = "Haal brief acties op", description = "Zoek alle toegestane acties voor een gegeven brief op")
 	@ApiResponses(value = {
@@ -78,8 +72,7 @@ public class BriefController
 		@ApiResponse(responseCode = "404", description = "Brief niet gevonden"),
 		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
 	})
-	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_OPNIEUW_KLAARZETTEN,
-		Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN }, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {}, altijdToegestaan = true, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 	public ResponseEntity<List<BriefActie>> getBriefActies(@PathVariable Long id, @PathVariable String briefType)
 	{

@@ -31,7 +31,7 @@ public final class PlanningBenodigd
 
 	public PlanningBenodigd()
 	{
-		for (int jaar = PlanningConstanten.plannenVanafJaar; jaar <= PlanningConstanten.plannenTotEnMetJaar; jaar++)
+		for (var jaar = PlanningConstanten.plannenVanafJaar; jaar <= PlanningConstanten.plannenTotEnMetJaar; jaar++)
 		{
 			benodigdJaarMap.put(jaar, new PlanningBenodigdJaar(jaar));
 		}
@@ -44,7 +44,7 @@ public final class PlanningBenodigd
 
 	public void add(PlanningBenodigd benodigd)
 	{
-		for (int jaar = PlanningConstanten.plannenVanafJaar; jaar <= PlanningConstanten.plannenTotEnMetJaar; jaar++)
+		for (var jaar = PlanningConstanten.plannenVanafJaar; jaar <= PlanningConstanten.plannenTotEnMetJaar; jaar++)
 		{
 			this.benodigdJaarMap.get(jaar).add(benodigd.get(jaar));
 		}
@@ -52,7 +52,7 @@ public final class PlanningBenodigd
 
 	public void subtract(PlanningBenodigd benodigd)
 	{
-		for (int jaar = PlanningConstanten.plannenVanafJaar; jaar <= PlanningConstanten.plannenTotEnMetJaar; jaar++)
+		for (var jaar = PlanningConstanten.plannenVanafJaar; jaar <= PlanningConstanten.plannenTotEnMetJaar; jaar++)
 		{
 			this.benodigdJaarMap.get(jaar).subtract(benodigd.get(jaar));
 		}

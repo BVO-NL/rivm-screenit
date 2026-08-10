@@ -103,7 +103,7 @@ public class HandleidingServiceImpl implements HandleidingService
 	{
 		var resultaten = new ArrayList<HandleidingUploadResultDto>();
 
-		for (int i = 0; i < bestanden.size(); i++)
+		for (var i = 0; i < bestanden.size(); i++)
 		{
 			var bestandsnaam = bestandsnamen.get(i);
 			try

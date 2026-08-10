@@ -49,7 +49,7 @@ public class MammaDiscrepantieNaarArbitrageWriter extends BaseWriter<MammaBeoord
 	@Override
 	protected void write(MammaBeoordeling beoordeling) throws Exception
 	{
-		String namen = getRadioloogNamenVoorDoorzettenNaarArbitrage(beoordeling);
+		var namen = getRadioloogNamenVoorDoorzettenNaarArbitrage(beoordeling);
 		geefNamenDoor(namen);
 		hoogAantalBeoordelingenOp();
 
@@ -79,7 +79,7 @@ public class MammaDiscrepantieNaarArbitrageWriter extends BaseWriter<MammaBeoord
 	{
 		var stepExecution = getStepExecution();
 
-		Set<String> radiologen = (Set<String>) stepExecution.getJobExecution().getExecutionContext()
+		var radiologen = (Set<String>) stepExecution.getJobExecution().getExecutionContext()
 			.get(MammaDiscrepantieNaarArbitrageListener.MAMMA_RADIOLOGEN_BEOORDELINGEN_DOORGEZET_NAAR_ARBITRAGE);
 
 		if (radiologen == null)

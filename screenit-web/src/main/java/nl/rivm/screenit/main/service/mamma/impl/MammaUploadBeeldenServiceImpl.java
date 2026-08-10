@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.service.mamma.impl;
  */
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -39,7 +38,6 @@ import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenPoging;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoek;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoekStatus;
@@ -137,12 +135,12 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 	public void maakUploadVerzoek(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek, Client client, OrganisatieMedewerker gemaaktDoor)
 	{
 		uploadBeeldenVerzoek.setGemaaktDoor(gemaaktDoor);
-		MammaScreeningRonde screeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
+		var screeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
 		uploadBeeldenVerzoek.setScreeningRonde(screeningRonde);
 		screeningRonde.getUploadBeeldenVerzoeken().add(uploadBeeldenVerzoek);
 		uploadBeeldenVerzoek.setVerzoekType(MammaUploadBeeldenVerzoekType.HANDMATIG);
 
-		Date nu = dateSupplier.getDate();
+		var nu = dateSupplier.getDate();
 		uploadBeeldenVerzoek.setCreatieDatum(nu);
 		uploadBeeldenVerzoek.setStatus(MammaUploadBeeldenVerzoekStatus.WACHTEN_OP_UPLOAD);
 		uploadBeeldenVerzoek.setStatusDatum(nu);
@@ -163,10 +161,10 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 		}
 		try
 		{
-			MammaUploadBeeldenPoging uploadBeeldenPoging = maakUploadBeeldenPoging(uploadBeeldenVerzoek);
+			var uploadBeeldenPoging = maakUploadBeeldenPoging(uploadBeeldenVerzoek);
 
 			List<UploadDocument> teUploadenBeelden = new ArrayList<>();
-			for (UploadDocument uploadDocument : uploadDocumenten)
+			for (var uploadDocument : uploadDocumenten)
 			{
 				teUploadenBeelden.add(uploadDocument);
 				uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.MAMMA_UPLOAD_BEELDEN);
@@ -187,12 +185,12 @@ public class MammaUploadBeeldenServiceImpl implements MammaUploadBeeldenService
 
 	private MammaUploadBeeldenPoging maakUploadBeeldenPoging(MammaUploadBeeldenVerzoek uploadBeeldenVerzoek)
 	{
-		Date nu = dateSupplier.getDate();
+		var nu = dateSupplier.getDate();
 
 		uploadBeeldenVerzoek.setStatus(MammaUploadBeeldenVerzoekStatus.BEELDEN_GEUPLOAD);
 		uploadBeeldenVerzoek.setStatusDatum(nu);
 
-		MammaUploadBeeldenPoging uploadBeeldenPoging = new MammaUploadBeeldenPoging();
+		var uploadBeeldenPoging = new MammaUploadBeeldenPoging();
 		uploadBeeldenPoging.setUploadBeeldenVerzoek(uploadBeeldenVerzoek);
 		uploadBeeldenVerzoek.setLaatsteUploadPoging(uploadBeeldenPoging);
 		uploadBeeldenVerzoek.getUploadPogingen().add(uploadBeeldenPoging);

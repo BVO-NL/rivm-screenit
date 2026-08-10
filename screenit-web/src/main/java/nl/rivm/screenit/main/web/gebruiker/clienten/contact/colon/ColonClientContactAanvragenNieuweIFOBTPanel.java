@@ -29,17 +29,15 @@ import nl.rivm.screenit.main.model.TypeGebeurtenis;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActie;
-import nl.rivm.screenit.model.colon.ColonDossier;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.GbaStatus;
 
-import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public class ColonClientContactAanvragenNieuweIFOBTPanel extends AbstractClientContactActiePanel<ClientContactActie>
 {
@@ -52,9 +50,9 @@ public class ColonClientContactAanvragenNieuweIFOBTPanel extends AbstractClientC
 
 		Bevolkingsonderzoek type = null;
 		Date verstuurd = null;
-		int rondeNr = 0;
-		ColonDossier colonDossier = client.getObject().getColonDossier();
-		ColonScreeningRonde laatsteScreeningRonde = colonDossier.getLaatsteScreeningRonde();
+		var rondeNr = 0;
+		var colonDossier = client.getObject().getColonDossier();
+		var laatsteScreeningRonde = colonDossier.getLaatsteScreeningRonde();
 		if (laatsteScreeningRonde != null && laatsteScreeningRonde.getLaatsteUitnodiging() != null)
 		{
 			verstuurd = laatsteScreeningRonde.getLaatsteUitnodiging().getVerstuurdDatum();

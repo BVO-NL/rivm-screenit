@@ -24,7 +24,6 @@ package nl.rivm.screenit.batch.service.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Objects;
@@ -46,9 +45,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
@@ -62,29 +59,29 @@ public class PostcodeNlRestService
 
 	public InputStream getDelivery(PostcodeNlProductCode productCode) throws IOException
 	{
-		String currentTarget = getTarget(productCode);
+		var currentTarget = getTarget(productCode);
 		if (currentTarget == null || currentTarget.isEmpty() || currentTarget.equalsIgnoreCase("null"))
 		{
-			LocalDate date = currentDateSupplier.getLocalDate().minusDays(31);
+			var date = currentDateSupplier.getLocalDate().minusDays(31);
 			currentTarget = date.format(DateTimeFormatter.ofPattern(Constants.DATE_FORMAT_YYYYMMDD));
 		}
 
-		String uri = String.format("%s://%s%s?deliveryType=complete&productCode=%s&after=%s",
+		var uri = String.format("%s://%s%s?deliveryType=complete&productCode=%s&after=%s",
 			preferenceService.getString(PreferenceKey.POSTCODE_NL_API_SCHEME.name()),
 			preferenceService.getString(PreferenceKey.POSTCODE_NL_API_HOST.name()),
 			preferenceService.getString(PreferenceKey.POSTCODE_NL_API_DELIVERYPATH.name()),
 			productCode.getCode(),
 			currentTarget);
-		RestTemplate restApi = RestApiFactory.create();
+		var restApi = RestApiFactory.create();
 		LOG.info("Calling {}", uri);
-		ResponseEntity<PostcodeNlDto[]> response = restApi.exchange(uri, HttpMethod.GET, getPostcodeNlRequest(), PostcodeNlDto[].class);
+		var response = restApi.exchange(uri, HttpMethod.GET, getPostcodeNlRequest(), PostcodeNlDto[].class);
 
 		if (response.getStatusCode() == HttpStatus.OK)
 		{
 			LOG.info("{} from server at {}", response.getStatusCode(), uri);
 			if (Objects.requireNonNull(response.getBody()).length > 0 && !response.getBody()[0].getDeliveryTarget().equals(getTarget(productCode)))
 			{
-				PostcodeNlDto postcodeNlDto = response.getBody()[0];
+				var postcodeNlDto = response.getBody()[0];
 				LOG.info("{} delivery beschikbaar met target = {}. Huidig target = {}", productCode.getCode(), postcodeNlDto.getDeliveryTarget(), getTarget(productCode));
 				setTarget(productCode, postcodeNlDto);
 				return openStream(postcodeNlDto.getDownloadUrl());
@@ -143,23 +140,23 @@ public class PostcodeNlRestService
 
 	private InputStream openStream(String url) throws IOException
 	{
-		InputStream stream = new URL(url).openStream();
-		ZipInputStream zipStream = new ZipInputStream(stream);
+		var stream = new URL(url).openStream();
+		var zipStream = new ZipInputStream(stream);
 		zipStream.getNextEntry();
 		return zipStream;
 	}
 
 	String getAuthorization()
 	{
-		String key = preferenceService.getString(PreferenceKey.POSTCODE_NL_API_KEY.name());
-		String secret = preferenceService.getString(PreferenceKey.POSTCODE_NL_API_SECRET.name());
-		String authorization = Base64.getEncoder().encodeToString((key + ":" + secret).getBytes());
+		var key = preferenceService.getString(PreferenceKey.POSTCODE_NL_API_KEY.name());
+		var secret = preferenceService.getString(PreferenceKey.POSTCODE_NL_API_SECRET.name());
+		var authorization = Base64.getEncoder().encodeToString((key + ":" + secret).getBytes());
 		return authorization;
 	}
 
 	private HttpEntity<String> getPostcodeNlRequest()
 	{
-		HttpHeaders headers = new HttpHeaders();
+		var headers = new HttpHeaders();
 		headers.add("Authorization", "Basic " + getAuthorization());
 		headers.add("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
 		return new HttpEntity<>(headers);

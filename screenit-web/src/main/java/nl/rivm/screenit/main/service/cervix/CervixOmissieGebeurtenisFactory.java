@@ -26,9 +26,8 @@ import java.util.Date;
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenissen;
 import nl.rivm.screenit.main.model.TypeGebeurtenis;
-import nl.rivm.screenit.model.enums.GebeurtenisBron;
 import nl.rivm.screenit.model.cervix.CervixBrief;
-import nl.rivm.screenit.model.cervix.CervixMonster;
+import nl.rivm.screenit.model.enums.GebeurtenisBron;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +43,9 @@ public class CervixOmissieGebeurtenisFactory
 			return;
 		}
 
-		ScreeningRondeGebeurtenis gebeurtenis = new ScreeningRondeGebeurtenis();
+		var gebeurtenis = new ScreeningRondeGebeurtenis();
 
-		CervixMonster monster = brief.getMonster();
+		var monster = brief.getMonster();
 		if (monster != null)
 		{
 			gebeurtenis.setUitnodiging(monster.getUitnodiging());

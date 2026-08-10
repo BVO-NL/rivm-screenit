@@ -34,14 +34,11 @@ import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.cervix.CervixBrief;
-import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
 import nl.rivm.screenit.model.colon.ColonBrief;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaBrief;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.model.project.ProjectBriefActieType;
 import nl.rivm.screenit.service.BaseBriefService;
@@ -92,7 +89,7 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 	public void opnieuwAanmaken(ClientBrief<?, ?, ?> brief, Account account)
 	{
 		brief = (ClientBrief<?, ?, ?>) Hibernate.unproxy(brief);
-		Class<? extends ClientBrief> briefClass = brief.getClass();
+		var briefClass = brief.getClass();
 		LOG.info("Kopieer brief {} (clientId: {})", brief.getBriefType(), brief.getClient().getId());
 		if (ProjectBrief.class.equals(briefClass))
 		{
@@ -119,7 +116,7 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 			opnieuwAanmakenAlgemenebrief((AlgemeneBrief) brief);
 		}
 
-		BriefType type = brief.getBriefType();
+		var type = brief.getBriefType();
 		if (type == null)
 		{
 			LOG.warn("Geen brieftype bekend, betreft een projectbrief? briefID: {}", brief.getId());
@@ -142,8 +139,8 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 
 	private void opnieuwAanmakenBezwaarbrief(ClientBrief<?, ?, ?> brief)
 	{
-		BezwaarBrief oudeBrief = (BezwaarBrief) brief;
-		BezwaarBrief nieuweBrief = new BezwaarBrief();
+		var oudeBrief = (BezwaarBrief) brief;
+		var nieuweBrief = new BezwaarBrief();
 		nieuweBrief.setBriefDefinitie(oudeBrief.getBriefDefinitie());
 		nieuweBrief.setTemplateNaam(oudeBrief.getTemplateNaam());
 		nieuweBrief.setMergedBrieven(null);
@@ -158,9 +155,9 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 
 	private void opnieuwAanmakenProjectBrief(ProjectBrief oudeProjectBrief)
 	{
-		ClientBrief<?, ?, ?> oudeBrief = (ClientBrief<?, ?, ?>) BriefUtil.getOrigineleBrief(oudeProjectBrief);
+		var oudeBrief = (ClientBrief<?, ?, ?>) BriefUtil.getOrigineleBrief(oudeProjectBrief);
 
-		ProjectBrief nieuweProjectBrief = new ProjectBrief();
+		var nieuweProjectBrief = new ProjectBrief();
 		if (oudeProjectBrief.getDefinitie().getType() == ProjectBriefActieType.VERVANGENDEBRIEF)
 		{
 			var projectBriefActie = ProjectUtil.getProjectBriefActieDefinitie(oudeProjectBrief.getProjectClient(), oudeProjectBrief.getDefinitie().getBriefType());
@@ -204,7 +201,7 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 
 	private MammaBrief opnieuwAanmakenMammaBrief(MammaBrief bestaandeBrief)
 	{
-		MammaBrief nieuweBrief = opnieuwAanmakenClientBrief(bestaandeBrief);
+		var nieuweBrief = opnieuwAanmakenClientBrief(bestaandeBrief);
 		nieuweBrief.setUitnodiging(bestaandeBrief.getUitnodiging());
 		hibernateService.saveOrUpdate(nieuweBrief);
 		return nieuweBrief;
@@ -212,13 +209,13 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 
 	private ColonBrief opnieuwAanmakenColonBrief(ColonBrief bestaandeBrief)
 	{
-		BriefType briefType = bestaandeBrief.getBriefType();
-		ColonScreeningRonde screeningRonde = bestaandeBrief.getScreeningRonde();
+		var briefType = bestaandeBrief.getBriefType();
+		var screeningRonde = bestaandeBrief.getScreeningRonde();
 
 		if (screeningRonde == null && briefType == BriefType.COLON_VOORAANKONDIGING)
 		{
 
-			for (ColonScreeningRonde ronde : bestaandeBrief.getClient().getColonDossier().getScreeningRondes())
+			for (var ronde : bestaandeBrief.getClient().getColonDossier().getScreeningRondes())
 			{
 				if (screeningRonde == null || ronde.getId() < screeningRonde.getId())
 				{
@@ -227,7 +224,7 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 			}
 		}
 
-		ColonBrief nieuweBrief = opnieuwAanmakenClientBrief(bestaandeBrief);
+		var nieuweBrief = opnieuwAanmakenClientBrief(bestaandeBrief);
 		nieuweBrief.setIntakeAfspraak(bestaandeBrief.getIntakeAfspraak());
 		nieuweBrief.setVorigeIntakeAfspraak(bestaandeBrief.getVorigeIntakeAfspraak());
 		hibernateService.saveOrUpdate(nieuweBrief);
@@ -236,7 +233,7 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 
 	private CervixBrief opnieuwAanmakenCervixBrief(CervixBrief bestaandeBrief)
 	{
-		CervixBrief nieuweBrief = opnieuwAanmakenClientBrief(bestaandeBrief);
+		var nieuweBrief = opnieuwAanmakenClientBrief(bestaandeBrief);
 		nieuweBrief.setAangevraagdeHerdruk(bestaandeBrief.isAangevraagdeHerdruk());
 		hibernateService.saveOrUpdate(nieuweBrief);
 		if (CervixMonsterType.getMonsterType(bestaandeBrief.getBriefType()) == CervixMonsterType.UITSTRIJKJE)
@@ -248,10 +245,10 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 
 	private <B extends ClientBrief<S, A, B>, A extends Afmelding<S, ?, B>, S extends ScreeningRonde<?, B, A, ?>> B opnieuwAanmakenClientBrief(B bestaandeBrief)
 	{
-		A afmelding = bestaandeBrief.getAfmelding();
-		S screeningRonde = bestaandeBrief.getScreeningRonde();
-		BriefType briefType = bestaandeBrief.getBriefType();
-		B nieuweBrief = afmelding != null ? briefService.maakBvoBrief(afmelding, briefType, null, bestaandeBrief.isVervangendeProjectBrief()) :
+		var afmelding = bestaandeBrief.getAfmelding();
+		var screeningRonde = bestaandeBrief.getScreeningRonde();
+		var briefType = bestaandeBrief.getBriefType();
+		var nieuweBrief = afmelding != null ? briefService.maakBvoBrief(afmelding, briefType, null, bestaandeBrief.isVervangendeProjectBrief()) :
 			briefService.maakBvoBrief(screeningRonde, briefType, null, false, bestaandeBrief.isVervangendeProjectBrief());
 
 		nieuweBrief.setTemplateNaam(bestaandeBrief.getTemplateNaam());
@@ -268,8 +265,8 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 			return false;
 		}
 
-		ClientBrief<?, ?, ?> origineleBrief = (ClientBrief<?, ?, ?>) BriefUtil.getOrigineleBrief(brief);
-		boolean magHerdrukken = true;
+		var origineleBrief = (ClientBrief<?, ?, ?>) BriefUtil.getOrigineleBrief(brief);
+		var magHerdrukken = true;
 		if (origineleBrief instanceof CervixBrief cervixBrief)
 		{
 			if (BriefType.getCervixUitstrijkjeBrieven().contains(cervixBrief.getBriefType())
@@ -278,7 +275,7 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 				return false;
 			}
 
-			CervixScreeningRonde screeningRonde = cervixBrief.getScreeningRonde();
+			var screeningRonde = cervixBrief.getScreeningRonde();
 			if (screeningRonde.getStatus() == ScreeningRondeStatus.AFGEROND && cervixBrief.getUitnodiging() != null)
 			{
 				magHerdrukken = false;
@@ -290,7 +287,7 @@ public class BriefHerdrukkenServiceImpl implements BriefHerdrukkenService
 		}
 		else if (origineleBrief instanceof MammaBrief mammaBrief)
 		{
-			MammaScreeningRonde screeningRonde = mammaBrief.getScreeningRonde();
+			var screeningRonde = mammaBrief.getScreeningRonde();
 			if (mammaBrief.getUitnodiging() != null && screeningRonde.getStatus() == ScreeningRondeStatus.AFGEROND)
 			{
 				magHerdrukken = false;

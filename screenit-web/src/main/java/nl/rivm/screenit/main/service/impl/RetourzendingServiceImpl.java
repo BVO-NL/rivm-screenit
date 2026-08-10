@@ -26,7 +26,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PushbackInputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +42,6 @@ import nl.rivm.screenit.model.Uitnodiging;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
-import nl.rivm.screenit.model.cervix.CervixZas;
 import nl.rivm.screenit.model.cervix.enums.CervixZasStatus;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
@@ -71,11 +69,8 @@ import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -129,8 +124,8 @@ public class RetourzendingServiceImpl implements RetourzendingService
 	public RetourzendingLogEvent verwerkBestandMetRetourzendingen(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, String contentType, File file, String fileName)
 		throws IOException
 	{
-		RetourzendingLogEvent logEvent = new RetourzendingLogEvent();
-		UploadDocument uploadDocument = new UploadDocument();
+		var logEvent = new RetourzendingLogEvent();
+		var uploadDocument = new UploadDocument();
 		uploadDocument.setActief(Boolean.TRUE);
 		uploadDocument.setContentType(contentType);
 		uploadDocument.setFile(file);
@@ -140,20 +135,20 @@ public class RetourzendingServiceImpl implements RetourzendingService
 
 		logEvent.setSanddBestand(uploadDocument);
 
-		try (Workbook workbook = WorkbookFactory.create(new PushbackInputStream(new FileInputStream(uploadDocumentService.load(uploadDocument)))))
+		try (var workbook = WorkbookFactory.create(new PushbackInputStream(new FileInputStream(uploadDocumentService.load(uploadDocument)))))
 		{
-			Sheet sheet = workbook.getSheetAt(0);
+			var sheet = workbook.getSheetAt(0);
 			if (sheet == null)
 			{
 				throw new IllegalStateException("Geen sheet in het excel gevonden");
 			}
 
-			int index = 0;
+			var index = 0;
 			Map<String, Integer> columnIndex = new HashMap<>();
-			boolean first = true;
+			var first = true;
 			while (sheet.getLastRowNum() >= index)
 			{
-				Row row = sheet.getRow(index++);
+				var row = sheet.getRow(index++);
 
 				if (first)
 				{
@@ -165,9 +160,9 @@ public class RetourzendingServiceImpl implements RetourzendingService
 				}
 				else
 				{
-					String trackId = getCellValue(row, columnIndex.get("TrackID"));
-					String retourzendingReden = getCellValue(row, columnIndex.get("Reden"));
-					String postcode = getCellValue(row, columnIndex.get("Postcode"));
+					var trackId = getCellValue(row, columnIndex.get("TrackID"));
+					var retourzendingReden = getCellValue(row, columnIndex.get("Reden"));
+					var postcode = getCellValue(row, columnIndex.get("Postcode"));
 
 					Integer huisnummer = null;
 					try
@@ -179,12 +174,12 @@ public class RetourzendingServiceImpl implements RetourzendingService
 						LOG.error("Geen geldig getal ingevoerd bij huisnummer.");
 					}
 
-					boolean isValidRegel = isValidRegel(logEvent, index, trackId, retourzendingReden, postcode, huisnummer);
+					var isValidRegel = isValidRegel(logEvent, index, trackId, retourzendingReden, postcode, huisnummer);
 
-					boolean skipRegel = true;
+					var skipRegel = true;
 					if (isValidRegel)
 					{
-						RetourredenAfhandeling retourredenAfhandeling = bepaalAfhandelingVoorRetourzending(retourzendingReden);
+						var retourredenAfhandeling = bepaalAfhandelingVoorRetourzending(retourzendingReden);
 						var colonUitnodiging = baseUitnodigingsService.getColonUitnodiging(trackId, postcode, huisnummer);
 						if (colonUitnodiging != null && colonUitnodiging.getRetourzendingReden() == null)
 						{
@@ -257,9 +252,9 @@ public class RetourzendingServiceImpl implements RetourzendingService
 
 	private boolean isValidRegel(RetourzendingLogEvent logEvent, int index, String trackId, String retourzendingReden, String postcode, Integer huisnummer)
 	{
-		boolean isValid = true;
-		boolean trackIDgevondenColon = baseUitnodigingsService.colonUitnodigingExists(trackId);
-		boolean trackIDgevondenCervix = baseUitnodigingsService.cervixUitnodigingExists(trackId);
+		var isValid = true;
+		var trackIDgevondenColon = baseUitnodigingsService.colonUitnodigingExists(trackId);
+		var trackIDgevondenCervix = baseUitnodigingsService.cervixUitnodigingExists(trackId);
 
 		if (huisnummer == null || StringUtils.isBlank(postcode))
 		{
@@ -280,7 +275,7 @@ public class RetourzendingServiceImpl implements RetourzendingService
 		}
 		else
 		{
-			RetourredenAfhandeling retourredenAfhandeling = bepaalAfhandelingVoorRetourzending(retourzendingReden);
+			var retourredenAfhandeling = bepaalAfhandelingVoorRetourzending(retourzendingReden);
 			if (retourredenAfhandeling == null)
 			{
 				logEvent.incrRetourRedenNietGevondenRegels(index);
@@ -296,15 +291,15 @@ public class RetourzendingServiceImpl implements RetourzendingService
 		U uitnodiging,
 		String retourzendingReden)
 	{
-		RetourzendingLogEvent logEvent = new RetourzendingLogEvent();
-		RetourredenAfhandeling retourredenAfhandeling = bepaalAfhandelingVoorRetourzending(retourzendingReden);
+		var logEvent = new RetourzendingLogEvent();
+		var retourredenAfhandeling = bepaalAfhandelingVoorRetourzending(retourzendingReden);
 		if (retourredenAfhandeling == null)
 		{
 			throw new IllegalArgumentException("Retourzendingreden: afhandeling is onbekend!");
 		}
 		verwerkRetourzending(logEvent, uitnodiging, retourredenAfhandeling, RetourzendingWijze.HANDMATIG);
 
-		Bevolkingsonderzoek bvo = uitnodiging instanceof ColonUitnodiging ? Bevolkingsonderzoek.COLON : Bevolkingsonderzoek.CERVIX;
+		var bvo = uitnodiging instanceof ColonUitnodiging ? Bevolkingsonderzoek.COLON : Bevolkingsonderzoek.CERVIX;
 		logService.logGebeurtenis(LogGebeurtenis.RETOURZENDINGEN_VERWERKT, logEvent, ingelogdeOrganisatieMedewerker, uitnodiging.getScreeningRonde().getDossier().getClient(), bvo);
 	}
 
@@ -315,7 +310,7 @@ public class RetourzendingServiceImpl implements RetourzendingService
 		uitnodiging.setRetourzendingReden(afhandeling.getRetourReden());
 		uitnodiging.setRetourzendingWijze(wijze);
 		logEvent.incrRegels(afhandeling.getAfhandeling());
-		S screeningRonde = uitnodiging.getScreeningRonde();
+		var screeningRonde = uitnodiging.getScreeningRonde();
 
 		switch (afhandeling.getAfhandeling())
 		{
@@ -358,7 +353,7 @@ public class RetourzendingServiceImpl implements RetourzendingService
 		case GEWEIGERD:
 			if (uitnodiging instanceof ColonUitnodiging)
 			{
-				ColonScreeningRonde ronde = (ColonScreeningRonde) screeningRonde;
+				var ronde = (ColonScreeningRonde) screeningRonde;
 				if (!colonScreeningsrondeService.isRondeStatusBuitenDoelgroep(ronde))
 				{
 					briefService.maakBvoBrief(ronde, BriefType.COLON_ZENDING_GEWEIGERD);
@@ -397,8 +392,8 @@ public class RetourzendingServiceImpl implements RetourzendingService
 
 	private RetourredenAfhandeling bepaalAfhandelingVoorRetourzending(String retourReden)
 	{
-		List<RetourredenAfhandeling> retourredenAfhandelingList = hibernateService.loadAll(RetourredenAfhandeling.class);
-		for (RetourredenAfhandeling retourRedenAfhandeling : retourredenAfhandelingList)
+		var retourredenAfhandelingList = hibernateService.loadAll(RetourredenAfhandeling.class);
+		for (var retourRedenAfhandeling : retourredenAfhandelingList)
 		{
 			if (retourRedenAfhandeling.getRetourReden().equalsIgnoreCase(retourReden))
 			{
@@ -455,7 +450,7 @@ public class RetourzendingServiceImpl implements RetourzendingService
 	{
 		if (!cervixScreeningrondeService.heeftUitslagOfHeeftGehad(uitnodiging))
 		{
-			CervixZas test = CervixMonsterUtil.getZAS(uitnodiging.getMonster());
+			var test = CervixMonsterUtil.getZAS(uitnodiging.getMonster());
 			if (test != null)
 			{
 				if (test.getZasStatus() == CervixZasStatus.VERSTUURD && uitnodiging.getGeannuleerdDatum() == null)
@@ -480,7 +475,7 @@ public class RetourzendingServiceImpl implements RetourzendingService
 
 	private String getCellValue(Row row, int index)
 	{
-		Cell cell = row.getCell(index);
+		var cell = row.getCell(index);
 		String cellValue = null;
 		if (cell != null)
 		{

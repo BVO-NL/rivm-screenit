@@ -58,7 +58,7 @@ public abstract class ClientDossierFilterBvoPanel extends GenericPanel<ClientDos
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				super.onSubmit(target);
-				IModel<ClientDossierFilter> filterModel = ClientDossierFilterBvoPanel.this.getModel();
+				var filterModel = ClientDossierFilterBvoPanel.this.getModel();
 				ScreenitSession.get().setZoekObject(ClientDossierFilterBvoPanel.class, filterModel);
 				ClientDossierFilterBvoPanel.this.doFilter(filterModel, target);
 			}

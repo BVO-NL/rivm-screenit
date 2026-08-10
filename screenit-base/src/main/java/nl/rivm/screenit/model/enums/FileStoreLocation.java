@@ -215,7 +215,7 @@ public enum FileStoreLocation
 
 	private String generatePath(String path, Long id)
 	{
-		StringBuilder directory = new StringBuilder();
+		var directory = new StringBuilder();
 
 		directory.append(path);
 
@@ -224,7 +224,7 @@ public enum FileStoreLocation
 			directory.append(relativePathForDate(LocalDate.now()));
 		}
 
-		String rightPath = directory.toString();
+		var rightPath = directory.toString();
 		if (id != null)
 		{
 			return rightPath.replace("{id}", id.toString());

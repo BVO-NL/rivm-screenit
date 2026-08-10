@@ -44,7 +44,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.DatePrecision;
 import org.dcm4che3.data.PersonName;
-import org.dcm4che3.data.Sequence;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.data.UID;
 import org.dcm4che3.data.VR;
@@ -101,9 +100,9 @@ public class StubController
 	public String getWerklijst(Model model, @RequestParam(value = "foutMelding", required = false) boolean foutMelding,
 		@RequestParam(value = "accessionNumber", required = false) String accessionNumber) throws Exception
 	{
-		Attributes worklistRequest = dicomXmlLoader.loadDicomFromResource("mwlRequestTemplate.xml");
+		var worklistRequest = dicomXmlLoader.loadDicomFromResource("mwlRequestTemplate.xml");
 
-		Sequence scheduledProcedure = worklistRequest.getSequence(Tag.ScheduledProcedureStepSequence);
+		var scheduledProcedure = worklistRequest.getSequence(Tag.ScheduledProcedureStepSequence);
 
 		var date = getCurrentUtilDate();
 
@@ -134,7 +133,7 @@ public class StubController
 	@RequestMapping("/mppsInProgress")
 	public String sendModalityPerfomedProcedureStepInProgress(Model model, @RequestParam(value = "foutMelding", required = false) boolean foutMelding) throws Exception
 	{
-		Attributes mppsInProgress = dicomXmlLoader.loadDicomFromResource("mppsInProgessTemplate.xml");
+		var mppsInProgress = dicomXmlLoader.loadDicomFromResource("mppsInProgessTemplate.xml");
 
 		updateMppsCreateFromWorklist(mppsInProgress);
 
@@ -156,7 +155,7 @@ public class StubController
 	public String sendModalityPerfomedProcedureStepCompleted(Model model, @PathVariable String zijde, @RequestParam(value = "foutMelding", required = false) boolean foutMelding)
 		throws Exception
 	{
-		Attributes mppsCompleted = dicomXmlLoader.loadDicomFromResource("mppsCompletedTemplate.xml");
+		var mppsCompleted = dicomXmlLoader.loadDicomFromResource("mppsCompletedTemplate.xml");
 
 		mppsCompleted.setDate(Tag.PerformedProcedureStepEndDateAndTime, new DatePrecision(Calendar.SECOND), getCurrentUtilDate());
 
@@ -194,7 +193,7 @@ public class StubController
 	@RequestMapping("/mppsDiscontinued")
 	public String sendModalityPerfomedProcedureStepDiscontinued(Model model) throws Exception
 	{
-		Attributes mppsDiscontinued = dicomXmlLoader.loadDicomFromResource("mppsDiscontinuedTemplate.xml");
+		var mppsDiscontinued = dicomXmlLoader.loadDicomFromResource("mppsDiscontinuedTemplate.xml");
 		mppsDiscontinued.setDate(Tag.PerformedProcedureStepEndDateAndTime, new DatePrecision(Calendar.SECOND), getCurrentUtilDate());
 
 		maakSerieFotos(mppsDiscontinued, "R CC");
@@ -247,21 +246,21 @@ public class StubController
 		viewResults.put("AccessionNumber", inTeVullenData.getString(Tag.AccessionNumber));
 		viewResults.put("ReferringPhysicianName", inTeVullenData.getString(Tag.ReferringPhysicianName));
 
-		final Sequence scheduledProcedureStepSequence = inTeVullenData.getSequence(Tag.ScheduledProcedureStepSequence);
+		final var scheduledProcedureStepSequence = inTeVullenData.getSequence(Tag.ScheduledProcedureStepSequence);
 		if (scheduledProcedureStepSequence == null)
 		{
 			viewResults.put("ScheduledProtocolCodeSequence", "");
 		}
 		else
 		{
-			final Sequence scheduledProtocolCodeSequence = scheduledProcedureStepSequence.get(0).getSequence(Tag.ScheduledProtocolCodeSequence);
+			final var scheduledProtocolCodeSequence = scheduledProcedureStepSequence.get(0).getSequence(Tag.ScheduledProtocolCodeSequence);
 			viewResults.put("ScheduledProtocolCodeSequence", scheduledProtocolCodeSequence != null ? scheduledProtocolCodeSequence.get(0).getString(Tag.CodeValue) : "");
 		}
 
-		final Sequence requestedProcedureCodeSequence = inTeVullenData.getSequence(Tag.RequestedProcedureCodeSequence);
+		final var requestedProcedureCodeSequence = inTeVullenData.getSequence(Tag.RequestedProcedureCodeSequence);
 		viewResults.put("RequestedProcedureCodeSequence", requestedProcedureCodeSequence != null ? requestedProcedureCodeSequence.get(0).getString(Tag.CodeValue) : "");
 
-		Date geboortedatum = inTeVullenData.getDate(Tag.PatientBirthDate);
+		var geboortedatum = inTeVullenData.getDate(Tag.PatientBirthDate);
 		viewResults.put("PatientBirthDate", geboortedatum != null ? formatter.format(geboortedatum) : "");
 
 		viewResults.put("EmptyWorklist", String.valueOf(!lastWorklistItem.containsValue(Tag.AccessionNumber)));
@@ -285,8 +284,8 @@ public class StubController
 
 		mppsInProgress.setString(Tag.StudyID, VR.SH, "1");
 
-		Attributes scheduledStepAttributes = new Attributes();
-		Attributes worklistProcedureStep = lastWorklistItem.getSequence(Tag.ScheduledProcedureStepSequence).get(0);
+		var scheduledStepAttributes = new Attributes();
+		var worklistProcedureStep = lastWorklistItem.getSequence(Tag.ScheduledProcedureStepSequence).get(0);
 		scheduledStepAttributes.setString(Tag.AccessionNumber, VR.SH, lastWorklistItem.getString(Tag.AccessionNumber));
 		scheduledStepAttributes.newSequence(Tag.ReferencedStudySequence, 0);
 		scheduledStepAttributes.setString(Tag.StudyInstanceUID, VR.UI, lastWorklistItem.getString(Tag.StudyInstanceUID));
@@ -314,15 +313,15 @@ public class StubController
 
 		attributes.getSequence(Tag.ExposureDoseSequence).add(maakDoses());
 
-		int numberOfExposures = attributes.getInt(Tag.TotalNumberOfExposures, 0) + 1;
+		var numberOfExposures = attributes.getInt(Tag.TotalNumberOfExposures, 0) + 1;
 		attributes.setInt(Tag.TotalNumberOfExposures, VR.US, numberOfExposures);
 	}
 
 	private void maakEnkeleFoto(Attributes attributes, String referencedSopClassUid, String positie)
 	{
-		Attributes fotoSequence = new Attributes();
+		var fotoSequence = new Attributes();
 
-		Attributes referencedImageSequence = new Attributes();
+		var referencedImageSequence = new Attributes();
 		referencedImageSequence.setString(Tag.ReferencedSOPClassUID, VR.UI, referencedSopClassUid);
 		referencedImageSequence.setString(Tag.ReferencedSOPInstanceUID, VR.UI, UIDUtils.createUID());
 
@@ -331,7 +330,7 @@ public class StubController
 
 		fotoSequence.setNull(Tag.PerformingPhysicianName, VR.PN);
 
-		PersonName operatorName = new PersonName();
+		var operatorName = new PersonName();
 		operatorName.set(PersonName.Component.GivenName, "Tech");
 		operatorName.set(PersonName.Component.FamilyName, "Manager");
 
@@ -347,7 +346,7 @@ public class StubController
 
 	private Attributes maakDoses()
 	{
-		Attributes exposureDoseSequence = new Attributes();
+		var exposureDoseSequence = new Attributes();
 
 		exposureDoseSequence.setString(Tag.KVP, VR.DS, "28");
 		exposureDoseSequence.setString(Tag.ExposureTime, VR.IS, "446");

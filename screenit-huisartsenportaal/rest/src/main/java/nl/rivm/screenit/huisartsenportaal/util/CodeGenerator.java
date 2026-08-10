@@ -37,13 +37,13 @@ public final class CodeGenerator
 	public static String genereerCode(int aantalCodeSegmenten, int segmentenLengte)
 	{
 		var code = new StringBuilder();
-		for (int s = 0; s < aantalCodeSegmenten; s++)
+		for (var s = 0; s < aantalCodeSegmenten; s++)
 		{
 			if (s > 0)
 			{
 				code.append("-");
 			}
-			for (int l = 0; l < segmentenLengte; l++)
+			for (var l = 0; l < segmentenLengte; l++)
 			{
 				code.append(characters[random.nextInt(characters.length)]);
 			}

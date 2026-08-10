@@ -76,16 +76,16 @@ public class AanvullendeBeGegevensPage extends OrganisatieBeheer
 
 	public AanvullendeBeGegevensPage()
 	{
-		BeoordelingsEenheid beoordelingsEenheid = (BeoordelingsEenheid) getCurrentSelectedOrganisatie();
+		var beoordelingsEenheid = (BeoordelingsEenheid) getCurrentSelectedOrganisatie();
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(beoordelingsEenheid)));
 
-		final IModel<BeoordelingsEenheid> model = ModelUtil.cModel(beoordelingsEenheid);
+		final var model = ModelUtil.cModel(beoordelingsEenheid);
 		setDefaultModel(model);
 
 		Form<Void> form = new ScreenitForm<>("form");
 		add(form);
 
-		boolean inzien = isAlleenInzien(beoordelingsEenheid);
+		var inzien = isAlleenInzien(beoordelingsEenheid);
 
 		form.add(new KoppelAanParentOrganisatiePanel<>("parent", model).setEnabled(!inzien));
 
@@ -97,14 +97,14 @@ public class AanvullendeBeGegevensPage extends OrganisatieBeheer
 
 	private boolean isAlleenInzien(Organisatie organisatie)
 	{
-		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie,
+		var actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie,
 			Recht.MEDEWERKER_BEOORDELINGSEENHEID_ORG_BEHEER);
 		return !isMinimumActie(actie, Actie.AANPASSEN);
 	}
 
 	private void addAnnulerenButton(Form<Void> form, boolean inzien)
 	{
-		AjaxLink<Void> annuleren = new AjaxLink<Void>("annuleren")
+		var annuleren = new AjaxLink<Void>("annuleren")
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -120,7 +120,7 @@ public class AanvullendeBeGegevensPage extends OrganisatieBeheer
 
 	private void addOpslaanButton(Form<Void> form, IModel<BeoordelingsEenheid> model, boolean inzien)
 	{
-		AjaxSubmitLink opslaan = new AjaxSubmitLink("submit")
+		var opslaan = new AjaxSubmitLink("submit")
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -128,7 +128,7 @@ public class AanvullendeBeGegevensPage extends OrganisatieBeheer
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				BasePage.markeerFormulierenOpgeslagen(target);
-				BeoordelingsEenheid beoordelingsEenheid = model.getObject();
+				var beoordelingsEenheid = model.getObject();
 				organisatieService.saveOrUpdate(beoordelingsEenheid);
 				logAction(beoordelingsEenheid);
 				this.info("Gegevens zijn succesvol opgeslagen");

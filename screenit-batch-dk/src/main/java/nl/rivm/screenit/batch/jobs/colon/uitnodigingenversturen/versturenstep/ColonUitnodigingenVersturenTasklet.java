@@ -98,7 +98,7 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 	@Override
 	protected void logMislukt(Long uitnodigingId)
 	{
-		String melding = String.format("Fout bij het versturen van uitnodiging met technisch id: %s", uitnodigingId);
+		var melding = String.format("Fout bij het versturen van uitnodiging met technisch id: %s", uitnodigingId);
 		logService.logGebeurtenis(LogGebeurtenis.UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM_MISLUKT, melding, Bevolkingsonderzoek.COLON);
 	}
 
@@ -123,14 +123,14 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 			return false;
 		}
 
-		String melding = "De cliënt heeft een onvolledig adres, dit is geconstateerd bij het aanmaken. De volgende gegevens ontbreken: "
+		var melding = "De cliënt heeft een onvolledig adres, dit is geconstateerd bij het aanmaken. De volgende gegevens ontbreken: "
 			+ AdresUtil.bepaalMissendeAdresgegevensString(AdresUtil.getAdres(client.getPersoon(), currentDateSupplier.getLocalDate())) + ".";
 		int dagen = simplePreferenceService.getInteger(PreferenceKey.INTERNAL_HERINNERINGSPERIODE_LOGREGEL_ONVOLLEDIG_ADRES.name());
 		LOG.warn("clientId {}: {}", client.getId(), melding);
 		if (logService.heeftGeenBestaandeLogregelBinnenPeriode(List.of(LogGebeurtenis.COLON_ADRES_ONVOLLEDIG_VOOR_INPAKCENTRUM), client.getPersoon().getBsn(),
 			melding, dagen))
 		{
-			List<Organisatie> dashboardOrganisaties = addLandelijkBeheerorganisatie(new ArrayList<>());
+			var dashboardOrganisaties = addLandelijkBeheerorganisatie(new ArrayList<>());
 			dashboardOrganisaties.addAll(clientService.getScreeningOrganisatieVan(client));
 			logService.logGebeurtenis(LogGebeurtenis.COLON_ADRES_ONVOLLEDIG_VOOR_INPAKCENTRUM, dashboardOrganisaties, null, client, melding,
 				Bevolkingsonderzoek.COLON);
@@ -153,8 +153,8 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 				.get(UitnodigingenVersturenConstants.PROJECTENCOUNTERS);
 			for (var projectClient : projectClienten)
 			{
-				boolean projectGroepInList = false;
-				for (UitnodigingenVersturenProjectGroepCounterHolder projectCounterHolder : projectGroepenCounters)
+				var projectGroepInList = false;
+				for (var projectCounterHolder : projectGroepenCounters)
 				{
 					if (projectCounterHolder.getProjectGroepId().equals(projectClient.getGroep().getId()))
 					{
@@ -229,7 +229,7 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 	@Override
 	protected void setUitnodigingVersturenTijd(List<Long> uitnodigingIds)
 	{
-		String uitnodigingUpdate = "UPDATE colon.uitnodiging SET verstuurd_datum = :datum WHERE id in ( :uitnodigingIds )";
+		var uitnodigingUpdate = "UPDATE colon.uitnodiging SET verstuurd_datum = :datum WHERE id in ( :uitnodigingIds )";
 		hibernateService.getHibernateSession().createNativeQuery(uitnodigingUpdate)
 			.setParameter("datum", currentDateSupplier.getDate())
 			.setParameter("uitnodigingIds", uitnodigingIds)

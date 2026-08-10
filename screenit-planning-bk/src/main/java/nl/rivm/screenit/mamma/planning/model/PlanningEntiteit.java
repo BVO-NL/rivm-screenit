@@ -52,7 +52,7 @@ public class PlanningEntiteit
 			return false;
 		}
 
-		PlanningEntiteit that = (PlanningEntiteit) o;
+		var that = (PlanningEntiteit) o;
 		return id.equals(that.id);
 	}
 

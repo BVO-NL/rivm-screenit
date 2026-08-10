@@ -47,7 +47,7 @@ public abstract class ActiefCellPanel<T extends IActief> extends GenericPanel<T>
 	{
 		super(id, rowModel);
 		setOutputMarkupId(true);
-		final WebMarkupContainer toggleActief = new WebMarkupContainer("toggleActief");
+		final var toggleActief = new WebMarkupContainer("toggleActief");
 
 		if (verwijderen)
 		{
@@ -59,10 +59,10 @@ public abstract class ActiefCellPanel<T extends IActief> extends GenericPanel<T>
 				@Override
 				protected void onEvent(AjaxRequestTarget target)
 				{
-					T actiefObject = ActiefCellPanel.this.getModelObject();
+					var actiefObject = ActiefCellPanel.this.getModelObject();
 					if (mayToggle(actiefObject))
 					{
-						Boolean actief = actiefObject.getActief();
+						var actief = actiefObject.getActief();
 						if (!skipConfirmation() && !Boolean.FALSE.equals(actief))
 						{
 							target.appendJavaScript("$('.modal.fade.in').addClass('previousDialog').modal('hide');");
@@ -110,7 +110,7 @@ public abstract class ActiefCellPanel<T extends IActief> extends GenericPanel<T>
 
 				private void onToggleActief(AjaxRequestTarget target)
 				{
-					T actiefObject = ActiefCellPanel.this.getModelObject();
+					var actiefObject = ActiefCellPanel.this.getModelObject();
 					actiefObject.setActief(Boolean.FALSE.equals(actiefObject.getActief()));
 					if (actiefObject.getActief())
 					{

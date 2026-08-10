@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.BaseCsvFileReader;
 import nl.rivm.screenit.batch.jobs.generalis.huisarts.EnovationHuisartsJobListener;
-import nl.rivm.screenit.service.ZorgmailImportMapping;
 import nl.rivm.screenit.service.ZorgmailImportService;
 import nl.rivm.screenit.service.ZorgmailImportVoortgang;
 
@@ -40,12 +39,12 @@ public class EnovationHuisartsReader extends BaseCsvFileReader<Object[]>
 	@Override
 	protected Object[] parseLine(String[] line, int regelNummer, String bestandsNaam) throws IllegalStateException
 	{
-		Object[] regel = new Object[] { regelNummer, line };
+		var regel = new Object[] { regelNummer, line };
 		if (regelNummer == 1)
 		{
-			ZorgmailImportMapping zorgmailImportMapping = zorgmailImportService.maakMapping(line);
+			var zorgmailImportMapping = zorgmailImportService.maakMapping(line);
 			getExecutionContext().put(EnovationHuisartsJobListener.ZM_BESTAND_MAPPING, zorgmailImportMapping);
-			ZorgmailImportVoortgang voortgang = new ZorgmailImportVoortgang();
+			var voortgang = new ZorgmailImportVoortgang();
 			getExecutionContext().put(EnovationHuisartsJobListener.ZM_BESTAND_VOORTGANG, voortgang);
 		}
 		return regel;

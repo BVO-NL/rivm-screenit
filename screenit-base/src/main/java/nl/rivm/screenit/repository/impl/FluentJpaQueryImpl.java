@@ -47,7 +47,6 @@ import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.boot.internal.SessionFactoryOptionsBuilder;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.internal.EmptyScrollableResults;
 import org.hibernate.jpa.SpecHints;
 import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;

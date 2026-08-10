@@ -67,7 +67,7 @@ public class ClientFieldsFragment extends Fragment
 		super.onInitialize();
 		add(getTitelDropDown(getTitels()));
 
-		FormComponent<String> bsnField = ComponentHelper.addTextField(this, "bsn", true, 9, false);
+		var bsnField = ComponentHelper.addTextField(this, "bsn", true, 9, false);
 		add(getBSNGenererenLink(bsnField));
 
 		ComponentHelper.addTextField(this, "gbaAdres.straat", false, 43, false);
@@ -141,7 +141,7 @@ public class ClientFieldsFragment extends Fragment
 			@Override
 			public void onClick(final AjaxRequestTarget target)
 			{
-				Persoon persoon = (Persoon) ClientFieldsFragment.this.getDefaultModelObject();
+				var persoon = (Persoon) ClientFieldsFragment.this.getDefaultModelObject();
 				persoon.setBsn(TestBsnGenerator.getValideBsn());
 				target.add(bsnField);
 			}

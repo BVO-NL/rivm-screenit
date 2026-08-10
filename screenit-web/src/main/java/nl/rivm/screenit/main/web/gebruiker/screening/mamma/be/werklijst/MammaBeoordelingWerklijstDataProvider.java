@@ -53,7 +53,7 @@ public class MammaBeoordelingWerklijstDataProvider extends SortableDataProvider<
 	@Override
 	public Iterator<? extends MammaBeoordeling> iterator(long first, long count)
 	{
-		MammaBeWerklijstZoekObject zoekObject = getZoekObject();
+		var zoekObject = getZoekObject();
 
 		return beWerklijstService.zoekBeoordelingen(zoekObject, first, count, toSpringSort(getSort())).iterator();
 	}
@@ -66,7 +66,7 @@ public class MammaBeoordelingWerklijstDataProvider extends SortableDataProvider<
 	@Override
 	public long size()
 	{
-		MammaBeWerklijstZoekObject zoekObject = getZoekObject();
+		var zoekObject = getZoekObject();
 		return beWerklijstService.countBeoordelingen(zoekObject);
 	}
 

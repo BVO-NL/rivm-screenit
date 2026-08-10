@@ -41,8 +41,8 @@ public class OpslaanAfsprakenBuitenStandplaatsPeriodeException extends Exception
 	@Override
 	public String getMessage()
 	{
-		String afsprakenBuitenStandplaatsPeriodeMelding = "";
-		for (Map.Entry<Long, Pair<Date, Date>> entry : afsprakenBuitenStandplaatsPeriodeMap.entrySet())
+		var afsprakenBuitenStandplaatsPeriodeMelding = "";
+		for (var entry : afsprakenBuitenStandplaatsPeriodeMap.entrySet())
 		{
 			afsprakenBuitenStandplaatsPeriodeMelding += getMessage(entry.getValue()) + "\n";
 		}
@@ -51,14 +51,15 @@ public class OpslaanAfsprakenBuitenStandplaatsPeriodeException extends Exception
 
 	public String getMessage(Pair<Date, Date> eersteEnLaatsteAfspraakDatums)
 	{
-		String afsprakenBuitenStandplaatsPeriodeMelding = "";
-		Date eersteAfspraakVanaf = eersteEnLaatsteAfspraakDatums.getLeft();
-		Date laatsteAfspraakVanaf = eersteEnLaatsteAfspraakDatums.getRight();
+		var afsprakenBuitenStandplaatsPeriodeMelding = "";
+		var eersteAfspraakVanaf = eersteEnLaatsteAfspraakDatums.getLeft();
+		var laatsteAfspraakVanaf = eersteEnLaatsteAfspraakDatums.getRight();
 
 		if (eersteAfspraakVanaf != null)
 		{
-			afsprakenBuitenStandplaatsPeriodeMelding += "Door de gemaakte wijzigingen is een standplaatsperiode korter geworden, waardoor afspraken op de volgende datum(s) buiten de standplaatsperiode vallen: "
-				+ DateUtil.formatShortDate(eersteAfspraakVanaf);
+			afsprakenBuitenStandplaatsPeriodeMelding +=
+				"Door de gemaakte wijzigingen is een standplaatsperiode korter geworden, waardoor afspraken op de volgende datum(s) buiten de standplaatsperiode vallen: "
+					+ DateUtil.formatShortDate(eersteAfspraakVanaf);
 
 			if (laatsteAfspraakVanaf != null && !DateUtil.toLocalDate(eersteAfspraakVanaf).equals(DateUtil.toLocalDate(laatsteAfspraakVanaf)))
 			{

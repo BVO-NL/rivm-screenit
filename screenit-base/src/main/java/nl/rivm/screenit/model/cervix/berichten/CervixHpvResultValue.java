@@ -57,7 +57,7 @@ public enum CervixHpvResultValue
 
 	public static CervixHpvResultValue fromValue(String value)
 	{
-		for (CervixHpvResultValue waarde : CervixHpvResultValue.values())
+		for (var waarde : CervixHpvResultValue.values())
 		{
 			if (waarde.getBerichtWaarde().equals(value))
 			{

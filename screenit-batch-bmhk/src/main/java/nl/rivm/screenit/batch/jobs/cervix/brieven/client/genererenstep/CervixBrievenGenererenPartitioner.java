@@ -40,11 +40,11 @@ public class CervixBrievenGenererenPartitioner extends AbstractBrievenGenererenP
 	@Override
 	protected void fillingData(Map<String, ExecutionContext> partities, ScreeningOrganisatie organisatie)
 	{
-		for (BriefType briefType : getBriefTypes())
+		for (var briefType : getBriefTypes())
 		{
 			if (briefType.getVerzendendeOrganisatieType() == OrganisatieType.SCREENINGSORGANISATIE)
 			{
-				ExecutionContext executionContext = new ExecutionContext();
+				var executionContext = new ExecutionContext();
 				executionContext.put(KEY_SCREENINGORGANISATIEID, organisatie.getId());
 				executionContext.put(KEY_BRIEFTYPE, briefType.name());
 				partities.put(organisatie.getId() + briefType.name(), executionContext);

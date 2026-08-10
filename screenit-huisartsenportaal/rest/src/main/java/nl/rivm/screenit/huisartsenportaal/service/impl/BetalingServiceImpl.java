@@ -65,13 +65,13 @@ public class BetalingServiceImpl implements BetalingService
 		{
 			betalingZoekObjectDto.getResultOptions().setCount(10);
 		}
-		List<Betaling> betalingen = betalingCriteriaRepository.getBetalingen(huisarts, betalingZoekObjectDto);
+		var betalingen = betalingCriteriaRepository.getBetalingen(huisarts, betalingZoekObjectDto);
 		List<BetalingDto> dtos = new ArrayList<>();
 		if (betalingen != null)
 		{
 			dtos = betalingen.stream().map(betaling -> convertToDisplayDto(betaling, betaling.getVerrichting())).collect(Collectors.toList());
 		}
-		BetalingenTotalenDto totalenDto = new BetalingenTotalenDto();
+		var totalenDto = new BetalingenTotalenDto();
 		totalenDto.setBetalingen(dtos);
 		totalenDto.setTotaalBedrag(NumberFormat.getCurrencyInstance().format(getTotaalBedrag(huisarts, betalingZoekObjectDto)));
 		totalenDto.setAantalBetalingen(betalingCriteriaRepository.countBetalingen(huisarts, betalingZoekObjectDto));
@@ -81,7 +81,7 @@ public class BetalingServiceImpl implements BetalingService
 	@Override
 	public File getBetalingenCsv(Huisarts huisarts, BetalingZoekObjectDto betalingDto) throws IOException
 	{
-		List<Betaling> betalingen = betalingCriteriaRepository.getBetalingen(huisarts, betalingDto);
+		var betalingen = betalingCriteriaRepository.getBetalingen(huisarts, betalingDto);
 		var dtos = betalingen.stream()
 			.map(this::convertToCsvDto)
 			.collect(Collectors.toList());
@@ -106,7 +106,7 @@ public class BetalingServiceImpl implements BetalingService
 
 	public BetalingDto convertToDisplayDto(Betaling betaling, Verrichting verrichting)
 	{
-		BetalingDto betalingDto = new BetalingDto();
+		var betalingDto = new BetalingDto();
 		betalingDto.setHuisartsportaalId(betaling.getHuisartsportaalId());
 		betalingDto.setBedrag(betaling.getBedrag());
 		betalingDto.setBetalingsKenmerk(betaling.getBetalingsKenmerk());
@@ -114,7 +114,7 @@ public class BetalingServiceImpl implements BetalingService
 		betalingDto.setDebet(betaling.isDebet());
 		betalingDto.setBetalingsKenmerk(betaling.getBetalingsKenmerk());
 		betalingDto.setBetalingsdatum(betaling.getBetalingsdatum());
-		VerrichtingDto verrichtingDto = new VerrichtingDto();
+		var verrichtingDto = new VerrichtingDto();
 		verrichtingDto.setClientNaam(verrichting.getClientNaam());
 		verrichtingDto.setMonsterId(verrichting.getMonsterId());
 		verrichtingDto.setRegio(verrichting.getRegio());
@@ -125,7 +125,7 @@ public class BetalingServiceImpl implements BetalingService
 
 	private BetalingCsvDto convertToCsvDto(Betaling betaling)
 	{
-		BetalingCsvDto betalingCsvDto = new BetalingCsvDto();
+		var betalingCsvDto = new BetalingCsvDto();
 		betalingCsvDto.setBedrag(betaling.getBedrag().toString());
 		betalingCsvDto.setBetalingsdatum(verrichtingenService.getPrintDatum(betaling.getBetalingsdatum()));
 		betalingCsvDto.setBetalingsKenmerk(betaling.getBetalingsKenmerk());
@@ -138,7 +138,7 @@ public class BetalingServiceImpl implements BetalingService
 
 	private BigDecimal getTotaalBedrag(Huisarts huisarts, BetalingZoekObjectDto betalingZoekObjectDto)
 	{
-		BigDecimal totaalBedrag = betalingCriteriaRepository.getBetalingenTotaalBedrag(huisarts, betalingZoekObjectDto);
+		var totaalBedrag = betalingCriteriaRepository.getBetalingenTotaalBedrag(huisarts, betalingZoekObjectDto);
 		if (totaalBedrag == null)
 		{
 			totaalBedrag = BigDecimal.ZERO;

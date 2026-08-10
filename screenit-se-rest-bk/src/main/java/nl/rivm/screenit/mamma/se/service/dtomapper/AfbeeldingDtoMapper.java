@@ -46,7 +46,7 @@ public class AfbeeldingDtoMapper
 
 	private AnnotatieIcoonSeDto createIcoonDto(MammaAnnotatieIcoon icoon)
 	{
-		AnnotatieIcoonSeDto result = new AnnotatieIcoonSeDto();
+		var result = new AnnotatieIcoonSeDto();
 		result.setId(icoon.getId());
 		result.setPositieX(icoon.getPositieX().doubleValue());
 		result.setPositieY(icoon.getPositieY().doubleValue());
@@ -57,11 +57,11 @@ public class AfbeeldingDtoMapper
 
 	public MammaAnnotatieIcoon icoonDtoToAnnotatieIcoon(AnnotatieIcoonSeDto icoonSeDto)
 	{
-		MammaAnnotatieIcoon result = new MammaAnnotatieIcoon();
+		var result = new MammaAnnotatieIcoon();
 		result.setId(icoonSeDto.getId());
-		BigDecimal posX = new BigDecimal(icoonSeDto.getPositieX());
+		var posX = new BigDecimal(icoonSeDto.getPositieX());
 		result.setPositieX(posX.setScale(3, RoundingMode.HALF_UP));
-		BigDecimal posY = new BigDecimal(icoonSeDto.getPositieY());
+		var posY = new BigDecimal(icoonSeDto.getPositieY());
 		result.setPositieY(posY.setScale(3, RoundingMode.HALF_UP));
 		result.setType(icoonSeDto.getType());
 		result.setTekst(icoonSeDto.getTekst());

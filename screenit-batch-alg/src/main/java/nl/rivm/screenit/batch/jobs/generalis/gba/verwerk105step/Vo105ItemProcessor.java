@@ -28,11 +28,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.enums.GbaVraagType;
 import nl.rivm.screenit.model.gba.GbaVraag;
+import nl.rivm.screenit.model.vertrouwdverbonden.Vo105Bericht;
+import nl.rivm.screenit.model.vertrouwdverbonden.enums.BerichtType;
+import nl.rivm.screenit.model.vertrouwdverbonden.enums.Vo105_ArecordVeld;
+import nl.rivm.screenit.model.vertrouwdverbonden.utils.VoxHelper;
 import nl.rivm.screenit.service.HibernateService;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo105Bericht;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.enums.BerichtType;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.enums.Vo105_ArecordVeld;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.utils.VoxHelper;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
@@ -53,16 +53,16 @@ public class Vo105ItemProcessor implements ItemProcessor<Long, Vo105Bericht>
 	public Vo105Bericht process(Long item)
 	{
 		var gbaVraag = hibernateService.load(GbaVraag.class, item);
-		Vo105Bericht bericht = berichtVoorGbaVraag(gbaVraag);
-		gbaVraag.setUniqueBatchId(stepExecution.getJobExecution().getId().toString());
+		var bericht = berichtVoorGbaVraag(gbaVraag);
+		gbaVraag.setUniqueBatchId(String.valueOf(stepExecution.getJobExecution().getId()));
 		hibernateService.saveOrUpdate(gbaVraag);
 		return bericht;
 	}
 
 	private Vo105Bericht berichtVoorGbaVraag(GbaVraag vraag)
 	{
-		String bsn = vraag.getClient() != null ? vraag.getClient().getPersoon().getBsn() : vraag.getBsn();
-		BerichtType berichtType = vraag.getVraagType() == GbaVraagType.PLAATS_INDICATIE ? BerichtType.AP01 : BerichtType.AV01;
+		var bsn = vraag.getClient() != null ? vraag.getClient().getPersoon().getBsn() : vraag.getBsn();
+		var berichtType = vraag.getVraagType() == GbaVraagType.PLAATS_INDICATIE ? BerichtType.AP01 : BerichtType.AV01;
 		return maakBericht(berichtType, bsn);
 	}
 

@@ -63,7 +63,7 @@ public class SELogServiceImpl implements SELogService
 	@Override
 	public void logWarning(LogGebeurtenis logGebeurtenis, Account account, Client client, Long screeningsEenheidId, LocalDateTime datumTijd, String melding)
 	{
-		MammaScreeningsEenheid screeningsEenheid = hibernateService.load(MammaScreeningsEenheid.class, screeningsEenheidId);
+		var screeningsEenheid = hibernateService.load(MammaScreeningsEenheid.class, screeningsEenheidId);
 		LOG.warn(createLogMessage(account, logGebeurtenis, screeningsEenheid, melding));
 		logService.logGebeurtenis(logGebeurtenis, screeningsEenheid, account, client, melding, datumTijd, Bevolkingsonderzoek.MAMMA);
 	}
@@ -85,7 +85,7 @@ public class SELogServiceImpl implements SELogService
 	@Override
 	public void logInfo(LogGebeurtenis logGebeurtenis, Account account, String seCode, LocalDateTime datumTijd, String message)
 	{
-		MammaScreeningsEenheid screeningsEenheid = screeningsEenheidService.getActieveScreeningsEenheidByCode(seCode);
+		var screeningsEenheid = screeningsEenheidService.getActieveScreeningsEenheidByCode(seCode);
 		if (screeningsEenheid == null && StringUtils.isNotBlank(seCode))
 		{
 			if (StringUtils.isBlank(message))
@@ -116,7 +116,7 @@ public class SELogServiceImpl implements SELogService
 	private String createLogMessage(Account account, LogGebeurtenis logGebeurtenis, MammaScreeningsEenheid se, String message)
 	{
 		var messageSafe = maakMetUserInputStringVeiligVoorLogging(message);
-		String result = String.format("%s; %s; %s", logGebeurtenis.name(), se == null ? "SE-???" : se.getCode(), messageSafe != null ? messageSafe : "");
+		var result = String.format("%s; %s; %s", logGebeurtenis.name(), se == null ? "SE-???" : se.getCode(), messageSafe != null ? messageSafe : "");
 		return account == null ? result : String.format("%s %s", SELogin.accountIdLogTekst(account), result);
 	}
 

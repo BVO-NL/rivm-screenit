@@ -22,7 +22,6 @@ package nl.rivm.screenit.huisartsenportaal.validator;
  */
 
 import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
-import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -35,7 +34,7 @@ public class WachtwoordRegistrerenValidator extends BaseWachtwoordValidator<Huis
 	@Override
 	public void validateTarget(HuisartsDto target, Errors errors)
 	{
-		Huisarts huisarts = getIngelogdeHuisarts();
+		var huisarts = getIngelogdeHuisarts();
 		if (StringUtils.isNotBlank(huisarts.getPassword()))
 		{
 

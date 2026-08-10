@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.zorginstelling;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.model.Organisatie;
@@ -49,9 +48,9 @@ public class GekoppeldePaLabsPanel<T extends Organisatie> extends GenericPanel<T
 	{
 		super.onInitialize();
 
-		List<Organisatie> paLabs = organisatieService.getPathologieLabs(getModelObject());
-		List<String> organisatieNamen = paLabs.stream().map(Organisatie::getNaam).collect(Collectors.toList());
-		String paLabsString = !organisatieNamen.isEmpty() ? String.join(", ", organisatieNamen) : "Er zijn geen labs gekoppeld";
+		var paLabs = organisatieService.getPathologieLabs(getModelObject());
+		var organisatieNamen = paLabs.stream().map(Organisatie::getNaam).collect(Collectors.toList());
+		var paLabsString = !organisatieNamen.isEmpty() ? String.join(", ", organisatieNamen) : "Er zijn geen labs gekoppeld";
 		add(new Label("paLabs", paLabsString));
 	}
 }

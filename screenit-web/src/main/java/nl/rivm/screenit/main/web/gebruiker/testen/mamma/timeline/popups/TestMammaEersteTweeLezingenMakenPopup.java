@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.testen.mamma.timeline.popups;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.MedewerkerService;
@@ -68,13 +67,13 @@ public class TestMammaEersteTweeLezingenMakenPopup extends TestMammaAbstractPopu
 	{
 		super(id, clientModel);
 
-		MammaBeoordeling beoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(clientModel.getObject().get(0).getMammaDossier().getLaatsteScreeningRonde());
+		var beoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(clientModel.getObject().get(0).getMammaDossier().getLaatsteScreeningRonde());
 		var zoekOrganisatieMedewerker = new OrganisatieMedewerker();
 		zoekOrganisatieMedewerker.setOrganisatie(beoordeling.getBeoordelingsEenheid());
 		var sort = Sort.by(Sort.Order.asc(propertyChain(OrganisatieMedewerker_.MEDEWERKER, Medewerker_.GEBRUIKERSNAAM)));
 		var radiologen = medewerkerService.getActieveRadiologen(zoekOrganisatieMedewerker, new ArrayList<>(), sort);
-		Iterator<OrganisatieMedewerker> iterator = radiologen.iterator();
-		OrganisatieMedewerker eersteBeoordelaar = iterator.next();
+		var iterator = radiologen.iterator();
+		var eersteBeoordelaar = iterator.next();
 		OrganisatieMedewerker tweedeBeoordelaar = null;
 		while (iterator.hasNext())
 		{
@@ -91,13 +90,13 @@ public class TestMammaEersteTweeLezingenMakenPopup extends TestMammaAbstractPopu
 		tweedeLezingModel.getObject().setBeoordelaar(tweedeBeoordelaar);
 		beoordeling.setStatus(MammaBeoordelingStatus.EERSTE_LEZING);
 
-		Form<MammaLezing> eersteLezingForm = new Form<>("eersteLezingForm", eersteLezingModel);
+		var eersteLezingForm = new Form<MammaLezing>("eersteLezingForm", eersteLezingModel);
 		add(eersteLezingForm);
 
 		IModel<List<OrganisatieMedewerker>> organisatieMedewerkersModel = ModelUtil.listRModel(radiologen, false);
 		addLezingComponenten(organisatieMedewerkersModel, eersteLezingForm);
 
-		Form<MammaLezing> tweedeLezingForm = new Form<>("tweedeLezingForm", tweedeLezingModel);
+		var tweedeLezingForm = new Form<MammaLezing>("tweedeLezingForm", tweedeLezingModel);
 
 		addLezingComponenten(organisatieMedewerkersModel, tweedeLezingForm);
 
@@ -106,7 +105,7 @@ public class TestMammaEersteTweeLezingenMakenPopup extends TestMammaAbstractPopu
 
 	private void addLezingComponenten(IModel<List<OrganisatieMedewerker>> organisatieMedewerkers, Form<MammaLezing> lezingForm)
 	{
-		List<MammaBIRADSWaarde> biradsWaardes = Arrays.asList(MammaBIRADSWaarde.values());
+		var biradsWaardes = Arrays.asList(MammaBIRADSWaarde.values());
 		ComponentHelper.addDropDownChoiceINaam(lezingForm, "biradsRechts", false, biradsWaardes, false);
 		ComponentHelper.addDropDownChoiceINaam(lezingForm, "biradsLinks", false, biradsWaardes, false);
 		lezingForm.add(ComponentHelper.newDropDownChoice("beoordelaar", organisatieMedewerkers, new ChoiceRenderer<OrganisatieMedewerker>("", "id")
@@ -128,9 +127,9 @@ public class TestMammaEersteTweeLezingenMakenPopup extends TestMammaAbstractPopu
 			return;
 		}
 		boolean verstuurHl7Berichten = ((MammaTestTimelinePage) getPage()).getVerstuurHl7Berichten().getObject();
-		for (Client client : getModelObject())
+		for (var client : getModelObject())
 		{
-			MammaBeoordeling laatsteBeoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(client.getMammaDossier().getLaatsteScreeningRonde());
+			var laatsteBeoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(client.getMammaDossier().getLaatsteScreeningRonde());
 			testTimelineService.voegEersteTweeLezingenToe(
 				laatsteBeoordeling,
 				cloneLezing(eersteLezingModel.getObject(), laatsteBeoordeling),
@@ -142,7 +141,7 @@ public class TestMammaEersteTweeLezingenMakenPopup extends TestMammaAbstractPopu
 
 	private MammaLezing cloneLezing(MammaLezing lezing, MammaBeoordeling beoordeling)
 	{
-		MammaLezing clone = new MammaLezing();
+		var clone = new MammaLezing();
 		clone.setBiradsLinks(lezing.getBiradsLinks());
 		clone.setBiradsRechts(lezing.getBiradsRechts());
 		clone.setBeoordelaar(lezing.getBeoordelaar());

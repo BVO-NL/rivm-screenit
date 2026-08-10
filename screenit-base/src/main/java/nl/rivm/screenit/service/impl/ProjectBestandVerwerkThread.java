@@ -121,7 +121,7 @@ public class ProjectBestandVerwerkThread extends OpenEntityManagerInThread
 
 	private String getLoggingMelding(ProjectBestand bestand)
 	{
-		String melding = "";
+		var melding = "";
 		if (ProjectBestandType.POPULATIE.equals(bestand.getType()))
 		{
 			melding += bestand.getVerwerking().getRegelsVerwerkt() + " cli&euml;nt(en) toegevoegd voor ";

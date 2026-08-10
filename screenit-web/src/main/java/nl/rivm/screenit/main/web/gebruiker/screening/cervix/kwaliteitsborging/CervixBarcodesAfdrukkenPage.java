@@ -21,9 +21,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.kwaliteitsborging;
  * =========================LICENSE_END==================================
  */
 
-import java.io.InputStream;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -118,7 +116,7 @@ public class CervixBarcodesAfdrukkenPage extends CervixBarcodeAfdrukkenBasePage
 		add(printDialog);
 		form = new Form<>("form");
 		add(form);
-		ScreenitDropdown<Integer> aantalDropdown = new ScreenitDropdown<>("aantal", aantal, Arrays.asList(1, 5, 10, 50));
+		var aantalDropdown = new ScreenitDropdown<Integer>("aantal", aantal, Arrays.asList(1, 5, 10, 50));
 		aantalDropdown.setRequired(true);
 		form.add(aantalDropdown);
 
@@ -129,7 +127,7 @@ public class CervixBarcodesAfdrukkenPage extends CervixBarcodeAfdrukkenBasePage
 			{
 				if (preferenceService.getBoolean(PreferenceKey.BMHK_LABEL_PRINTEN_ZONDER_PDF.name(), false))
 				{
-					List<String> controleMonsterIds = IntStream.range(0, aantal.getObject()).mapToObj(e -> genereerUniekControleMonsterId()).collect(Collectors.toList());
+					var controleMonsterIds = IntStream.range(0, aantal.getObject()).mapToObj(e -> genereerUniekControleMonsterId()).collect(Collectors.toList());
 					target.prependJavaScript(
 						"printControleMonsterBarcodes([\"" + String.join("\",\"", controleMonsterIds) + "\"])");
 					if (backupAfdrukkenContainer instanceof EmptyPanel)
@@ -152,9 +150,9 @@ public class CervixBarcodesAfdrukkenPage extends CervixBarcodeAfdrukkenBasePage
 	private void printBarcodesMetPdf(AjaxRequestTarget target)
 	{
 		Document gecombineerdDocument = null;
-		for (int i = 0; i < aantal.getObject(); i++)
+		for (var i = 0; i < aantal.getObject(); i++)
 		{
-			Document document = genereerControleMonsterBarcodeDocument();
+			var document = genereerControleMonsterBarcodeDocument();
 			try
 			{
 				if (gecombineerdDocument == null)
@@ -181,7 +179,7 @@ public class CervixBarcodesAfdrukkenPage extends CervixBarcodeAfdrukkenBasePage
 
 	private void showBackupAfdrukkenContainer(AjaxRequestTarget target)
 	{
-		WebMarkupContainer container = new WebMarkupContainer("backupAfdrukkenContainer");
+		var container = new WebMarkupContainer("backupAfdrukkenContainer");
 		container.setOutputMarkupId(true);
 		container.add(new IndicatingAjaxSubmitLink("backupAfdrukken")
 		{
@@ -218,23 +216,23 @@ public class CervixBarcodesAfdrukkenPage extends CervixBarcodeAfdrukkenBasePage
 
 	private Document genereerControleMonsterBarcodeDocument()
 	{
-		CervixUitstrijkje uitstrijkje = new CervixUitstrijkje();
+		var uitstrijkje = new CervixUitstrijkje();
 		uitstrijkje.setMonsterId(genereerUniekControleMonsterId());
-		CervixUitnodiging uitnodiging = new CervixUitnodiging();
+		var uitnodiging = new CervixUitnodiging();
 		uitnodiging.setUitnodigingsId(uitnodigingsDao.getNextUitnodigingsId());
 		uitnodiging.setMonster(uitstrijkje);
 
 		Document document = null;
-		MailMergeContext context = new MailMergeContext();
+		var context = new MailMergeContext();
 		context.setCervixUitnodiging(uitnodiging);
-		Client client = new Client();
-		Persoon persoon = new Persoon();
+		var client = new Client();
+		var persoon = new Persoon();
 		persoon.setBsn("Controlemonster");
 		client.setPersoon(persoon);
 		context.setClient(client);
-		try (InputStream inputStream = getClass().getResourceAsStream("/CervixUitnodigingsSticker.doc"))
+		try (var inputStream = getClass().getResourceAsStream("/CervixUitnodigingsSticker.doc"))
 		{
-			byte[] briefTemplateBytes = FileCopyUtils.copyToByteArray(inputStream);
+			var briefTemplateBytes = FileCopyUtils.copyToByteArray(inputStream);
 			document = asposeService.processDocument(briefTemplateBytes, context);
 		}
 		catch (Exception e)

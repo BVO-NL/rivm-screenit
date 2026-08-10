@@ -30,7 +30,7 @@ public abstract class BaseResourceProvider implements IResourceProvider
 
 	protected static FhirValidator getFhirValidator(FhirContext context)
 	{
-		FhirValidator fhirValidator = context.newValidator();
+		var fhirValidator = context.newValidator();
 		fhirValidator.setValidateAgainstStandardSchema(true);
 		return fhirValidator;
 	}

@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.parameterisatie;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.model.Parameterisatie;
 import nl.rivm.screenit.main.service.ParameterisatieService;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
@@ -50,7 +49,7 @@ public class ClientportaalParameterisatiePage extends ParameterisatieBasePage
 
 	public ClientportaalParameterisatiePage()
 	{
-		Parameterisatie parameterisatie = parameterisatieService.loadParameterisatie();
+		var parameterisatie = parameterisatieService.loadParameterisatie();
 		add(new ClientportaalParametersPanel("landelijkeParameters", new Model<>(parameterisatie)));
 	}
 

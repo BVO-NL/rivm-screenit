@@ -30,7 +30,7 @@ public class StandplaatsPeriodeUtil
 
 	public static String getStandplaatsPeriodeNaam(MammaStandplaatsPeriode standplaatsPeriode)
 	{
-		String standplaatsNaam = standplaatsPeriode.getStandplaatsRonde().getStandplaats().getNaam();
+		var standplaatsNaam = standplaatsPeriode.getStandplaatsRonde().getStandplaats().getNaam();
 
 		return standplaatsPeriode.getStandplaatsRondeVolgNr() > 1 || standplaatsPeriode.getStandplaatsRonde().getStandplaatsPerioden().size() > 1
 			? standplaatsNaam + " (deel " + standplaatsPeriode.getStandplaatsRondeVolgNr() + ")"

@@ -44,7 +44,7 @@ public abstract class LaesiePanel extends GenericPanel<LaesieDto>
 
 	<E extends Enum<E> & INaam> RadioChoice<E> createSpecificatieRadioChoice(String id, Class<E> enumType)
 	{
-		RadioChoice<E> choice = new RadioChoice<>(id,
+		var choice = new RadioChoice<E>(id,
 			Arrays.asList(enumType.getEnumConstants()),
 			new NaamChoiceRenderer<>());
 		choice.setRequired(true);

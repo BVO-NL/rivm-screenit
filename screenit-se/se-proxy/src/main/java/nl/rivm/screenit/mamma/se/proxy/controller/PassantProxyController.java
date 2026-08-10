@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,7 +57,7 @@ public class PassantProxyController
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 
-		RequestEntity.BodyBuilder requestBuilder = proxyService.getProxyRequestEntityAccount("/passanten?bsn=" + bsn + "&geboortedatum=" + geboortedatum.format(DateTimeFormatter.ISO_DATE), HttpMethod.GET, accountId);
+		var requestBuilder = proxyService.getProxyRequestEntityAccount("/passanten?bsn=" + bsn + "&geboortedatum=" + geboortedatum.format(DateTimeFormatter.ISO_DATE), HttpMethod.GET, accountId);
 		return proxyService.sendUncheckedProxyRequest(requestBuilder.build(), String.class);
 	}
 }

@@ -24,6 +24,11 @@ package nl.rivm.screenit.huisartsenportaal.dto;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class BetalingDto extends AbstractDtoReferenceObject
 {
 
@@ -39,63 +44,4 @@ public class BetalingDto extends AbstractDtoReferenceObject
 
 	private String bedragString;
 
-	public String getBedragString()
-	{
-		return bedragString;
-	}
-
-	public void setBedragString(String bedragString)
-	{
-		this.bedragString = bedragString;
-	}
-
-	public boolean isDebet()
-	{
-		return debet;
-	}
-
-	public void setDebet(boolean debet)
-	{
-		this.debet = debet;
-	}
-
-	public VerrichtingDto getVerrichting()
-	{
-		return verrichting;
-	}
-
-	public void setVerrichting(VerrichtingDto verrichting)
-	{
-		this.verrichting = verrichting;
-	}
-
-	public BigDecimal getBedrag()
-	{
-		return bedrag;
-	}
-
-	public void setBedrag(BigDecimal bedrag)
-	{
-		this.bedrag = bedrag;
-	}
-
-	public String getBetalingsKenmerk()
-	{
-		return betalingsKenmerk;
-	}
-
-	public void setBetalingsKenmerk(String betalingsKenmerk)
-	{
-		this.betalingsKenmerk = betalingsKenmerk;
-	}
-
-	public Date getBetalingsdatum()
-	{
-		return betalingsdatum;
-	}
-
-	public void setBetalingsdatum(Date betalingsdatum)
-	{
-		this.betalingsdatum = betalingsdatum;
-	}
 }

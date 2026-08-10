@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.gedeeld.verslagen;
  */
 
 import java.util.Iterator;
-import java.util.List;
 
 import nl.rivm.screenit.main.service.OngeldigeBerichtenService;
 import nl.rivm.screenit.model.BerichtZoekFilter;
@@ -55,7 +54,7 @@ public class OngeldigeBerichtenDataProvider extends SortableDataProvider<Melding
 	@Override
 	public Iterator<? extends MeldingOngeldigCdaBericht> iterator(long first, long count)
 	{
-		List<MeldingOngeldigCdaBericht> searchOngeldigeBerichten = ongeldigeBerichtenService.zoekOngeldigeBerichten(ModelUtil.nullSafeGet(filter), first, count,
+		var searchOngeldigeBerichten = ongeldigeBerichtenService.zoekOngeldigeBerichten(ModelUtil.nullSafeGet(filter), first, count,
 			toSpringSort(getSort()));
 		return searchOngeldigeBerichten.iterator();
 	}

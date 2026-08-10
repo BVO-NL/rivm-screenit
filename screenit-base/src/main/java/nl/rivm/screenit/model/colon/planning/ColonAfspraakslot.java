@@ -58,7 +58,7 @@ public class ColonAfspraakslot extends ColonTijdslot
 	@Transient
 	public ColonAfspraakslot transientClone()
 	{
-		ColonAfspraakslot item = (ColonAfspraakslot) super.transientClone();
+		var item = (ColonAfspraakslot) super.transientClone();
 		item.setAfspraak(null);
 		return item;
 	}

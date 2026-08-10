@@ -32,10 +32,10 @@ public class ScreenITIBANValidator implements IValidator<String>
 	@Override
 	public void validate(IValidatable<String> iValidatable)
 	{
-		String iban = iValidatable.getValue();
+		var iban = iValidatable.getValue();
 		if (!controleerIban(iban))
 		{
-			ValidationError error = new ValidationError();
+			var error = new ValidationError();
 			error.addKey("IBANValidator.not.valid");
 			iValidatable.error(error);
 		}

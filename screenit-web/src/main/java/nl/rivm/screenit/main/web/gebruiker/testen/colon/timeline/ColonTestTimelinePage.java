@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
-import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenissen;
 import nl.rivm.screenit.main.model.TypeGebeurtenis;
 import nl.rivm.screenit.main.model.testen.TestTimelineModel;
 import nl.rivm.screenit.main.model.testen.TestTimelineRonde;
@@ -45,11 +44,9 @@ import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.components.Te
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.popups.BijzondereClientDatumPopup;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
-import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -148,7 +145,7 @@ public class ColonTestTimelinePage extends TestenBasePage
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
-				String message = colonTestService.clientenResetten(bsns.getObject());
+				var message = colonTestService.clientenResetten(bsns.getObject());
 				if (message.contains("Succesvol"))
 				{
 					info(message);
@@ -205,7 +202,7 @@ public class ColonTestTimelinePage extends TestenBasePage
 			ModelUtil.listRModel(testService.getGemeentesMetScreeningOrganisatie(), false),
 			new ChoiceRenderer<>("naam")));
 
-		IndicatingAjaxSubmitLink clientVindOfMaak = new IndicatingAjaxSubmitLink("clientVindOfMaak")
+		var clientVindOfMaak = new IndicatingAjaxSubmitLink("clientVindOfMaak")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -230,14 +227,14 @@ public class ColonTestTimelinePage extends TestenBasePage
 		form.setDefaultButton(clientVindOfMaak);
 		container.add(clientVindOfMaak);
 
-		IndicatingAjaxSubmitLink clientWijzigOfMaak = new IndicatingAjaxSubmitLink("clientWijzigOfMaak")
+		var clientWijzigOfMaak = new IndicatingAjaxSubmitLink("clientWijzigOfMaak")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				TestTimelineModel timelineModel = model.getObject();
-				List<Client> clienten = testTimelineService.maakOfWijzigClienten(timelineModel);
-				List<String> errors = testTimelineService.validateTestClienten(clienten);
+				var timelineModel = model.getObject();
+				var clienten = testTimelineService.maakOfWijzigClienten(timelineModel);
+				var errors = testTimelineService.validateTestClienten(clienten);
 				errors.forEach(this::error);
 				refreshForm(clienten, target, model.getObject());
 			}
@@ -250,7 +247,7 @@ public class ColonTestTimelinePage extends TestenBasePage
 	protected WebMarkupContainer getGebeurtenissenContainer()
 	{
 
-		WebMarkupContainer container = new WebMarkupContainer("gebeurtenissenContainer");
+		var container = new WebMarkupContainer("gebeurtenissenContainer");
 		container.setOutputMarkupPlaceholderTag(true);
 
 		container.setVisible(clientModel != null);
@@ -266,15 +263,15 @@ public class ColonTestTimelinePage extends TestenBasePage
 				@Override
 				public boolean refreshContainer(AjaxRequestTarget target)
 				{
-					List<Client> clienten = testTimelineService.maakOfVindClienten(model.getObject());
-					List<String> errors = testTimelineService.validateTestClienten(clienten);
-					for (String error : errors)
+					var clienten = testTimelineService.maakOfVindClienten(model.getObject());
+					var errors = testTimelineService.validateTestClienten(clienten);
+					for (var error : errors)
 					{
 						error(error);
 					}
 					clientModel = ModelUtil.listRModel(clienten);
 
-					WebMarkupContainer geContainer = getGebeurtenissenContainer();
+					var geContainer = getGebeurtenissenContainer();
 					gebeurtenissenContainer.replaceWith(geContainer);
 					gebeurtenissenContainer = geContainer;
 					target.add(gebeurtenissenContainer);
@@ -293,10 +290,10 @@ public class ColonTestTimelinePage extends TestenBasePage
 				@Override
 				public boolean isVisible()
 				{
-					boolean isOverleden = false;
+					var isOverleden = false;
 					if (!clientModel.getObject().isEmpty())
 					{
-						Persoon persoon = clientModel.getObject().get(0).getPersoon();
+						var persoon = clientModel.getObject().get(0).getPersoon();
 						isOverleden = persoon.getOverlijdensdatum() != null;
 					}
 					return !isOverleden;
@@ -309,7 +306,7 @@ public class ColonTestTimelinePage extends TestenBasePage
 				}
 			});
 
-			ListView<TestTimelineRonde> listView = getListView();
+			var listView = getListView();
 			listView.setOutputMarkupId(true);
 			container.add(listView);
 		}
@@ -338,7 +335,7 @@ public class ColonTestTimelinePage extends TestenBasePage
 					@Override
 					public boolean refreshContainer(AjaxRequestTarget target)
 					{
-						WebMarkupContainer geContainer = getGebeurtenissenContainer();
+						var geContainer = getGebeurtenissenContainer();
 						gebeurtenissenContainer.replaceWith(geContainer);
 						gebeurtenissenContainer = geContainer;
 						target.add(gebeurtenissenContainer);
@@ -348,21 +345,21 @@ public class ColonTestTimelinePage extends TestenBasePage
 					@Override
 					public boolean isVisible()
 					{
-						Client client = clientModel.getObject().get(0);
-						Persoon persoon = client.getPersoon();
-						boolean isOverleden = persoon.getOverlijdensdatum() != null;
-						TestTimelineRonde timeLineRonde = item.getModelObject();
-						ScreeningRondeGebeurtenissen gebeurtenissen = timeLineRonde.getColonScreeningRondeDossier();
+						var client = clientModel.getObject().get(0);
+						var persoon = client.getPersoon();
+						var isOverleden = persoon.getOverlijdensdatum() != null;
+						var timeLineRonde = item.getModelObject();
+						var gebeurtenissen = timeLineRonde.getColonScreeningRondeDossier();
 						ScreeningRonde<?, ?, ?, ?> ronde = gebeurtenissen.getScreeningRonde();
-						ColonScreeningRonde colonRonde = (ColonScreeningRonde) ronde;
-						boolean isLopend = ScreeningRondeStatus.LOPEND.equals(ronde.getStatus()) || heeftIfobtMetWijzigbareStatus(colonRonde);
+						var colonRonde = (ColonScreeningRonde) ronde;
+						var isLopend = ScreeningRondeStatus.LOPEND.equals(ronde.getStatus()) || heeftIfobtMetWijzigbareStatus(colonRonde);
 						boolean isAangemeld = ronde.getAangemeld();
 						return !isOverleden && (isLopend || !isAangemeld && !isLopend);
 					}
 
 					private boolean heeftIfobtMetWijzigbareStatus(ColonScreeningRonde colonRonde)
 					{
-						for (ColonUitnodiging uitnodiging : colonRonde.getUitnodigingen())
+						for (var uitnodiging : colonRonde.getUitnodigingen())
 						{
 							if (uitnodiging.getGekoppeldeFitRegistratie() != null && ColonFitRegistratieStatus.isMutableEindStatus(
 								uitnodiging.getGekoppeldeFitRegistratie().getStatus()))
@@ -380,7 +377,7 @@ public class ColonTestTimelinePage extends TestenBasePage
 					}
 				});
 
-				SortingListModel<ScreeningRondeGebeurtenis> sortingListModel = new SortingListModel<>(
+				var sortingListModel = new SortingListModel<ScreeningRondeGebeurtenis>(
 					new PropertyModel<>(item.getModel(), "colonScreeningRondeDossier.gebeurtenissen"), new GebeurtenisComparator());
 
 				item.add(new PropertyListView<>("gebeurtenissen", sortingListModel)
@@ -395,8 +392,8 @@ public class ColonTestTimelinePage extends TestenBasePage
 						item.add(new AttributeAppender("class", new Model<>("badge-not-clickable"), " "));
 						item.add(new Label("extraOmschrijving", (IModel<String>) () ->
 						{
-							ScreeningRondeGebeurtenis gebeurtenis2 = item.getModelObject();
-							String[] extraOmschrijvingen = gebeurtenis2.getExtraOmschrijving();
+							var gebeurtenis2 = item.getModelObject();
+							var extraOmschrijvingen = gebeurtenis2.getExtraOmschrijving();
 							return BriefOmschrijvingUtil.verwerkExtraOmschrijvingen(extraOmschrijvingen, ColonTestTimelinePage.this::getString);
 						}));
 					}
@@ -418,7 +415,7 @@ public class ColonTestTimelinePage extends TestenBasePage
 					public void close(AjaxRequestTarget target)
 					{
 						dialog.close(target);
-						WebMarkupContainer geContainer = getGebeurtenissenContainer();
+						var geContainer = getGebeurtenissenContainer();
 						gebeurtenissenContainer.replaceWith(geContainer);
 						gebeurtenissenContainer = geContainer;
 						target.add(gebeurtenissenContainer);

@@ -42,8 +42,8 @@ public class MammaVerslagKiesUitgangssituatiePanel extends GenericPanel<MammaBeo
 	public MammaVerslagKiesUitgangssituatiePanel(String id, IModel<MammaBeoordeling> model)
 	{
 		super(id, model);
-		MammaBeoordeling beoordeling = model.getObject();
-		MammaLezing[] lezingen = beoordelingService.getLezingenVoorVerslag(beoordeling);
+		var beoordeling = model.getObject();
+		var lezingen = beoordelingService.getLezingenVoorVerslag(beoordeling);
 
 		add(maakLezingPanel(model, "eersteVerwijsLezing", lezingen[0]));
 		add(maakLezingPanel(model, "tweedeVerwijsLezing", lezingen[1]));
@@ -51,7 +51,7 @@ public class MammaVerslagKiesUitgangssituatiePanel extends GenericPanel<MammaBeo
 
 	private MammaReadOnlyLezingPanel maakLezingPanel(IModel<MammaBeoordeling> model, String id, MammaLezing lezing)
 	{
-		final MammaReadOnlyLezingPanel result = new MammaReadOnlyLezingPanel(id, model.getObject(), lezing, false, false, true);
+		final var result = new MammaReadOnlyLezingPanel(id, model.getObject(), lezing, false, false, true);
 		result.add(createClickEvent(result));
 		return result;
 	}
@@ -63,9 +63,9 @@ public class MammaVerslagKiesUitgangssituatiePanel extends GenericPanel<MammaBeo
 			@Override
 			protected void onEvent(AjaxRequestTarget target)
 			{
-				MammaVerslagRondePanel verslagRondePanel = result.findMammaVerslagPanel();
+				var verslagRondePanel = result.findMammaVerslagPanel();
 				var toonAfwijkingSliceButtons = MammaOnderzoekType.TOMOSYNTHESE == getModelObject().getOnderzoek().getOnderzoekType();
-				MammaVerslagVerfijnenPanel verslagVerfijnenPanel = new MammaVerslagVerfijnenPanel(verslagRondePanel, "verslagPanel", result.maakVerslagLezing(),
+				var verslagVerfijnenPanel = new MammaVerslagVerfijnenPanel(verslagRondePanel, "verslagPanel", result.maakVerslagLezing(),
 					getModelObject().getOnderzoek().getAmputatie(), toonAfwijkingSliceButtons);
 				verslagVerfijnenPanel.setOutputMarkupId(true);
 				verslagRondePanel.replaceRonde(target, verslagVerfijnenPanel);

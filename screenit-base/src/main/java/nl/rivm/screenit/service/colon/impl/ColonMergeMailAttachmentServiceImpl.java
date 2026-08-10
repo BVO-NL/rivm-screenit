@@ -47,7 +47,7 @@ public class ColonMergeMailAttachmentServiceImpl implements ColonMergeMailAttach
 		var mailAttachmentList = new ArrayList<MailAttachmentDto>();
 		var mergefields = template.getType().getMergeFields();
 		var bodyTekst = template.getBody();
-		String searchString = "{" + MergeField.SO_LOGO_EMAIL.getFieldName() + "}";
+		var searchString = "{" + MergeField.SO_LOGO_EMAIL.getFieldName() + "}";
 
 		if (mergefields.contains(MergeField.SO_LOGO_EMAIL) && bodyTekst.contains(searchString))
 		{

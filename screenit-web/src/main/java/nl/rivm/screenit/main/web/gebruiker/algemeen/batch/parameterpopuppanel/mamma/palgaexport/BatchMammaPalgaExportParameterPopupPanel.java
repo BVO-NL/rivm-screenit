@@ -89,7 +89,7 @@ public class BatchMammaPalgaExportParameterPopupPanel extends AbstractParameterP
 
 	private TextField<Integer> maakVolgnummerKwaliteitsborgingVeld()
 	{
-		TextField<Integer> field = ComponentHelper.newTextField("volgnummerKwaliteitsborging", Integer.class, true);
+		var field = ComponentHelper.newTextField("volgnummerKwaliteitsborging", Integer.class, true);
 		field.setEnabled(false);
 		field.add(new RangeValidator<>(1, 99));
 		return field;
@@ -106,17 +106,17 @@ public class BatchMammaPalgaExportParameterPopupPanel extends AbstractParameterP
 
 	private RadioGroup<MammaPalgaExportConfig> maakSelectPeriodeTypeRadioChoice(Form<?> form)
 	{
-		RadioGroup<MammaPalgaExportConfig> periodeTypeRadio = new RadioGroup<>("periodeType");
+		var periodeTypeRadio = new RadioGroup<MammaPalgaExportConfig>("periodeType");
 		periodeTypeRadio.setRequired(true);
 
 		periodeTypeRadio.add(new Radio<>("range", new Model<>(MammaPalgaExportPeriodeType.ONDERZOEKS_DATUM_PERIODE)));
 		periodeTypeRadio.add(new Radio<>("xmaanden", new Model<>(MammaPalgaExportPeriodeType.ONDERZOEKS_DATUM_AANTAL_MAANDEN_TERUG)));
 
-		DatePicker<Date> vanafOnderzoeksDatum = maakDatumveld("vanafOnderzoeksDatum");
-		DatePicker<Date> totEnMetOnderzoeksDatum = maakDatumveld("totEnMetOnderzoeksDatum");
+		var vanafOnderzoeksDatum = maakDatumveld("vanafOnderzoeksDatum");
+		var totEnMetOnderzoeksDatum = maakDatumveld("totEnMetOnderzoeksDatum");
 		form.add(new DependantDateValidator(vanafOnderzoeksDatum, totEnMetOnderzoeksDatum, DependantDateValidator.Operator.AFTER));
 		form.add(new MaximalePeriodeLengteValidator(vanafOnderzoeksDatum, totEnMetOnderzoeksDatum, 50));
-		TextField<Integer> onderzoekAantalMaandenTerug = maakAantalMaandenTerugVeld();
+		var onderzoekAantalMaandenTerug = maakAantalMaandenTerugVeld();
 		periodeTypeRadio.add(vanafOnderzoeksDatum);
 		periodeTypeRadio.add(totEnMetOnderzoeksDatum);
 		periodeTypeRadio.add(onderzoekAantalMaandenTerug);
@@ -134,7 +134,7 @@ public class BatchMammaPalgaExportParameterPopupPanel extends AbstractParameterP
 
 	private DatePicker<Date> maakDatumveld(String id)
 	{
-		DatePicker<Date> datePicker = ComponentHelper.newDatePicker(id);
+		var datePicker = ComponentHelper.newDatePicker(id);
 		datePicker.setOutputMarkupId(true);
 		datePicker.setEnabled(false);
 		datePicker.setRequired(true);
@@ -144,7 +144,7 @@ public class BatchMammaPalgaExportParameterPopupPanel extends AbstractParameterP
 
 	private TextField<Integer> maakAantalMaandenTerugVeld()
 	{
-		TextField<Integer> field = ComponentHelper.newTextField("onderzoekAantalMaandenTerug", Integer.class, true);
+		var field = ComponentHelper.newTextField("onderzoekAantalMaandenTerug", Integer.class, true);
 		field.setEnabled(false);
 		field.add(new RangeValidator<>(0, 50));
 		return field;

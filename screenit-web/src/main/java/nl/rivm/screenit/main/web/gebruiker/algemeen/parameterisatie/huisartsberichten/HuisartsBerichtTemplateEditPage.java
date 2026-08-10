@@ -85,7 +85,7 @@ public class HuisartsBerichtTemplateEditPage extends ParameterisatieBasePage
 		{
 			super(id, new CompoundPropertyModel<>(model));
 
-			ScreenitDropdown<HuisartsBerichtType> typeSelectie = new ScreenitDropdown<HuisartsBerichtType>("berichtType",
+			var typeSelectie = new ScreenitDropdown<HuisartsBerichtType>("berichtType",
 				HuisartsBerichtType.getBerichtTypeVoorBevolkingsonderzoeken(ScreenitSession.get().getOnderzoeken()),
 				new ChoiceRenderer<>()
 				{
@@ -111,7 +111,7 @@ public class HuisartsBerichtTemplateEditPage extends ParameterisatieBasePage
 							template.setBerichtType(filter.getObject().getBerichtType());
 						}
 
-						HuisartsBerichtTemplateEditPanel editPanel = new HuisartsBerichtTemplateEditPanel("templateContainer", ModelUtil.cModel(template));
+						var editPanel = new HuisartsBerichtTemplateEditPanel("templateContainer", ModelUtil.cModel(template));
 						editPanel.setOutputMarkupPlaceholderTag(true);
 						templateContainer.replaceWith(editPanel);
 						templateContainer = editPanel;
@@ -121,7 +121,7 @@ public class HuisartsBerichtTemplateEditPage extends ParameterisatieBasePage
 					}
 					else
 					{
-						WebMarkupContainer editPanel = new WebMarkupContainer("templateContainer");
+						var editPanel = new WebMarkupContainer("templateContainer");
 						editPanel.setOutputMarkupPlaceholderTag(true);
 						templateContainer.replaceWith(editPanel);
 						templateContainer = editPanel;

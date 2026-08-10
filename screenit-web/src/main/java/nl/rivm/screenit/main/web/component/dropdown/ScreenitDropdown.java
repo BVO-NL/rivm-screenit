@@ -28,7 +28,6 @@ import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
-import org.apache.wicket.markup.html.form.AbstractSingleSelectChoice;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
@@ -104,7 +103,7 @@ public class ScreenitDropdown<T> extends DropDownChoice<T> implements IAjaxIndic
 	{
 		super.renderHead(response);
 
-		Options select2Options = new Options();
+		var select2Options = new Options();
 		select2Options.put("placeholder", JsUtils.quotes("- Maak een keuze -"));
 		select2Options.put("allowClear", isNullValid());
 		select2Options.put("formatNoMatches", "function () { return \"Geen resultaten gevonden.\"; }");
@@ -133,7 +132,8 @@ public class ScreenitDropdown<T> extends DropDownChoice<T> implements IAjaxIndic
 	}
 
 	@Override
-	public ScreenitDropdown<T> setNullValid(boolean nullValid) {
+	public ScreenitDropdown<T> setNullValid(boolean nullValid)
+	{
 		return (ScreenitDropdown<T>) super.setNullValid(nullValid);
 	}
 }

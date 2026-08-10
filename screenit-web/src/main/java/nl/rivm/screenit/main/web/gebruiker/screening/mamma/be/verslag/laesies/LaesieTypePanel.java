@@ -25,7 +25,6 @@ import java.util.List;
 
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDto;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDtoMapper;
-import nl.rivm.screenit.model.mamma.MammaLaesie;
 import nl.rivm.screenit.service.mamma.MammaBaseLaesieService;
 
 import org.apache.commons.lang.StringUtils;
@@ -65,9 +64,9 @@ class LaesieTypePanel extends GenericPanel<LaesieDto>
 
 	private String volgnummerPostfix()
 	{
-		LaesieDto laesie = getModelObject();
-		MammaLaesie mammaLaesie = mapper.laesieDtoToMammaLaesie(laesie);
-		final List<MammaLaesie> mammaLaesieList = alleLaesies.stream().map(mapper::laesieDtoToMammaLaesie).toList();
+		var laesie = getModelObject();
+		var mammaLaesie = mapper.laesieDtoToMammaLaesie(laesie);
+		final var mammaLaesieList = alleLaesies.stream().map(mapper::laesieDtoToMammaLaesie).toList();
 		return laesieService.isVolgnummerNodig(mammaLaesieList, mammaLaesie) ? " - " + laesie.getNummer() : "";
 	}
 

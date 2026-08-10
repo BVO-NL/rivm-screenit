@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
 import nl.rivm.screenit.util.NaamUtil;
@@ -54,7 +53,7 @@ public class MammaPlanningTabExtensiePanel extends Panel
 	{
 		super(id);
 
-		ScreeningOrganisatie screeningOrganisatie = ScreenitSession.get().getScreeningOrganisatie();
+		var screeningOrganisatie = ScreenitSession.get().getScreeningOrganisatie();
 		if (screeningOrganisatie != null)
 		{
 			List<Long> conceptGewijzigdDoor = new ArrayList<>(Arrays.asList(conceptPlanningsApplicatie.getConceptGewijzigdDoor(screeningOrganisatie)));
@@ -63,19 +62,19 @@ public class MammaPlanningTabExtensiePanel extends Panel
 				conceptGewijzigdDoor.add(ScreenitSession.get().getIngelogdeOrganisatieMedewerker().getId());
 			}
 			List<OrganisatieMedewerker> conceptGewijzigdDoorOrganisatieMedewerkers = new ArrayList<>();
-			for (Long conceptGewijzigdDoorId : conceptGewijzigdDoor)
+			for (var conceptGewijzigdDoorId : conceptGewijzigdDoor)
 			{
 				conceptGewijzigdDoorOrganisatieMedewerkers.add(hibernateService.load(OrganisatieMedewerker.class, conceptGewijzigdDoorId));
 			}
 			if (!conceptGewijzigdDoorOrganisatieMedewerkers.isEmpty())
 			{
-				OrganisatieMedewerker eersteOrganisatieMedewerker = conceptGewijzigdDoorOrganisatieMedewerkers.get(0);
-				String naamMedewerker = NaamUtil.getNaamMedewerker(eersteOrganisatieMedewerker.getMedewerker());
+				var eersteOrganisatieMedewerker = conceptGewijzigdDoorOrganisatieMedewerkers.get(0);
+				var naamMedewerker = NaamUtil.getNaamMedewerker(eersteOrganisatieMedewerker.getMedewerker());
 				if (conceptGewijzigdDoorOrganisatieMedewerkers.size() > 1)
 				{
 					naamMedewerker += " ...";
 				}
-				Label label = new Label("gewijzigdDoor", naamMedewerker);
+				var label = new Label("gewijzigdDoor", naamMedewerker);
 				add(label);
 				conceptGewijzigdDoorOrganisatieMedewerkers.remove(eersteOrganisatieMedewerker);
 				if (!conceptGewijzigdDoorOrganisatieMedewerkers.isEmpty())

@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.jobs.generalis.huisarts.afterimportstep;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.generalis.huisarts.EnovationHuisartsJobListener;
@@ -58,9 +56,9 @@ public class AfterImportEnovationHuisartsTasklet implements Tasklet
 	{
 		this.stepExecution = chunkContext.getStepContext().getStepExecution();
 
-		ZorgmailImportVoortgang voortgang = (ZorgmailImportVoortgang) stepExecution.getJobExecution().getExecutionContext().get(EnovationHuisartsJobListener.ZM_BESTAND_VOORTGANG);
+		var voortgang = (ZorgmailImportVoortgang) stepExecution.getJobExecution().getExecutionContext().get(EnovationHuisartsJobListener.ZM_BESTAND_VOORTGANG);
 
-		List<String> klantnummers = voortgang.getKlantnummers();
+		var klantnummers = voortgang.getKlantnummers();
 		voortgang.setGeinactiveerdeHuisartsenAfter(ennovationHuisartsService.valideerKlantnummers(klantnummers));
 		klantnummers.clear();
 
@@ -70,7 +68,7 @@ public class AfterImportEnovationHuisartsTasklet implements Tasklet
 
 	private void startJob(JobType jobType)
 	{
-		String jmsMessageID = jobService.startJob(jobType, null);
+		var jmsMessageID = jobService.startJob(jobType, null);
 		if (jmsMessageID == null)
 		{
 			LOG.error("Failed to start afterjob: {}.", jobType);

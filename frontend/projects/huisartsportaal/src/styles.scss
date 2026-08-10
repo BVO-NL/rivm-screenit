@@ -1,0 +1,85 @@
+/*-
+ * ========================LICENSE_START=================================
+ * huisartsportaal
+ * %%
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@use '@topicus-rgp-ds/web/design-tokens';
+@use 'styles/utils' as *;
+@use 'styles/grid' as *;
+@use 'styles/ds_overrides' as *;
+
+:root {
+  --ds-color-primary: #{design-tokens.$purple-900};
+  --ds-color-primary-tint: #{design-tokens.$purple-100};
+  --zwart: black;
+  --grijs: #acacac;
+  --paars: #54026e;
+  --donkerpaars: #440959;
+  --rood: #a94442;
+  --wit: white;
+  --donkerrood: #bd362f;
+  --blauw: #2f96b4;
+  --oranje: #f89406;
+  --groen: #51a351;
+  --ds-text-color: #{design-tokens.$black-600};
+  --ds-secondary-text-color: #{design-tokens.$black-500};
+  --wit-doorzichtig: rgba(255, 255, 255, 0.9);
+  --max-width: 1180px;
+  --max-width-small: 500px;
+  --border-width: 1px;
+  --header-height: 126px;
+}
+
+body {
+  font-family: 'Roboto', Helvetica, Arial, 'sans-serif';
+  font-size: 0.95rem;
+  color: var(--zwart);
+  background: url('/assets/background.jpg') no-repeat center center fixed;
+  background-size: cover;
+  line-height: 1.5;
+  position: relative;
+}
+
+a {
+  color: var(--ds-color-primary);
+  text-decoration: underline;
+}
+
+h3 {
+  font-weight: normal;
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+hr {
+  margin: 1rem 0;
+  color: inherit;
+  border: 0;
+  border-top-width: 0px;
+  border-top-style: none;
+  border-top-color: currentcolor;
+  border-top: var(--border-width) solid;
+  opacity: 0.25;
+}
+
+.container {
+  padding-top: 20px;
+  max-width: var(--max-width-small);
+  margin: 0 auto;
+  display: block;
+}

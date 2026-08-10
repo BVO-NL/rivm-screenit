@@ -67,7 +67,7 @@ public class TransactionQueueServiceImpl implements TransactionQueueService, App
 	@Override
 	public void addTransactionToQueue(String transactionJSON, Long clientId)
 	{
-		final PersistableTransaction transaction = new PersistableTransaction(DateUtil.getCurrentDateTime(), transactionJSON, clientId);
+		final var transaction = new PersistableTransaction(DateUtil.getCurrentDateTime(), transactionJSON, clientId);
 		persistableTransactionService.putLast(transaction);
 		LOG.debug("Transactie toegevoegd aan queue: " + transactieLogTekst(transaction));
 		ensureRunningQueueVerwerking();
@@ -75,9 +75,9 @@ public class TransactionQueueServiceImpl implements TransactionQueueService, App
 
 	private String transactieLogTekst(PersistableTransaction transaction)
 	{
-		TransactionParser transactionParser = new TransactionParser(transaction.getTransactie());
+		var transactionParser = new TransactionParser(transaction.getTransactie());
 
-		String logTekst = String.format("[transactieType: %s] [transactieTijd: %s] [clientId: %s] [uitnodigingsNr: %s] [medewerkercode: %s]",
+		var logTekst = String.format("[transactieType: %s] [transactieTijd: %s] [clientId: %s] [uitnodigingsNr: %s] [medewerkercode: %s]",
 			transactionParser.getTransactieType(), transaction.getDatumTijd(), transaction.getClientId(),
 			transactionParser.getUitnodigingsNr(), transactionParser.getMedewerkercode());
 

@@ -29,7 +29,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
@@ -51,29 +50,29 @@ public class ClientportaalParametersPanel extends BasePrimaireParametersPanel
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
 
-		ListView<Bevolkingsonderzoek> bvos = new ListView<Bevolkingsonderzoek>("bvos", Arrays.asList(Bevolkingsonderzoek.values()))
+		var bvos = new ListView<Bevolkingsonderzoek>("bvos", Arrays.asList(Bevolkingsonderzoek.values()))
 		{
 
 			@Override
 			protected void populateItem(ListItem<Bevolkingsonderzoek> item)
 			{
 				item.add(new EnumLabel<Bevolkingsonderzoek>("naam", item.getModelObject()));
-				String bvoLowerCase = item.getModelObject().name().toLowerCase();
+				var bvoLowerCase = item.getModelObject().name().toLowerCase();
 				item.add(
 					new CheckBox("toonVervangendeTekst",
 						new ParameterisatieClientportaalPropertyModel<Parameterisatie, Boolean>(ClientportaalParametersPanel.this.getModelObject(),
 							bvoLowerCase + "ClientportaalToonVervangendeTekst")));
-				TextArea<String> vervangendeTekst = new TextArea<>("vervangendeTekst",
+				var vervangendeTekst = new TextArea<String>("vervangendeTekst",
 					new ParameterisatieClientportaalPropertyModel<Parameterisatie, String>(ClientportaalParametersPanel.this.getModelObject(),
 						bvoLowerCase + "ClientportaalVervangendeTekst"));
 				vervangendeTekst.setOutputMarkupId(true);
 				vervangendeTekst.add(new StringValidator(1, 3999));
 				item.add(vervangendeTekst);
-				TextArea<String> tijdelijkeMelding = new TextArea<>("tijdelijkeMelding",
-						new ParameterisatieClientportaalPropertyModel<Parameterisatie, String>(ClientportaalParametersPanel.this.getModelObject(),
-								bvoLowerCase + "ClientportaalTijdelijkeMelding"));
+				var tijdelijkeMelding = new TextArea<String>("tijdelijkeMelding",
+					new ParameterisatieClientportaalPropertyModel<Parameterisatie, String>(ClientportaalParametersPanel.this.getModelObject(),
+						bvoLowerCase + "ClientportaalTijdelijkeMelding"));
 				tijdelijkeMelding.setOutputMarkupId(true);
 				tijdelijkeMelding.add(new StringValidator(1, 3999));
 				item.add(tijdelijkeMelding);
@@ -96,7 +95,7 @@ public class ClientportaalParametersPanel extends BasePrimaireParametersPanel
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-			opslaan(target, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA, Bevolkingsonderzoek.COLON);
+				opslaan(target, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA, Bevolkingsonderzoek.COLON);
 				info("Clientportaal parameters zijn opgeslagen");
 
 			}

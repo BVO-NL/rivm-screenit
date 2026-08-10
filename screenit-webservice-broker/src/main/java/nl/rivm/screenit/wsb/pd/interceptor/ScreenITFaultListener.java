@@ -37,8 +37,8 @@ public class ScreenITFaultListener implements FaultListener
 	{
 		if (e instanceof XMLFault)
 		{
-			XMLFault xmlFault = (XMLFault) e;
-			String faultMessage = xmlFault.getMessage();
+			var xmlFault = (XMLFault) e;
+			var faultMessage = xmlFault.getMessage();
 			if (faultMessage != null && faultMessage.startsWith(Constants.XML_FAULT_PREFIX))
 			{
 

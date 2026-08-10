@@ -100,7 +100,7 @@ public class CervixHuisartsberichtenJobListener extends BaseLogListener
 			@Override
 			protected void verwerk(HuisartsBerichtType huisartsBerichtType, long aantal)
 			{
-				CervixHuisartsberichtenRapportageEntry huisartsberichtenRapportageEntry = new CervixHuisartsberichtenRapportageEntry(rapportage, huisartsBerichtType);
+				var huisartsberichtenRapportageEntry = new CervixHuisartsberichtenRapportageEntry(rapportage, huisartsBerichtType);
 				huisartsberichtenRapportageEntry.setAantalVerstuurd(aantal);
 				rapportagePerHuisartsBerichtType.put(huisartsBerichtType, huisartsberichtenRapportageEntry);
 			}
@@ -111,7 +111,7 @@ public class CervixHuisartsberichtenJobListener extends BaseLogListener
 			@Override
 			protected void verwerk(HuisartsBerichtType huisartsBerichtType, long aantal)
 			{
-				CervixHuisartsberichtenRapportageEntry huisartsberichtenRapportageEntry = rapportagePerHuisartsBerichtType.get(huisartsBerichtType);
+				var huisartsberichtenRapportageEntry = rapportagePerHuisartsBerichtType.get(huisartsBerichtType);
 				if (huisartsberichtenRapportageEntry == null)
 				{
 					huisartsberichtenRapportageEntry = new CervixHuisartsberichtenRapportageEntry(rapportage, huisartsBerichtType);

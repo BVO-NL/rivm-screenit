@@ -236,7 +236,7 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 	private void verwijderNogNietVerstuurdeUitnodigingIndienNodig(ColonFitRegistratie teVerwerkenFit)
 	{
 		var screeningRonde = teVerwerkenFit.getScreeningRonde();
-		boolean teVerwerkenFitHeeftSuccesvolleAnalyse = ColonFitRegistratieUtil.heeftSuccesvolleAnalyse(teVerwerkenFit);
+		var teVerwerkenFitHeeftSuccesvolleAnalyse = ColonFitRegistratieUtil.heeftSuccesvolleAnalyse(teVerwerkenFit);
 		var rondeHeeftFitMetMislukteAnalyse = screeningRonde.getFitRegistraties()
 			.stream()
 			.filter(fit -> !fit.equals(teVerwerkenFit))
@@ -707,7 +707,7 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 			return false;
 		}
 
-		ColonFitRegistratie fitRegistratie = andereClient.getColonDossier().getLaatsteScreeningRonde().getLaatsteFitRegistratie();
+		var fitRegistratie = andereClient.getColonDossier().getLaatsteScreeningRonde().getLaatsteFitRegistratie();
 		if (fitRegistratie == null)
 		{
 			return true;
@@ -728,7 +728,7 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 				return false;
 			}
 
-			LocalDate createDatumUitnodiging = DateUtil.toLocalDate(andereClient.getColonDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getCreatieDatum());
+			var createDatumUitnodiging = DateUtil.toLocalDate(andereClient.getColonDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getCreatieDatum());
 			createDatumUitnodiging = createDatumUitnodiging.plusDays(wachttijdVerzendenPakket);
 			return !createDatumUitnodiging.isAfter(vandaag);
 		}

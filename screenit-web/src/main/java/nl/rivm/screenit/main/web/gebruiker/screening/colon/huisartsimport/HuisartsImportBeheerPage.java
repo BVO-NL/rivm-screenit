@@ -32,8 +32,6 @@ import nl.rivm.screenit.main.web.component.validator.AantalBestandenUploadenVali
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
 import nl.rivm.screenit.main.web.gebruiker.screening.colon.ColonScreeningBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
-import nl.rivm.screenit.model.cervix.CervixBulkUpload;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.FileType;
@@ -114,10 +112,10 @@ public class HuisartsImportBeheerPage extends ColonScreeningBasePage
 
 	private WebMarkupContainer getHuisartsImporterenContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("colonHuisartsImporteren");
-		Form<Void> uploadForm = new Form<Void>("uploadForm");
+		var container = new WebMarkupContainer("colonHuisartsImporteren");
+		var uploadForm = new Form<Void>("uploadForm");
 		uploadForm.setMultiPart(true);
-		FileUploadField uploadveld = new FileUploadField("fileInput", fileUploadModel);
+		var uploadveld = new FileUploadField("fileInput", fileUploadModel);
 		uploadveld.add(new FileValidator(FileType.CSV));
 		uploadveld.add(new AantalBestandenUploadenValidator(1));
 		uploadForm.add(uploadveld);
@@ -133,7 +131,7 @@ public class HuisartsImportBeheerPage extends ColonScreeningBasePage
 				{
 					try
 					{
-						String ediParameter = preferenceService.getString(PreferenceKey.EDIFACTADRES.name());
+						var ediParameter = preferenceService.getString(PreferenceKey.EDIFACTADRES.name());
 
 						if (StringUtils.isBlank(ediParameter) && Boolean.TRUE.equals(ediAdresOverschrijven.getModelObject()))
 						{
@@ -141,7 +139,7 @@ public class HuisartsImportBeheerPage extends ColonScreeningBasePage
 						}
 						else
 						{
-							FileUpload excelfile = fileUploadModel.getObject().get(0);
+							var excelfile = fileUploadModel.getObject().get(0);
 
 							if (!StringUtils.endsWith(excelfile.getClientFileName(), ".csv"))
 							{
@@ -149,7 +147,7 @@ public class HuisartsImportBeheerPage extends ColonScreeningBasePage
 							}
 							else
 							{
-								OrganisatieMedewerker ingelogdeMedewerker = getIngelogdeOrganisatieMedewerker();
+								var ingelogdeMedewerker = getIngelogdeOrganisatieMedewerker();
 								importExecService.startImport(excelfile.writeToTempFile(), ediAdresOverschrijven.getModelObject());
 
 								logService.logGebeurtenis(LogGebeurtenis.HUISARTS_IMPORT_GESTART, ingelogdeMedewerker,
@@ -177,9 +175,9 @@ public class HuisartsImportBeheerPage extends ColonScreeningBasePage
 
 	private WebMarkupContainer getBulkContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("cervixBulkContainer");
-		Form<Void> cervixUploadBulkForm = new Form<Void>("cervixBulkUploadFrom");
-		FileUploadField cervixBulkUploadVeld = new FileUploadField("bulkFile", cervixBulkUploadModel);
+		var container = new WebMarkupContainer("cervixBulkContainer");
+		var cervixUploadBulkForm = new Form<Void>("cervixBulkUploadFrom");
+		var cervixBulkUploadVeld = new FileUploadField("bulkFile", cervixBulkUploadModel);
 		cervixBulkUploadVeld
 			.add(new FileValidator(FileType.CSV));
 		cervixBulkUploadVeld.add(new AantalBestandenUploadenValidator(1));
@@ -194,15 +192,15 @@ public class HuisartsImportBeheerPage extends ColonScreeningBasePage
 				{
 					try
 					{
-						FileUpload excelfile = cervixBulkUploadModel.getObject().get(0);
+						var excelfile = cervixBulkUploadModel.getObject().get(0);
 
 						if (!StringUtils.endsWith(excelfile.getClientFileName(), ".csv"))
 						{
 							error(getString("error.huisartsimport.mislukt.herkenning"));
 						}
 
-						OrganisatieMedewerker ingelogdeMedewerker = getIngelogdeOrganisatieMedewerker();
-						CervixBulkUpload upload = cervixBulkHuisartsenService.saveExcelBestand(excelfile.writeToTempFile(), excelfile.getContentType(),
+						var ingelogdeMedewerker = getIngelogdeOrganisatieMedewerker();
+						var upload = cervixBulkHuisartsenService.saveExcelBestand(excelfile.writeToTempFile(), excelfile.getContentType(),
 							excelfile.getClientFileName(), ingelogdeMedewerker);
 						info("Bulk huisarts bestand is opgeslagen en zal worden verwerkt.");
 						cervixBulkHuisartsenService.verwerkBulkHuisartsen(upload);
@@ -225,11 +223,11 @@ public class HuisartsImportBeheerPage extends ColonScreeningBasePage
 
 	private boolean magContainerZichtbaarZijnVoor(Recht controleRecht, Bevolkingsonderzoek onderzoek)
 	{
-		List<Bevolkingsonderzoek> onderzoeken = ScreenitSession.get().getOnderzoeken();
+		var onderzoeken = ScreenitSession.get().getOnderzoeken();
 		if (onderzoeken.contains(onderzoek))
 		{
-			List<Recht> rechten = autorisatieService.getRechtWithBevolkingsonderzoek(Arrays.asList(onderzoek));
-			for (Recht recht : rechten)
+			var rechten = autorisatieService.getRechtWithBevolkingsonderzoek(Arrays.asList(onderzoek));
+			for (var recht : rechten)
 			{
 				if (controleRecht.equals(recht))
 				{

@@ -21,18 +21,21 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.tehuis;
  * =========================LICENSE_END==================================
  */
 
-import com.google.common.primitives.Ints;
 import java.util.Iterator;
+
 import nl.rivm.screenit.main.service.mamma.MammaTehuisAdresService;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.MammaTehuisAdres;
 import nl.rivm.screenit.service.mamma.enums.MammaTehuisSelectie;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
+
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.injection.Injector;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+
+import com.google.common.primitives.Ints;
 
 public class MammaTehuisClientenDataProvider extends SortableDataProvider<Client, String>
 {
@@ -51,7 +54,7 @@ public class MammaTehuisClientenDataProvider extends SortableDataProvider<Client
 	@Override
 	public Iterator<? extends Client> iterator(long first, long count)
 	{
-		MammaTehuisAdres zoekAdres = zoekAdresModel.getObject();
+		var zoekAdres = zoekAdresModel.getObject();
 		return tehuisAdresService
 			.getTehuisAdresClienten(zoekAdres.getTehuis(), zoekAdres, Ints.checkedCast(first), Ints.checkedCast(count), getSort().getProperty(), getSort().isAscending())
 			.iterator();
@@ -60,7 +63,7 @@ public class MammaTehuisClientenDataProvider extends SortableDataProvider<Client
 	@Override
 	public long size()
 	{
-		MammaTehuisAdres zoekAdres = zoekAdresModel.getObject();
+		var zoekAdres = zoekAdresModel.getObject();
 		return tehuisAdresService.countClienten(zoekAdres.getTehuis(), MammaTehuisSelectie.TEHUIS_ADRES, zoekAdres);
 	}
 

@@ -48,7 +48,7 @@ public class ClientGebeurtenis implements Serializable, Comparable<ClientGebeurt
 	@Override
 	public int compareTo(ClientGebeurtenis o)
 	{
-		int result = 0;
+		var result = 0;
 		if (o.datum.before(datum))
 		{
 			result = -1;

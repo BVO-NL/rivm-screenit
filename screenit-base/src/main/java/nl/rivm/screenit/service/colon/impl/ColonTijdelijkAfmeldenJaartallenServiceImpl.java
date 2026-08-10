@@ -70,7 +70,7 @@ public class ColonTijdelijkAfmeldenJaartallenServiceImpl implements ColonTijdeli
 			var maximumLeeftijd = preferenceService.getInteger(PreferenceKey.MAXIMALE_LEEFTIJD_COLON.name());
 			var leeftijdGeenUitnodigingMeer = maximumLeeftijd + 1L;
 
-			for (int toeTeVoegenJaren = 2; toeTeVoegenJaren <= 5; toeTeVoegenJaren++)
+			for (var toeTeVoegenJaren = 2; toeTeVoegenJaren <= 5; toeTeVoegenJaren++)
 			{
 				var teKiezenJaartal = begindatumLaatsteScreeningRonde.plusYears(toeTeVoegenJaren).getYear();
 

@@ -41,7 +41,7 @@ public class TimeLocalTimeConverter implements IConverter<LocalDate>
 		{
 			if (value.contains(":"))
 			{
-				DateTimeFormatter f2 = DateTimeFormatter.ofPattern("HH:mm");
+				var f2 = DateTimeFormatter.ofPattern("HH:mm");
 				return LocalDate.parse(value, f2);
 			}
 			else

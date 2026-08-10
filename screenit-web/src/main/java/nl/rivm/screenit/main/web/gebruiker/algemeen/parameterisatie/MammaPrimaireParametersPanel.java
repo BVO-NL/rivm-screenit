@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.parameterisatie;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Map;
-
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.model.Parameterisatie;
 import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
@@ -47,7 +45,7 @@ public class MammaPrimaireParametersPanel extends BasePrimaireParametersPanel
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
 
 		form.add(new TextField<>("mammaMinimaleLeeftijd", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("mammaMaximaleLeeftijd", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
@@ -91,8 +89,8 @@ public class MammaPrimaireParametersPanel extends BasePrimaireParametersPanel
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Parameterisatie parameterisatie = getModelObject();
-				Map<PreferenceKey, Object> oudeParameters = getOudParameterObject().getParameters();
+				var parameterisatie = getModelObject();
+				var oudeParameters = getOudParameterObject().getParameters();
 
 				if ((Integer) parameterisatie.getParameters().get(PreferenceKey.MAMMA_MINIMALE_LEEFTIJD) > (Integer) parameterisatie.getParameters()
 					.get(PreferenceKey.MAMMA_MAXIMALE_LEEFTIJD))
@@ -101,7 +99,7 @@ public class MammaPrimaireParametersPanel extends BasePrimaireParametersPanel
 				}
 				else
 				{
-					boolean leeftijdParametersZijnAangepast = !oudeParameters.get(PreferenceKey.MAMMA_MINIMALE_LEEFTIJD)
+					var leeftijdParametersZijnAangepast = !oudeParameters.get(PreferenceKey.MAMMA_MINIMALE_LEEFTIJD)
 						.equals(parameterisatie.getParameters().get(PreferenceKey.MAMMA_MINIMALE_LEEFTIJD)) ||
 						!oudeParameters.get(PreferenceKey.MAMMA_MAXIMALE_LEEFTIJD)
 							.equals(parameterisatie.getParameters().get(PreferenceKey.MAMMA_MAXIMALE_LEEFTIJD));

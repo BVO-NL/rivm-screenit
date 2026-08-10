@@ -23,6 +23,8 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
 
 import java.time.LocalDate;
 
+import jakarta.servlet.http.HttpSession;
+
 import nl.rivm.screenit.mamma.se.proxy.model.DaglijstMetMutatiesDto;
 import nl.rivm.screenit.mamma.se.proxy.services.CleanUpService;
 import nl.rivm.screenit.mamma.se.proxy.services.LogischeSessieService;
@@ -40,8 +42,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/daglijst")
@@ -80,7 +80,7 @@ public class DaglijstProxyController
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 
-		String daglijst = daglijstService.getDaglijstGeforceerd(datum);
+		var daglijst = daglijstService.getDaglijstGeforceerd(datum);
 		if (daglijst != null)
 		{
 			return ResponseEntity

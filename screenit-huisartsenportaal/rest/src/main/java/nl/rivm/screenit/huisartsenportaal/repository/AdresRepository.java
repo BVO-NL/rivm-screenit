@@ -23,13 +23,9 @@ package nl.rivm.screenit.huisartsenportaal.repository;
 
 import nl.rivm.screenit.huisartsenportaal.model.Adres;
 
-import org.springframework.data.repository.CrudRepository;
-
 public interface AdresRepository extends BaseRepository<Adres>
 {
-
 	Adres findByHuisartsportaalId(Long id);
 
 	Adres findByScreenitId(Long id);
-
 }

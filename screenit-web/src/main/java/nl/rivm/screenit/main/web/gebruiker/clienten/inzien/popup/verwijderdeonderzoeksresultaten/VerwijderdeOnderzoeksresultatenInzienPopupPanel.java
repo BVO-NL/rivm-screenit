@@ -24,17 +24,14 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.inzien.popup.verwijderdeond
 import java.io.File;
 import java.util.List;
 
-import nl.rivm.screenit.main.service.BriefService;
+import nl.rivm.screenit.main.service.algemeen.BezwaarService;
 import nl.rivm.screenit.main.util.BriefOmschrijvingUtil;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.popup.DocumentVervangenPanel;
 import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.model.UploadDocument;
-import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.service.BezwaarService;
-import nl.rivm.screenit.service.BriefHerdrukkenService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -65,12 +62,6 @@ public abstract class VerwijderdeOnderzoeksresultatenInzienPopupPanel extends Ge
 	@SpringBean
 	private BezwaarService bezwaarService;
 
-	@SpringBean
-	private BriefService briefService;
-
-	@SpringBean
-	private BriefHerdrukkenService briefHerdrukkenService;
-
 	private IModel<UploadDocument> upload;
 
 	private WebMarkupContainer uploadForm;
@@ -94,7 +85,7 @@ public abstract class VerwijderdeOnderzoeksresultatenInzienPopupPanel extends Ge
 				@Override
 				protected void populateItem(ListItem<String> item)
 				{
-					String tekst = item.getModelObject();
+					var tekst = item.getModelObject();
 					item.add(new Label("brief", Model.of(tekst)));
 				}
 			});
@@ -114,7 +105,6 @@ public abstract class VerwijderdeOnderzoeksresultatenInzienPopupPanel extends Ge
 		upload = ModelUtil.sModel(getModelObject().getGetekendeBrief());
 		var magNogmaalsVersturen = upload != null;
 		var magDocumentVervangen = ScreenitSession.get().checkPermission(Recht.VERVANGEN_DOCUMENTEN, Actie.AANPASSEN);
-		var account = ScreenitSession.get().getIngelogdAccount();
 
 		if (magNogmaalsVersturen)
 		{
@@ -129,7 +119,7 @@ public abstract class VerwijderdeOnderzoeksresultatenInzienPopupPanel extends Ge
 		}
 		else
 		{
-			EmptyPanel empty = new EmptyPanel("bezwaarformulierHandImg");
+			var empty = new EmptyPanel("bezwaarformulierHandImg");
 			empty.setVisible(false);
 			add(empty);
 		}
@@ -139,8 +129,8 @@ public abstract class VerwijderdeOnderzoeksresultatenInzienPopupPanel extends Ge
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				List<BezwaarBrief> bevestigingsbrieven = briefService.getOorspronkelijkeBevestigingsbrieven(VerwijderdeOnderzoeksresultatenInzienPopupPanel.this.getModelObject());
-				briefHerdrukkenService.opnieuwAanmaken(bevestigingsbrieven, account);
+				var bevestigingsbrieven = bezwaarService.verstuurBevestigingsbrievenNogmaals(VerwijderdeOnderzoeksresultatenInzienPopupPanel.this.getModelObject(),
+					ScreenitSession.get().getIngelogdAccount());
 				info(getString(
 					bevestigingsbrieven.size() > 1 ?
 						"info.verwijderde.onderzoeksresultaten.meerdere.bevestigingsbrieven.nogmaals.verstuurd" :
@@ -167,8 +157,7 @@ public abstract class VerwijderdeOnderzoeksresultatenInzienPopupPanel extends Ge
 			@Override
 			protected void vervangDocument(UploadDocument uploadDocument, AjaxRequestTarget target)
 			{
-				if (bezwaarService.ondertekendeOnderzoeksresultatenBriefVervangen(uploadDocument, getModelObject(), upload.getObject(),
-					ScreenitSession.get().getIngelogdAccount()))
+				if (bezwaarService.ondertekendeOnderzoeksresultatenBriefVervangen(uploadDocument, getModelObject()))
 				{
 					info(getString("info.vervangendocument"));
 					close(target);

@@ -35,7 +35,6 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.gedeeld.BriefOpnieuwAanmakenPanel;
 import nl.rivm.screenit.main.web.gebruiker.gedeeld.TemplateInzienPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -91,14 +90,14 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 
 	private WebMarkupContainer maakBriefTegenhoudenContent()
 	{
-		WebMarkupContainer tegenhoudenContainer = new WebMarkupContainer("tegenhoudenContainer");
-		WebMarkupContainer mogelijk = new WebMarkupContainer("mogelijk");
-		ClientBrief<?, ?, ?> brief = getModelObject().getBrief();
+		var tegenhoudenContainer = new WebMarkupContainer("tegenhoudenContainer");
+		var mogelijk = new WebMarkupContainer("mogelijk");
+		var brief = getModelObject().getBrief();
 
 		GebeurtenisUtil.voegBriefTypeOfNaamBriefToe(mogelijk, brief);
 
 		mogelijk.add(DateLabel.forDatePattern("brief.creatieDatum", Model.of(brief.getCreatieDatum()), Constants.DEFAULT_DATE_FORMAT));
-		boolean tegenhoudenMogelijk = BriefUtil.isTegenhoudenMogelijk(brief);
+		var tegenhoudenMogelijk = BriefUtil.isTegenhoudenMogelijk(brief);
 		mogelijk.add(new WebMarkupContainer("nietMeer").setVisible(BriefUtil.isGegenereerd(brief) || !tegenhoudenMogelijk));
 		IndicatingAjaxLink<Void> tegenhoudenLink = new IndicatingAjaxLink<>("tegenhouden")
 		{
@@ -118,7 +117,7 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				ScreeningRondeGebeurtenis screeningRondeGebeurtenis = BriefKlaargezetPanel.this.getModelObject();
+				var screeningRondeGebeurtenis = BriefKlaargezetPanel.this.getModelObject();
 				screeningRondeGebeurtenis.setGebeurtenis(TypeGebeurtenis.BRIEF_TEGENHOUDEN);
 				baseBriefService.briefNietMeerTegenhouden(BriefKlaargezetPanel.this.getModelObject().getBrief(), ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.briefactiveren"));
@@ -128,7 +127,7 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 		mogelijk.setVisible(BriefUtil.isNietGegenereerdEnNietVervangen(brief) && tegenhoudenMogelijk);
 		tegenhoudenContainer.add(mogelijk);
 
-		WebMarkupContainer nietmogelijk = new WebMarkupContainer("nietMogelijk");
+		var nietmogelijk = new WebMarkupContainer("nietMogelijk");
 
 		nietmogelijk.setVisible(BriefUtil.isGegenereerd(brief) || !tegenhoudenMogelijk);
 		tegenhoudenContainer.add(nietmogelijk);
@@ -138,7 +137,7 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 
 	private void verversTegenhouden(AjaxRequestTarget target)
 	{
-		WebMarkupContainer nieuw = maakBriefTegenhoudenContent();
+		var nieuw = maakBriefTegenhoudenContent();
 		tegenhoudenContainer.replaceWith(nieuw);
 		tegenhoudenContainer = nieuw;
 		target.add(tegenhoudenContainer);

@@ -81,7 +81,7 @@ public class TijdelijkAdres extends Adres
 	@Override
 	public String toString()
 	{
-		StringBuilder stringbuilder = new StringBuilder();
+		var stringbuilder = new StringBuilder();
 		stringbuilder.append("ID: ");
 		stringbuilder.append(this.getId());
 		stringbuilder.append(", StartDatum: ");

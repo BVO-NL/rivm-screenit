@@ -72,7 +72,7 @@ public class MedewerkerMenuItem implements Serializable, IMenuItem
 	{
 		if (targetPageClass != null)
 		{
-			for (Class<? extends MedewerkerBasePage> pageclass : targetPageClass)
+			for (var pageclass : targetPageClass)
 			{
 				if (Session.get().getAuthorizationStrategy().isInstantiationAuthorized(pageclass))
 				{
@@ -112,7 +112,7 @@ public class MedewerkerMenuItem implements Serializable, IMenuItem
 		}
 		else
 		{
-			MedewerkerMenuItem contextMenuItem = getEerstBeschikbareSubMenuItem(hoofdMenuItem);
+			var contextMenuItem = getEerstBeschikbareSubMenuItem(hoofdMenuItem);
 			if (contextMenuItem != null)
 			{
 				targetPageClass = contextMenuItem.getTargetPageClass();
@@ -125,7 +125,7 @@ public class MedewerkerMenuItem implements Serializable, IMenuItem
 	{
 		if (CollectionUtils.isNotEmpty(hoofdMenuItem.getSubMenuItems()))
 		{
-			for (IMenuItem contextMenuItem : hoofdMenuItem.getSubMenuItems())
+			for (var contextMenuItem : hoofdMenuItem.getSubMenuItems())
 			{
 				if (contextMenuItem instanceof MedewerkerMenuItem medewerkerMenuItem)
 				{

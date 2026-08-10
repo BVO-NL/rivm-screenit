@@ -28,10 +28,9 @@ import java.util.stream.Collectors;
 
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixDossier;
-import nl.rivm.screenit.model.cervix.cis.CervixCISHistorie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-
 import nl.rivm.screenit.service.RondeNummerService;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +45,7 @@ public class RondeNummerServiceImpl implements RondeNummerService
 	{
 		List<SR> rondes = new ArrayList<SR>((List<SR>) huidigeRonde.getDossier().getScreeningRondes());
 		rondes = rondes.stream().sorted(Comparator.comparing(SR::getCreatieDatum)).collect(Collectors.toList());
-		for (int i = 1; i < rondes.size(); i++)
+		for (var i = 1; i < rondes.size(); i++)
 		{
 			if (huidigeRonde.equals(rondes.get(i)))
 			{
@@ -65,8 +64,8 @@ public class RondeNummerServiceImpl implements RondeNummerService
 		ScreeningRonde ronde0 = null;
 		if (ronde.getBevolkingsonderzoek().equals(Bevolkingsonderzoek.CERVIX))
 		{
-			CervixDossier cervixDossier = (CervixDossier) ronde.getDossier();
-			CervixCISHistorie cisHistorie = cervixDossier.getCisHistorie();
+			var cervixDossier = (CervixDossier) ronde.getDossier();
+			var cisHistorie = cervixDossier.getCisHistorie();
 			if (cisHistorie != null)
 			{
 				ronde0 = cisHistorie.getScreeningRonde();
@@ -77,9 +76,9 @@ public class RondeNummerServiceImpl implements RondeNummerService
 			}
 		}
 
-		for (int i = 0; i < rondes.size(); i++)
+		for (var i = 0; i < rondes.size(); i++)
 		{
-			ScreeningRonde screeningRonde = rondes.get(i);
+			var screeningRonde = rondes.get(i);
 			if (screeningRonde.equals(ronde) && ronde0 == null)
 			{
 				return i + 1;

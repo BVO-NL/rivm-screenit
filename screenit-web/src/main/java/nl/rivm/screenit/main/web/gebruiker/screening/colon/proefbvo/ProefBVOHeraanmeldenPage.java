@@ -34,7 +34,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.IModel;
@@ -64,7 +63,7 @@ public class ProefBVOHeraanmeldenPage extends ProefBVOPage
 
 		final IModel<List<FileUpload>> clientenBestanden = new ListModel<>();
 
-		FormComponent<List<FileUpload>> clientenBestand = new FileUploadField("clientenBestand", clientenBestanden)
+		var clientenBestand = new FileUploadField("clientenBestand", clientenBestanden)
 			.add(new FileValidator(FileType.CSV));
 		form.add(clientenBestand);
 		clientenBestand.setRequired(true);
@@ -73,15 +72,15 @@ public class ProefBVOHeraanmeldenPage extends ProefBVOPage
 
 		final IModel<List<FileUpload>> heraanmeldBrieven = new ListModel<>();
 
-		FormComponent<List<FileUpload>> heraanmeldBrief = new FileUploadField("heraanmeldBrief", heraanmeldBrieven)
+		var heraanmeldBrief = new FileUploadField("heraanmeldBrief", heraanmeldBrieven)
 			.add(new FileValidator(FileType.PDF));
 		form.add(heraanmeldBrief.setRequired(true).setOutputMarkupId(true));
 		heraanmeldBrief.setRequired(true);
 		heraanmeldBrief.setOutputMarkupId(true);
 		heraanmeldBrief.setLabel(Model.of("Heraanmeldbrief"));
 
-		final Model<String> meldingenModel = new Model<String>("");
-		final MultiLineLabel meldingen = new MultiLineLabel("meldingen", meldingenModel);
+		final var meldingenModel = new Model<String>("");
+		final var meldingen = new MultiLineLabel("meldingen", meldingenModel);
 		meldingen.setEscapeModelStrings(false);
 		meldingen.setOutputMarkupId(true);
 		form.add(meldingen);
@@ -96,11 +95,11 @@ public class ProefBVOHeraanmeldenPage extends ProefBVOPage
 				if (clientenBestanden.getObject().size() == 1)
 				{
 
-					FileUpload clientenBestandFileUpload = clientenBestanden.getObject().get(0);
+					var clientenBestandFileUpload = clientenBestanden.getObject().get(0);
 					if (heraanmeldBrieven.getObject().size() == 1)
 					{
 
-						FileUpload heraanmeldBriefFileUpload = heraanmeldBrieven.getObject().get(0);
+						var heraanmeldBriefFileUpload = heraanmeldBrieven.getObject().get(0);
 						try
 						{
 

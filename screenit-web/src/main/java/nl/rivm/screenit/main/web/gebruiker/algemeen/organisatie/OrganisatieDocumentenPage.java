@@ -77,14 +77,14 @@ public class OrganisatieDocumentenPage extends OrganisatieBeheer
 	public OrganisatieDocumentenPage()
 	{
 
-		Organisatie organisatie = getCurrentSelectedOrganisatie();
+		var organisatie = getCurrentSelectedOrganisatie();
 		organisatieModel = ModelUtil.sModel(organisatie);
 		add(new OrganisatiePaspoortPanel("paspoort", organisatieModel));
 
-		Form<Void> form = new Form<>("form");
+		var form = new Form<Void>("form");
 		add(form);
 
-		final WebMarkupContainer documentenContainer = new WebMarkupContainer("documentenContainer");
+		final var documentenContainer = new WebMarkupContainer("documentenContainer");
 		documentenContainer.setOutputMarkupId(true);
 		form.add(documentenContainer);
 
@@ -123,7 +123,7 @@ public class OrganisatieDocumentenPage extends OrganisatieBeheer
 
 		});
 
-		AjaxSubmitLink toevoegen = new AjaxSubmitLink("documentToevoegen")
+		var toevoegen = new AjaxSubmitLink("documentToevoegen")
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -131,7 +131,7 @@ public class OrganisatieDocumentenPage extends OrganisatieBeheer
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				UploadDocument nieuwDocument = new UploadDocument();
+				var nieuwDocument = new UploadDocument();
 				addDocumentDialog.openWith(target, new OrganisatieDocumentPopupPanel(IDialog.CONTENT_ID, ModelUtil.cModel(nieuwDocument), organisatieModel, documentenContainer)
 				{
 

@@ -35,12 +35,10 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
-import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.util.EntityAuditUtil;
 import nl.rivm.screenit.util.NaamUtil;
-import org.hibernate.Hibernate;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -52,6 +50,7 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 
 public abstract class CeRadioloogZoekPanel extends GenericPanel<MammaBeoordeling>
 {
@@ -84,10 +83,10 @@ public abstract class CeRadioloogZoekPanel extends GenericPanel<MammaBeoordeling
 
 	private void createHistoryList()
 	{
-		RepeatingView repeatingView = new RepeatingView("historyRepeater");
+		var repeatingView = new RepeatingView("historyRepeater");
 		if (getModelObject().getVerslagLezing() != null)
 		{
-			MammaLezing verslagLezing = baseBeoordelingService.getOrineleVerslagLezing(getModelObject());
+			var verslagLezing = baseBeoordelingService.getOrineleVerslagLezing(getModelObject());
 			if (verslagLezing != null)
 			{
 				repeatingView.add(
@@ -95,7 +94,7 @@ public abstract class CeRadioloogZoekPanel extends GenericPanel<MammaBeoordeling
 						NaamUtil.getNaamMedewerker(verslagLezing.getBeoordelaar().getMedewerker())));
 			}
 		}
-		List<Object[]> beoordelingen = beoordelingService.beoordelingGeschiedenis(getModelObject());
+		var beoordelingen = beoordelingService.beoordelingGeschiedenis(getModelObject());
 		repeatingView.setVisible(false);
 		beoordelingen.stream()
 			.map(beoordelingRev -> (MammaBeoordeling) EntityAuditUtil.getRevisionEntity(beoordelingRev))
@@ -112,10 +111,10 @@ public abstract class CeRadioloogZoekPanel extends GenericPanel<MammaBeoordeling
 	protected void createMedewerkerLijst()
 	{
 		medewerkerLijstWrapper = new WebMarkupContainer("medewerkerLijstWrapper");
-		RepeatingView medewerkerLijst = new RepeatingView("medewerkerlijst");
-		for (OrganisatieMedewerker organisatieMedewerker : getRadiologen())
+		var medewerkerLijst = new RepeatingView("medewerkerlijst");
+		for (var organisatieMedewerker : getRadiologen())
 		{
-			WebMarkupContainer row = new WebMarkupContainer(medewerkerLijst.newChildId());
+			var row = new WebMarkupContainer(medewerkerLijst.newChildId());
 			if (selectedOrganisatieMedewerkerModel == null && getModelObject().getToegewezenOrganisatieMedewerker() != null && getModelObject().getToegewezenOrganisatieMedewerker()
 				.getId()
 				.equals(organisatieMedewerker.getId())

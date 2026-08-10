@@ -31,7 +31,6 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
-import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixLabformulierStatus;
 import nl.rivm.screenit.model.cervix.enums.CervixUitstrijkjeStatus;
 import nl.rivm.screenit.model.cervix.enums.signaleringen.CervixLabformulierSignalering;
@@ -46,7 +45,6 @@ import nl.rivm.screenit.service.cervix.CervixLabformulierService;
 import nl.rivm.screenit.service.cervix.CervixMailService;
 import nl.rivm.screenit.service.cervix.CervixVervolgService;
 import nl.rivm.screenit.service.cervix.enums.CervixVervolgTekst;
-import nl.rivm.screenit.service.cervix.impl.CervixVervolg;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.NaamUtil;
@@ -66,7 +64,6 @@ import org.apache.wicket.markup.html.form.CheckBoxMultipleChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -76,7 +73,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.hibernate.Hibernate;
-import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
 import static nl.rivm.screenit.model.cervix.enums.signaleringen.CervixLabformulierSignalering.AFNAMEDATUM_NIET_OF_VERKEERD_OVERGENOMEN_IN_SCREENIT;
 
@@ -128,7 +124,7 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 
 		saveLabformulier(true);
 
-		CervixLabformulier labformulier = getModelObject();
+		var labformulier = getModelObject();
 
 		if (labformulier.getDigitaal())
 		{
@@ -147,16 +143,16 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 			add(new CervixLabformulierPanel("labformulier", getModelObject().getObjid()));
 		}
 
-		Form<CervixLabformulier> form = new Form<>("form", getModel());
+		var form = new Form<CervixLabformulier>("form", getModel());
 		add(form);
 
-		boolean magAanpassen = ScreenitSession.get().checkPermission(getRecht(), Actie.AANPASSEN);
+		var magAanpassen = ScreenitSession.get().checkPermission(getRecht(), Actie.AANPASSEN);
 
 		ComponentHelper.addTextField(form, "barcode", false, 12, Integer.class, !getMonsterIdEnabled() || !magAanpassen);
 
-		WebMarkupContainer monsterstatusContainer = new WebMarkupContainer("monsterstatusContainer");
+		var monsterstatusContainer = new WebMarkupContainer("monsterstatusContainer");
 		form.add(monsterstatusContainer);
-		EnumLabel<CervixUitstrijkjeStatus> monsterstatus = new EnumLabel<>("uitstrijkje.uitstrijkjeStatus");
+		var monsterstatus = new EnumLabel<CervixUitstrijkjeStatus>("uitstrijkje.uitstrijkjeStatus");
 		monsterstatus.setOutputMarkupId(true);
 		monsterstatusContainer.add(monsterstatus);
 		if (highlightMonsterstatus(labformulier))
@@ -164,29 +160,29 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 			monsterstatusContainer.add(new AttributeAppender("class", new Model<>("highlight"), " "));
 		}
 
-		Client client = getClient();
+		var client = getClient();
 		clientNaamModel = new Model<>(NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client));
 
-		Label naam = new Label("clientNaam", clientNaamModel);
+		var naam = new Label("clientNaam", clientNaamModel);
 		naam.setOutputMarkupId(true);
 		form.add(naam);
-		Label bsn = new Label("uitstrijkje.uitnodiging.screeningRonde.dossier.client.persoon.bsn");
+		var bsn = new Label("uitstrijkje.uitnodiging.screeningRonde.dossier.client.persoon.bsn");
 		bsn.setOutputMarkupId(true);
 		form.add(bsn);
-		Label geboortedatum = new Label("uitstrijkje.uitnodiging.screeningRonde.dossier.client.persoon.geboortedatum", DateUtil.getGeboortedatum(client));
+		var geboortedatum = new Label("uitstrijkje.uitnodiging.screeningRonde.dossier.client.persoon.geboortedatum", DateUtil.getGeboortedatum(client));
 		geboortedatum.setOutputMarkupId(true);
 		form.add(geboortedatum);
-		Label screeningOrganisatie = new Label("uitstrijkje.uitnodiging.screeningRonde.dossier.client.persoon.gbaAdres.gbaGemeente.screeningOrganisatie.naam");
+		var screeningOrganisatie = new Label("uitstrijkje.uitnodiging.screeningRonde.dossier.client.persoon.gbaAdres.gbaGemeente.screeningOrganisatie.naam");
 		screeningOrganisatie.setOutputMarkupId(true);
 		form.add(screeningOrganisatie);
 
-		WebMarkupContainer datumUitstrijkjeContainer = new WebMarkupContainer("datumUitstrijkjeContainer");
+		var datumUitstrijkjeContainer = new WebMarkupContainer("datumUitstrijkjeContainer");
 		datumUitstrijkjeContainer.setVisible(getDatumUitstrijkjeVisible() && !labformulier.getKunstmatig());
 		form.add(datumUitstrijkjeContainer);
-		DatePicker<Date> datumUitstrijkje = ComponentHelper.newDatePicker("datumUitstrijkje", magAanpassen);
+		var datumUitstrijkje = ComponentHelper.newDatePicker("datumUitstrijkje", magAanpassen);
 		datumUitstrijkjeContainer.add(datumUitstrijkje);
 
-		WebMarkupContainer medischeGegevensContainer = new WebMarkupContainer("medischeGegevensContainer");
+		var medischeGegevensContainer = new WebMarkupContainer("medischeGegevensContainer");
 		medischeGegevensContainer.setVisible(getMedischeGegevensVisible() && !labformulier.getKunstmatig());
 		form.add(medischeGegevensContainer);
 		medischeGegevensContainer.add(ComponentHelper.newCheckBox("klachtenGeen", magAanpassen));
@@ -228,14 +224,14 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 		labformulierStatusContainer.setOutputMarkupId(true);
 		form.add(labformulierStatusContainer);
 
-		ScreenitDropdown<CervixLabformulierStatus> labformulierStatus = new ScreenitDropdown<>("status", mogelijkeStatussen(), new EnumChoiceRenderer<>());
+		var labformulierStatus = new ScreenitDropdown<CervixLabformulierStatus>("status", mogelijkeStatussen(), new EnumChoiceRenderer<>());
 		labformulierStatus.setEnabled(magAanpassen);
 		labformulierStatusContainer.add(labformulierStatus);
 
-		WebMarkupContainer labformulierSignaleringenContainer = new WebMarkupContainer("labformulierSignaleringenContainer");
+		var labformulierSignaleringenContainer = new WebMarkupContainer("labformulierSignaleringenContainer");
 		form.add(labformulierSignaleringenContainer);
 
-		CheckBoxMultipleChoice<CervixLabformulierSignalering> labformulierSignaleringen = new CheckBoxMultipleChoice<>("signaleringen",
+		var labformulierSignaleringen = new CheckBoxMultipleChoice<CervixLabformulierSignalering>("signaleringen",
 			CervixLabformulierSignalering.getMogelijkeSignaleringen(),
 			new EnumChoiceRenderer<CervixLabformulierSignalering>()
 			{
@@ -249,11 +245,11 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 		labformulierSignaleringen.setLabelPosition(AbstractChoice.LabelPosition.WRAP_AFTER);
 		labformulierSignaleringenContainer.add(labformulierSignaleringen);
 
-		TextField<String> overigeLabformulierSignalering = ComponentHelper.newTextField("overigeLabformulierSignalering", 255, false);
+		var overigeLabformulierSignalering = ComponentHelper.newTextField("overigeLabformulierSignalering", 255, false);
 		labformulierSignaleringenContainer.add(overigeLabformulierSignalering);
 		labformulierSignaleringenContainer.setVisible(getSignaleringenEnabled());
 
-		Integer current = current();
+		var current = current();
 		Link<Void> vorige = new Link<>("vorige")
 		{
 			@Override
@@ -323,7 +319,7 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 
 	private TextArea<String> textArea(String id, boolean magAanpassen)
 	{
-		TextArea<String> area = new TextArea<>(id);
+		var area = new TextArea<String>(id);
 		area.add(StringValidator.maximumLength(240));
 		area.setEnabled(magAanpassen);
 		return area;
@@ -331,11 +327,11 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 
 	private WebMarkupContainer getHuisartsContainer(boolean magAanpassen)
 	{
-		CervixLabformulier labformulier = getModelObject();
+		var labformulier = getModelObject();
 		WebMarkupContainer newHuisartsContainer;
 		if (!magHuisartsWijzigen() || !magAanpassen || labformulier.getHuisartsLocatie() != null)
 		{
-			CompoundPropertyModel<CervixHuisartsLocatie> huisartsLocatieModel = new CompoundPropertyModel<>(
+			var huisartsLocatieModel = new CompoundPropertyModel<CervixHuisartsLocatie>(
 				new PropertyModel<>(CervixLabformulierBasePanel.this.getModel(), "huisartsLocatie"));
 
 			newHuisartsContainer = new CervixHuisartsLocatiePanel("huisartsLocatieContainer", huisartsLocatieModel, magAanpassen && magHuisartsWijzigen())
@@ -375,8 +371,8 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 
 	private void replaceHuisartsLocatie(AjaxRequestTarget target, CervixHuisartsLocatie huisartsLocatie)
 	{
-		CervixLabformulier labformulier = CervixLabformulierBasePanel.this.getModelObject();
-		CervixVervolg vervolg = vervolgService.bepaalVervolg(labformulier.getUitstrijkje(), null);
+		var labformulier = CervixLabformulierBasePanel.this.getModelObject();
+		var vervolg = vervolgService.bepaalVervolg(labformulier.getUitstrijkje(), null);
 		if (CervixLabformulierStatus.HUISARTS_ONBEKEND.equals(labformulier.getStatus()) && labformulier.getHuisartsLocatie() == null && huisartsLocatie != null
 			&& vervolg.getVervolgTekst() != null
 			&& CervixVervolgTekst.UITSTRIJKJE_HPV_POSITIEF_NAAR_CYTOLOGIE.getCssClass().equals(vervolg.getVervolgTekst().getCssClass()))
@@ -385,7 +381,7 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 		}
 		labformulier.setHuisartsLocatie(huisartsLocatie);
 		saveLabformulier(false);
-		WebMarkupContainer huisartsContainer = getHuisartsContainer(true);
+		var huisartsContainer = getHuisartsContainer(true);
 		CervixLabformulierBasePanel.this.huisartsContainer.replaceWith(huisartsContainer);
 		CervixLabformulierBasePanel.this.huisartsContainer = huisartsContainer;
 
@@ -416,7 +412,7 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 
 	private Client getClient()
 	{
-		CervixUitstrijkje uitstrijkje = getModelObject().getUitstrijkje();
+		var uitstrijkje = getModelObject().getUitstrijkje();
 		if (uitstrijkje != null)
 		{
 			return uitstrijkje.getUitnodiging().getScreeningRonde().getDossier().getClient();
@@ -428,12 +424,12 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 	{
 		if (ScreenitSession.get().checkPermission(getRecht(), Actie.AANPASSEN))
 		{
-			CervixLabformulier labformulier = getModelObject();
-			boolean gebruikerStatusNietAangepast = labformulier.getStatus().equals(vorigeStatus);
+			var labformulier = getModelObject();
+			var gebruikerStatusNietAangepast = labformulier.getStatus().equals(vorigeStatus);
 			try
 			{
 
-				boolean verzetStatus = getVanStatus() != null && getVanStatus() == labformulier.getStatus() && gebruikerStatusNietAangepast;
+				var verzetStatus = getVanStatus() != null && getVanStatus() == labformulier.getStatus() && gebruikerStatusNietAangepast;
 				if (verzetStatus)
 				{
 					labformulier.setStatus(getNaarStatus());
@@ -445,7 +441,7 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 					labformulierService.valideerLabformulier(labformulier);
 
 					labformulier = (CervixLabformulier) Hibernate.unproxy(labformulier);
-					String diff = labformulierService.koppelEnBewaarLabformulier(labformulier);
+					var diff = labformulierService.koppelEnBewaarLabformulier(labformulier);
 					setModel(ModelUtil.ccModel(labformulier));
 
 					logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIER_OPGESLAGEN, ScreenitSession.get().getIngelogdAccount(), getClient(),
@@ -464,7 +460,7 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 					labformulier.setStatusDatum(dateSupplier.getDate());
 					try
 					{
-						String diff = labformulierService.koppelEnBewaarLabformulier(labformulier);
+						var diff = labformulierService.koppelEnBewaarLabformulier(labformulier);
 						logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIER_OPGESLAGEN, ScreenitSession.get().getIngelogdAccount(), getClient(),
 							String.format("%s - %s %s %s", getString("titel"), getString(EnumStringUtil.getPropertyString(labformulier.getStatus())), getSignaleringen(), diff),
 							Bevolkingsonderzoek.CERVIX);
@@ -481,7 +477,7 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 
 	private String getSignaleringen()
 	{
-		List<CervixLabformulierSignalering> signaleringen = getModelObject().getSignaleringen();
+		var signaleringen = getModelObject().getSignaleringen();
 		if (CollectionUtils.isNotEmpty(signaleringen))
 		{
 			return " (signaleringen: " + StringUtils.join(signaleringen.stream().map(CervixLabformulierSignalering::getBeschrijving).collect(Collectors.toList()), ", ") + ")";
@@ -497,7 +493,7 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 
 	private List<CervixLabformulierStatus> mogelijkeStatussen()
 	{
-		List<CervixLabformulierStatus> mogelijkeStatussen = permissiesVoorStatussen();
+		var mogelijkeStatussen = permissiesVoorStatussen();
 		if (!mogelijkeStatussen.contains(getModelObject().getStatus()))
 		{
 			mogelijkeStatussen.add(getModelObject().getStatus());
@@ -507,7 +503,7 @@ public abstract class CervixLabformulierBasePanel extends GenericPanel<CervixLab
 
 	private Integer current()
 	{
-		for (int i = 0; i < labformulierenIds.size(); i++)
+		for (var i = 0; i < labformulierenIds.size(); i++)
 		{
 			if (labformulierenIds.get(i).equals(getModelObject().getId()))
 			{

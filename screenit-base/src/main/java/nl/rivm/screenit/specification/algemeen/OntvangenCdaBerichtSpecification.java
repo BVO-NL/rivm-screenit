@@ -102,12 +102,12 @@ public class OntvangenCdaBerichtSpecification
 	{
 		return (r, q, cb) ->
 		{
-			boolean mdl = Boolean.TRUE.equals(filter.getMdlBerichten());
-			boolean pa = Boolean.TRUE.equals(filter.getPaLabBerichten());
-			boolean cyto = Boolean.TRUE.equals(filter.getCytologieBerichten());
-			boolean followUp = Boolean.TRUE.equals(filter.getFollowUpBerichten());
-			boolean colon = mdl || pa;
-			boolean geenBerichtType = !(mdl || pa || cyto || followUp);
+			var mdl = Boolean.TRUE.equals(filter.getMdlBerichten());
+			var pa = Boolean.TRUE.equals(filter.getPaLabBerichten());
+			var cyto = Boolean.TRUE.equals(filter.getCytologieBerichten());
+			var followUp = Boolean.TRUE.equals(filter.getFollowUpBerichten());
+			var colon = mdl || pa;
+			var geenBerichtType = !(mdl || pa || cyto || followUp);
 
 			var predicates = new ArrayList<Predicate>();
 			if (geenBerichtType)

@@ -35,7 +35,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoor
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaBeTabelCounterPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MammaOnderzoekMiniWerklijstDataProvider;
 import nl.rivm.screenit.model.OrganisatieType;
-import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaFotobesprekingOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
 import nl.rivm.screenit.service.HibernateService;
@@ -61,7 +60,7 @@ public class MammaFotobesprekingMiniWerklijstPanel extends Panel
 	{
 		super(id);
 
-		MammaOnderzoekMiniWerklijstDataProvider<MammaFotobesprekingOnderzoek> miniWerklijstDataProvider = new MammaOnderzoekMiniWerklijstDataProvider<>(huidigeBeoordelingId,
+		var miniWerklijstDataProvider = new MammaOnderzoekMiniWerklijstDataProvider<MammaFotobesprekingOnderzoek>(huidigeBeoordelingId,
 			beoordelingenIds, MammaFotobesprekingOnderzoek.class);
 
 		List<IColumn<MammaFotobesprekingOnderzoek, String>> columns = new ArrayList<>();
@@ -83,8 +82,8 @@ public class MammaFotobesprekingMiniWerklijstPanel extends Panel
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<MammaFotobesprekingOnderzoek> model)
 			{
-				MammaFotobesprekingOnderzoek onderzoek = model.getObject();
-				MammaBeoordeling beoordeling = onderzoek.getBeoordeling();
+				var onderzoek = model.getObject();
+				var beoordeling = onderzoek.getBeoordeling();
 				parent.gaNaarBeoordeling(beoordeling.getId(), target);
 			}
 
@@ -93,7 +92,7 @@ public class MammaFotobesprekingMiniWerklijstPanel extends Panel
 			{
 				if (getDataProvider() instanceof MammaOnderzoekMiniWerklijstDataProvider)
 				{
-					int openVerslag = ((MammaOnderzoekMiniWerklijstDataProvider) getDataProvider()).getOpenVerslag();
+					var openVerslag = ((MammaOnderzoekMiniWerklijstDataProvider) getDataProvider()).getOpenVerslag();
 
 					if (index == openVerslag)
 					{
@@ -106,17 +105,17 @@ public class MammaFotobesprekingMiniWerklijstPanel extends Panel
 			@Override
 			public Panel getCustomPanel(String id)
 			{
-				IModel<Integer> besprokenModel = new IModel<Integer>()
+				var besprokenModel = new IModel<Integer>()
 				{
 					@Override
 					public Integer getObject()
 					{
-						MammaFotobesprekingOnderzoek fotobesprekingOnderzoek = hibernateService.load(MammaFotobesprekingOnderzoek.class, huidigeBeoordelingId);
+						var fotobesprekingOnderzoek = hibernateService.load(MammaFotobesprekingOnderzoek.class, huidigeBeoordelingId);
 						return (int) fotobesprekingService.getAantalBesproken(fotobesprekingOnderzoek.getFotobespreking());
 					}
 				};
 
-				IModel<Integer> teBesprokenModel = new IModel<Integer>()
+				var teBesprokenModel = new IModel<Integer>()
 				{
 					@Override
 					public Integer getObject()

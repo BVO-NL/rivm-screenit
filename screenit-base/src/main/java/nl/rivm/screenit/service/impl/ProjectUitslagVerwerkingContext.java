@@ -119,13 +119,13 @@ public class ProjectUitslagVerwerkingContext
 
 	private void bepaalVolgordeHeader()
 	{
-		List<String> headers = getHuidigeRegel();
+		var headers = getHuidigeRegel();
 		if (CollectionUtils.isNotEmpty(headers))
 		{
-			for (String header : headers)
+			for (var header : headers)
 			{
 
-				String geformatteerdeHeader = header.toLowerCase().trim();
+				var geformatteerdeHeader = header.toLowerCase().trim();
 				if (BARCODE.equals(geformatteerdeHeader))
 				{
 					barcodeColumn = headers.indexOf(header);

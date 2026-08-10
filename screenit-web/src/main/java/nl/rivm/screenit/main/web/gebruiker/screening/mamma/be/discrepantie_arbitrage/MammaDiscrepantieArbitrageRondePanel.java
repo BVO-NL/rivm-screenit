@@ -80,7 +80,7 @@ public class MammaDiscrepantieArbitrageRondePanel extends AbstractMammaRondePane
 	private void createMBBerPanel(WebMarkupContainer panelContainer)
 	{
 		IModel<MammaOnderzoek> onderzoekModel = new CompoundPropertyModel<>(new PropertyModel<>(getModel(), "onderzoek"));
-		MammaMBBBeoordelingPanel mammaMBBBeoordelingPanel = new MammaMBBBeoordelingPanel("mbberBevindingenPanel", onderzoekModel, true);
+		var mammaMBBBeoordelingPanel = new MammaMBBBeoordelingPanel("mbberBevindingenPanel", onderzoekModel, true);
 
 		panelContainer.add(mammaMBBBeoordelingPanel);
 	}
@@ -88,7 +88,7 @@ public class MammaDiscrepantieArbitrageRondePanel extends AbstractMammaRondePane
 	private void createVisueleInspectiePanel(WebMarkupContainer panelContainer)
 	{
 		IModel<MammaOnderzoek> onderzoekModel = new CompoundPropertyModel<>(new PropertyModel<>(getModel(), "onderzoek"));
-		MammaVisueleInspectiePanel visueleInspectiePanel = new MammaVisueleInspectiePanel("visueleInspectiePanel", onderzoekModel);
+		var visueleInspectiePanel = new MammaVisueleInspectiePanel("visueleInspectiePanel", onderzoekModel);
 		panelContainer.add(visueleInspectiePanel);
 	}
 
@@ -107,7 +107,7 @@ public class MammaDiscrepantieArbitrageRondePanel extends AbstractMammaRondePane
 
 	private void koppelNieuweLaesiesAanLezing(MammaLezing lezing, List<LaesieDto> laesieDtos)
 	{
-		LaesieDtoMapper mapper = new LaesieDtoMapper();
+		var mapper = new LaesieDtoMapper();
 		mapper.koppelNieuweLaesiesAanLezing(mapper.laesieDtosToMammaLaesies(laesieDtos), lezing);
 	}
 

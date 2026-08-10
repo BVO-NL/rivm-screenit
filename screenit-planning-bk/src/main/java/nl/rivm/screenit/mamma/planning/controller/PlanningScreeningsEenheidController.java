@@ -29,7 +29,6 @@ import nl.rivm.screenit.dto.mamma.planning.PlanningScreeningsEenheidMetaDataDto;
 import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsEenheidIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsOrganisatieIndex;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
-import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsOrganisatie;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -67,7 +66,7 @@ public class PlanningScreeningsEenheidController
 	@DeleteMapping("/{screeningsEenheidId}")
 	public void delete(@PathVariable Long screeningsEenheidId)
 	{
-		PlanningScreeningsEenheid knownScreeningsEenheid = PlanningScreeningsEenheidIndex.get(screeningsEenheidId);
+		var knownScreeningsEenheid = PlanningScreeningsEenheidIndex.get(screeningsEenheidId);
 		if (knownScreeningsEenheid != null)
 		{
 			knownScreeningsEenheid.getScreeningsOrganisatie().getScreeningsEenheidSet().remove(knownScreeningsEenheid);
@@ -78,8 +77,8 @@ public class PlanningScreeningsEenheidController
 
 	private void addOrChangeScreeningsEenheid(PlanningScreeningsEenheidDto screeningsEenheidDto)
 	{
-		PlanningScreeningsOrganisatie screeningsOrganisatie = PlanningScreeningsOrganisatieIndex.get(screeningsEenheidDto.screeningsOrganisatieId);
-		PlanningScreeningsEenheid knownScreeningsEenheid = PlanningScreeningsEenheidIndex.get(screeningsEenheidDto.id);
+		var screeningsOrganisatie = PlanningScreeningsOrganisatieIndex.get(screeningsEenheidDto.screeningsOrganisatieId);
+		var knownScreeningsEenheid = PlanningScreeningsEenheidIndex.get(screeningsEenheidDto.id);
 		if (knownScreeningsEenheid == null)
 		{
 			knownScreeningsEenheid = new PlanningScreeningsEenheid(screeningsEenheidDto.id, null, null, null, dateSupplier.getLocalDate().with(DayOfWeek.MONDAY));

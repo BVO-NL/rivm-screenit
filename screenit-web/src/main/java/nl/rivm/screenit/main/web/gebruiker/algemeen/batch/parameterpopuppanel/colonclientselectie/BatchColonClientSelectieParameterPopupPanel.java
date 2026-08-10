@@ -28,7 +28,6 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.batch.parameterpopuppanel.Ab
 import nl.rivm.screenit.model.enums.JobStartParameter;
 
 import org.apache.wicket.markup.html.basic.EnumLabel;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.Model;
 
 public class BatchColonClientSelectieParameterPopupPanel extends AbstractParameterPopupPanel<Boolean>
@@ -38,7 +37,7 @@ public class BatchColonClientSelectieParameterPopupPanel extends AbstractParamet
 		super(id, Model.of(Boolean.FALSE));
 
 		add(new EnumLabel<>("parameterOmschrijving", JobStartParameter.COLON_SELECTIE_HERSTART));
-		CheckBox checkBox = ComponentHelper.newCheckBox("checkbox", getModel());
+		var checkBox = ComponentHelper.newCheckBox("checkbox", getModel());
 		add(checkBox);
 	}
 

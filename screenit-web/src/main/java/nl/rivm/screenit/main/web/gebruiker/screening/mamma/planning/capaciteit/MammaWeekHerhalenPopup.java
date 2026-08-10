@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.service.mamma.MammaScreeningsEenheidService;
@@ -81,13 +80,13 @@ public abstract class MammaWeekHerhalenPopup extends GenericPanel<MammaScreening
 		confirmPopup.setOutputMarkupPlaceholderTag(true);
 		add(confirmPopup);
 
-		Label screeningsEenheidNaam = new Label("screeningsEenheidNaam", screeningEenheid.getObject().getNaam());
+		var screeningsEenheidNaam = new Label("screeningsEenheidNaam", screeningEenheid.getObject().getNaam());
 		add(screeningsEenheidNaam);
 
-		DateTimeFormatter endWeekPattern = DateTimeFormatter.ofPattern("dd MMM yyyy", Constants.LOCALE_NL);
+		var endWeekPattern = DateTimeFormatter.ofPattern("dd MMM yyyy", Constants.LOCALE_NL);
 
-		LocalDate eindHerhalingsWeek = herhalingsWeek.plusDays(6);
-		String startPattern = "dd";
+		var eindHerhalingsWeek = herhalingsWeek.plusDays(6);
+		var startPattern = "dd";
 		if (!herhalingsWeek.getMonth().equals(eindHerhalingsWeek.getMonth()))
 		{
 			startPattern += " MMM";
@@ -96,17 +95,17 @@ public abstract class MammaWeekHerhalenPopup extends GenericPanel<MammaScreening
 		{
 			startPattern += " yyyy";
 		}
-		DateTimeFormatter startWeekPattern = DateTimeFormatter.ofPattern(startPattern, Constants.LOCALE_NL);
+		var startWeekPattern = DateTimeFormatter.ofPattern(startPattern, Constants.LOCALE_NL);
 
-		String weekSpan = DateUtil.getWeekNr(herhalingsWeek) + ": " + startWeekPattern.format(herhalingsWeek) + " \u2014 " + endWeekPattern.format(eindHerhalingsWeek);
-		Label weekSpanLabel = new Label("weekSpan", weekSpan);
+		var weekSpan = DateUtil.getWeekNr(herhalingsWeek) + ": " + startWeekPattern.format(herhalingsWeek) + " \u2014 " + endWeekPattern.format(eindHerhalingsWeek);
+		var weekSpanLabel = new Label("weekSpan", weekSpan);
 		add(weekSpanLabel);
 
 		herhalenForm = new Form<>("herhalenForm", screeningEenheid);
 		herhalenForm.setOutputMarkupId(true);
 		add(herhalenForm);
 
-		ScreenitDropdown<MammaScreeningsEenheid> screeningsEenheidDropDown = new ScreenitDropdown<>("screeningsEenheid", new PropertyModel<>(this, "selectedScreeningEenheid"),
+		var screeningsEenheidDropDown = new ScreenitDropdown<MammaScreeningsEenheid>("screeningsEenheid", new PropertyModel<>(this, "selectedScreeningEenheid"),
 			ModelUtil.listRModel(screeningsEenheidService.getActieveScreeningsEenhedenVoorScreeningOrganisatie(ScreenitSession.get().getScreeningOrganisatie())),
 			new ChoiceRenderer<>("naam"));
 		screeningsEenheidDropDown.setRequired(true);
@@ -123,26 +122,26 @@ public abstract class MammaWeekHerhalenPopup extends GenericPanel<MammaScreening
 
 		addOrUpdateVanTotEnMet(null);
 
-		ConfirmingIndicatingAjaxSubmitLink<Void> opslaan = new ConfirmingIndicatingAjaxSubmitLink<Void>("opslaan", herhalenForm, confirmPopup, "overschrijven.popup")
+		var opslaan = new ConfirmingIndicatingAjaxSubmitLink<Void>("opslaan", herhalenForm, confirmPopup, "overschrijven.popup")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				LocalDate herhalenTotEnMetWeek = herhalenTotEnMetDatumDatePicker.getModelObject();
-				LocalDate herhalenVanafWeek = herhalenVanafDatumDatePicker.getModelObject();
+				var herhalenTotEnMetWeek = herhalenTotEnMetDatumDatePicker.getModelObject();
+				var herhalenVanafWeek = herhalenVanafDatumDatePicker.getModelObject();
 
 				if (herhalenTotEnMetWeek != null && herhalenVanafWeek != null && herhalenVanafWeek.isAfter(herhalenTotEnMetWeek))
 				{
 					error(getString("vanafNietNaTotEnMet"));
 					return;
 				}
-				MammaScreeningsEenheid selectedSe = getSelectedScreeningEenheid();
+				var selectedSe = getSelectedScreeningEenheid();
 				baseConceptPlanningsApplicatie.herhaalWeek(MammaWeekHerhalenPopup.this.getModelObject(), selectedSe, herhalingsWeek, herhalenVanafWeek, herhalenTotEnMetWeek,
 					ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
-				MammaScreeningsEenheid origSe = MammaWeekHerhalenPopup.this.getModelObject();
+				var origSe = MammaWeekHerhalenPopup.this.getModelObject();
 				if (!origSe.equals(selectedSe))
 				{
-					MammaSECapaciteitEditPage page = new MammaSECapaciteitEditPage(selectedSe, DateUtil.toUtilDate(herhalenVanafWeek));
+					var page = new MammaSECapaciteitEditPage(selectedSe, DateUtil.toUtilDate(herhalenVanafWeek));
 					page.successMelding(getString("herhalen.afgerond"));
 					setResponsePage(page);
 				}
@@ -161,13 +160,13 @@ public abstract class MammaWeekHerhalenPopup extends GenericPanel<MammaScreening
 
 	private void addOrUpdateVanTotEnMet(AjaxRequestTarget target)
 	{
-		LocalDate eersteDagNieuweWeek = herhalingsWeek.plusDays(7);
-		LocalDate vrijgegevenTotEnMet = DateUtil.toLocalDate(getSelectedScreeningEenheid().getVrijgegevenTotEnMet());
+		var eersteDagNieuweWeek = herhalingsWeek.plusDays(7);
+		var vrijgegevenTotEnMet = DateUtil.toLocalDate(getSelectedScreeningEenheid().getVrijgegevenTotEnMet());
 		if (vrijgegevenTotEnMet != null && vrijgegevenTotEnMet.isAfter(eersteDagNieuweWeek))
 		{
 			eersteDagNieuweWeek = vrijgegevenTotEnMet.plusWeeks(1).with(DayOfWeek.MONDAY);
 		}
-		Date uitersteHerhalenTotEnMet = DateUtil.toUtilDate(DateUtil.toLocalDate(baseConceptPlanningsApplicatie.getPlannenTotEnMetDatum()).minusWeeks(1));
+		var uitersteHerhalenTotEnMet = DateUtil.toUtilDate(DateUtil.toLocalDate(baseConceptPlanningsApplicatie.getPlannenTotEnMetDatum()).minusWeeks(1));
 
 		herhalenVanafDatumDatePicker = new WeekNumberDateField("herhalenVanafWeek", Model.of(eersteDagNieuweWeek), eersteDagNieuweWeek);
 		herhalenVanafDatumDatePicker.setOutputMarkupId(true);
@@ -181,7 +180,7 @@ public abstract class MammaWeekHerhalenPopup extends GenericPanel<MammaScreening
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				LocalDate weekVanaf = herhalenVanafDatumDatePicker.getModelObject();
+				var weekVanaf = herhalenVanafDatumDatePicker.getModelObject();
 				if (weekVanaf != null)
 				{
 					herhalenTotEnMetDatumDatePicker.setMinDate(new DateOption(DateUtil.toUtilDate(weekVanaf)));

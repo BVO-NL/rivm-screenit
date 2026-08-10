@@ -25,7 +25,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import nl.rivm.screenit.mamma.se.dto.SeStatusDto;
 import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidStatusService;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +44,7 @@ public class StatusController extends AuthorizedController
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity statusMelden(@RequestBody SeStatusDto statusDto, HttpServletRequest request)
 	{
-		MammaScreeningsEenheid screeningsEenheid = getScreeningsEenheid(request);
+		var screeningsEenheid = getScreeningsEenheid(request);
 		statusService.verwerkStatusBericht(screeningsEenheid, statusDto);
 		return ResponseEntity.ok().build();
 	}

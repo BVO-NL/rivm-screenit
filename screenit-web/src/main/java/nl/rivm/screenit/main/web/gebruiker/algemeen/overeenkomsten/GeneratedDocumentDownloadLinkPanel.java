@@ -21,9 +21,7 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.overeenkomsten;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +38,6 @@ import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.ContentDisposition;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-import com.aspose.words.Document;
 import com.aspose.words.OoxmlSaveOptions;
 import com.aspose.words.SaveFormat;
 
@@ -61,7 +58,7 @@ public class GeneratedDocumentDownloadLinkPanel extends Panel
 			@Override
 			protected ResourceResponse newResourceResponse(Attributes attributes)
 			{
-				ResourceResponse response = new ResourceResponse();
+				var response = new ResourceResponse();
 				response.setFileName(model.getObject().getCode().replace(" ", "_") + ".docx");
 				response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 				response.getHeaders().addHeader("Cache-Control", "no-cache");
@@ -72,12 +69,12 @@ public class GeneratedDocumentDownloadLinkPanel extends Panel
 					@Override
 					public void writeData(Attributes attributes)
 					{
-						try (OutputStream outputStream = attributes.getResponse().getOutputStream();)
+						try (var outputStream = attributes.getResponse().getOutputStream();)
 						{
-							File file = uploadDocumentService.load(model.getObject().getOvereenkomst().getDocument());
-							MailMergeContext mailMergeContext = new MailMergeContext();
+							var file = uploadDocumentService.load(model.getObject().getOvereenkomst().getDocument());
+							var mailMergeContext = new MailMergeContext();
 							mailMergeContext.setOvereenkomst(model.getObject());
-							Document document = asposeService.processDocument(FileUtils.readFileToByteArray(file), mailMergeContext);
+							var document = asposeService.processDocument(FileUtils.readFileToByteArray(file), mailMergeContext);
 
 							document.save(outputStream, new OoxmlSaveOptions(SaveFormat.DOCX));
 						}

@@ -150,7 +150,7 @@ public class ColonIntakeAfspraakServiceImpl implements ColonIntakeAfspraakServic
 				continue;
 			}
 
-			boolean isAlClientAfspraakDezeBatch = false;
+			var isAlClientAfspraakDezeBatch = false;
 
 			var colonScreeningRondeId = row.getScreeningRondeId();
 			var analyseDatum = row.getAnalyseDatum();

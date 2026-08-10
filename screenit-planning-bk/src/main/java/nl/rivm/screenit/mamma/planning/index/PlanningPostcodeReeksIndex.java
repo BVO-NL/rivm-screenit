@@ -43,7 +43,7 @@ public enum PlanningPostcodeReeksIndex
 
 	public static void update(PlanningPostcodeReeks postcodeReeks, Set<String> postcodeSetOud)
 	{
-		Set<String> postcodeSetNieuw = postcodeReeks.getPostcodeSet();
+		var postcodeSetNieuw = postcodeReeks.getPostcodeSet();
 
 		postcodeSetOud.removeAll(postcodeSetNieuw);
 		postcodeReeksMap.keySet().removeAll(postcodeSetOud);

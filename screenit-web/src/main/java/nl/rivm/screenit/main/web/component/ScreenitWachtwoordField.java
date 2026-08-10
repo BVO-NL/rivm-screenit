@@ -47,7 +47,7 @@ public class ScreenitWachtwoordField extends GenericPanel<String>
 	public ScreenitWachtwoordField(String id, IModel<String> model, boolean required, IValidator<String> validator, String testId)
 	{
 		super(id, model);
-		PasswordTextField inputField = new PasswordTextField("wachtwoord", getModel());
+		var inputField = new PasswordTextField("wachtwoord", getModel());
 		inputField.setOutputMarkupId(true);
 		inputField.setRequired(required);
 		inputField.add(new AttributeAppender("data-testid", testId));

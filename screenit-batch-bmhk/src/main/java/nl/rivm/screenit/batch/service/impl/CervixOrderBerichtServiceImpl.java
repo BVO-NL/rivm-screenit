@@ -24,7 +24,6 @@ package nl.rivm.screenit.batch.service.impl;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,10 +34,8 @@ import nl.rivm.screenit.batch.service.CervixHL7BaseService;
 import nl.rivm.screenit.batch.service.CervixOrderBerichtService;
 import nl.rivm.screenit.batch.service.HL7BaseSendMessageService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.cervix.CervixHpvAnalyseresultaten;
-import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
@@ -63,18 +60,8 @@ import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.v24.datatype.FT;
 import ca.uhn.hl7v2.model.v24.datatype.XCN;
-import ca.uhn.hl7v2.model.v24.group.OML_O21_CONTAINER_2;
-import ca.uhn.hl7v2.model.v24.group.OML_O21_OBSERVATION_REQUEST;
-import ca.uhn.hl7v2.model.v24.group.OML_O21_ORDER;
-import ca.uhn.hl7v2.model.v24.group.OML_O21_ORDER_GENERAL;
-import ca.uhn.hl7v2.model.v24.group.OML_O21_PATIENT;
-import ca.uhn.hl7v2.model.v24.group.OML_O21_PATIENT_VISIT;
 import ca.uhn.hl7v2.model.v24.message.OML_O21;
 import ca.uhn.hl7v2.model.v24.segment.MSH;
-import ca.uhn.hl7v2.model.v24.segment.OBR;
-import ca.uhn.hl7v2.model.v24.segment.OBX;
-import ca.uhn.hl7v2.model.v24.segment.ORC;
-import ca.uhn.hl7v2.model.v24.segment.PV1;
 
 @Slf4j
 @AllArgsConstructor
@@ -137,8 +124,8 @@ public class CervixOrderBerichtServiceImpl implements CervixOrderBerichtService
 
 	private static void vulHuisartsRedords(CervixLabformulier labformulier, XCN berichtHuisarts) throws DataTypeException
 	{
-		CervixHuisarts huisarts = labformulier.getHuisartsLocatie().getHuisarts();
-		Medewerker arts = huisarts.getOrganisatieMedewerkers().get(0).getMedewerker();
+		var huisarts = labformulier.getHuisartsLocatie().getHuisarts();
+		var arts = huisarts.getOrganisatieMedewerkers().get(0).getMedewerker();
 		berichtHuisarts.getGivenName().setValue(arts.getVoorletters());
 		berichtHuisarts.getXcn1_IDNumber().setValue(huisarts.getAgbcode());
 		berichtHuisarts.getIdentifierCheckDigit().setValue(huisarts.getAgbcode());
@@ -150,10 +137,10 @@ public class CervixOrderBerichtServiceImpl implements CervixOrderBerichtService
 	@Override
 	public String maakCytologieOrderTextBericht(CervixUitstrijkje uitstrijkje, CervixCytologieReden cytologieReden)
 	{
-		Client client = uitstrijkje.getOntvangstScreeningRonde().getDossier().getClient();
-		CervixLabformulier labformulier = uitstrijkje.getLabformulier();
+		var client = uitstrijkje.getOntvangstScreeningRonde().getDossier().getClient();
+		var labformulier = uitstrijkje.getLabformulier();
 
-		OML_O21 omlBericht = new OML_O21();
+		var omlBericht = new OML_O21();
 
 		try
 		{
@@ -178,9 +165,9 @@ public class CervixOrderBerichtServiceImpl implements CervixOrderBerichtService
 	@Override
 	public String maakHpvOrderTextBericht(CervixMonster monster, boolean cancelOrder)
 	{
-		Client client = monster.getUitnodiging().getScreeningRonde().getDossier().getClient();
+		var client = monster.getUitnodiging().getScreeningRonde().getDossier().getClient();
 
-		OML_O21 omlBericht = new OML_O21();
+		var omlBericht = new OML_O21();
 
 		try
 		{
@@ -188,7 +175,7 @@ public class CervixOrderBerichtServiceImpl implements CervixOrderBerichtService
 
 			vulHeaderVoorHpvOrder(omlBericht);
 
-			CervixLabformulier labformulier = getLabformulier(monster);
+			var labformulier = getLabformulier(monster);
 			vulHuisartsRecordsVoorHpvOrder(labformulier, omlBericht);
 
 			vulPatientRecords(client, omlBericht);
@@ -205,21 +192,21 @@ public class CervixOrderBerichtServiceImpl implements CervixOrderBerichtService
 
 	private void vulHeaderVoorCytoOrder(OML_O21 oml_bericht) throws DataTypeException
 	{
-		MSH mshSegment = vulHeader(oml_bericht);
+		var mshSegment = vulHeader(oml_bericht);
 		mshSegment.getReceivingFacility().getNamespaceID().setValue("PALGA");
 		mshSegment.getReceivingApplication().getNamespaceID().setValue("UDPS");
 	}
 
 	private void vulHeaderVoorHpvOrder(OML_O21 oml_bericht) throws DataTypeException
 	{
-		MSH mshSegment = vulHeader(oml_bericht);
+		var mshSegment = vulHeader(oml_bericht);
 		mshSegment.getReceivingFacility().getNamespaceID().setValue("LIMS");
 		mshSegment.getReceivingApplication().getNamespaceID().setValue("LIMS");
 	}
 
 	private MSH vulHeader(OML_O21 oml_bericht) throws DataTypeException
 	{
-		MSH mshSegment = oml_bericht.getMSH();
+		var mshSegment = oml_bericht.getMSH();
 		hl7BaseService.buildMessageHeader(mshSegment, "SCREENIT_OML");
 		mshSegment.getPrincipalLanguageOfMessage().getText().setValue("NLD");
 		mshSegment.getAlternateCharacterSetHandlingScheme().setValue("AL");
@@ -229,7 +216,7 @@ public class CervixOrderBerichtServiceImpl implements CervixOrderBerichtService
 
 	private void vulPatientRecords(Client client, OML_O21 omlBericht) throws DataTypeException
 	{
-		OML_O21_PATIENT omlPatient = omlBericht.getPATIENT();
+		var omlPatient = omlBericht.getPATIENT();
 
 		hl7BaseService.buildPIDSegmentWithForcedGender(omlPatient.getPID(), client, Geslacht.VROUW);
 
@@ -239,12 +226,12 @@ public class CervixOrderBerichtServiceImpl implements CervixOrderBerichtService
 	{
 		if (labformulier != null && labformulier.getHuisartsLocatie() != null)
 		{
-			OML_O21_PATIENT_VISIT visit = omlBericht.getPATIENT().getPATIENT_VISIT();
-			PV1 pv1 = visit.getPV1();
+			var visit = omlBericht.getPATIENT().getPATIENT_VISIT();
+			var pv1 = visit.getPV1();
 			pv1.getPv11_SetIDPV1().setValue("1");
 			pv1.getPatientClass().setValue("O");
 
-			XCN berichtHuisarts = pv1.getPv18_ReferringDoctor(0);
+			var berichtHuisarts = pv1.getPv18_ReferringDoctor(0);
 			vulHuisartsRedords(labformulier, berichtHuisarts);
 		}
 	}
@@ -253,29 +240,29 @@ public class CervixOrderBerichtServiceImpl implements CervixOrderBerichtService
 	{
 		if (labformulier != null && labformulier.getHuisartsLocatie() != null)
 		{
-			ORC orc = omlBericht.getORDER_GENERAL().getORDER().getORC();
-			XCN berichtHuisarts = orc.getOrc12_OrderingProvider(0);
+			var orc = omlBericht.getORDER_GENERAL().getORDER().getORC();
+			var berichtHuisarts = orc.getOrc12_OrderingProvider(0);
 			vulHuisartsRedords(labformulier, berichtHuisarts);
 		}
 	}
 
 	private void vulCytologieOrderRecords(CervixCytologieReden cytologieReden, CervixLabformulier labformulier, OML_O21 omlBericht) throws HL7Exception, IllegalStateException
 	{
-		OML_O21_ORDER_GENERAL order_general = omlBericht.getORDER_GENERAL();
+		var order_general = omlBericht.getORDER_GENERAL();
 
-		OML_O21_ORDER orderSegment = order_general.getORDER();
-		ORC orc = orderSegment.getORC();
+		var orderSegment = order_general.getORDER();
+		var orc = orderSegment.getORC();
 		orc.getOrc1_OrderControl().setValue("NW");
 		orc.getOrc2_PlacerOrderNumber().getEi1_EntityIdentifier().setValue(CervixMonsterUtil.getMonsterEntityIdentifier(labformulier.getUitstrijkje(), false));
 		orc.getOrc2_PlacerOrderNumber().getEi2_NamespaceID().setValue("ScreenIT");
 		orc.getDateTimeOfTransaction().getTs1_TimeOfAnEvent().setValue(getCurrentDateTimeString());
 
-		OML_O21_OBSERVATION_REQUEST observationRequest = orderSegment.getOBSERVATION_REQUEST();
-		OBR obr = hl7BaseService.buildOBRSegment(observationRequest.getOBR(), labformulier.getUitstrijkje(), false);
+		var observationRequest = orderSegment.getOBSERVATION_REQUEST();
+		var obr = hl7BaseService.buildOBRSegment(observationRequest.getOBR(), labformulier.getUitstrijkje(), false);
 		obr.getRequestedDateTime().getTs1_TimeOfAnEvent().setValue(hl7BaseService.getCurrentDateTimeString());
 		obr.getObr4_UniversalServiceIdentifier().getCe1_Identifier().setValue("Cervixcytologie");
 
-		Date datumUitstrijkje = labformulier.getDatumUitstrijkje();
+		var datumUitstrijkje = labformulier.getDatumUitstrijkje();
 		if (datumUitstrijkje != null)
 		{
 			makeNewObxRecord(omlBericht, DATUM_UITSTRIJKJE, DateUtil.formatForPattern(Constants.DEFAULT_DATE_TIME_FORMAT_SHORT_YEAR, datumUitstrijkje));
@@ -283,7 +270,7 @@ public class CervixOrderBerichtServiceImpl implements CervixOrderBerichtService
 		makeNewObxRecord(omlBericht, AANLEIDING, cytologieReden.getOmlOrderCode());
 		makeNewObxRecord(omlBericht, DOOR, "1");
 		vulOBXRegelsMetKlachten(omlBericht, labformulier);
-		Date datumLaatsteMenstruatie = labformulier.getDatumLaatsteMenstruatie();
+		var datumLaatsteMenstruatie = labformulier.getDatumLaatsteMenstruatie();
 		if (datumLaatsteMenstruatie != null)
 		{
 			makeNewObxRecord(omlBericht, LAATSTE_MENSTRUATIE, DateUtil.formatForPattern(Constants.DEFAULT_DATE_TIME_FORMAT_SHORT_YEAR, datumLaatsteMenstruatie));
@@ -548,19 +535,19 @@ public class CervixOrderBerichtServiceImpl implements CervixOrderBerichtService
 
 	private void makeNewObxRecord(OML_O21 message, String identifier, String value) throws HL7Exception
 	{
-		OML_O21_ORDER_GENERAL order_general = message.getORDER_GENERAL();
-		OML_O21_ORDER orderSegment = order_general.getORDER();
-		OML_O21_OBSERVATION_REQUEST observationRequest = orderSegment.getOBSERVATION_REQUEST();
-		OML_O21_CONTAINER_2 container = observationRequest.getCONTAINER_2();
+		var order_general = message.getORDER_GENERAL();
+		var orderSegment = order_general.getORDER();
+		var observationRequest = orderSegment.getOBSERVATION_REQUEST();
+		var container = observationRequest.getCONTAINER_2();
 
-		List<OBX> obxen = container.getOBXAll();
-		int newObxNmr = obxen.size();
-		OBX newOBX = container.getOBX(newObxNmr);
+		var obxen = container.getOBXAll();
+		var newObxNmr = obxen.size();
+		var newOBX = container.getOBX(newObxNmr);
 		newOBX.getObx1_SetIDOBX().setValue(String.valueOf(newObxNmr));
 		newOBX.getObx2_ValueType().setValue("FT");
 		newOBX.getObx3_ObservationIdentifier().getCe1_Identifier().setValue(identifier);
 
-		FT ft = new FT(message);
+		var ft = new FT(message);
 		ft.setValue(value.replace("\r\n", "*").replace("\r", "*").replace("\n", "*"));
 		newOBX.getObx5_ObservationValue(0).setData(ft);
 	}
@@ -581,7 +568,7 @@ public class CervixOrderBerichtServiceImpl implements CervixOrderBerichtService
 
 	private Date getDatumAfname(CervixMonster monster)
 	{
-		CervixLabformulier labformulier = getLabformulier(monster);
+		var labformulier = getLabformulier(monster);
 		if (labformulier != null && labformulier.getDatumUitstrijkje() != null)
 		{
 			return labformulier.getDatumUitstrijkje();

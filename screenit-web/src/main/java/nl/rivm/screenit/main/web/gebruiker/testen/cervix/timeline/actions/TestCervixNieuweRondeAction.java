@@ -38,7 +38,7 @@ public class TestCervixNieuweRondeAction extends TestCervixVervolgKeuzeAction
 	@Override
 	public void execute()
 	{
-		for (Client client : clienten)
+		for (var client : clienten)
 		{
 			cervixBaseTestTimelineService.nieuweRonde(client);
 		}

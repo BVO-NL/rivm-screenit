@@ -31,13 +31,13 @@ public interface MammaBaseFollowUpRepository extends BaseJpaRepository<MammaFoll
 {
 	@Query("""
 			SELECT COUNT(d) > 0 FROM MammaDossier d
-			JOIN d.laatsteBeoordelingMetUitslag b
-			JOIN b.onderzoek o
-			JOIN o.afspraak a
-			JOIN a.uitnodiging u
-			JOIN u.screeningRonde sr
-			LEFT JOIN sr.followUpVerslagen fuv ON fuv.type = nl.rivm.screenit.model.berichten.enums.VerslagType.MAMMA_PA_FOLLOW_UP
-			LEFT JOIN sr.followUpRadiologieVerslagen furv
+			JOIN MammaBeoordeling b ON b = d.laatsteBeoordelingMetUitslag
+			JOIN MammaOnderzoek o ON o = b.onderzoek
+			JOIN MammaAfspraak a ON a.onderzoek = o
+			JOIN MammaUitnodiging u ON u = a.uitnodiging
+			JOIN MammaScreeningRonde sr ON sr = u.screeningRonde
+			LEFT JOIN MammaFollowUpVerslag fuv ON fuv.screeningRonde = sr AND fuv.type = nl.rivm.screenit.model.berichten.enums.VerslagType.MAMMA_PA_FOLLOW_UP
+			LEFT JOIN MammaFollowUpRadiologieVerslag furv ON furv.screeningRonde = sr
 			WHERE d.id = :dossierId
 			AND (
 				fuv.id IS NOT NULL AND
@@ -49,7 +49,7 @@ public interface MammaBaseFollowUpRepository extends BaseJpaRepository<MammaFoll
 					AND sr.followUpConclusieStatus IS NULL
 					AND sr.id NOT IN (
 						SELECT sr2.id FROM MammaFollowUpRadiologieVerslag furv2
-						JOIN furv2.screeningRonde sr2
+						JOIN MammaScreeningRonde sr2 ON sr2 = furv2.screeningRonde
 						WHERE furv2.pathologieUitgevoerd = true
 						AND sr2.dossier.id = :dossierId
 						AND furv2.paVerslagNietTeVerwachten IS NULL

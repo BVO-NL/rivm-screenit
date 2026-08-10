@@ -26,6 +26,7 @@ import java.util.List;
 
 import nl.rivm.screenit.comparator.BriefCreatieDatumComparator;
 import nl.rivm.screenit.main.service.BriefService;
+import nl.rivm.screenit.main.service.algemeen.BezwaarService;
 import nl.rivm.screenit.main.util.BriefOmschrijvingUtil;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.bezwaar.tekst.BezwaarTekstPanel;
@@ -36,7 +37,6 @@ import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.BaseBriefService;
-import nl.rivm.screenit.service.BezwaarService;
 import nl.rivm.screenit.service.BriefHerdrukkenService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.BriefUtil;
@@ -96,7 +96,7 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 	{
 		super.onInitialize();
 		add(new Label("wijzeAfmelding", getModelObject().getBezwaarBrief() == null ? "Clientportaal" : "Infolijn"));
-		WebMarkupContainer verstuurdFormulierContainer = new WebMarkupContainer("formulierVerstuurdContainer");
+		var verstuurdFormulierContainer = new WebMarkupContainer("formulierVerstuurdContainer");
 		add(verstuurdFormulierContainer);
 		verstuurdFormulierContainer.add(
 			new ListView<>("brievenLijst", BriefOmschrijvingUtil.getBrievenOmschrijvingen(briefService.getBrievenVanBezwaar(getModelObject())))
@@ -104,7 +104,7 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 				@Override
 				protected void populateItem(ListItem<String> item)
 				{
-					String tekst = item.getModelObject();
+					var tekst = item.getModelObject();
 					item.add(new Label("brief", Model.of(tekst)));
 				}
 			});
@@ -142,7 +142,7 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 		}
 		else
 		{
-			EmptyPanel empty = new EmptyPanel("bezwaarformulierHandImg");
+			var empty = new EmptyPanel("bezwaarformulierHandImg");
 			empty.setVisible(false);
 			add(empty);
 		}
@@ -174,7 +174,7 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				List<BezwaarBrief> bevestigingsbrieven = briefService.getOorspronkelijkeBevestigingsbrieven(BezwaarInzienPopupPanel.this.getModelObject());
+				var bevestigingsbrieven = briefService.getOorspronkelijkeBevestigingsbrieven(BezwaarInzienPopupPanel.this.getModelObject());
 				briefHerdrukkenService.opnieuwAanmaken(bevestigingsbrieven, ScreenitSession.get().getIngelogdAccount());
 				info(getString(
 					bevestigingsbrieven.size() > 1 ? "info.bezwaar.meerdere.bevestigingsbrieven.nogmaals.verstuurd" : "info.bezwaar.enkele.bevestigingsbrief.nogmaals.verstuurd"));
@@ -200,7 +200,7 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 			@Override
 			protected void vervangDocument(UploadDocument uploadDocument, AjaxRequestTarget target)
 			{
-				if (bezwaarService.ondertekendeBezwaarBriefVervangen(uploadDocument, getModelObject(), upload.getObject(), ScreenitSession.get().getIngelogdAccount()))
+				if (bezwaarService.ondertekendeBezwaarBriefVervangen(uploadDocument, getModelObject(), upload.getObject()))
 				{
 					info(getString("info.vervangendocument"));
 					close(target);
@@ -219,7 +219,7 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 
 	private BezwaarBrief getLaatsteBrief()
 	{
-		List<BezwaarBrief> brieven = briefService.getBrievenVanBezwaar(getModelObject());
+		var brieven = briefService.getBrievenVanBezwaar(getModelObject());
 		brieven.sort(new BriefCreatieDatumComparator().reversed());
 		if (!CollectionUtils.isEmpty(brieven))
 		{

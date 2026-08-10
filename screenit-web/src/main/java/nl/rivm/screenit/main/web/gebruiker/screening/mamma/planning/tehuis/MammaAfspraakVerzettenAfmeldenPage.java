@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.Constants;
-import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.clienten.ClientContactActieTypeWrapper;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.ClientContactPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPlanningBasePage;
@@ -36,7 +36,6 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
-import nl.rivm.screenit.model.mamma.MammaTehuis;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -65,8 +64,8 @@ public class MammaAfspraakVerzettenAfmeldenPage extends MammaPlanningBasePage
 			@Override
 			protected void contactAfgerond()
 			{
-				Client client = (Client) MammaAfspraakVerzettenAfmeldenPage.this.getDefaultModelObject();
-				MammaTehuis tehuis = client.getMammaDossier().getTehuis();
+				var client = (Client) MammaAfspraakVerzettenAfmeldenPage.this.getDefaultModelObject();
+				var tehuis = client.getMammaDossier().getTehuis();
 				setResponsePage(new MammaTehuisEditPage(ModelUtil.cModel(tehuis)));
 			}
 
@@ -90,7 +89,7 @@ public class MammaAfspraakVerzettenAfmeldenPage extends MammaPlanningBasePage
 	@Override
 	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<MedewerkerMenuItem> contextMenuItems = super.getContextMenuItems();
+		var contextMenuItems = super.getContextMenuItems();
 		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.planning.afspraken.verzetten.afmelden", false, MammaAfspraakVerzettenAfmeldenPage.class));
 
 		return contextMenuItems;

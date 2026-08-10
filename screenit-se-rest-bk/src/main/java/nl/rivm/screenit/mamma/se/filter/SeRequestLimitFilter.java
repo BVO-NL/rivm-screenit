@@ -64,16 +64,16 @@ public class SeRequestLimitFilter implements Filter
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
 	{
-		HttpServletRequest httpRequest = (HttpServletRequest) request;
-		HttpServletResponse httpResponse = (HttpServletResponse) response;
+		var httpRequest = (HttpServletRequest) request;
+		var httpResponse = (HttpServletResponse) response;
 		LOG.debug("Request started: {} (available:{}, queued:{})", httpRequest.getRequestURI(), semaphore.availablePermits(), semaphore.getQueueLength());
-		Stopwatch stopWatch = Stopwatch.createStarted();
+		var stopWatch = Stopwatch.createStarted();
 		try
 		{
-			boolean acquired = semaphore.tryAcquire(acquireTimeoutSeconds, TimeUnit.SECONDS);
+			var acquired = semaphore.tryAcquire(acquireTimeoutSeconds, TimeUnit.SECONDS);
 			if (acquired)
 			{
-				long wachtTijd = stopWatch.elapsed(TimeUnit.MILLISECONDS);
+				var wachtTijd = stopWatch.elapsed(TimeUnit.MILLISECONDS);
 				try
 				{
 					chain.doFilter(request, response);

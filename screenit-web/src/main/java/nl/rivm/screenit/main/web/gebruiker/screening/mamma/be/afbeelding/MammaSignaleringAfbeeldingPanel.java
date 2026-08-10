@@ -55,7 +55,7 @@ public class MammaSignaleringAfbeeldingPanel extends MammaBaseAfbeeldingPanel<Ma
 			@Override
 			protected InputStream getSvgImageData(Attributes attributes)
 			{
-				MammaAnnotatieAfbeelding afbeelding = new PropertyModel<MammaAnnotatieAfbeelding>(
+				var afbeelding = new PropertyModel<MammaAnnotatieAfbeelding>(
 					MammaSignaleringAfbeeldingPanel.this.getModel(), zijdeDoorsnede.getSignalerenDoorsnedeProperty()).getObject();
 				return afbeeldingService.createSignaleringAfbeelding(afbeelding, zijdeDoorsnede,
 					MammaSignaleringAfbeeldingPanel.this.getModelObject().getOnderzoek().getAmputatie());

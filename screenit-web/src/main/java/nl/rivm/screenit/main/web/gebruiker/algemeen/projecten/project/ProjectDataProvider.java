@@ -103,7 +103,7 @@ public class ProjectDataProvider extends SortableDataProvider<Project, String>
 		if (CollectionUtils.isEmpty(zoekObject.getObject().getProjectTypes()))
 		{
 			List<ProjectType> projectTypesMetRecht = new ArrayList<>();
-			for (ProjectType projectType : ProjectType.values())
+			for (var projectType : ProjectType.values())
 			{
 				if (toeganglevels.get(projectType) != null)
 				{

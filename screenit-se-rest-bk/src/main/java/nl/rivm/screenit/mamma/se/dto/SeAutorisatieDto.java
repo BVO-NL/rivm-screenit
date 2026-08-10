@@ -26,8 +26,6 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
-
 @Getter
 @Setter
 public class SeAutorisatieDto

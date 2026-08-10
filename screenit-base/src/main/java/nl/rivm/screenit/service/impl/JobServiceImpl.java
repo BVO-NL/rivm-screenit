@@ -74,7 +74,7 @@ public class JobServiceImpl implements JobService
 	@Override
 	public String startJob(JobType jobType, OrganisatieMedewerker organisatieMedewerker)
 	{
-		BatchJob batchJob = new BatchJob();
+		var batchJob = new BatchJob();
 		batchJob.setJobType(jobType);
 		return startJob(batchJob, organisatieMedewerker);
 	}
@@ -82,7 +82,7 @@ public class JobServiceImpl implements JobService
 	@Override
 	public String startJob(final BatchJob batchJob, OrganisatieMedewerker organisatieMedewerker)
 	{
-		MessageStoringMessageCreator messageStoringMessageCreator = new MessageStoringMessageCreator(batchJob);
+		var messageStoringMessageCreator = new MessageStoringMessageCreator(batchJob);
 
 		switch (batchJob.getJobType().getBatchApplicationType())
 		{
@@ -105,8 +105,8 @@ public class JobServiceImpl implements JobService
 		try
 		{
 
-			String jmsMessageID = messageStoringMessageCreator.getMessage().getJMSMessageID();
-			String infoJobStartParameter = batchJob.getJobParameters().toString();
+			var jmsMessageID = messageStoringMessageCreator.getMessage().getJMSMessageID();
+			var infoJobStartParameter = batchJob.getJobParameters().toString();
 			if (organisatieMedewerker != null)
 			{
 
@@ -124,10 +124,10 @@ public class JobServiceImpl implements JobService
 	@Override
 	public void resumeClientSelectie()
 	{
-		BatchJob batchJob = new BatchJob();
+		var batchJob = new BatchJob();
 		batchJob.setJobType(JobType.CLIENT_SELECTIE);
 		batchJob.getJobParameters().put("resume", true);
-		MessageStoringMessageCreator messageStoringMessageCreator = new MessageStoringMessageCreator(batchJob);
+		var messageStoringMessageCreator = new MessageStoringMessageCreator(batchJob);
 
 		jmsTemplate.send(colonJobsDestination, messageStoringMessageCreator);
 	}

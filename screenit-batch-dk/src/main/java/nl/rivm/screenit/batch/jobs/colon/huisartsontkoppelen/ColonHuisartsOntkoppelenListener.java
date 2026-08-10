@@ -56,7 +56,7 @@ public class ColonHuisartsOntkoppelenListener extends BaseLogListener
 	protected LogEvent getEindLogEvent()
 	{
 		var logEvent = new LogEvent();
-		String melding = "Aantal DK rondes ontkoppeld: " + getJobExecution().getExecutionContext().getLong(AANTAL_RONDES_ONTKOPPELD, 0L);
+		var melding = "Aantal DK rondes ontkoppeld: " + getJobExecution().getExecutionContext().getLong(AANTAL_RONDES_ONTKOPPELD, 0L);
 		addMelding(logEvent, melding);
 		return logEvent;
 	}

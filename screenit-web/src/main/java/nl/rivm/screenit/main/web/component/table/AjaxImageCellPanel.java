@@ -35,7 +35,7 @@ public abstract class AjaxImageCellPanel<T> extends GenericPanel<T>
 	{
 		super(id, rowModel);
 		setOutputMarkupId(true);
-		final AjaxLink<T> ajaxLink = new AjaxLink<T>("imageLink")
+		final var ajaxLink = new AjaxLink<T>("imageLink")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)

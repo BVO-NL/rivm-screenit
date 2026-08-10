@@ -22,8 +22,6 @@ package nl.rivm.screenit.main.web.base;
  * =========================LICENSE_END==================================
  */
 
-import jakarta.servlet.http.HttpSession;
-
 import nl.rivm.screenit.main.web.gebruiker.base.angular.AngularBasePage;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -34,7 +32,6 @@ import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.head.StringHeaderItem;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
-import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.resource.JQueryResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -60,8 +57,8 @@ public abstract class BasePage extends WebPage
 	public BasePage()
 	{
 		LOG.info("Pagina " + this.getClass().getName() + " wordt geladen");
-		Request request = RequestCycle.get().getRequest();
-		HttpSession httpSession = ((ServletWebRequest) request).getContainerRequest().getSession();
+		var request = RequestCycle.get().getRequest();
+		var httpSession = ((ServletWebRequest) request).getContainerRequest().getSession();
 		LOG.debug("st" + httpSession.getMaxInactiveInterval());
 	}
 

@@ -52,7 +52,7 @@ public class BezwaarValidatieServiceImpl implements BezwaarValidatieService
 	@Override
 	public void valideerBezwaarType(BezwaarDto[] bezwaarDtos)
 	{
-		for (BezwaarDto bezwaarDto : bezwaarDtos)
+		for (var bezwaarDto : bezwaarDtos)
 		{
 			if (bezwaarDto.getType().getOnzichtbaarOpClientPortaal())
 			{

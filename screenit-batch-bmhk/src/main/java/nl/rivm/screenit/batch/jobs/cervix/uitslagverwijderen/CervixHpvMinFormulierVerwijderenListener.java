@@ -72,8 +72,8 @@ public class CervixHpvMinFormulierVerwijderenListener extends BaseLogListener
 		var event = super.eindLogging(jobExecution);
 
 		var context = jobExecution.getExecutionContext();
-		long aantalFormulierMetData = context.getLong(CervixHpvMinFormulierVerwijderenConstants.AANTAL_FORMULIEREN_INHOUD_GEWIST, 0);
-		long aantalPdfGewist = context.getLong(CervixHpvMinFormulierVerwijderenConstants.AANTAL_FORMALIEREN_DATUM_GEWIST, 0);
+		var aantalFormulierMetData = context.getLong(CervixHpvMinFormulierVerwijderenConstants.AANTAL_FORMULIEREN_INHOUD_GEWIST, 0);
+		var aantalPdfGewist = context.getLong(CervixHpvMinFormulierVerwijderenConstants.AANTAL_FORMALIEREN_DATUM_GEWIST, 0);
 
 		if (StringUtils.isBlank(event.getMelding()))
 		{

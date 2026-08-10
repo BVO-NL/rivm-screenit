@@ -26,7 +26,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import nl.rivm.screenit.model.berichten.cda.CdaConstants;
 import nl.rivm.screenit.model.berichten.enums.VerslagGeneratie;
@@ -87,7 +86,7 @@ public class VerslagProjectVersionMapping
 
 	public String getFirstProjectVersion(VerslagGeneratie generatie, VerslagType verslagType)
 	{
-		for (Entry<String, Map<VerslagType, VerslagGeneratie>> e : mapping.entrySet())
+		for (var e : mapping.entrySet())
 		{
 			if (generatie.equals(e.getValue().get(verslagType)))
 			{

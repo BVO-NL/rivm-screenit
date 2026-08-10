@@ -22,9 +22,7 @@ package nl.rivm.screenit.batch.jobs.generalis.brieven.bezwaar;
  */
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import lombok.AllArgsConstructor;
 
@@ -43,7 +41,6 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -58,11 +55,11 @@ public class BezwaarBrievenListener extends BaseLogListener
 	@Override
 	protected void beforeStarting(JobExecution jobExecution)
 	{
-		BrievenGenererenBeeindigdLogEvent brievenLogEvent = new BrievenGenererenBeeindigdLogEvent();
+		var brievenLogEvent = new BrievenGenererenBeeindigdLogEvent();
 		Map<Long, Integer> map = new HashMap<>();
 
-		List<ScreeningOrganisatie> screeningOrganisaties = hibernateService.loadAll(ScreeningOrganisatie.class);
-		for (ScreeningOrganisatie org : screeningOrganisaties)
+		var screeningOrganisaties = hibernateService.loadAll(ScreeningOrganisatie.class);
+		for (var org : screeningOrganisaties)
 		{
 			map.put(org.getId(), 0);
 		}
@@ -92,11 +89,11 @@ public class BezwaarBrievenListener extends BaseLogListener
 	@Override
 	protected LogEvent getEindLogEvent()
 	{
-		String key = BezwaarBrievenConstants.RAPPORTAGEKEYBRIEVEN;
-		ExecutionContext executionContext = getJobExecution().getExecutionContext();
+		var key = BezwaarBrievenConstants.RAPPORTAGEKEYBRIEVEN;
+		var executionContext = getJobExecution().getExecutionContext();
 		if (executionContext.containsKey(key))
 		{
-			Long brievenlogEventid = (Long) getJobExecution().getExecutionContext().get(key);
+			var brievenlogEventid = (Long) getJobExecution().getExecutionContext().get(key);
 			return hibernateService.load(BrievenGenererenBeeindigdLogEvent.class, brievenlogEventid);
 		}
 		return null;
@@ -105,17 +102,17 @@ public class BezwaarBrievenListener extends BaseLogListener
 	@Override
 	protected LogEvent eindLogging(JobExecution jobExecution)
 	{
-		LogEvent logEvent = getEindLogEvent();
+		var logEvent = getEindLogEvent();
 		if (logEvent != null)
 		{
-			BrievenGenererenBeeindigdLogEvent brievenLogEvent = (BrievenGenererenBeeindigdLogEvent) logEvent;
+			var brievenLogEvent = (BrievenGenererenBeeindigdLogEvent) logEvent;
 			if (jobHasExitCode(ExitStatus.FAILED))
 			{
-				String error = "Brieven genereren heeft gefaald met een onbekende oorzaak";
+				var error = "Brieven genereren heeft gefaald met een onbekende oorzaak";
 
 				if (CollectionUtils.isNotEmpty(jobExecution.getAllFailureExceptions()))
 				{
-					Throwable exception = jobExecution.getAllFailureExceptions().get(0);
+					var exception = jobExecution.getAllFailureExceptions().get(0);
 					error = exception.getMessage();
 				}
 				brievenLogEvent.setMelding(error);
@@ -126,15 +123,15 @@ public class BezwaarBrievenListener extends BaseLogListener
 				brievenLogEvent.setLevel(Level.INFO);
 			}
 
-			BrievenGenererenRapportage rapportage = new BrievenGenererenRapportage();
+			var rapportage = new BrievenGenererenRapportage();
 			rapportage.setDatumVerwerking(currentDateSupplier.getDate());
 			hibernateService.saveOrUpdate(rapportage);
 			brievenLogEvent.setRapportage(rapportage);
-			Map<Long, Integer> map = (Map<Long, Integer>) jobExecution.getExecutionContext().get(BezwaarBrievenConstants.RAPPORTAGEKEYAANTALBRIEVEN);
+			var map = (Map<Long, Integer>) jobExecution.getExecutionContext().get(BezwaarBrievenConstants.RAPPORTAGEKEYAANTALBRIEVEN);
 
-			for (Entry<Long, Integer> entry : map.entrySet())
+			for (var entry : map.entrySet())
 			{
-				BrievenGenererenRapportageEntry rapportageEntry = new BrievenGenererenRapportageEntry();
+				var rapportageEntry = new BrievenGenererenRapportageEntry();
 				rapportageEntry.setScreeningOrganisatie(hibernateService.load(ScreeningOrganisatie.class, entry.getKey()));
 				rapportageEntry.setRapportage(rapportage);
 				rapportageEntry.setAantalBrievenPerScreeningOrganisatie(entry.getValue());
@@ -143,7 +140,7 @@ public class BezwaarBrievenListener extends BaseLogListener
 			}
 			hibernateService.saveOrUpdate(rapportage);
 
-			for (BrievenGenererenRapportageEntry entry : brievenLogEvent.getRapportage().getEntries())
+			for (var entry : brievenLogEvent.getRapportage().getEntries())
 			{
 				hibernateService.saveOrUpdate(entry);
 			}

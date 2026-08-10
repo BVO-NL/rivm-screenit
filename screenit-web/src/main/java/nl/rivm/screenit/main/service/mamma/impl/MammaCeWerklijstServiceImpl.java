@@ -153,9 +153,9 @@ public class MammaCeWerklijstServiceImpl implements MammaCeWerklijstService
 
 	private Sort werklijstSorteringFollowUpWerklijst(Sort sort)
 	{
-		Sort nieuweSort = Sort.unsorted();
+		var nieuweSort = Sort.unsorted();
 		sort = werklijstSortering(sort);
-		for (Sort.Order order : sort)
+		for (var order : sort)
 		{
 			nieuweSort = nieuweSort.and(
 				Sort.by(order.withProperty(

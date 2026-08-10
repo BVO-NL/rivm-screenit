@@ -40,7 +40,6 @@ import nl.topicuszorg.wicket.input.validator.StringIsNumberValidator;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -67,16 +66,16 @@ public abstract class EditOrganisatieParametersPanel extends GenericPanel<List<O
 	{
 		super(id);
 
-		Form<Void> form = new Form<>("form");
+		var form = new Form<Void>("form");
 		add(form);
-		ListView<OrganisatieParameterKey> parameters = new ListView<>("parameters", parameterKeys)
+		var parameters = new ListView<>("parameters", parameterKeys)
 		{
 
 			@Override
 			protected void populateItem(ListItem<OrganisatieParameterKey> item)
 			{
-				OrganisatieParameterKey parameterKey = item.getModelObject();
-				List<Organisatie> organisatieByOrganisatieTypes = organisatieService.getOrganisatieByOrganisatieTypes(Collections.singletonList(parameterKey.getOrganisatieType()));
+				var parameterKey = item.getModelObject();
+				var organisatieByOrganisatieTypes = organisatieService.getOrganisatieByOrganisatieTypes(Collections.singletonList(parameterKey.getOrganisatieType()));
 
 				addTabelHeader(item, parameterKey);
 				addOrganisatieLijst(item, parameterKey, organisatieByOrganisatieTypes);
@@ -85,11 +84,11 @@ public abstract class EditOrganisatieParametersPanel extends GenericPanel<List<O
 
 			private void addTabelHeader(ListItem<OrganisatieParameterKey> item, OrganisatieParameterKey parameterKey)
 			{
-				boolean parameterKeyNeedsMax = Integer.class.equals(parameterKey.getValueType());
+				var parameterKeyNeedsMax = Integer.class.equals(parameterKey.getValueType());
 				item.add(new EnumLabel<>("organisatieType", parameterKey.getOrganisatieType()));
 				item.add(new EnumLabel<>("param", parameterKey));
 
-				String maxValueTekst = String.format(getString("maxValue"), getString(EnumStringUtil.getPropertyString(parameterKey) + ".unit"), parameterKey.getMaxValue());
+				var maxValueTekst = String.format(getString("maxValue"), getString(EnumStringUtil.getPropertyString(parameterKey) + ".unit"), parameterKey.getMaxValue());
 				item.add(new Label("maxValue", maxValueTekst).setVisible(parameterKeyNeedsMax));
 			}
 
@@ -102,7 +101,7 @@ public abstract class EditOrganisatieParametersPanel extends GenericPanel<List<O
 					protected void populateItem(ListItem<Organisatie> item)
 					{
 						OrganisatieParameter foundParameter = null;
-						for (OrganisatieParameter parameter : item.getModelObject().getParameters())
+						for (var parameter : item.getModelObject().getParameters())
 						{
 							if (parameter.getKey() == parameterKey)
 							{
@@ -115,24 +114,24 @@ public abstract class EditOrganisatieParametersPanel extends GenericPanel<List<O
 							foundParameter.setOrganisatie(item.getModelObject());
 							foundParameter.setKey(parameterKey);
 						}
-						List<OrganisatieParameter> allParams = allParametersModel.getObject();
+						var allParams = allParametersModel.getObject();
 						allParams.add(foundParameter);
-						Class<?> valueType = parameterKey.getValueType();
-						boolean parameterkeyIsBoolean = Boolean.class.equals(valueType);
+						var valueType = parameterKey.getValueType();
+						var parameterkeyIsBoolean = Boolean.class.equals(valueType);
 
 						item.add(new Label("naam", item.getModelObject().getNaam()));
 
-						TextField<String> numberValueField = new TextField<>("numberValue",
+						var numberValueField = new TextField<String>("numberValue",
 							new PropertyModel<String>(EditOrganisatieParametersPanel.this, "allParameters[" + (allParams.size() - 1) + "].value"));
 						numberValueField.setVisible(Integer.class.equals(valueType));
 						numberValueField.setEnabled(valueFieldEnabled);
 
-						TextField<String> textValueField = new TextField<>("textValue",
+						var textValueField = new TextField<String>("textValue",
 							new PropertyModel<>(EditOrganisatieParametersPanel.this, "allParameters[" + (allParams.size() - 1) + "].value"));
 						textValueField.setVisible(String.class.equals(valueType) || BigDecimal.class.equals(valueType));
 						textValueField.setEnabled(valueFieldEnabled);
 
-						CheckBox parameterCheckbox = ComponentHelper.newCheckBox("checkbox",
+						var parameterCheckbox = ComponentHelper.newCheckBox("checkbox",
 							new PropertyModel<>(EditOrganisatieParametersPanel.this, "allParameters[" + (allParams.size() - 1) + "].value"));
 						parameterCheckbox.setVisible(parameterkeyIsBoolean);
 
@@ -189,7 +188,7 @@ public abstract class EditOrganisatieParametersPanel extends GenericPanel<List<O
 									}
 									catch (Exception e)
 									{
-										ValidationError error = new ValidationError(this, "bigdecimal");
+										var error = new ValidationError(this, "bigdecimal");
 										validatable.error(error);
 									}
 								}
@@ -225,7 +224,7 @@ public abstract class EditOrganisatieParametersPanel extends GenericPanel<List<O
 
 	public List<OrganisatieParameter> getAllParameters()
 	{
-		List<OrganisatieParameter> list = ModelUtil.nullSafeGet(allParametersModel);
+		var list = ModelUtil.nullSafeGet(allParametersModel);
 		list.forEach(op -> op.setParameterNaam(getString(EnumStringUtil.getPropertyString(op.getKey()))));
 		return list;
 	}

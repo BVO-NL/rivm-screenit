@@ -1,0 +1,42 @@
+<!--
+  ========================LICENSE_START=================================
+  huisartsportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<ds-card cardTitle="Inloggen huisartsenportaal" class="container">
+  <p>U logt in op een systeem met vertrouwelijke informatie. Door verder te gaan verklaart u akkoord te gaan met de verantwoording die bij deze informatie hoort. Deze gegevens
+    dienen te allen tijde vertrouwelijk behandeld te worden.</p>
+  <form [formGroup]="loginForm" class="mt-2" id="inlog-formulier" (ngSubmit)="inloggen()">
+    <ds-input
+      formControlName="gebruikersnaam"
+      label="Gebruikersnaam"
+      placeholder="Gebruikersnaam"
+    />
+    <ds-input
+      formControlName="wachtwoord"
+      label="Wachtwoord"
+      placeholder="Wachtwoord"
+      type="password"
+    />
+    <button type="button" ds-button-small ds-button-tertiary routerLink="/wachtwoordvergeten">Wachtwoord opnieuw instellen</button>
+    <ng-template ds-footer-actions-right>
+      <button type="submit" form="inlog-formulier" ds-button-primary>Inloggen</button>
+    </ng-template>
+  </form>
+
+</ds-card>

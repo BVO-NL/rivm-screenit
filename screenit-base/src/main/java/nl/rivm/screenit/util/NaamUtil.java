@@ -47,7 +47,7 @@ public abstract class NaamUtil
 			return null;
 		}
 
-		StringBuilder medewerkerNaam = new StringBuilder();
+		var medewerkerNaam = new StringBuilder();
 		if (StringUtils.isNotBlank(medewerker.getVoorletters()))
 		{
 			medewerkerNaam.append(NaamWeergaveHelper.standaardiseerVoorletters(medewerker.getVoorletters()));
@@ -69,7 +69,7 @@ public abstract class NaamUtil
 			return null;
 		}
 
-		StringBuilder medewerkerNaam = new StringBuilder();
+		var medewerkerNaam = new StringBuilder();
 		if (StringUtils.isNotBlank(medewerker.getTussenvoegsel()))
 		{
 			medewerkerNaam.append(medewerker.getTussenvoegsel());
@@ -87,7 +87,7 @@ public abstract class NaamUtil
 			return null;
 		}
 
-		StringBuilder naam = new StringBuilder();
+		var naam = new StringBuilder();
 		if (StringUtils.isNotBlank(persoon.getTussenvoegsel()))
 		{
 			naam.append(persoon.getTussenvoegsel());
@@ -100,14 +100,14 @@ public abstract class NaamUtil
 
 	public static String getNaamClientMetBsn(Client client, boolean withClosure)
 	{
-		String naamClient = titelVoorlettersTussenvoegselEnAanspreekAchternaam(client);
+		var naamClient = titelVoorlettersTussenvoegselEnAanspreekAchternaam(client);
 		if (Strings.isNullOrEmpty(naamClient))
 		{
 			return null;
 		}
-		StringBuilder naam = new StringBuilder();
+		var naam = new StringBuilder();
 		naam.append(naamClient);
-		Persoon persoon = client.getPersoon();
+		var persoon = client.getPersoon();
 		if (!Strings.isNullOrEmpty(persoon.getBsn()))
 		{
 			naam.append(" (Bsn: ");
@@ -135,13 +135,13 @@ public abstract class NaamUtil
 
 	public static String getNaamClientMetBsnMetGeboortedatum(Client client)
 	{
-		StringBuilder naam = new StringBuilder();
-		String naamClient = getNaamClientMetBsn(client, false);
+		var naam = new StringBuilder();
+		var naamClient = getNaamClientMetBsn(client, false);
 		if (Strings.isNullOrEmpty(naamClient))
 		{
 			return null;
 		}
-		Persoon persoon = client.getPersoon();
+		var persoon = client.getPersoon();
 		naam.append(naamClient);
 		if (persoon.getGeboortedatum() != null)
 		{
@@ -149,7 +149,7 @@ public abstract class NaamUtil
 			{
 				naam.append(" (");
 			}
-			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+			var format = new SimpleDateFormat("dd-MM-yyyy");
 			naam.append("Geboortedatum: ");
 			naam.append(format.format(persoon.getGeboortedatum()));
 			naam.append(")");
@@ -168,9 +168,9 @@ public abstract class NaamUtil
 			return null;
 		}
 
-		StringBuilder naam = new StringBuilder();
+		var naam = new StringBuilder();
 
-		Persoon persoon = client.getPersoon();
+		var persoon = client.getPersoon();
 		if (!Strings.isNullOrEmpty(persoon.getTitel()))
 		{
 			naam.append(persoon.getTitel());
@@ -188,8 +188,8 @@ public abstract class NaamUtil
 			return null;
 		}
 
-		StringBuilder naam = new StringBuilder();
-		String voorletters = getVoorlettersClient(client);
+		var naam = new StringBuilder();
+		var voorletters = getVoorlettersClient(client);
 		naam.append(voorletters);
 		if (!Strings.isNullOrEmpty(voorletters))
 		{
@@ -356,23 +356,24 @@ public abstract class NaamUtil
 		{
 			return null;
 		}
+		return getVoorletters(client.getPersoon().getVoornaam());
+	}
 
+	public static String getVoorletters(String voornaam)
+	{
 		var voorletters = new StringBuilder();
-
-		if (!Strings.isNullOrEmpty(client.getPersoon().getVoornaam()))
+		if (StringUtils.isNotBlank(voornaam))
 		{
-			String[] voornamen = client.getPersoon().getVoornaam().split(" ");
-			for (String voornaam : voornamen)
+			for (var deelVoornaam : voornaam.split(" "))
 			{
-				if (!Strings.isNullOrEmpty(voornaam))
+				if (StringUtils.isNotBlank(deelVoornaam))
 				{
-					voorletters.append(voornaam.toUpperCase().charAt(0));
-
-					if (voornaam.toUpperCase().startsWith("IJ"))
+					var hoofdletters = deelVoornaam.toUpperCase();
+					voorletters.append(hoofdletters.charAt(0));
+					if (hoofdletters.startsWith("IJ"))
 					{
-						voorletters.append(voornaam.toUpperCase().charAt(1));
+						voorletters.append(hoofdletters.charAt(1));
 					}
-
 					voorletters.append(".");
 				}
 			}

@@ -168,11 +168,11 @@ public class MammaIlmJobListener extends BaseLogListener
 
 	private void addEntries(JobExecution jobExecution, MammaIlmBeeldenStatusRapportage rapportage)
 	{
-		List<MammaIlmRetryDto> dtoList = (List<MammaIlmRetryDto>) jobExecution.getExecutionContext().get(KEY_BEELDEN_STATUS_ENTRIES);
+		var dtoList = (List<MammaIlmRetryDto>) jobExecution.getExecutionContext().get(KEY_BEELDEN_STATUS_ENTRIES);
 
 		if (dtoList != null)
 		{
-			for (MammaIlmRetryDto dto : dtoList)
+			for (var dto : dtoList)
 			{
 				var client = hibernateService.get(Client.class, dto.getClientId());
 				var rapportageEntry = new MammaIlmBeeldenStatusRapportageEntry(
@@ -201,8 +201,8 @@ public class MammaIlmJobListener extends BaseLogListener
 
 		if (minutes != null)
 		{
-			Date startTime = new Date();
-			Date endTime = DateUtil.plusTijdseenheid(startTime, minutes, ChronoUnit.MINUTES);
+			var startTime = new Date();
+			var endTime = DateUtil.plusTijdseenheid(startTime, minutes, ChronoUnit.MINUTES);
 			getJobExecution().getExecutionContext().put(KEY_MAX_EIND_TIJD, endTime);
 		}
 	}

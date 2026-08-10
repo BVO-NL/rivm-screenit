@@ -146,7 +146,7 @@ public class MammaCeUploadBeeldenVerzoekOrganisatieWerklijstPage extends Abstrac
 			}
 		});
 
-		MammaCeUploadBeeldenVerzoekOrganisatieDataProvider dataProvider = new MammaCeUploadBeeldenVerzoekOrganisatieDataProvider((IModel<Organisatie>) getDefaultModel(),
+		var dataProvider = new MammaCeUploadBeeldenVerzoekOrganisatieDataProvider((IModel<Organisatie>) getDefaultModel(),
 			ModelUtil.sModel(ScreenitSession.get().getScreeningOrganisatie()));
 		table = new ScreenitDataTable<MammaUploadBeeldenVerzoek, String>("werklijst", columns, dataProvider, 10,
 			Model.of("verzoek(en)"))

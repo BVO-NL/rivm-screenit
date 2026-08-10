@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.mammaAfdeling;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.base.BasePage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBeheer;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieZoeken;
@@ -60,7 +59,7 @@ public class AanvullendeMammaAfdelingGegevensPage extends OrganisatieBeheer
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Organisatie organisatie = (Organisatie) model.getObject();
+				var organisatie = (Organisatie) model.getObject();
 				organisatieService.saveOrUpdate(organisatie);
 				BasePage.markeerFormulierenOpgeslagen(target);
 				this.info("Gegevens zijn succesvol opgeslagen");
@@ -70,7 +69,7 @@ public class AanvullendeMammaAfdelingGegevensPage extends OrganisatieBeheer
 
 	protected void createAnnuleren(Form form)
 	{
-		AjaxLink<Medewerker> annuleren = new AjaxLink<Medewerker>("annuleren")
+		var annuleren = new AjaxLink<Medewerker>("annuleren")
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -92,7 +91,7 @@ public class AanvullendeMammaAfdelingGegevensPage extends OrganisatieBeheer
 
 	protected void setAlleenInzien(Organisatie organisatie, Recht recht)
 	{
-		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie,
+		var actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie,
 			recht);
 		inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 	}

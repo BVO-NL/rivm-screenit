@@ -33,6 +33,7 @@ import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.Assert;
 
 @FunctionalInterface
 public interface ExtendedSpecification<T> extends Specification<T>
@@ -77,10 +78,12 @@ public interface ExtendedSpecification<T> extends Specification<T>
 
 	default ExtendedSpecification<T> and(ExtendedSpecification<T> other)
 	{
+
+		Assert.notNull(other, "Specification must not be null");
 		return (r, q, cb) ->
 		{
 			var thisPredicate = toPredicate(r, q, cb);
-			var otherPredicate = other == null ? null : other.toPredicate(r, q, cb);
+			var otherPredicate = other.toPredicate(r, q, cb);
 			if (thisPredicate == null)
 			{
 				return otherPredicate;
@@ -94,10 +97,12 @@ public interface ExtendedSpecification<T> extends Specification<T>
 
 	default ExtendedSpecification<T> or(ExtendedSpecification<T> other)
 	{
+
+		Assert.notNull(other, "Specification must not be null");
 		return (r, q, cb) ->
 		{
 			var thisPredicate = toPredicate(r, q, cb);
-			var otherPredicate = other == null ? null : other.toPredicate(r, q, cb);
+			var otherPredicate = other.toPredicate(r, q, cb);
 			if (thisPredicate == null)
 			{
 				return otherPredicate;
@@ -111,7 +116,9 @@ public interface ExtendedSpecification<T> extends Specification<T>
 
 	static <T> ExtendedSpecification<T> not(ExtendedSpecification<T> spec)
 	{
-		return (r, q, cb) -> spec == null ? null : cb.not(spec.toPredicate(r, q, cb));
+
+		Assert.notNull(spec, "Specification must not be null");
+		return (r, q, cb) -> cb.not(spec.toPredicate(r, q, cb));
 	}
 
 	static <T> ExtendedSpecification<T> unrestricted()

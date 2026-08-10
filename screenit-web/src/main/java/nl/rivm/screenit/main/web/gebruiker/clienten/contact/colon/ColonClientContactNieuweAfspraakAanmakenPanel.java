@@ -29,11 +29,8 @@ import java.util.Map;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActie;
-import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
-import nl.rivm.screenit.model.colon.ColoscopieCentrumWrapper;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -65,25 +62,25 @@ public class ColonClientContactNieuweAfspraakAanmakenPanel extends AbstractClien
 	{
 		super(id, model);
 
-		ColonDossier colonDossier = client.getObject().getColonDossier();
+		var colonDossier = client.getObject().getColonDossier();
 
 		IModel<ColonIntakeAfspraak> afspraakModel = Model.of();
-		ColonScreeningRonde laatsteScreeningRonde = colonDossier.getLaatsteScreeningRonde();
+		var laatsteScreeningRonde = colonDossier.getLaatsteScreeningRonde();
 		if (laatsteScreeningRonde != null)
 		{
-			ColonIntakeAfspraak laatsteAfspraak = laatsteScreeningRonde.getLaatsteAfspraak();
+			var laatsteAfspraak = laatsteScreeningRonde.getLaatsteAfspraak();
 			if (laatsteAfspraak != null)
 			{
 				afspraakModel = ModelUtil.csModel(laatsteAfspraak);
 			}
 			else
 			{
-				ColonIntakeAfspraak afspraak = new ColonIntakeAfspraak();
+				var afspraak = new ColonIntakeAfspraak();
 				afspraak.setClient(client.getObject());
 				afspraak.setScreeningRonde(laatsteScreeningRonde);
 				afspraak.setAangemaaktOp(currentDateSupplier.getLocalDateTime());
-				ColoscopieCentrumWrapper intakeLocatieWrapper = organisatieZoekService.getNearestIntakeLocatie(client.getObject());
-				ColonIntakelocatie intakeLocatie = hibernateService.load(ColonIntakelocatie.class, intakeLocatieWrapper.getId());
+				var intakeLocatieWrapper = organisatieZoekService.getNearestIntakeLocatie(client.getObject());
+				var intakeLocatie = hibernateService.load(ColonIntakelocatie.class, intakeLocatieWrapper.getId());
 				for (var kamer : intakeLocatie.getKamers())
 				{
 					if (Boolean.TRUE.equals(kamer.getActief()))
@@ -93,7 +90,7 @@ public class ColonClientContactNieuweAfspraakAanmakenPanel extends AbstractClien
 					}
 				}
 				afspraak.setVanaf(currentDateSupplier.getLocalDateTime());
-				BigDecimal afstand = intakeLocatieWrapper.getAfstand();
+				var afstand = intakeLocatieWrapper.getAfstand();
 				if (afstand == null)
 				{
 					afstand = BigDecimal.ZERO;
@@ -110,7 +107,7 @@ public class ColonClientContactNieuweAfspraakAanmakenPanel extends AbstractClien
 	@Override
 	public Map<ExtraOpslaanKey, Object> getOpslaanObjecten()
 	{
-		Map<ExtraOpslaanKey, Object> opslaanObjecten = super.getOpslaanObjecten();
+		var opslaanObjecten = super.getOpslaanObjecten();
 		if (afspraakMakenPanel != null)
 		{
 			opslaanObjecten.putAll(afspraakMakenPanel.getOpslaanObjecten());

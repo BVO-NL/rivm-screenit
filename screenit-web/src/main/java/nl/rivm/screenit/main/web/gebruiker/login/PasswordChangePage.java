@@ -42,10 +42,8 @@ import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.behavior.FocusBehavior;
 
 import org.apache.wicket.Application;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
@@ -111,14 +109,14 @@ public class PasswordChangePage extends LoginBasePage
 			error(getString("error.code.incorrect"));
 		}
 
-		final ScreenitForm<PasswordChangePage> form = new ScreenitForm<>("requestForm", new CompoundPropertyModel<>(this));
-		final BookmarkablePageLink<Void> naarinlogpagina = new BookmarkablePageLink<>("naarinlogpagina", Application.get().getHomePage());
-		AjaxButton opslaan = new AjaxButton("opslaan", form)
+		final var form = new ScreenitForm<PasswordChangePage>("requestForm", new CompoundPropertyModel<>(this));
+		final var naarinlogpagina = new BookmarkablePageLink<Void>("naarinlogpagina", Application.get().getHomePage());
+		var opslaan = new AjaxButton("opslaan", form)
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Medewerker medewerker = ModelUtil.nullSafeGet(PasswordChangePage.this.medewerkerModel);
+				var medewerker = ModelUtil.nullSafeGet(PasswordChangePage.this.medewerkerModel);
 				if (!isValidChangeCode())
 				{
 					error("Code is niet meer geldig. Neem contact op met de beheerder.");
@@ -146,7 +144,7 @@ public class PasswordChangePage extends LoginBasePage
 						naarinlogpagina.setVisible(Boolean.TRUE);
 						setVisible(Boolean.FALSE);
 
-						for (Component component : form)
+						for (var component : form)
 						{
 							if (!(component instanceof BookmarkablePageLink))
 							{
@@ -174,16 +172,16 @@ public class PasswordChangePage extends LoginBasePage
 		form.add(naarinlogpagina);
 		form.setDefaultButton(opslaan);
 		add(form);
-		FormComponent<String> gebruikersnaamTf = ComponentHelper.addTextField(form, "gebruikersnaam", true, 50, true);
+		var gebruikersnaamTf = ComponentHelper.addTextField(form, "gebruikersnaam", true, 50, true);
 		gebruikersnaamTf.add(new FocusBehavior());
 
 		ComponentHelper.addTextField(form, "changeCode", true, 50, true);
 
-		ScreenITWachtwoordValidator validator = new ScreenITWachtwoordValidator(gebruikersnaamTf, medewerkerModel);
-		ScreenitWachtwoordField wachtwoord1Field = new ScreenitWachtwoordField("wachtwoord1", new PropertyModel<>(this, "wachtwoord1"), true, validator);
+		var validator = new ScreenITWachtwoordValidator(gebruikersnaamTf, medewerkerModel);
+		var wachtwoord1Field = new ScreenitWachtwoordField("wachtwoord1", new PropertyModel<>(this, "wachtwoord1"), true, validator);
 		form.add(wachtwoord1Field);
 
-		ScreenitWachtwoordField wachtwoord2Field = new ScreenitWachtwoordField("wachtwoord2", new PropertyModel<>(this, "wachtwoord2"), true, null);
+		var wachtwoord2Field = new ScreenitWachtwoordField("wachtwoord2", new PropertyModel<>(this, "wachtwoord2"), true, null);
 		form.add(wachtwoord2Field);
 	}
 

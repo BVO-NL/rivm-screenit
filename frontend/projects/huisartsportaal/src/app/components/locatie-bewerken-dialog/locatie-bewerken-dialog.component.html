@@ -1,0 +1,59 @@
+<!--
+  ========================LICENSE_START=================================
+  huisartsportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<ds-modal [config]="locatieEditModalConfig" [header]="isNew ? 'Locatie toevoegen' : 'Locatie wijzigen'" (modalClosed)="annuleren()">
+  <form [formGroup]="locatieForm">
+    <div class="row">
+      <div class="col-md-6">
+        <ds-input label="Locatienaam" formControlName="naam" required placeholder="Locatienaam"/>
+        <ds-input label="Zorgmail klantnummer"
+                  formControlName="zorgmailklantnummer"
+                  required
+                  type="number"
+                  placeholder="bijv. 500010007"
+                  [errorMessage]="{minlength: 'Dit veld moet minstens 9 tekens bevatten', maxlength: 'Dit veld mag hoogstens 9 tekens bevatten'}"/>
+        <ds-input label="IBAN"
+                  formControlName="iban"
+                  required
+                  placeholder="bijv. NL12ABNA12345678"
+                  [errorMessage]="{pattern: 'De IBAN is incorrect'}"/>
+        <ds-input label="Tenaamstelling"
+                  placeholder="Tenaamstelling"
+                  formControlName="ibanTenaamstelling"
+                  required/>
+      </div>
+      <div class="col-md-6" formGroupName="locatieAdres">
+        <ds-checkbox data-testid="gelijkAanNaw_checkbox" class="nawCheckbox" [formControl]="gelijkAanNawCtrl">Gelijk aan NAW gegevens</ds-checkbox>
+        <ds-input label="Straat" placeholder="Straat" formControlName="straat" required/>
+        <div class="row">
+          <ds-input label="Huisnummer" placeholder="Huisnummer" formControlName="huisnummer" required class="col-md-8" type="number"/>
+          <ds-input formControlName="huisnummertoevoeging" class="col-md-4" label="Toevoeging" placeholder="Toevoeging"/>
+        </div>
+        <ds-input label="Postcode" placeholder="Postcode" formControlName="postcode" required/>
+        <app-woonplaats-selector formControlName="woonplaats" [required]="true"/>
+      </div>
+    </div>
+  </form>
+
+  <div *ds-footer-actions-right class="footer">
+    <button ds-button-secondary (click)="annuleren()" data-testid="annuleren_button">Annuleren</button>
+    <button ds-button-primary (click)="opslaan()" data-testid="opslaan_button">Opslaan</button>
+  </div>
+</ds-modal>

@@ -147,11 +147,11 @@ public class RoosterDaoImpl implements RoosterDao
 			}
 		}
 		whereQueryString += " and ts.tot>:vanaf and ts.vanaf<:tot ";
-		String orderByQueryString = "";
+		var orderByQueryString = "";
 		if (sortProperty != null)
 		{
 			orderByQueryString += "order by ";
-			boolean supportedSortProperty = true;
+			var supportedSortProperty = true;
 			switch (sortProperty)
 			{
 			case "vanaf":
@@ -416,12 +416,12 @@ public class RoosterDaoImpl implements RoosterDao
 
 		querySB.append("select {k.*}");
 
-//4b62dab1-a287-4879-a5b2-39235e1b1b5a
+//5ee157a7-730d-481d-b04a-724d67400dd8
 		querySB.append(" from colon.afspraakslot afs");
 		querySB.append(" join colon.tijdslot ts on afs.id=ts.id");
 		querySB.append(" join colon.intakekamer k on ts.kamer=k.id");
 
-//4b62dab1-a287-4879-a5b2-39235e1b1b5a
+//5ee157a7-730d-481d-b04a-724d67400dd8
 		var params = new HashMap<String, Object>();
 		querySB.append(" and k.actief = true");
 		querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2))");

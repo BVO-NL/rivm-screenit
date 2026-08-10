@@ -481,7 +481,7 @@ public class ColonUitnodigingsgebiedServiceImpl implements ColonUitnodigingsgebi
 		}
 
 		Collections.sort(wijzigingen, Comparator.comparing(CapaciteitsPercWijziging::getUitnodigingsgebied).thenComparing(CapaciteitsPercWijziging::getIntakelocatie));
-		for (String onzichtbareAdherentieWijziging : onzichtbareAdherentieWijzigingen)
+		for (var onzichtbareAdherentieWijziging : onzichtbareAdherentieWijzigingen)
 		{
 			nieuweAdherentiePercentages.remove(onzichtbareAdherentieWijziging);
 		}
@@ -607,7 +607,7 @@ public class ColonUitnodigingsgebiedServiceImpl implements ColonUitnodigingsgebi
 			wijziging.setNieuwBerekendeIntakes(berekendeBenodigdeIntakecapaciteitVoorGebied);
 			wijziging.setOudAdhPer(koppeling.getPercentageAdherentie());
 			wijziging.setNieuwAdhPer(getAdherentiePercentage(koppeling, verwijderdeKoppelingen, nieuweAdherentiePercentages));
-			Integer aantalGeprognostiseerdeAfspraakslots = intakelocatie.getAantalGeprognostiseerdeRoosterblokken();
+			var aantalGeprognostiseerdeAfspraakslots = intakelocatie.getAantalGeprognostiseerdeRoosterblokken();
 			if (aantalGeprognostiseerdeAfspraakslots != null)
 			{
 				var prognoseVanRestVanJaar = bepaalPrognoseVoorRestVanJaar(aantalGeprognostiseerdeAfspraakslots);
@@ -692,7 +692,7 @@ public class ColonUitnodigingsgebiedServiceImpl implements ColonUitnodigingsgebi
 		}
 		else
 		{
-			String transientId = "";
+			var transientId = "";
 			if (verdeling.getIntakelocatie() != null)
 			{
 				transientId += verdeling.getIntakelocatie().getId().toString();

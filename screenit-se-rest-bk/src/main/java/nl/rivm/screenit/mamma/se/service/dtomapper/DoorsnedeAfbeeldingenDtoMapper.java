@@ -41,7 +41,7 @@ public class DoorsnedeAfbeeldingenDtoMapper
 
 	public DoorsnedeAfbeeldingenSeDto createDoorsnedeAfbeeldingenDtoFromLaesies(List<MammaLaesie> laesies)
 	{
-		DoorsnedeAfbeeldingenSeDto doorsnedeAfbeeldingenDto = new DoorsnedeAfbeeldingenSeDto();
+		var doorsnedeAfbeeldingenDto = new DoorsnedeAfbeeldingenSeDto();
 		doorsnedeAfbeeldingenDto.setRechtsHorizontaleDoorsnede(mapToAfbeelding(getHorizontaleAnnotatieIcoonCollection(laesies, MammaZijde.RECHTER_BORST)));
 		doorsnedeAfbeeldingenDto.setLinksHorizontaleDoorsnede(mapToAfbeelding(getHorizontaleAnnotatieIcoonCollection(laesies, MammaZijde.LINKER_BORST)));
 		doorsnedeAfbeeldingenDto.setRechtsVerticaleDoorsnede(mapToAfbeelding(getVerticaleAnnotatieIcoonCollection(laesies, MammaZijde.RECHTER_BORST)));
@@ -52,7 +52,7 @@ public class DoorsnedeAfbeeldingenDtoMapper
 	public DoorsnedeAfbeeldingenSeDto createDoorsnedeAfbeeldingenDtoFromAanzichten(MammaAnnotatieAfbeelding rechtsVerticaleDoorsnede,
 		MammaAnnotatieAfbeelding linksVerticaleDoorsnede, MammaAnnotatieAfbeelding rechtsHorizontaleDoorsnede, MammaAnnotatieAfbeelding linksHorizontaleDoorsnede)
 	{
-		DoorsnedeAfbeeldingenSeDto doorsnedeAfbeeldingenDto = new DoorsnedeAfbeeldingenSeDto();
+		var doorsnedeAfbeeldingenDto = new DoorsnedeAfbeeldingenSeDto();
 		doorsnedeAfbeeldingenDto.setRechtsHorizontaleDoorsnede(mapper.createAfbeeldingDto(rechtsHorizontaleDoorsnede));
 		doorsnedeAfbeeldingenDto.setLinksHorizontaleDoorsnede(mapper.createAfbeeldingDto(linksHorizontaleDoorsnede));
 		doorsnedeAfbeeldingenDto.setRechtsVerticaleDoorsnede(mapper.createAfbeeldingDto(rechtsVerticaleDoorsnede));
@@ -74,7 +74,7 @@ public class DoorsnedeAfbeeldingenDtoMapper
 
 	private AnnotatieAfbeeldingSeDto mapToAfbeelding(List<AnnotatieIcoonSeDto> iconen)
 	{
-		AnnotatieAfbeeldingSeDto afbeeldingSeDto = new AnnotatieAfbeeldingSeDto();
+		var afbeeldingSeDto = new AnnotatieAfbeeldingSeDto();
 		afbeeldingSeDto.setIconen(iconen);
 		return afbeeldingSeDto;
 	}
@@ -83,7 +83,7 @@ public class DoorsnedeAfbeeldingenDtoMapper
 	{
 		if (laesieicoon != null)
 		{
-			AnnotatieIcoonSeDto dto = new AnnotatieIcoonSeDto();
+			var dto = new AnnotatieIcoonSeDto();
 			dto.setType(mapAnnotatieIcoonType(type));
 			dto.setPositieX(laesieicoon.getPositieX().doubleValue());
 			dto.setPositieY(laesieicoon.getPositieY().doubleValue());

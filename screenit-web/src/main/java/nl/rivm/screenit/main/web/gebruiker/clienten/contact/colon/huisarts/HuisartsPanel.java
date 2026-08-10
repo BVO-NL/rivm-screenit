@@ -74,9 +74,9 @@ public class HuisartsPanel extends GenericPanel<ColonScreeningRonde>
 		setZoekModel(ModelUtil.cModel(new EnovationHuisarts()));
 		setDialog(dialog);
 
-		boolean magWijzigen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_WIJZIGEN_HUISARTS, Actie.AANPASSEN);
-		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_WIJZIGEN_HUISARTS, Actie.VERWIJDEREN);
-		boolean magVerzenden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_HUISARTSBERICHT_OPNIEUW_VERZENDEN, Actie.AANPASSEN, getModelObject());
+		var magWijzigen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_WIJZIGEN_HUISARTS, Actie.AANPASSEN);
+		var magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_WIJZIGEN_HUISARTS, Actie.VERWIJDEREN);
+		var magVerzenden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_HUISARTSBERICHT_OPNIEUW_VERZENDEN, Actie.AANPASSEN, getModelObject());
 
 		setHuisartsWijzigenPanel(huisartsWijzigenPanel);
 
@@ -86,15 +86,15 @@ public class HuisartsPanel extends GenericPanel<ColonScreeningRonde>
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				ToegangLevel toegangsLevel = ScreenitSession.get().getToegangsLevel(Actie.AANPASSEN, Recht.MEDEWERKER_WIJZIGEN_HUISARTS);
+				var toegangsLevel = ScreenitSession.get().getToegangsLevel(Actie.AANPASSEN, Recht.MEDEWERKER_WIJZIGEN_HUISARTS);
 				setVisible(toegangsLevel != null && ToegangLevel.REGIO.getNiveau() <= toegangsLevel.getNiveau());
 			}
 
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				ColonScreeningRonde huidigeRonde = getModelObject();
-				ColonScreeningRonde vorigeRonde = rondeNummerService.getVorigeRonde(huidigeRonde);
+				var huidigeRonde = getModelObject();
+				var vorigeRonde = rondeNummerService.getVorigeRonde(huidigeRonde);
 				if (vorigeRonde != null && vorigeRonde.getHuisarts() != null && huidigeRonde.getHuisarts() == null)
 				{
 					getDialog().openWith(target, new HuisartsVorigeRondeDialogPanel(IDialog.CONTENT_ID, getModel(), ModelUtil.sModel(vorigeRonde.getHuisarts()),
@@ -133,18 +133,18 @@ public class HuisartsPanel extends GenericPanel<ColonScreeningRonde>
 		wijzigHuisartsBtn.setVisible(magWijzigen);
 		add(wijzigHuisartsBtn);
 
-		ColonScreeningRonde laatsteScreeningronde = getModelObject();
-		boolean vorigeBerichtenBeschikbaar = laatsteScreeningronde.getLaatsteAfspraak() != null;
-		EnovationHuisarts enovationHuisarts = laatsteScreeningronde.getHuisarts();
+		var laatsteScreeningronde = getModelObject();
+		var vorigeBerichtenBeschikbaar = laatsteScreeningronde.getLaatsteAfspraak() != null;
+		var enovationHuisarts = laatsteScreeningronde.getHuisarts();
 
-		boolean verzendHaBerichtenVisible = magVerzenden && vorigeBerichtenBeschikbaar && enovationHuisarts != null;
-		final WebMarkupContainer verzendHaBerichtenOpnieuwContainer = new WebMarkupContainer("verzendHaBerichtenOpnieuwContainer");
+		var verzendHaBerichtenVisible = magVerzenden && vorigeBerichtenBeschikbaar && enovationHuisarts != null;
+		final var verzendHaBerichtenOpnieuwContainer = new WebMarkupContainer("verzendHaBerichtenOpnieuwContainer");
 		verzendHaBerichtenOpnieuwContainer.setVisible(verzendHaBerichtenVisible);
 		verzendHaBerichtenOpnieuwContainer.setOutputMarkupId(true);
 		add(verzendHaBerichtenOpnieuwContainer);
 
 		huisartsBerichtenVerzenden.setObject(verzendHaBerichtenVisible);
-		CheckBox verzendHaBerichtenOpnieuw = new CheckBox("verzendHaBerichtenOpnieuw", huisartsBerichtenVerzenden);
+		var verzendHaBerichtenOpnieuw = new CheckBox("verzendHaBerichtenOpnieuw", huisartsBerichtenVerzenden);
 		verzendHaBerichtenOpnieuwContainer.add(verzendHaBerichtenOpnieuw);
 
 		AjaxLink huisartsVerwijderenBtn = new AjaxLink<Void>("verwijderHuisarts")
@@ -174,7 +174,7 @@ public class HuisartsPanel extends GenericPanel<ColonScreeningRonde>
 			add(new Label("huisartsNaam", NaamUtil.getNaamHuisarts(enovationHuisarts)));
 			add(new Label("praktijkNaam", enovationHuisarts.getPraktijknaam()));
 			add(new Label("praktijkAdres", AdresUtil.getVolledigeAdresString(enovationHuisarts.getAdres())));
-			String agbCode = enovationHuisarts.getHuisartsAgb();
+			var agbCode = enovationHuisarts.getHuisartsAgb();
 			if (StringUtils.isBlank(agbCode))
 			{
 				agbCode = enovationHuisarts.getPraktijkAgb();

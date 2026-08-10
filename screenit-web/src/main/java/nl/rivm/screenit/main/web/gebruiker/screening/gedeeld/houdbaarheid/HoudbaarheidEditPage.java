@@ -57,13 +57,13 @@ public abstract class HoudbaarheidEditPage<H extends AbstractHoudbaarheid> exten
 	{
 		add(new Label("title", getTitleModel(model)));
 
-		Form<H> form = new Form<>("form", new CompoundPropertyModel<>(model));
+		var form = new Form<H>("form", new CompoundPropertyModel<>(model));
 		add(form);
 
-		final TextField<String> barcodeStart = new TextField<>("barcodeStart");
-		final TextField<String> barcodeEnd = new TextField<>("barcodeEnd");
+		final var barcodeStart = new TextField<String>("barcodeStart");
+		final var barcodeEnd = new TextField<String>("barcodeEnd");
 		customizeBarcodeFields(barcodeStart, barcodeEnd);
-		Component type = createTypeField("type");
+		var type = createTypeField("type");
 
 		form.add(barcodeStart.setRequired(true));
 		form.add(barcodeEnd.setRequired(true));
@@ -98,7 +98,7 @@ public abstract class HoudbaarheidEditPage<H extends AbstractHoudbaarheid> exten
 			public void onSubmit()
 			{
 				var nu = currentDateSupplier.getLocalDateTime();
-				H vervalDatum = model.getObject();
+				var vervalDatum = model.getObject();
 				if (houdbaarheidService.overlaptBestaandeReeks(vervalDatum))
 				{
 					ScreenitSession.get().error(getString("error.overlappendereeks"));

@@ -56,7 +56,7 @@ abstract class MammaMammograafEditPanel extends GenericPanel<MammaMammograaf>
 		Form<MammaMammograaf> form = new ScreenitForm<>("form", model);
 		add(form);
 
-		final Long mammograafId = model.getObject().getId();
+		final var mammograafId = model.getObject().getId();
 		ComponentHelper.addTextField(form, "aeTitle", true, 15, String.class, false)
 			.add(new ScreenitUniqueFieldValidator<>(MammaMammograaf.class, mammograafId, "aeTitle", true));
 		ComponentHelper.addTextField(form, "werkstationIpAdres", true, 15, String.class, false)
@@ -68,7 +68,7 @@ abstract class MammaMammograafEditPanel extends GenericPanel<MammaMammograaf>
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 
-				boolean seProxyEnMammograafIpsMatchen = screeningsEenheidService.ipAdressenHebbenZelfdeGemeenschappelijkeBlokken(getScreeningsEenheid());
+				var seProxyEnMammograafIpsMatchen = screeningsEenheidService.ipAdressenHebbenZelfdeGemeenschappelijkeBlokken(getScreeningsEenheid());
 				if (!seProxyEnMammograafIpsMatchen)
 				{
 					error("De eerste drie blokken van de IP-adressen mammograaf en server screeningseenheid komen niet overeen, controleer welke correct is.");
@@ -92,7 +92,7 @@ abstract class MammaMammograafEditPanel extends GenericPanel<MammaMammograaf>
 
 	private MammaScreeningsEenheid getScreeningsEenheid()
 	{
-		MammaMammograaf mammograaf = MammaMammograafEditPanel.this.getModelObject();
+		var mammograaf = MammaMammograafEditPanel.this.getModelObject();
 		return mammograaf.getScreeningsEenheid();
 	}
 

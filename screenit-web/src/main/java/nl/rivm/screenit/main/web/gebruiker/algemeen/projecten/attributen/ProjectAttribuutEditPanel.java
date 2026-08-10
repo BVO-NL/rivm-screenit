@@ -61,7 +61,7 @@ public abstract class ProjectAttribuutEditPanel extends GenericPanel<ProjectAttr
 		attributeModel = model;
 		oudeNaamAttribuut = model.getObject().getNaam();
 
-		Form<ProjectAttribuut> form = new Form<>("form", attributeModel);
+		var form = new Form<ProjectAttribuut>("form", attributeModel);
 		add(form);
 
 		ComponentHelper.addTextField(form, "naam", true, 50, false);
@@ -77,16 +77,16 @@ public abstract class ProjectAttribuutEditPanel extends GenericPanel<ProjectAttr
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				ProjectAttribuut attribuut = form.getModelObject();
-				LogGebeurtenis logGebeurtenis = attribuut.getId() == null ? LogGebeurtenis.PROJECT_ATTRIBUUT_TOEGEVOEGD : LogGebeurtenis.PROJECT_ATTRIBUUT_GEWIJZIGD;
+				var attribuut = form.getModelObject();
+				var logGebeurtenis = attribuut.getId() == null ? LogGebeurtenis.PROJECT_ATTRIBUUT_TOEGEVOEGD : LogGebeurtenis.PROJECT_ATTRIBUUT_GEWIJZIGD;
 
-				String naamAttribuut = attribuut.getNaam();
+				var naamAttribuut = attribuut.getNaam();
 				naamAttribuut = naamAttribuut.replaceAll(" ", "").toLowerCase();
 
-				String projectNaam = attribuut.getProject().getNaam();
+				var projectNaam = attribuut.getProject().getNaam();
 				projectNaam = projectNaam.replaceAll(" ", "").toLowerCase();
 
-				String mergeField = "_" + projectNaam + "_" + naamAttribuut;
+				var mergeField = "_" + projectNaam + "_" + naamAttribuut;
 
 				attribuut.setMergeField(mergeField);
 				if (projectService.getProjectAttribuut(attribuut) == null)
@@ -95,7 +95,7 @@ public abstract class ProjectAttribuutEditPanel extends GenericPanel<ProjectAttr
 
 					projectService.projectAttribuutOpslaan(attribuut);
 
-					String melding = "Project: " + attribuut.getProject().getNaam() + " attribuutnaam: " + attribuut.getNaam();
+					var melding = "Project: " + attribuut.getProject().getNaam() + " attribuutnaam: " + attribuut.getNaam();
 					if (StringUtil.isNotBlank(oudeNaamAttribuut) && LogGebeurtenis.PROJECT_ATTRIBUUT_GEWIJZIGD == logGebeurtenis)
 					{
 						melding += " oude attribuutnaam: " + oudeNaamAttribuut;

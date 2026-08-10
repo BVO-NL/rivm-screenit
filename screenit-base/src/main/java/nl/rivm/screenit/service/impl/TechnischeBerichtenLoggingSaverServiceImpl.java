@@ -82,7 +82,7 @@ public class TechnischeBerichtenLoggingSaverServiceImpl implements TechnischeBer
 	@Override
 	public long logRequest(String type, String service, String message)
 	{
-		long exchangeId = createExchangeId();
+		var exchangeId = createExchangeId();
 		logRequest(type, exchangeId, service, message);
 		return exchangeId;
 	}
@@ -90,7 +90,7 @@ public class TechnischeBerichtenLoggingSaverServiceImpl implements TechnischeBer
 	@Override
 	public void logRequest(String type, long exchangeId, String service, String message)
 	{
-		TechnischeLogEvent event = new TechnischeLogEvent(true);
+		var event = new TechnischeLogEvent(true);
 
 		event.type = type;
 		event.exchangeId = exchangeId;
@@ -104,7 +104,7 @@ public class TechnischeBerichtenLoggingSaverServiceImpl implements TechnischeBer
 	@Override
 	public void logResponse(String type, long exchangeId, String message)
 	{
-		TechnischeLogEvent event = new TechnischeLogEvent(false);
+		var event = new TechnischeLogEvent(false);
 
 		event.type = type;
 		event.exchangeId = exchangeId;
@@ -114,7 +114,7 @@ public class TechnischeBerichtenLoggingSaverServiceImpl implements TechnischeBer
 
 	private void logEvent(TechnischeLogEvent logEvent)
 	{
-		String logVerwijzing = logEvent.type + ": Vind %s bericht met 'select * from gedeeld.technische_berichten_log_regel where id = " + logEvent.exchangeId + "';";
+		var logVerwijzing = logEvent.type + ": Vind %s bericht met 'select * from gedeeld.technische_berichten_log_regel where id = " + logEvent.exchangeId + "';";
 		if (logEvent.request)
 		{
 			LOG.info(logVerwijzing.formatted("request"));

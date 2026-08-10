@@ -151,8 +151,8 @@ public class Organisatie extends AbstractHibernateObject implements IActief
 	@Override
 	public int hashCode()
 	{
-		final int prime = 31;
-		int result = 1;
+		final var prime = 31;
+		var result = 1;
 		if (getId() != null)
 		{
 			result = prime * result + getId().hashCode();
@@ -169,7 +169,7 @@ public class Organisatie extends AbstractHibernateObject implements IActief
 	@Override
 	public boolean equals(Object obj)
 	{
-		boolean returnValue = true;
+		var returnValue = true;
 		if (obj == null)
 		{
 			returnValue = false;
@@ -180,7 +180,7 @@ public class Organisatie extends AbstractHibernateObject implements IActief
 		}
 		else
 		{
-			Organisatie other = (Organisatie) obj;
+			var other = (Organisatie) obj;
 			if (getId() == null)
 			{
 				if (other.getId() != null)

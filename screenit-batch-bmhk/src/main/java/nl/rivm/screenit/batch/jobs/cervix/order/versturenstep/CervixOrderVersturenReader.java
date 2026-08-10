@@ -44,7 +44,7 @@ public class CervixOrderVersturenReader extends BaseSpecificationScrollableResul
 	{
 		var specification = heeftStatusIn(List.of(CervixCytologieOrderStatus.AANGEMAAKT, CervixCytologieOrderStatus.MISLUKT));
 		var jobParameters = getStepExecution().getJobExecution().getJobParameters();
-		if (jobParameters.getParameters().containsKey(JobStartParameter.CERVIX_ORDER_LABORATORIUM.name()))
+		if (jobParameters.getParameter(JobStartParameter.CERVIX_ORDER_LABORATORIUM.name()) != null)
 		{
 			specification = specification.and(
 				heeftLaboratoriumMetId(jobParameters.getLong(JobStartParameter.CERVIX_ORDER_LABORATORIUM.name())).with(CervixCytologieOrder_.uitstrijkje));

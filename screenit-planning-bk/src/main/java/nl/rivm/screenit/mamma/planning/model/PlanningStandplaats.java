@@ -38,7 +38,7 @@ public final class PlanningStandplaats extends PlanningEntiteit
 	private final NavigableSet<PlanningStandplaatsRonde> standplaatsRondeNavigableSet = new TreeSet<>(
 		(standplaatsRonde1, standplaatsRonde2) ->
 		{
-			int compareTo = standplaatsRonde1.getStandplaatsPeriodeNavigableSet().first().getVanaf()
+			var compareTo = standplaatsRonde1.getStandplaatsPeriodeNavigableSet().first().getVanaf()
 				.compareTo(standplaatsRonde2.getStandplaatsPeriodeNavigableSet().first().getVanaf());
 			if (compareTo != 0)
 			{

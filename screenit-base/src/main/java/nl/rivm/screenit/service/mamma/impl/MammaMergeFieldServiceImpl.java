@@ -84,12 +84,12 @@ public class MammaMergeFieldServiceImpl implements MammaMergeFieldService
 
 	private Medewerker bepaalTweedeVerwijzendeRadioloog(MammaBeoordeling beoordeling)
 	{
-		Medewerker verslagMaker = beoordeling.getVerslagLezing().getBeoordelaar().getMedewerker();
-		Medewerker beoordelaarEersteLezing = beoordeling.getEersteLezing().getBeoordelaar().getMedewerker();
-		Medewerker beoordelaarTweedeLezing = beoordeling.getTweedeLezing().getBeoordelaar().getMedewerker();
-		Optional<Medewerker> beoordelaarDiscrepantie = Optional.of(beoordeling).map(MammaBeoordeling::getDiscrepantieLezing).map(MammaLezing::getBeoordelaar)
+		var verslagMaker = beoordeling.getVerslagLezing().getBeoordelaar().getMedewerker();
+		var beoordelaarEersteLezing = beoordeling.getEersteLezing().getBeoordelaar().getMedewerker();
+		var beoordelaarTweedeLezing = beoordeling.getTweedeLezing().getBeoordelaar().getMedewerker();
+		var beoordelaarDiscrepantie = Optional.of(beoordeling).map(MammaBeoordeling::getDiscrepantieLezing).map(MammaLezing::getBeoordelaar)
 			.map(OrganisatieMedewerker::getMedewerker);
-		Optional<Medewerker> beoordelaarArbitrage = Optional.of(beoordeling).map(MammaBeoordeling::getArbitrageLezing).map(MammaLezing::getBeoordelaar)
+		var beoordelaarArbitrage = Optional.of(beoordeling).map(MammaBeoordeling::getArbitrageLezing).map(MammaLezing::getBeoordelaar)
 			.map(OrganisatieMedewerker::getMedewerker);
 
 		if (beoordelaarArbitrage.isPresent())
@@ -114,7 +114,7 @@ public class MammaMergeFieldServiceImpl implements MammaMergeFieldService
 
 	private Medewerker bepaalVerwijzendeRadioloog(MammaBeoordeling beoordeling, Medewerker beoordelaarEersteLezing, Medewerker beoordelaarTweedeLezing)
 	{
-		MammaBaseBeoordelingService beoordelingService = ApplicationContextProvider.getApplicationContext().getBean(MammaBaseBeoordelingService.class);
+		var beoordelingService = ApplicationContextProvider.getApplicationContext().getBean(MammaBaseBeoordelingService.class);
 
 		if (beoordelingService.isLezingVerwijzen(beoordeling.getEersteLezing()))
 		{
@@ -129,7 +129,7 @@ public class MammaMergeFieldServiceImpl implements MammaMergeFieldService
 
 	private Medewerker bepaalEersteNietVerwijzendeRadioloog(MammaBeoordeling beoordeling)
 	{
-		MammaLezing eersteLezing = beoordeling.getEersteLezing();
+		var eersteLezing = beoordeling.getEersteLezing();
 
 		return beoordeling.getArbitrageLezing() != null ? beoordeling.getArbitrageLezing().getBeoordelaar().getMedewerker() : eersteLezing.getBeoordelaar().getMedewerker();
 	}
@@ -141,8 +141,8 @@ public class MammaMergeFieldServiceImpl implements MammaMergeFieldService
 
 	private Medewerker bepaalAndereGunstigeLezing(MammaBeoordeling beoordeling)
 	{
-		MammaBaseBeoordelingService beoordelingService = ApplicationContextProvider.getApplicationContext().getBean(MammaBaseBeoordelingService.class);
-		MammaLezing eersteLezing = beoordeling.getEersteLezing();
+		var beoordelingService = ApplicationContextProvider.getApplicationContext().getBean(MammaBaseBeoordelingService.class);
+		var eersteLezing = beoordeling.getEersteLezing();
 
 		return !beoordelingService.isLezingVerwijzen(eersteLezing) ? eersteLezing.getBeoordelaar().getMedewerker()
 			: beoordeling.getTweedeLezing().getBeoordelaar().getMedewerker();

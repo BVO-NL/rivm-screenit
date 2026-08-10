@@ -29,7 +29,6 @@ import nl.rivm.screenit.main.web.component.SimpleStringResourceModel;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -46,20 +45,20 @@ public abstract class ContextMenuPanel extends Panel
 	{
 		super(id);
 
-		List<MedewerkerMenuItem> allowedContextMenuItems = getAllowedContextMenuItems();
-		final Class<? extends MedewerkerBasePage> activeContextMenuClass = getActiveContextMenuClass();
-		ListView<MedewerkerMenuItem> contextMenu = new ListView<MedewerkerMenuItem>("contextMenu", allowedContextMenuItems)
+		var allowedContextMenuItems = getAllowedContextMenuItems();
+		final var activeContextMenuClass = getActiveContextMenuClass();
+		var contextMenu = new ListView<MedewerkerMenuItem>("contextMenu", allowedContextMenuItems)
 		{
 
 			@Override
 			protected void populateItem(ListItem<MedewerkerMenuItem> item)
 			{
-				WebMarkupContainer container = new WebMarkupContainer("container");
+				var container = new WebMarkupContainer("container");
 
-				MedewerkerMenuItem menuTab = item.getModelObject();
-				Class<? extends MedewerkerBasePage> targetPageClass = menuTab.getTargetPageClass();
-				boolean isZoekPage = targetPageClass.getAnnotation(ZoekenContextMenuItem.class) != null;
-				boolean isActive = targetPageClass.equals(activeContextMenuClass);
+				var menuTab = item.getModelObject();
+				var targetPageClass = menuTab.getTargetPageClass();
+				var isZoekPage = targetPageClass.getAnnotation(ZoekenContextMenuItem.class) != null;
+				var isActive = targetPageClass.equals(activeContextMenuClass);
 				if (isActive)
 				{
 					container.add(new AttributeAppender("class", Model.of("active"), " "));
@@ -70,9 +69,9 @@ public abstract class ContextMenuPanel extends Panel
 				}
 				item.add(container);
 
-				IndicatingAjaxLink<?> link = menuTab.createWicketLink("link");
+				var link = menuTab.createWicketLink("link");
 				container.add(link);
-				WebMarkupContainer zoekIcon = new WebMarkupContainer("zoekIcon");
+				var zoekIcon = new WebMarkupContainer("zoekIcon");
 				if (!isActive)
 				{
 					zoekIcon.add(new AttributeAppender("class", Model.of("icon-white"), " "));

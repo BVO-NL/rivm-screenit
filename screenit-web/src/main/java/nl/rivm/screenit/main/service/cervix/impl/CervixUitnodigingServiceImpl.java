@@ -139,7 +139,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 			var eersteLetter = monsterId.charAt(0);
 			if (eersteLetter == verwachteEersteZASMonsterIdLetter)
 			{
-				final String monsterNummer = monsterId.substring(1);
+				final var monsterNummer = monsterId.substring(1);
 				if (!StringUtils.isNumeric(monsterNummer))
 				{
 					return String.format(getString.apply("nummer.invullen.na.z"), verwachteEersteZASMonsterIdLetter);

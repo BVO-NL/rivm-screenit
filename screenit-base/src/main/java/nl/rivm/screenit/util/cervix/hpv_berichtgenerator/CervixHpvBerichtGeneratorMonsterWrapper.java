@@ -28,9 +28,9 @@ import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.cervix.berichten.CervixHpvResultValue;
 import nl.rivm.screenit.model.cervix.berichten.CervixHpvOrderCode;
 import nl.rivm.screenit.model.cervix.berichten.CervixHpvResultCode;
+import nl.rivm.screenit.model.cervix.berichten.CervixHpvResultValue;
 
 @Getter
 @Setter
@@ -58,13 +58,13 @@ public class CervixHpvBerichtGeneratorMonsterWrapper implements Serializable
 
 	public String getStringAutorisatieDatum()
 	{
-		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddhhmmss");
+		var format = new SimpleDateFormat("yyyyMMddhhmmss");
 		return format.format(autorisatieDatum);
 	}
 
 	public String getStringAnalyseDatum()
 	{
-		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddhhmmss");
+		var format = new SimpleDateFormat("yyyyMMddhhmmss");
 		return format.format(analyseDatum);
 	}
 }

@@ -24,7 +24,6 @@ package nl.rivm.screenit.clientportaal.controllers;
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.clientportaal.model.LoginBrowserInfoDto;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.LogService;
@@ -54,7 +53,7 @@ public class LoginController extends AbstractController
 	@PutMapping
 	public ResponseEntity<Void> logLoggingInAction(@RequestBody LoginBrowserInfoDto loginBrowserInfo, Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 		logService.logGebeurtenis(LogGebeurtenis.INLOGGEN, client, getParsedUserAgentInfo(loginBrowserInfo.getUserAgent()));
 		return ResponseEntity.ok().build();
 	}

@@ -278,17 +278,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.vaynberg.wicket.select2</groupId>
-            <artifactId>wicket-select2</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>wicket-core</artifactId>
-                    <groupId>org.apache.wicket</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
         </dependency>

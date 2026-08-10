@@ -25,7 +25,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -87,7 +86,7 @@ public class PostcodeNlDataReader implements ItemReader<String>, ItemStream
 		{
 			try
 			{
-				InputStream inputStream = postcodeNlRestService.getDelivery(PostcodeNlProductCode.valueOf(productCode));
+				var inputStream = postcodeNlRestService.getDelivery(PostcodeNlProductCode.valueOf(productCode));
 				if (inputStream != null)
 				{
 					tempFile = File.createTempFile(productCode, ".zip");

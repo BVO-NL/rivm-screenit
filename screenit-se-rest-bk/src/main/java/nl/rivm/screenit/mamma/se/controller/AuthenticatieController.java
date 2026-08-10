@@ -31,22 +31,17 @@ import lombok.RequiredArgsConstructor;
 import nl.rivm.screenit.mamma.se.SELogin;
 import nl.rivm.screenit.mamma.se.SERequestHeader;
 import nl.rivm.screenit.mamma.se.dto.LoginDto;
-import nl.rivm.screenit.mamma.se.dto.SeAutorisatieDto;
 import nl.rivm.screenit.mamma.se.security.SERealm;
 import nl.rivm.screenit.mamma.se.service.ConfiguratieService;
 import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidService;
-import nl.rivm.screenit.model.Medewerker;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.util.NaamUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.lang.codec.Base64;
-import org.springframework.data.util.Version;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,8 +52,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 @RestController
 @RequestMapping("/api/authenticatie")
@@ -85,8 +78,8 @@ public class AuthenticatieController extends AuthorizedController
 		@RequestHeader(value = "nfcServerVersie", required = false) String nfcServerVersie,
 		@RequestHeader(value = "Yubikey") String yubikey, @RequestHeader(value = "navigatie") String navigatie, HttpServletRequest request) throws IOException
 	{
-		String base64Credentials = Base64.decodeToString(credentials.substring(6));
-		String[] credentialArray = StringUtils.split(base64Credentials, ":", 2);
+		var base64Credentials = Base64.decodeToString(credentials.substring(6));
+		var credentialArray = StringUtils.split(base64Credentials, ":", 2);
 		if (proxyDatumTijd == null)
 		{
 			throw new IllegalArgumentException("Datum komt niet mee uit de request");
@@ -94,12 +87,12 @@ public class AuthenticatieController extends AuthorizedController
 
 		LoginDto loginDto;
 
-		SELogin login = new SELogin();
+		var login = new SELogin();
 
-		String seCode = getSeCode(request);
+		var seCode = getSeCode(request);
 		if (seCode.isEmpty())
 		{
-			final String proxy_ip = request.getHeader("PROXY_IP");
+			final var proxy_ip = request.getHeader("PROXY_IP");
 			seCode = screeningsEenheidService.getSeCodeMetIpAdres(proxy_ip);
 			if (seCode == null)
 			{
@@ -112,10 +105,10 @@ public class AuthenticatieController extends AuthorizedController
 
 		if (loginDto.isSuccess())
 		{
-			OrganisatieMedewerker ingelogdeOrganisatieMedewerker = login.getIngelogdeOrganisatieMedewerker();
-			SeAutorisatieDto result = getSeRechtenOrganisatieMedewerker(ingelogdeOrganisatieMedewerker.getId());
-			MammaScreeningsEenheid ingelogdeScreeningsEenheid = login.getIngelogdeScreeningsEenheid();
-			Medewerker medewerker = ingelogdeOrganisatieMedewerker.getMedewerker();
+			var ingelogdeOrganisatieMedewerker = login.getIngelogdeOrganisatieMedewerker();
+			var result = getSeRechtenOrganisatieMedewerker(ingelogdeOrganisatieMedewerker.getId());
+			var ingelogdeScreeningsEenheid = login.getIngelogdeScreeningsEenheid();
+			var medewerker = ingelogdeOrganisatieMedewerker.getMedewerker();
 
 			result.setDisplayName(NaamUtil.getNaamMedewerker(medewerker));
 			result.setOrganisatieMedewerkerId(ingelogdeOrganisatieMedewerker.getId());
@@ -136,7 +129,7 @@ public class AuthenticatieController extends AuthorizedController
 	@RequestMapping(value = "/uitloggen", method = RequestMethod.POST)
 	public ResponseEntity logout(HttpServletRequest request)
 	{
-		OrganisatieMedewerker organisatieMedewerker = getOrganisatieMedewerker(request);
+		var organisatieMedewerker = getOrganisatieMedewerker(request);
 		if (organisatieMedewerker != null)
 		{
 			seRealm.clearCachedAuthorizationInfo(organisatieMedewerker);

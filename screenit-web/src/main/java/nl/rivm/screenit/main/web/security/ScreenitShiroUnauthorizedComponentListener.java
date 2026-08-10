@@ -25,7 +25,6 @@ import nl.rivm.screenit.main.web.base.BasePage;
 import nl.rivm.screenit.main.web.base.ScreenitContext;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -62,14 +61,14 @@ public class ScreenitShiroUnauthorizedComponentListener implements IUnauthorized
 	@Override
 	public void onUnauthorizedInstantiation(final Component component)
 	{
-		final Subject subject = SecurityUtils.getSubject();
-		final boolean notLoggedIn = subject.getPrincipal() == null;
+		final var subject = SecurityUtils.getSubject();
+		final var notLoggedIn = subject.getPrincipal() == null;
 		final Class<? extends Page> page;
 		if (notLoggedIn)
 		{
 			if (component.getPage() instanceof BasePage)
 			{
-				BasePage basePage = (BasePage) component.getPage();
+				var basePage = (BasePage) component.getPage();
 				if (basePage.getContext() == ScreenitContext.MEDEWERKER)
 				{
 					page = Application.get().getHomePage();

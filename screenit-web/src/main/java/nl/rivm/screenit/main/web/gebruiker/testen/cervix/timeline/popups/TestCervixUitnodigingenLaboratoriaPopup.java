@@ -27,11 +27,8 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
-import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.cervix.CervixMonster;
-import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -55,24 +52,24 @@ public abstract class TestCervixUitnodigingenLaboratoriaPopup extends TestCervix
 	public TestCervixUitnodigingenLaboratoriaPopup(String id, IModel<List<Client>> clientModel)
 	{
 		super(id, clientModel);
-		Organisatie organisatie = ScreenitSession.get().getOrganisatie();
+		var organisatie = ScreenitSession.get().getOrganisatie();
 
 		laboratoriaModel = ModelUtil.listModel(hiberateService.loadAll(BMHKLaboratorium.class, "naam", true));
 
 		BMHKLaboratorium laboratorium = null;
 
-		CervixUitnodiging uitnodiging = getUitnodiging();
+		var uitnodiging = getUitnodiging();
 		if (uitnodiging != null && uitnodiging.getMonster() != null)
 		{
-			CervixMonster monster = (CervixMonster) Hibernate.unproxy(uitnodiging.getMonster());
+			var monster = (CervixMonster) Hibernate.unproxy(uitnodiging.getMonster());
 			if (monster.getLaboratorium() != null)
 			{
 				laboratorium = monster.getLaboratorium();
 			}
 			else if (monster instanceof CervixUitstrijkje)
 			{
-				CervixUitstrijkje uitstrijkje = (CervixUitstrijkje) monster;
-				CervixLabformulier labformulier = uitstrijkje.getLabformulier();
+				var uitstrijkje = (CervixUitstrijkje) monster;
+				var labformulier = uitstrijkje.getLabformulier();
 				if (labformulier != null)
 				{
 					laboratorium = labformulier.getLaboratorium();
@@ -93,7 +90,7 @@ public abstract class TestCervixUitnodigingenLaboratoriaPopup extends TestCervix
 		}
 		laboratoriumModel = ModelUtil.cModel(laboratorium);
 
-		ScreenitDropdown<BMHKLaboratorium> laboratoriaDropdown = new ScreenitDropdown<>("laboratoria", laboratoriumModel, laboratoriaModel,
+		var laboratoriaDropdown = new ScreenitDropdown<BMHKLaboratorium>("laboratoria", laboratoriumModel, laboratoriaModel,
 			new IChoiceRenderer<BMHKLaboratorium>()
 			{
 				@Override

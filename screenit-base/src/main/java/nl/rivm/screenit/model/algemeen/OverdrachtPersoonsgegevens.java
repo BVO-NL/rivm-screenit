@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.CascadeType;
@@ -36,6 +35,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.AanvraagBriefStatus;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.UploadDocument;
@@ -46,11 +48,10 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(schema = "algemeen")
 @Audited
+@Getter
+@Setter
 public class OverdrachtPersoonsgegevens extends AbstractHibernateObject
 {
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private Client client;
 
@@ -74,7 +75,7 @@ public class OverdrachtPersoonsgegevens extends AbstractHibernateObject
 	@Column(nullable = false)
 	private Boolean dkGegevens;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private AlgemeneBrief verstuurdeAanvraagbrief;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -83,103 +84,4 @@ public class OverdrachtPersoonsgegevens extends AbstractHibernateObject
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private AlgemeneBrief geenHandtekeningBrief;
 
-	public Client getClient()
-	{
-		return client;
-	}
-
-	public void setClient(Client client)
-	{
-		this.client = client;
-	}
-
-	public AanvraagBriefStatus getStatus()
-	{
-		return status;
-	}
-
-	public void setStatus(AanvraagBriefStatus status)
-	{
-		this.status = status;
-	}
-
-	public Date getStatusDatum()
-	{
-		return statusDatum;
-	}
-
-	public void setStatusDatum(Date statusDatum)
-	{
-		this.statusDatum = statusDatum;
-	}
-
-	public AlgemeneBrief getVerstuurdeAanvraagbrief()
-	{
-		return verstuurdeAanvraagbrief;
-	}
-
-	public void setVerstuurdeAanvraagbrief(AlgemeneBrief verstuurdeAanvraagBrief)
-	{
-		this.verstuurdeAanvraagbrief = verstuurdeAanvraagBrief;
-	}
-
-	public UploadDocument getOntvangenAanvraagbrief()
-	{
-		return ontvangenAanvraagbrief;
-	}
-
-	public void setOntvangenAanvraagbrief(UploadDocument ontvangenAanvraagBrief)
-	{
-		this.ontvangenAanvraagbrief = ontvangenAanvraagBrief;
-	}
-
-	public AlgemeneBrief getGeenHandtekeningBrief()
-	{
-		return geenHandtekeningBrief;
-	}
-
-	public void setGeenHandtekeningBrief(AlgemeneBrief geenHandtekeningBrief)
-	{
-		this.geenHandtekeningBrief = geenHandtekeningBrief;
-	}
-
-	public Boolean getBkGegevens()
-	{
-		return bkGegevens;
-	}
-
-	public void setBkGegevens(Boolean bkGegevens)
-	{
-		this.bkGegevens = bkGegevens;
-	}
-
-	public Boolean getBkBeelden()
-	{
-		return bkBeelden;
-	}
-
-	public void setBkBeelden(Boolean bkBeelden)
-	{
-		this.bkBeelden = bkBeelden;
-	}
-
-	public Boolean getBmhkGegevens()
-	{
-		return bmhkGegevens;
-	}
-
-	public void setBmhkGegevens(Boolean bmhkGegevens)
-	{
-		this.bmhkGegevens = bmhkGegevens;
-	}
-
-	public Boolean getDkGegevens()
-	{
-		return dkGegevens;
-	}
-
-	public void setDkGegevens(Boolean dkGegevens)
-	{
-		this.dkGegevens = dkGegevens;
-	}
 }

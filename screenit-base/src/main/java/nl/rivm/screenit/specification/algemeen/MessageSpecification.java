@@ -40,4 +40,14 @@ public class MessageSpecification
 	{
 		return skipWhenNull(context, (r, q, cb) -> cb.equal(r.get(Message_.context), context));
 	}
+
+	public static Specification<Message> filterMessageIdGroterDan(Long messageId)
+	{
+		return skipWhenNull(messageId, (r, q, cb) -> cb.greaterThan(r.get(Message_.id), messageId));
+	}
+
+	public static Specification<Message> heeftTypeEnContext(MessageType type, String context)
+	{
+		return heeftType(type).and(filterContext(context));
+	}
 }

@@ -158,7 +158,7 @@ public class ZasUitnodigingenVersturenTasklet extends AbstractUitnodigingenVerst
 	@Override
 	protected synchronized void updateCounts(CervixUitnodiging uitnodiging)
 	{
-		long aantalVerstuurd = getExecutionContext().getLong(uitnodiging.getBrief().getBriefType().name());
+		var aantalVerstuurd = getExecutionContext().getLong(uitnodiging.getBrief().getBriefType().name());
 		getExecutionContext().put(uitnodiging.getBrief().getBriefType().name(), aantalVerstuurd + 1);
 
 		updateProjectenCounts(uitnodiging);
@@ -174,7 +174,7 @@ public class ZasUitnodigingenVersturenTasklet extends AbstractUitnodigingenVerst
 			var projectCounterHolders = getProjectCounterHolders();
 			for (var projectClient : projectClienten)
 			{
-				boolean projectInList = false;
+				var projectInList = false;
 				for (var projectCounterHolder : projectCounterHolders)
 				{
 					if (projectCounterHolder.getProjectGroepId().equals(projectClient.getGroep().getId()))

@@ -37,7 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.service.IdpSingleSignOnService;
-import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.KeyStoreService;
@@ -68,17 +67,17 @@ public class IdpSingleSignOnServiceImpl implements IdpSingleSignOnService
 	@Override
 	public String createWebFocusSsoUrl(OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		Map<String, Object> context = createContextMap(ingelogdeOrganisatieMedewerker);
+		var context = createContextMap(ingelogdeOrganisatieMedewerker);
 
 		return createJwtSsoUrl(ingelogdeOrganisatieMedewerker, context);
 	}
 
 	private String createJwtSsoUrl(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, Map<String, Object> context)
 	{
-		Instant now = Instant.now();
+		var now = Instant.now();
 
-		Medewerker medewerker = ingelogdeOrganisatieMedewerker.getMedewerker();
-		String jwt = Jwts.builder()
+		var medewerker = ingelogdeOrganisatieMedewerker.getMedewerker();
+		var jwt = Jwts.builder()
 			.issuer(getIdpIssuer())
 			.issuedAt(Date.from(now))
 			.notBefore(Date.from(now))
@@ -123,7 +122,7 @@ public class IdpSingleSignOnServiceImpl implements IdpSingleSignOnService
 
 	private String getIdpKeystoreLocation()
 	{
-		String keystoreLocation = getStringValue(PreferenceKey.INTERNAL_OPENID_CONNECT_IDP_KEYSTORE, "");
+		var keystoreLocation = getStringValue(PreferenceKey.INTERNAL_OPENID_CONNECT_IDP_KEYSTORE, "");
 		if (StringUtils.isBlank(keystoreLocation))
 		{
 			keystoreLocation = "keystore" + File.separator + "keycloak-screenit-webfocus-local.jks";
@@ -143,7 +142,7 @@ public class IdpSingleSignOnServiceImpl implements IdpSingleSignOnService
 
 	private String getIdpKeycloakOrigin()
 	{
-		String keycloakOrigin = getStringValue(PreferenceKey.INTERNAL_OPENID_CONNECT_IDP_KEYCLOAK_ORIGIN, "https://idp-acc.topicuszorg.nl/");
+		var keycloakOrigin = getStringValue(PreferenceKey.INTERNAL_OPENID_CONNECT_IDP_KEYCLOAK_ORIGIN, "https://idp-acc.topicuszorg.nl/");
 		if (!keycloakOrigin.endsWith("/"))
 		{
 			keycloakOrigin += "/";

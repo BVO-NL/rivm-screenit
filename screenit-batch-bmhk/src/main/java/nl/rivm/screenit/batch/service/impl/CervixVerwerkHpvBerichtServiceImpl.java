@@ -34,7 +34,6 @@ import nl.rivm.screenit.batch.service.CervixVerwerkHpvBerichtService;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
-import nl.rivm.screenit.model.cervix.CervixHpvBeoordeling;
 import nl.rivm.screenit.model.cervix.CervixHpvBericht;
 import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
@@ -98,7 +97,7 @@ public class CervixVerwerkHpvBerichtServiceImpl implements CervixVerwerkHpvBeric
 	@Transactional
 	public void verwerkOntvangenHpvBericht(Long berichtId)
 	{
-		CervixHpvBericht ontvangenBericht = hibernateService.get(CervixHpvBericht.class, berichtId);
+		var ontvangenBericht = hibernateService.get(CervixHpvBericht.class, berichtId);
 
 		List<Organisatie> opDashboardVanOrganisaties = Arrays.asList(ontvangenBericht.getLaboratorium());
 		try
@@ -110,7 +109,7 @@ public class CervixVerwerkHpvBerichtServiceImpl implements CervixVerwerkHpvBeric
 			var bericht = new CervixHpvBerichtWrapper((OUL_R22) hapiMsg);
 
 			LOG.info("Bericht wordt verwerkt! Aantal: {}", bericht.getResults().size());
-			for (CervixHpvMonsterWrapper sample : bericht.getResults())
+			for (var sample : bericht.getResults())
 			{
 				try
 				{
@@ -202,7 +201,7 @@ public class CervixVerwerkHpvBerichtServiceImpl implements CervixVerwerkHpvBeric
 			melding += sampleGegevens;
 		}
 
-		for (Organisatie lab : organisaties)
+		for (var lab : organisaties)
 		{
 			if (lab.getOrganisatieType() == OrganisatieType.BMHK_LABORATORIUM)
 			{
@@ -285,7 +284,7 @@ public class CervixVerwerkHpvBerichtServiceImpl implements CervixVerwerkHpvBeric
 	{
 		var format = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
 		var analyseDatum = sample.getAnalyseDatum();
-		for (CervixHpvBeoordeling hpvBeoordeling : monster.getHpvBeoordelingen())
+		for (var hpvBeoordeling : monster.getHpvBeoordelingen())
 		{
 			if (format.format(hpvBeoordeling.getAnalyseDatum()).equals(format.format(analyseDatum)))
 			{
@@ -349,10 +348,10 @@ public class CervixVerwerkHpvBerichtServiceImpl implements CervixVerwerkHpvBeric
 	private void validateStatusMonster(CervixMonster monster, CervixHpvMonsterWrapper sample, List<Organisatie> opDashboardVanOrganisaties) throws IllegalStateException
 	{
 		String status = null;
-		String melding = "";
+		var melding = "";
 		if (CervixMonsterUtil.isUitstrijkje(monster))
 		{
-			CervixUitstrijkje uitstrijkje = CervixMonsterUtil.getUitstrijkje(monster);
+			var uitstrijkje = CervixMonsterUtil.getUitstrijkje(monster);
 			if (CervixUitstrijkjeStatus.ONTVANGEN == uitstrijkje.getUitstrijkjeStatus()
 				|| CervixUitstrijkjeStatus.GEANALYSEERD_OP_HPV_POGING_1 == uitstrijkje.getUitstrijkjeStatus() && isErAlEenEerdereInvalidUitslag(monster))
 			{
@@ -364,7 +363,7 @@ public class CervixVerwerkHpvBerichtServiceImpl implements CervixVerwerkHpvBeric
 
 		if (CervixMonsterUtil.isZAS(monster))
 		{
-			CervixZas zas = CervixMonsterUtil.getZAS(monster);
+			var zas = CervixMonsterUtil.getZAS(monster);
 			if (CervixZasStatus.ONTVANGEN == zas.getZasStatus() || CervixZasStatus.GEANALYSEERD_OP_HPV_POGING_1 == zas.getZasStatus() && isErAlEenEerdereInvalidUitslag(monster))
 			{
 				return;

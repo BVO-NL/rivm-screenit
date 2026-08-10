@@ -73,7 +73,7 @@ public class CervixBetaalopdrachtRegel extends AbstractHibernateObject
 	@Override
 	protected boolean concreateEquals(AbstractHibernateObject obj)
 	{
-		CervixBetaalopdrachtRegel compareBetaalOpdrachtRegel = (CervixBetaalopdrachtRegel) obj;
+		var compareBetaalOpdrachtRegel = (CervixBetaalopdrachtRegel) obj;
 		if (betaalopdracht == null)
 		{
 			return false;

@@ -142,7 +142,7 @@ public abstract class VerwerkOngeldigeBerichtenPage extends MedewerkerBasePage
 			public void populateItem(Item<ICellPopulator<MeldingOngeldigCdaBericht>> cellItem, String componentId, IModel<MeldingOngeldigCdaBericht> rowModel)
 			{
 				var topdeskTicket = rowModel.getObject().getTopdeskTicket();
-				String topdeskTicketClass = "color-link";
+				var topdeskTicketClass = "color-link";
 				if (topdeskTicket == null)
 				{
 					topdeskTicket = "Vul topdesk-nummer in";

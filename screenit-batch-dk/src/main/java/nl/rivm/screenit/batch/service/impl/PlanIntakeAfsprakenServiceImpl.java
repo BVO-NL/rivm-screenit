@@ -24,42 +24,41 @@ package nl.rivm.screenit.batch.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
 import nl.rivm.screenit.batch.model.ClientAfspraak;
 import nl.rivm.screenit.batch.model.IntakeSolution;
 import nl.rivm.screenit.batch.service.PlanIntakeAfsprakenService;
 import nl.rivm.screenit.model.colon.dto.VrijSlot;
 
-import org.optaplanner.core.api.solver.Solver;
-import org.optaplanner.core.api.solver.SolverFactory;
-import org.optaplanner.core.config.solver.SolverConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import ai.timefold.solver.core.api.solver.SolverFactory;
+import ai.timefold.solver.core.config.solver.SolverConfig;
+
 @Service
+@Slf4j
 public class PlanIntakeAfsprakenServiceImpl implements PlanIntakeAfsprakenService
 {
-	private static final Logger LOGGER = LoggerFactory.getLogger(PlanIntakeAfsprakenServiceImpl.class);
-
 	@Override
 	public List<ClientAfspraak> planIntakeAfspraken(List<ClientAfspraak> clienten, List<VrijSlot> vrijeSloten, StringBuilder planningResultaat, Long maximumSecondsSpend)
 	{
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-		SolverConfig solverConfig = SolverConfig.createFromXmlResource("screenit-planning-solver-config.xml");
+		var solverConfig = SolverConfig.createFromXmlResource("screenit-planning-solver-config.xml");
 		solverConfig.getTerminationConfig().setSecondsSpentLimit(maximumSecondsSpend);
 		SolverFactory<IntakeSolution> solverFactory = SolverFactory.create(solverConfig);
-		Solver<IntakeSolution> solver = solverFactory.buildSolver();
+		var solver = solverFactory.buildSolver();
 
-		IntakeSolution intakeSolution = new IntakeSolution();
+		var intakeSolution = new IntakeSolution();
 
 		intakeSolution.setClientAfspraken(clienten);
 		intakeSolution.setVrijeSloten(vrijeSloten);
-		IntakeSolution bestSolution = solver.solve(intakeSolution);
+		var bestSolution = solver.solve(intakeSolution);
 
-		LOGGER.trace(bestSolution.toString());
+		LOG.trace(bestSolution.toString());
 		planningResultaat.append("planner score ").append(bestSolution.getScore());
 		List<ClientAfspraak> clientAfspraken = new ArrayList<>();
-		if (bestSolution.getScore().getHardScore() == 0)
+		if (bestSolution.getScore().hardScore() == 0)
 		{
 			clientAfspraken = bestSolution.getClientAfspraken();
 		}

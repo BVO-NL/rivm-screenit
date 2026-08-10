@@ -26,11 +26,8 @@ import lombok.AllArgsConstructor;
 import nl.rivm.screenit.clientportaal.controllers.AbstractController;
 import nl.rivm.screenit.clientportaal.mappers.HuisartsMapper;
 import nl.rivm.screenit.clientportaal.model.HuisartsDto;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.EnovationHuisarts;
-import nl.rivm.screenit.model.mamma.MammaDossier;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.enums.MammaGeenHuisartsOption;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.HibernateService;
@@ -65,15 +62,15 @@ public class MammaHuisartsController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> koppelMammaHuisarts(Authentication authentication, @RequestParam long id)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN))
 		{
-			EnovationHuisarts huisarts = hibernateService.get(EnovationHuisarts.class, id);
+			var huisarts = hibernateService.get(EnovationHuisarts.class, id);
 
 			if (client != null && huisarts != null && !huisarts.isVerwijderd())
 			{
-				boolean isGekoppeld = mammaHuisartsService.koppelHuisarts(huisarts, client.getMammaDossier().getLaatsteScreeningRonde(), client);
+				var isGekoppeld = mammaHuisartsService.koppelHuisarts(huisarts, client.getMammaDossier().getLaatsteScreeningRonde(), client);
 				if (isGekoppeld)
 				{
 					return ResponseEntity.ok().build();
@@ -89,16 +86,16 @@ public class MammaHuisartsController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> ontkoppelMammaHuisarts(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN))
 		{
 			if (client != null)
 			{
-				MammaDossier dossier = client.getMammaDossier();
+				var dossier = client.getMammaDossier();
 				if (dossier != null)
 				{
-					MammaScreeningRonde laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
+					var laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
 					if (laatsteScreeningRonde != null)
 					{
 						if (mammaHuisartsService.magHuisartsVerwijderen(laatsteScreeningRonde)
@@ -118,13 +115,13 @@ public class MammaHuisartsController extends AbstractController
 	@GetMapping(path = "/magverwijderen")
 	public ResponseEntity<Boolean> magMammaHuisartsVerwijderen(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN))
 		{
 			if (client != null && client.getMammaDossier() != null)
 			{
-				MammaScreeningRonde laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
+				var laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
 				if (laatsteScreeningRonde != null)
 				{
 					return ResponseEntity.ok(mammaHuisartsService.magHuisartsVerwijderen(laatsteScreeningRonde));
@@ -140,11 +137,11 @@ public class MammaHuisartsController extends AbstractController
 	public ResponseEntity<HuisartsDto> getVorigeMammaHuisarts(Authentication authentication)
 	{
 
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 		if (client != null && client.getMammaDossier() != null)
 		{
-			MammaScreeningRonde laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
-			EnovationHuisarts huisartsVanVorigeRonde = mammaHuisartsService.getActieveHuisartsVanVorigeRonde(laatsteScreeningRonde);
+			var laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
+			var huisartsVanVorigeRonde = mammaHuisartsService.getActieveHuisartsVanVorigeRonde(laatsteScreeningRonde);
 			return ResponseEntity.ok(huisartsMapper.huisartsToDto(huisartsVanVorigeRonde));
 		}
 		return ResponseEntity.notFound().build();
@@ -153,13 +150,13 @@ public class MammaHuisartsController extends AbstractController
 	@GetMapping(path = "/huidige")
 	public ResponseEntity<HuisartsDto> getHuidigeMammaHuisarts(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 		if (client != null && client.getMammaDossier() != null)
 		{
-			MammaScreeningRonde laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
+			var laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
 			if (laatsteScreeningRonde != null)
 			{
-				EnovationHuisarts huisartsVanHuidigeRonde = mammaHuisartsService.getActieveHuisartsVanRonde(laatsteScreeningRonde);
+				var huisartsVanHuidigeRonde = mammaHuisartsService.getActieveHuisartsVanRonde(laatsteScreeningRonde);
 				return ResponseEntity.ok(huisartsMapper.huisartsToDto(huisartsVanHuidigeRonde));
 			}
 		}
@@ -169,11 +166,11 @@ public class MammaHuisartsController extends AbstractController
 	@GetMapping(path = "/vorige/geen")
 	public ResponseEntity<MammaGeenHuisartsOption> getVorigeMammaGeenHuisartsOptie(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 		if (client != null && client.getMammaDossier() != null)
 		{
-			MammaScreeningRonde laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
-			MammaGeenHuisartsOption geenHuisartsOptie = mammaHuisartsService.getMammaGeenHuisartsOptieVorigeRonde(laatsteScreeningRonde);
+			var laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
+			var geenHuisartsOptie = mammaHuisartsService.getMammaGeenHuisartsOptieVorigeRonde(laatsteScreeningRonde);
 			return ResponseEntity.ok(geenHuisartsOptie);
 		}
 		return ResponseEntity.notFound().build();
@@ -182,13 +179,13 @@ public class MammaHuisartsController extends AbstractController
 	@GetMapping(path = "/huidige/geen")
 	public ResponseEntity<MammaGeenHuisartsOption> getHuidigeMammaGeenHuisartsOptie(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 		if (client != null && client.getMammaDossier() != null)
 		{
-			MammaScreeningRonde laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
+			var laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
 			if (laatsteScreeningRonde != null)
 			{
-				MammaGeenHuisartsOption geenHuisartsOptie = mammaHuisartsService.getMammaGeenHuisartsOptieVanRonde(laatsteScreeningRonde);
+				var geenHuisartsOptie = mammaHuisartsService.getMammaGeenHuisartsOptieVanRonde(laatsteScreeningRonde);
 				return ResponseEntity.ok(geenHuisartsOptie);
 			}
 		}
@@ -199,16 +196,16 @@ public class MammaHuisartsController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> bevestigVorigeMammaHuisarts(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_HUISARTS_WIJZIGEN))
 		{
 			if (client != null && client.getMammaDossier() != null)
 			{
-				MammaScreeningRonde laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
+				var laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
 				if (laatsteScreeningRonde != null)
 				{
-					boolean isBevestigd = mammaHuisartsService.bevestigVorigeMammaHuisartsKeuze(client, laatsteScreeningRonde);
+					var isBevestigd = mammaHuisartsService.bevestigVorigeMammaHuisartsKeuze(client, laatsteScreeningRonde);
 					if (isBevestigd)
 					{
 						return ResponseEntity.ok().build();

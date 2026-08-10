@@ -1,0 +1,97 @@
+<!--
+  ========================LICENSE_START=================================
+  huisartsportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<div class="filter-container">
+  <ds-dropdown label="Uw locaties zijn gefiltered op:" [items]="statussen" [(ngModel)]="filter" (ngModelChange)="getLocaties()" bindLabel="label" bindValue="value"
+               [clearable]="false" appendTo="body">
+    <ng-template ds-option-template let-item>
+      <app-locatie-status [status]="item"/>
+    </ng-template>
+    <ng-template ds-label-template let-item>
+      <app-locatie-status [status]="item"/>
+    </ng-template>
+  </ds-dropdown>
+</div>
+<table [dataSource]="dataSource()" ds-table matSort class="w-100">
+  <ng-container dsColumnDef="naam">
+    <th *dsHeaderCellDef ds-header-cell mat-sort-header="naam">Locatienaam</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.naam }}</td>
+  </ng-container>
+
+  <ng-container dsColumnDef="adres">
+    <th *dsHeaderCellDef ds-header-cell mat-sort-header="locatieAdres.straat">Adres</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.locatieAdres.straat }} {{ row.locatieAdres.huisnummer }} {{ row.locatieAdres.huisnummertoevoeging }}</td>
+  </ng-container>
+
+  <ng-container dsColumnDef="postcode">
+    <th *dsHeaderCellDef ds-header-cell mat-sort-header="locatieAdres.postcode">Postcode</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.locatieAdres.postcode }}</td>
+  </ng-container>
+
+  <ng-container dsColumnDef="plaats">
+    <th *dsHeaderCellDef ds-header-cell mat-sort-header="locatieAdres.woonplaats.naam">Plaats</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.locatieAdres.woonplaats.naam }}</td>
+  </ng-container>
+
+  <ng-container dsColumnDef="status">
+    <th *dsHeaderCellDef ds-header-cell mat-sort-header="status">Status</th>
+    <td *dsCellDef="let row" ds-cell>
+      <app-locatie-status [status]="row.status"/>
+    </td>
+  </ng-container>
+
+  <ng-container dsColumnDef="wijzigen">
+    <th *dsHeaderCellDef ds-header-cell>Wijzig</th>
+    <td *dsCellDef="let row" ds-cell>
+      @if (row.status !== LocatieStatus.INACTIEF) {
+        <button ds-button-quaternary ds-button-icon (click)="wijzigLocatie(row)">
+          <ds-icon [icon]="faPencil"></ds-icon>
+        </button>
+      }
+    </td>
+  </ng-container>
+
+  <ng-container dsColumnDef="verwijderen">
+    <th *dsHeaderCellDef ds-header-cell>Verwijder</th>
+    <td *dsCellDef="let row" ds-cell>
+      @if (row.status !== LocatieStatus.INACTIEF) {
+        <button ds-button-quaternary ds-button-icon (click)="verwijderLocatie(row)">
+          <ds-icon [icon]="faTrash"></ds-icon>
+        </button>
+      }
+    </td>
+  </ng-container>
+
+  <tr *dsRowDef="let row; columns: displayedColumns()" ds-row></tr>
+  <tr *dsHeaderRowDef="displayedColumns()" ds-header-row></tr>
+  <ds-paginator [totalNumberOfItems]="10"/>
+</table>
+
+@if (showConfirmationDialog()) {
+  <ds-confirmation-dialog [confirmationDialogModel]="confirmationModel" [config]="confirmationConfig">
+    Weet u zeker dat u deze locatie wilt verwijderen?
+  </ds-confirmation-dialog>
+}
+
+@if (!controleren() && dataSource().length === 0) {
+  <div class="display-flex justify-content-end mt-3">
+    <button ds-button-primary (click)="wijzigLocatie()">Locatie toevoegen</button>
+  </div>
+}

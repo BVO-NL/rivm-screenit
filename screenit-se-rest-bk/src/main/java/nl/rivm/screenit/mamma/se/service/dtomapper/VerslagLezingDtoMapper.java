@@ -23,7 +23,6 @@ package nl.rivm.screenit.mamma.se.service.dtomapper;
 
 import nl.rivm.screenit.mamma.se.dto.LezingSeDto;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
-import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.enums.MammaZijde;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.util.NaamUtil;
@@ -35,12 +34,12 @@ public class VerslagLezingDtoMapper
 
 	public LezingSeDto createVerslagLezingDto(MammaBeoordeling beoordeling, MammaBaseBeoordelingService beoordelingService)
 	{
-		LezingSeDto conclusie = new LezingSeDto();
+		var conclusie = new LezingSeDto();
 		if (beoordeling == null)
 		{
 			return conclusie;
 		}
-		MammaLezing verslagLezing = beoordeling.getVerslagLezing();
+		var verslagLezing = beoordeling.getVerslagLezing();
 		conclusie.setBiradsLinks(beoordelingService.getResultaatVoorZijde(beoordeling, MammaZijde.LINKER_BORST) != null
 			? beoordelingService.getResultaatVoorZijde(beoordeling, MammaZijde.LINKER_BORST).getNaam()
 			: null);

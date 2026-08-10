@@ -57,8 +57,8 @@ public class StamtabellenServiceImpl implements StamtabellenService
 
 	private void addInactiveTitel(Titel titel, List<Titel> titels)
 	{
-		boolean contains = false;
-		for (Titel titelInList : titels)
+		var contains = false;
+		for (var titelInList : titels)
 		{
 			if (titelInList.getId().equals(titel.getId()))
 			{
@@ -78,8 +78,8 @@ public class StamtabellenServiceImpl implements StamtabellenService
 
 		if (medewerker != null && medewerker.getFunctie() != null)
 		{
-			boolean contains = false;
-			for (Functie functieInList : functies)
+			var contains = false;
+			for (var functieInList : functies)
 			{
 				if (functieInList.getId().equals(medewerker.getFunctie().getId()))
 				{

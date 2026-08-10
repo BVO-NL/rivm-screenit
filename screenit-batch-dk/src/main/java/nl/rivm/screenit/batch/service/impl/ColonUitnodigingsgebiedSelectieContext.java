@@ -76,7 +76,7 @@ public class ColonUitnodigingsgebiedSelectieContext implements Comparable<ColonU
 		}
 		uitnodigingscapaciteitTotaal = uitnodigingscapaciteitTotaal.add(toeTeVoegenUitnodigingscapaciteit);
 		uitnodigingscapaciteitOver = uitnodigingscapaciteitOver.add(toeTeVoegenUitnodigingscapaciteit);
-		BigDecimal huidigeCapVanIL = capVanIl.get(intakelocatieId);
+		var huidigeCapVanIL = capVanIl.get(intakelocatieId);
 		if (huidigeCapVanIL == null)
 		{
 			huidigeCapVanIL = BigDecimal.ZERO;
@@ -88,14 +88,14 @@ public class ColonUitnodigingsgebiedSelectieContext implements Comparable<ColonU
 	{
 		if (uitnodigingscapaciteitTotaal.compareTo(BigDecimal.ZERO) > 0)
 		{
-			BigDecimal rest = capVanIl.get(null);
-			BigDecimal totaal = uitnodigingscapaciteitTotaal;
+			var rest = capVanIl.get(null);
+			var totaal = uitnodigingscapaciteitTotaal;
 			if (rest != null && capVanIl.size() > 1)
 			{
 
 				totaal = uitnodigingscapaciteitTotaal.subtract(rest);
 			}
-			BigDecimal capaciteitOverVoorIL = capVanIl.get(ilId).multiply(uitnodigingscapaciteitOver).divide(totaal, 10, RoundingMode.HALF_UP);
+			var capaciteitOverVoorIL = capVanIl.get(ilId).multiply(uitnodigingscapaciteitOver).divide(totaal, 10, RoundingMode.HALF_UP);
 			if (rest != null && rest.compareTo(BigDecimal.ZERO) != 0 && capVanIl.size() > 1)
 			{
 
@@ -127,7 +127,7 @@ public class ColonUitnodigingsgebiedSelectieContext implements Comparable<ColonU
 
 	public int getUitnodigingscapaciteitToevoegingOfOver()
 	{
-		BigDecimal honderd = BigDecimal.valueOf(100);
+		var honderd = BigDecimal.valueOf(100);
 		if (uitnodigingscapaciteitOrig != null)
 		{
 			if (uitnodigingscapaciteitTotaal.compareTo(uitnodigingscapaciteitOrig) > 0)
@@ -165,8 +165,8 @@ public class ColonUitnodigingsgebiedSelectieContext implements Comparable<ColonU
 	@Override
 	public int hashCode()
 	{
-		final int prime = 31;
-		int result = 1;
+		final var prime = 31;
+		var result = 1;
 		result = prime * result + (uitnodigingsgebiedId == null ? 0 : uitnodigingsgebiedId.hashCode());
 		return result;
 	}
@@ -186,7 +186,7 @@ public class ColonUitnodigingsgebiedSelectieContext implements Comparable<ColonU
 		{
 			return false;
 		}
-		ColonUitnodigingsgebiedSelectieContext other = (ColonUitnodigingsgebiedSelectieContext) obj;
+		var other = (ColonUitnodigingsgebiedSelectieContext) obj;
 		if (uitnodigingsgebiedId == null)
 		{
 			return other.uitnodigingsgebiedId == null;

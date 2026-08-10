@@ -43,9 +43,8 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.mammaAfdeling.Aa
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.palab.AanvullendePaLabGegevensPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.screeningorganisatie.AanvullendeSOGegevensPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.zorginstelling.AanvullendeZiGegevensPage;
-import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
-import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.model.OrganisatieType;
 
 public abstract class OrganisatieBeheer extends AlgemeenPage
@@ -68,7 +67,7 @@ public abstract class OrganisatieBeheer extends AlgemeenPage
 	public static List<MedewerkerMenuItem> createContextMenu()
 	{
 		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<MedewerkerMenuItem>();
-		Organisatie currentSelectedOrganisatie = ScreenitSession.get().getCurrentSelectedOrganisatie();
+		var currentSelectedOrganisatie = ScreenitSession.get().getCurrentSelectedOrganisatie();
 		contextMenuItems.add(new MedewerkerMenuItem("menu.algemeen.organisaties.zoeken", OrganisatieZoeken.class));
 		if (currentSelectedOrganisatie != null && OrganisatieType.HUISARTS != currentSelectedOrganisatie.getOrganisatieType())
 		{

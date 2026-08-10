@@ -22,6 +22,7 @@ package nl.rivm.screenit.main.dto.algemeen;
  */
 
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -83,4 +84,6 @@ public class ClientDto extends EntityDto
 	private String screeningsorganisatie;
 
 	private boolean actief;
+
+	private List<OnderzoeksresultatenActieDto> onderzoeksresultatenActies;
 }

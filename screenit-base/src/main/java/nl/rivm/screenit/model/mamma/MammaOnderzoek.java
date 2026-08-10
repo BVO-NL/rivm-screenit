@@ -56,8 +56,6 @@ import nl.rivm.screenit.model.mamma.enums.OnvolledigOnderzoekOption;
 import nl.rivm.screenit.model.mamma.enums.SuboptimaleInsteltechniek;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -71,12 +69,6 @@ import org.hibernate.envers.Audited;
 		@Index(name = "idx_mamma_onderzoek_status", columnList = "status"),
 	})
 @Audited
-@FetchProfile(
-	name = "kansberekening",
-	fetchOverrides = {
-		@FetchProfile.FetchOverride(entity = MammaOnderzoek.class, association = "laatsteBeoordeling", mode = FetchMode.JOIN),
-		@FetchProfile.FetchOverride(entity = MammaOnderzoek.class, association = "mammografie", mode = FetchMode.JOIN),
-	})
 public class MammaOnderzoek extends AbstractHibernateObject
 {
 	@OneToOne(optional = false, mappedBy = "onderzoek")

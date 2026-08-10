@@ -39,7 +39,6 @@ import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -67,31 +66,31 @@ public class TestMDLVerslagPopup extends AbstractTestBasePopupPanel
 	{
 		super(id, clientModel);
 
-		List<ColoscopieLocatie> actieveColoscopieLocaties = getActiveColoscopieLocatiesMetMedewerkers();
+		var actieveColoscopieLocaties = getActiveColoscopieLocatiesMetMedewerkers();
 		coloscopieLocatieModel = ModelUtil.sModel(actieveColoscopieLocaties.get(0));
 
-		ScreenitDropdown<ColoscopieLocatie> coloscopieLocatieDropDown = new ScreenitDropdown<>("coloscopieLocatieOrganisatie", coloscopieLocatieModel,
+		var coloscopieLocatieDropDown = new ScreenitDropdown<ColoscopieLocatie>("coloscopieLocatieOrganisatie", coloscopieLocatieModel,
 			ModelUtil.listModel(actieveColoscopieLocaties),
 			new ChoiceRenderer<>("naam"));
 		coloscopieLocatieDropDown.setRequired(true);
 		add(coloscopieLocatieDropDown);
 
-		ScreenitDropdown<MdlVervolgbeleid> vervolgBeleidDropDown = new ScreenitDropdown<>("vervolgbeleid", vervolgbeleidModel, Arrays.asList(MdlVervolgbeleid.values()),
+		var vervolgBeleidDropDown = new ScreenitDropdown<MdlVervolgbeleid>("vervolgbeleid", vervolgbeleidModel, Arrays.asList(MdlVervolgbeleid.values()),
 			new EnumChoiceRenderer<>(this));
 
 		add(vervolgBeleidDropDown);
 
 		datumOnderzoekModel = Model.of(currentDateSupplier.getDate());
-		FormComponent<Date> datumOnderzoek = ComponentHelper.addTextField(this, "datumOnderzoek", true, 10, Date.class, false);
+		var datumOnderzoek = ComponentHelper.addTextField(this, "datumOnderzoek", true, 10, Date.class, false);
 		datumOnderzoek.setModel(datumOnderzoekModel);
 		datumOnderzoek.setType(Date.class);
 	}
 
 	private List<ColoscopieLocatie> getActiveColoscopieLocatiesMetMedewerkers()
 	{
-		List<ColoscopieLocatie> actieveColoscopieLocaties = organisatieService.getActieveOrganisaties(ColoscopieLocatie.class);
+		var actieveColoscopieLocaties = organisatieService.getActieveOrganisaties(ColoscopieLocatie.class);
 		List<ColoscopieLocatie> actieveColoscopieLocatiesMetMedewerkers = new ArrayList<>();
-		for (ColoscopieLocatie locatie : actieveColoscopieLocaties)
+		for (var locatie : actieveColoscopieLocaties)
 		{
 			if (locatie.getOrganisatieMedewerkers().size() > 0)
 			{
@@ -105,10 +104,10 @@ public class TestMDLVerslagPopup extends AbstractTestBasePopupPanel
 	@Override
 	protected void opslaan()
 	{
-		ColoscopieLocatie locatie = coloscopieLocatieModel.getObject();
-		MdlVervolgbeleid vervolgbeleid = vervolgbeleidModel.getObject();
-		Date datumOnderzoek = datumOnderzoekModel.getObject();
-		for (Client client : getModelObject())
+		var locatie = coloscopieLocatieModel.getObject();
+		var vervolgbeleid = vervolgbeleidModel.getObject();
+		var datumOnderzoek = datumOnderzoekModel.getObject();
+		for (var client : getModelObject())
 		{
 			colonTestTimelineService.maaktMdlVerslagVoorClient(client, locatie, vervolgbeleid, datumOnderzoek);
 		}

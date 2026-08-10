@@ -48,10 +48,10 @@ public class PassantInschrijvenValidatorServiceImpl implements PassantInschrijve
 
 	public PassantValidatorResult isGeldigPassantScenario(Client client, LocalDate currentDate, MammaScreeningsEenheid se)
 	{
-		MammaScreeningRonde laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
+		var laatsteScreeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
 		if (laatsteScreeningRonde != null && laatsteScreeningRonde.getLaatsteUitnodiging() != null)
 		{
-			MammaAfspraak laatsteAfspraak = laatsteScreeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak();
+			var laatsteAfspraak = laatsteScreeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak();
 			if (heeftAfspraakOpHuidigeDagOpSe(currentDate, se, laatsteAfspraak))
 			{
 				return PassantValidatorResult.ONGELDIG_ZELFDE_DAG;
@@ -61,7 +61,8 @@ public class PassantInschrijvenValidatorServiceImpl implements PassantInschrijve
 				return PassantValidatorResult.ONGELDIG;
 			}
 		}
-		boolean isAfspraakMogelijk = baseDossierService.isAfspraakMakenMogelijk(client.getMammaDossier(), false, true) || baseDossierService.isVerzettenMogelijk(client.getMammaDossier());
+		var isAfspraakMogelijk =
+			baseDossierService.isAfspraakMakenMogelijk(client.getMammaDossier(), false, true) || baseDossierService.isVerzettenMogelijk(client.getMammaDossier());
 		return isAfspraakMogelijk ? PassantValidatorResult.OK : PassantValidatorResult.ONGELDIG;
 	}
 

@@ -24,7 +24,8 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import nl.rivm.screenit.huisartsenportaal.dto.VerrichtingTotalenDto;
+import jakarta.validation.Valid;
+
 import nl.rivm.screenit.huisartsenportaal.dto.VerrichtingZoekObjectDto;
 import nl.rivm.screenit.huisartsenportaal.exception.ValidatieException;
 import nl.rivm.screenit.huisartsenportaal.service.VerrichtingenService;
@@ -43,8 +44,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("verrichting")
@@ -70,7 +69,7 @@ public class VerrichtingController extends BaseController
 		{
 			throw new ValidatieException(result.getAllErrors());
 		}
-		VerrichtingTotalenDto verrichtingDtos = verrichtingenService.getVerrichtingen(getIngelogdeHuisarts(), verrichtingDto);
+		var verrichtingDtos = verrichtingenService.getVerrichtingen(getIngelogdeHuisarts(), verrichtingDto);
 		return new ResponseEntity(verrichtingDtos, HttpStatus.OK);
 	}
 

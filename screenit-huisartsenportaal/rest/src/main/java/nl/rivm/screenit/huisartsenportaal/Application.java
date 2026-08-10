@@ -58,18 +58,18 @@ public class Application extends SpringBootServletInitializer
 	@Bean
 	public ModelMapper modelMapper()
 	{
-		Condition skipIds = new Condition()
+		var skipIds = new Condition()
 		{
 
 			@Override
 			public boolean applies(MappingContext context)
 			{
 				return context.getSource() != null && !context.getMapping().getLastDestinationProperty().getName().equals("id")
-						&& !context.getMapping().getLastDestinationProperty().getName().equals("referenceId")
-						&& !context.getMapping().getLastDestinationProperty().getName().equals("username");
+					&& !context.getMapping().getLastDestinationProperty().getName().equals("referenceId")
+					&& !context.getMapping().getLastDestinationProperty().getName().equals("username");
 			}
 		};
-		ModelMapper modelMapper = new ModelMapper();
+		var modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setPropertyCondition(skipIds);
 
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);

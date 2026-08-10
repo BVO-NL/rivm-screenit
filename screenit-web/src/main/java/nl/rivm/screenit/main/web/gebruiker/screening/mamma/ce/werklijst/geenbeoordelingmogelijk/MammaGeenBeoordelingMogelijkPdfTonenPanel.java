@@ -44,7 +44,7 @@ public class MammaGeenBeoordelingMogelijkPdfTonenPanel extends GenericPanel<Mamm
 	public MammaGeenBeoordelingMogelijkPdfTonenPanel(String id, IModel<MammaBeoordeling> model)
 	{
 		super(id, model);
-		File tempFile = maakPdfFile();
+		var tempFile = maakPdfFile();
 		add(new PdfViewer("briefPdf", tempFile, true));
 	}
 

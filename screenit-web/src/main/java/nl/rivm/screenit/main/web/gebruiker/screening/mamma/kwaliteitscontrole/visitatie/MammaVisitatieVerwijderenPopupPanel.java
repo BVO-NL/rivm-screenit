@@ -55,7 +55,7 @@ public abstract class MammaVisitatieVerwijderenPopupPanel extends GenericPanel<M
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaVisitatie visitatie = MammaVisitatieVerwijderenPopupPanel.this.getModelObject();
+				var visitatie = MammaVisitatieVerwijderenPopupPanel.this.getModelObject();
 				try
 				{
 					kwaliteitscontroleService.deleteVisitatie(visitatie);

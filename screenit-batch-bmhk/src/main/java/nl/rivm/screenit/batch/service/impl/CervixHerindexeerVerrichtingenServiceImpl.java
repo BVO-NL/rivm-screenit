@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.batch.service.CervixHerindexeerVerrichtingenService;
 import nl.rivm.screenit.model.cervix.enums.CervixTariefType;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel;
@@ -82,9 +80,9 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 	@Override
 	public int verrichtingenHerindexeren(CervixHerindexatieDto herindexatieDto)
 	{
-		int aantalVerrichtingen = 0;
-		CervixTarief oudeTarief = hibernateService.load(CervixTarief.class, herindexatieDto.getOudeTariefId());
-		CervixTarief nieuweTarief = hibernateService.load(CervixTarief.class, herindexatieDto.getNieuweTariefId());
+		var aantalVerrichtingen = 0;
+		var oudeTarief = hibernateService.load(CervixTarief.class, herindexatieDto.getOudeTariefId());
+		var nieuweTarief = hibernateService.load(CervixTarief.class, herindexatieDto.getNieuweTariefId());
 
 		if (herindexatieDto.isHuisartsTarief())
 		{
@@ -95,7 +93,7 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 			var organisatie = ((CervixLabTarief) Hibernate.unproxy(nieuweTarief)).getBmhkLaboratorium();
 			var bmhk2023Lab = cervix2023StartBepalingService.isBmhk2023Laboratorium(organisatie);
 
-			for (CervixTariefType labTariefType : CervixTariefType.getAlleLabTariefTypes(bmhk2023Lab))
+			for (var labTariefType : CervixTariefType.getAlleLabTariefTypes(bmhk2023Lab))
 			{
 				if (!labTariefType.getBedragVanTarief(nieuweTarief).equals(labTariefType.getBedragVanTarief(oudeTarief)))
 				{
@@ -109,15 +107,15 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 
 	private int bepaalBoekregelsVoorVerrichtingen(CervixTarief oudeTarief, CervixTarief nieuweTarief, CervixTariefType tariefType)
 	{
-		List<CervixVerrichting> verrichtingen = verrichtingService.getVerrichtingenVoorTarief(oudeTarief.getId(), nieuweTarief, tariefType);
+		var verrichtingen = verrichtingService.getVerrichtingenVoorTarief(oudeTarief.getId(), nieuweTarief, tariefType);
 		verrichtingen.forEach(v -> bepaalBoekregelsVoorVerrichting(v, oudeTarief, nieuweTarief));
 		return verrichtingen.size();
 	}
 
 	private void bepaalBoekregelsVoorVerrichting(CervixVerrichting verrichting, CervixTarief oudeTarief, CervixTarief nieuweTarief)
 	{
-		CervixBoekRegel laatsteBoekRegel = verrichting.getLaatsteBoekRegel();
-		String logIndexeerd = "";
+		var laatsteBoekRegel = verrichting.getLaatsteBoekRegel();
+		var logIndexeerd = "";
 
 		if (laatsteBoekRegel.getSpecificatie() != null)
 		{
@@ -147,14 +145,14 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 
 	private void maakDebetEnCreditBoekregels(CervixVerrichting verrichting, CervixTarief oudeTarief, CervixTarief nieuweTarief)
 	{
-		CervixBoekRegel debetRegel = new CervixBoekRegel();
+		var debetRegel = new CervixBoekRegel();
 		debetRegel.setVerrichting(verrichting);
 		debetRegel.setDebet(true);
 		debetRegel.setTarief(oudeTarief);
 		hibernateService.saveOrUpdate(debetRegel);
 		verrichting.getBoekRegels().add(debetRegel);
 
-		CervixBoekRegel creditRegel = new CervixBoekRegel();
+		var creditRegel = new CervixBoekRegel();
 		creditRegel.setVerrichting(verrichting);
 		creditRegel.setTarief(nieuweTarief);
 		creditRegel.setDebet(false);
@@ -168,12 +166,12 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 	@Override
 	public void logStart(CervixHerindexatieDto herindexatieDto)
 	{
-		CervixTarief oudeTarief = hibernateService.load(CervixTarief.class, herindexatieDto.getOudeTariefId());
-		String melding = "Start herindexatie voor verrichtingen voor " + baseBetalingService.getTariefString(oudeTarief) + ".";
-		LogGebeurtenis gebeurtenis = LogGebeurtenis.CERVIX_HUISARTS_TARIEF_INDEXEERD;
+		var oudeTarief = hibernateService.load(CervixTarief.class, herindexatieDto.getOudeTariefId());
+		var melding = "Start herindexatie voor verrichtingen voor " + baseBetalingService.getTariefString(oudeTarief) + ".";
+		var gebeurtenis = LogGebeurtenis.CERVIX_HUISARTS_TARIEF_INDEXEERD;
 		if (!herindexatieDto.isHuisartsTarief())
 		{
-			CervixLabTarief labTarief = (CervixLabTarief) Hibernate.unproxy(oudeTarief);
+			var labTarief = (CervixLabTarief) Hibernate.unproxy(oudeTarief);
 			melding = "BMHK laboratorium: " + labTarief.getBmhkLaboratorium().getNaam() + "; " + melding;
 			gebeurtenis = LogGebeurtenis.CERVIX_LAB_TARIEF_INDEXEERD;
 		}
@@ -191,12 +189,12 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 	@Override
 	public void logEinde(CervixHerindexatieDto herindexatieDto, int totaalAantalVerrichtingen)
 	{
-		CervixTarief oudeTarief = hibernateService.load(CervixTarief.class, herindexatieDto.getOudeTariefId());
-		String melding = totaalAantalVerrichtingen + " verrichtingen voor " + baseBetalingService.getTariefString(oudeTarief) + " bijgewerkt.";
-		LogGebeurtenis gebeurtenis = LogGebeurtenis.CERVIX_HUISARTS_TARIEF_INDEXEERD;
+		var oudeTarief = hibernateService.load(CervixTarief.class, herindexatieDto.getOudeTariefId());
+		var melding = totaalAantalVerrichtingen + " verrichtingen voor " + baseBetalingService.getTariefString(oudeTarief) + " bijgewerkt.";
+		var gebeurtenis = LogGebeurtenis.CERVIX_HUISARTS_TARIEF_INDEXEERD;
 		if (!herindexatieDto.isHuisartsTarief())
 		{
-			CervixLabTarief labTarief = (CervixLabTarief) Hibernate.unproxy(oudeTarief);
+			var labTarief = (CervixLabTarief) Hibernate.unproxy(oudeTarief);
 			melding = "BMHK laboratorium: " + labTarief.getBmhkLaboratorium().getNaam() + "; " + melding;
 			gebeurtenis = LogGebeurtenis.CERVIX_LAB_TARIEF_INDEXEERD;
 		}
@@ -207,17 +205,17 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 	@Override
 	public void logFout(CervixHerindexatieDto herindexatieDto, int totaalAantalVerrichtingen, Exception e)
 	{
-		LogGebeurtenis gebeurtenis = LogGebeurtenis.CERVIX_HUISARTS_TARIEF_INDEXEERD;
-		String melding = "";
+		var gebeurtenis = LogGebeurtenis.CERVIX_HUISARTS_TARIEF_INDEXEERD;
+		var melding = "";
 		if (herindexatieDto != null)
 		{
-			CervixTarief oudeTarief = (CervixTarief) Hibernate.unproxy(hibernateService.load(CervixTarief.class, herindexatieDto.getOudeTariefId()));
+			var oudeTarief = (CervixTarief) Hibernate.unproxy(hibernateService.load(CervixTarief.class, herindexatieDto.getOudeTariefId()));
 
 			melding += "Er zijn wel " + totaalAantalVerrichtingen + " verrichtingen voor " + baseBetalingService.getTariefString(oudeTarief) + " bijgewerkt.";
 
 			if (!herindexatieDto.isHuisartsTarief())
 			{
-				CervixLabTarief labTarief = (CervixLabTarief) oudeTarief;
+				var labTarief = (CervixLabTarief) oudeTarief;
 				melding = "BMHK laboratorium: " + labTarief.getBmhkLaboratorium().getNaam() + "; " + melding;
 				gebeurtenis = LogGebeurtenis.CERVIX_LAB_TARIEF_INDEXEERD;
 			}
@@ -227,7 +225,7 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 		{
 			LOG.error("Fout bij verwerking door: ", e);
 		}
-		LogEvent logEvent = new LogEvent();
+		var logEvent = new LogEvent();
 		logEvent.setLevel(Level.ERROR);
 		logEvent.setMelding("Er is een onbekende fout opgetreden tijdens het verwerken van herindexatie, neem contact op met Topicus. " + melding);
 		logService.logGebeurtenis(gebeurtenis, logEvent, Bevolkingsonderzoek.CERVIX);

@@ -21,10 +21,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
-
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.util.DateUtil;
 
@@ -46,10 +43,10 @@ public abstract class AbstractMammaRondePanel extends AbstractBEAccordionPanel<M
 	public AbstractMammaRondePanel(String id, IModel<MammaBeoordeling> model, Integer jaarLaatsteVerwijzing)
 	{
 		super(id, model, 12);
-		MammaBeoordeling beoordeling = getModelObject();
-		MammaOnderzoek onderzoek = beoordeling.getOnderzoek();
-		LocalDate localDate = DateUtil.toLocalDate(onderzoek.getCreatieDatum());
-		String title = "" + localDate.getYear();
+		var beoordeling = getModelObject();
+		var onderzoek = beoordeling.getOnderzoek();
+		var localDate = DateUtil.toLocalDate(onderzoek.getCreatieDatum());
+		var title = "" + localDate.getYear();
 		if (onderzoek.getBeoordelingen().size() > 1 && onderzoek.getLaatsteBeoordeling().equals(beoordeling))
 		{
 			title += " (HERBEOORDELING)";

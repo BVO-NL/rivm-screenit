@@ -109,6 +109,8 @@ public class Constants
 
 	private static final ThreadLocalDateFormat DATE_DD_MM_YYYY_FORMAT = new ThreadLocalDateFormat(DATE_FORMAT_DDMMYYY);
 
+	private static final ThreadLocalDateFormat DATE_FORMAT_YYYYMMDD_FORMAT = new ThreadLocalDateFormat(DATE_FORMAT_YYYYMMDD);
+
 	private static final ThreadLocalDateFormat DATE_TIME_SECONDS_FORMAT = new ThreadLocalDateFormat(DEFAULT_DATE_TIME_SECONDS_FORMAT);
 
 	public static final String VRAAG_LAESIE_JA_NEE = "laesie_ja_nee_vraag";
@@ -204,5 +206,10 @@ public class Constants
 	public static SimpleDateFormat getDateDDMMYYYYFormat()
 	{
 		return DATE_DD_MM_YYYY_FORMAT.get();
+	}
+
+	public static SimpleDateFormat getDateYYYYMMDDFormat()
+	{
+		return DATE_FORMAT_YYYYMMDD_FORMAT.get();
 	}
 }

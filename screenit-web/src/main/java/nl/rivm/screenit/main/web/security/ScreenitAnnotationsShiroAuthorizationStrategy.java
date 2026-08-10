@@ -27,7 +27,6 @@ import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.security.Constraint;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 
@@ -63,7 +62,7 @@ public class ScreenitAnnotationsShiroAuthorizationStrategy implements IAuthoriza
 
 	public <T extends IRequestableComponent> SecurityConstraint checkInvalidInstantiation(final Class<T> componentClass)
 	{
-		SecurityConstraint fail = checkInvalidInstantiation(componentClass.getAnnotations(), null);
+		var fail = checkInvalidInstantiation(componentClass.getAnnotations(), null);
 		if (fail == null)
 		{
 			fail = checkInvalidInstantiation(componentClass.getPackage().getAnnotations(), null);
@@ -76,15 +75,15 @@ public class ScreenitAnnotationsShiroAuthorizationStrategy implements IAuthoriza
 		SecurityConstraint fail = null;
 		if (annotations != null)
 		{
-			for (Annotation annotation : annotations)
+			for (var annotation : annotations)
 			{
 
 				if (annotation instanceof SecurityConstraint)
 				{
-					SecurityConstraint constraint = (SecurityConstraint) annotation;
-					SecurityManager sm = ThreadContext.getSecurityManager();
-					Subject subject = SecurityUtils.getSubject();
-					Constraint permissieConstraint = new Constraint();
+					var constraint = (SecurityConstraint) annotation;
+					var sm = ThreadContext.getSecurityManager();
+					var subject = SecurityUtils.getSubject();
+					var permissieConstraint = new Constraint();
 					permissieConstraint.setActie(constraint.actie());
 					permissieConstraint.setToegangLevel(constraint.level());
 					permissieConstraint.setBevolkingsonderzoek(Arrays.asList(constraint.bevolkingsonderzoekScopes()));
@@ -102,7 +101,7 @@ public class ScreenitAnnotationsShiroAuthorizationStrategy implements IAuthoriza
 								permissieConstraint.setScopeObjectClass(component.getDefaultModelObject().getClass());
 								if (component.getDefaultModelObject() instanceof HibernateObject)
 								{
-									HibernateObject hibernateObject = (HibernateObject) component.getDefaultModelObject();
+									var hibernateObject = (HibernateObject) component.getDefaultModelObject();
 									permissieConstraint.setScopeObjectId(hibernateObject.getId());
 								}
 							}
@@ -114,8 +113,8 @@ public class ScreenitAnnotationsShiroAuthorizationStrategy implements IAuthoriza
 						fail = constraint;
 						break;
 					}
-					boolean isAny = constraint.required().equals(Required.ANY);
-					for (Recht recht : constraint.recht())
+					var isAny = constraint.required().equals(Required.ANY);
+					for (var recht : constraint.recht())
 					{
 						permissieConstraint.setRecht(recht);
 						fail = getConstraint(constraint, sm, subject, permissieConstraint);
@@ -170,8 +169,8 @@ public class ScreenitAnnotationsShiroAuthorizationStrategy implements IAuthoriza
 	{
 		if (action.getName().equals(Component.RENDER))
 		{
-			Class<? extends Component> clazz = component.getClass();
-			SecurityConstraint fail = checkInvalidInstantiation(clazz.getAnnotations(), component);
+			var clazz = component.getClass();
+			var fail = checkInvalidInstantiation(clazz.getAnnotations(), component);
 			if (fail == null)
 			{
 				fail = checkInvalidInstantiation(clazz.getPackage().getAnnotations(), component);
@@ -180,9 +179,9 @@ public class ScreenitAnnotationsShiroAuthorizationStrategy implements IAuthoriza
 		}
 		else if (action instanceof ConstraintAction)
 		{
-			ConstraintAction constraintAction = (ConstraintAction) action;
-			Subject subject = SecurityUtils.getSubject();
-			SecurityManager sm = ThreadContext.getSecurityManager();
+			var constraintAction = (ConstraintAction) action;
+			var subject = SecurityUtils.getSubject();
+			var sm = ThreadContext.getSecurityManager();
 			return sm.isPermitted(subject.getPrincipals(), constraintAction.getConstraint());
 		}
 		return true;

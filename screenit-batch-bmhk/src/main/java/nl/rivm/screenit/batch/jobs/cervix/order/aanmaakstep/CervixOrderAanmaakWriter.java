@@ -93,7 +93,7 @@ public class CervixOrderAanmaakWriter extends BaseWriter<CervixUitstrijkje>
 	{
 		try
 		{
-			String startdatumAanleveringGenotyperingString = (String) getJobExecution().getExecutionContext()
+			var startdatumAanleveringGenotyperingString = (String) getJobExecution().getExecutionContext()
 				.get(PreferenceKey.CERVIX_START_AANLEVERING_GENOTYPERING_EN_INVOERING_TRIAGE.name());
 
 			var vervolgContext = new CervixBepaalVervolgContext(uitstrijkje, false, dateSupplier.getLocalDateTime(),

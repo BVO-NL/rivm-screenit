@@ -25,7 +25,6 @@ import java.util.List;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
-import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.enums.MammaLezingType;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -51,10 +50,10 @@ public class TestMammaZettenNaarArbitragePopup extends TestMammaAbstractPopupPan
 	@Override
 	protected void opslaan()
 	{
-		for (Client client : getModelObject())
+		for (var client : getModelObject())
 		{
-			MammaBeoordeling beoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(client.getMammaDossier().getLaatsteScreeningRonde());
-			MammaLezing discrepantieLezing = new MammaLezing();
+			var beoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(client.getMammaDossier().getLaatsteScreeningRonde());
+			var discrepantieLezing = new MammaLezing();
 			discrepantieLezing.setBeoordeling(beoordeling);
 			discrepantieLezing.setBiradsOpmerking("Automatisch doorgezet vanuit test-timeline.");
 			discrepantieLezing.setLezingType(MammaLezingType.DISCREPANTIE_LEZING);

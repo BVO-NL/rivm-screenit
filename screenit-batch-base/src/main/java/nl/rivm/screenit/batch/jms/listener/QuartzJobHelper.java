@@ -42,7 +42,7 @@ public class QuartzJobHelper
 
 	public static JobDetail createNewJobDetail(JobType jobType)
 	{
-		JobBuilder jobBuilder = JobBuilder.newJob(JobLauncherDetails.class);
+		var jobBuilder = JobBuilder.newJob(JobLauncherDetails.class);
 		jobBuilder = jobBuilder.withIdentity(jobType.name());
 		jobBuilder = jobBuilder.usingJobData(JOB_NAME, jobType.name());
 		jobBuilder = jobBuilder.storeDurably();
@@ -51,7 +51,7 @@ public class QuartzJobHelper
 
 	public static JobDetail createReadyJobDetail()
 	{
-		JobBuilder jobBuilder = JobBuilder.newJob(JobLauncherDetails.class);
+		var jobBuilder = JobBuilder.newJob(JobLauncherDetails.class);
 		jobBuilder = jobBuilder.withIdentity(JOB_READY);
 		jobBuilder = jobBuilder.storeDurably();
 		return jobBuilder.build();

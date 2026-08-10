@@ -72,14 +72,9 @@ public class VerrichtingServiceImpl implements VerrichtingenService
 		{
 			verrichtingDto.getResultOptions().setCount(10);
 		}
-		List<Verrichting> verrichtingen = verrichtingCriteriaRepository.getVerrichtingen(huisarts, verrichtingDto, verrichtingDto.getResultOptions());
-		List<VerrichtingDto> dtos = new ArrayList<>();
-		for (Verrichting verrichting : verrichtingen)
-		{
-			dtos.add(convertToDto(verrichting));
-		}
-
-		VerrichtingTotalenDto totalenDto = new VerrichtingTotalenDto();
+		var verrichtingen = verrichtingCriteriaRepository.getVerrichtingen(huisarts, verrichtingDto, verrichtingDto.getResultOptions());
+		var dtos = verrichtingen.stream().map(this::convertToDto).toList();
+		var totalenDto = new VerrichtingTotalenDto();
 		totalenDto.setVerrichtingen(dtos);
 		totalenDto.setAantalVerrichtingen(verrichtingCriteriaRepository.countVerrichtingen(huisarts, verrichtingDto));
 		return totalenDto;
@@ -88,9 +83,9 @@ public class VerrichtingServiceImpl implements VerrichtingenService
 	@Override
 	public File getVerrichtingenCsv(Huisarts huisarts, VerrichtingZoekObjectDto verrichtingDto) throws IOException
 	{
-		List<Verrichting> verrichtingen = verrichtingCriteriaRepository.getVerrichtingen(huisarts, verrichtingDto, verrichtingDto.getResultOptions());
+		var verrichtingen = verrichtingCriteriaRepository.getVerrichtingen(huisarts, verrichtingDto, verrichtingDto.getResultOptions());
 		List<VerrichtingCsvDto> dtos = new ArrayList<>();
-		for (Verrichting verrichting : verrichtingen)
+		for (var verrichting : verrichtingen)
 		{
 			dtos.add(convertToCsvDto(verrichting));
 		}
@@ -130,7 +125,7 @@ public class VerrichtingServiceImpl implements VerrichtingenService
 
 	private VerrichtingCsvDto convertToCsvDto(Verrichting verrichting)
 	{
-		VerrichtingCsvDto verrichtingCsvDto = new VerrichtingCsvDto();
+		var verrichtingCsvDto = new VerrichtingCsvDto();
 		verrichtingCsvDto.setHuisartsLocatieNaam(verrichting.getHuisartsLocatie().getNaam());
 		verrichtingCsvDto.setClientNaam(verrichting.getClientNaam());
 		verrichtingCsvDto.setMonsterId(verrichting.getMonsterId());
@@ -154,7 +149,7 @@ public class VerrichtingServiceImpl implements VerrichtingenService
 	@Override
 	public VerrichtingDto convertToDto(Verrichting verrichting)
 	{
-		VerrichtingDto verrichtingDto = new VerrichtingDto();
+		var verrichtingDto = new VerrichtingDto();
 		verrichtingDto.setHuisartsportaalId(verrichting.getHuisartsportaalId());
 		verrichtingDto.setRegio(verrichting.getRegio());
 		verrichtingDto.setMonsterId(verrichting.getMonsterId());
@@ -170,7 +165,7 @@ public class VerrichtingServiceImpl implements VerrichtingenService
 	@Override
 	public Verrichting convertFromDto(VerrichtingDto verrichtingDto)
 	{
-		Verrichting verrichting = new Verrichting();
+		var verrichting = new Verrichting();
 		verrichting.setScreenitId(verrichtingDto.getScreenitId());
 		verrichting.setRegio(verrichtingDto.getRegio());
 		verrichting.setMonsterId(verrichtingDto.getMonsterId());
@@ -187,17 +182,17 @@ public class VerrichtingServiceImpl implements VerrichtingenService
 	@Transactional
 	public Verrichting saveScreenITVerrichting(VerrichtingDto verrichtingDto)
 	{
-		Verrichting verrichting = verrichtingRepository.findByScreenitId(verrichtingDto.getScreenitId());
-		List<Betaling> nieuweBetalingen = new ArrayList<>();
+		var verrichting = verrichtingRepository.findByScreenitId(verrichtingDto.getScreenitId());
+		var nieuweBetalingen = new ArrayList<Betaling>();
 
 		if (verrichting == null)
 		{
 			verrichting = convertFromDto(verrichtingDto);
 		}
 
-		for (BetalingDto betalingDto : verrichtingDto.getBetalingen())
+		for (var betalingDto : verrichtingDto.getBetalingen())
 		{
-			Betaling betaling = betalingRepository.findByScreenitId(betalingDto.getScreenitId());
+			var betaling = betalingRepository.findByScreenitId(betalingDto.getScreenitId());
 
 			if (betaling != null)
 			{
@@ -208,10 +203,10 @@ public class VerrichtingServiceImpl implements VerrichtingenService
 
 				if (verrichting.getBetalingen().size() == 1)
 				{
-					Betaling bestaandeBetaling = verrichting.getBetalingen().get(0);
+					var bestaandeBetaling = verrichting.getBetalingen().get(0);
 					if (bestaandeBetaling.getScreenitId() == null)
 					{
-						BetalingDto oudsteBetaling = getOudsteBetalingDto(verrichtingDto);
+						var oudsteBetaling = getOudsteBetalingDto(verrichtingDto);
 						betaling = updateBetaling(oudsteBetaling, bestaandeBetaling);
 					}
 				}
@@ -224,7 +219,7 @@ public class VerrichtingServiceImpl implements VerrichtingenService
 		}
 
 		verrichtingRepository.save(verrichting);
-		for (Betaling betaling : nieuweBetalingen)
+		for (var betaling : nieuweBetalingen)
 		{
 			betaling.setVerrichting(verrichting);
 			betalingRepository.save(betaling);
@@ -246,10 +241,10 @@ public class VerrichtingServiceImpl implements VerrichtingenService
 
 	private BetalingDto getOudsteBetalingDto(VerrichtingDto verrichtingDto)
 	{
-		BetalingDto oudsteBetalingDto = new BetalingDto();
+		var oudsteBetalingDto = new BetalingDto();
 		oudsteBetalingDto.setScreenitId(Long.MAX_VALUE);
 
-		for (BetalingDto betalingDto : verrichtingDto.getBetalingen())
+		for (var betalingDto : verrichtingDto.getBetalingen())
 		{
 			if (betalingDto.getScreenitId() < oudsteBetalingDto.getScreenitId())
 			{
@@ -261,7 +256,7 @@ public class VerrichtingServiceImpl implements VerrichtingenService
 
 	private Betaling convertFromDto(BetalingDto betalingDto)
 	{
-		Betaling betaling = new Betaling();
+		var betaling = new Betaling();
 		betaling.setScreenitId(betalingDto.getScreenitId());
 		betaling.setDebet(betalingDto.isDebet());
 		betaling.setBetalingsKenmerk(betalingDto.getBetalingsKenmerk());

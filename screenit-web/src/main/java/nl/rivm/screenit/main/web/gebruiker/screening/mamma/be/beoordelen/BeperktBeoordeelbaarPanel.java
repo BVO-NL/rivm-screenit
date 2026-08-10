@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.beoordelen;
  */
 
 import java.util.Arrays;
-import java.util.List;
 
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.model.mamma.MammaLezing;
@@ -64,22 +63,22 @@ public class BeperktBeoordeelbaarPanel extends GenericPanel<MammaLezing>
 		super.onInitialize();
 		beperktBeoordeelbaarTekstContainer = new WebMarkupContainer("beperktBeoordeelbaarTekstContainer");
 		add(beperktBeoordeelbaarTekstContainer);
-		List<MammaBeperktBeoordeelbaarReden> beperktBeoordeelbaarRedenen = Arrays.asList(MammaBeperktBeoordeelbaarReden.values());
+		var beperktBeoordeelbaarRedenen = Arrays.asList(MammaBeperktBeoordeelbaarReden.values());
 		dropdown = new ScreenitDropdown<>("beperktBeoordeelbaarReden", beperktBeoordeelbaarRedenen, new EnumChoiceRenderer<>());
 		dropdown.setOutputMarkupId(true);
 		dropdown.setVisible(!alleenInzien);
 		dropdown.setNullValid(true);
 		add(dropdown);
 
-		MammaBeperktBeoordeelbaarReden beperktBeoordeelbaarReden = getModelObject().getBeperktBeoordeelbaarReden();
-		EnumLabel<MammaBeperktBeoordeelbaarReden> beperktBeoordeelbaarRedenText = new EnumLabel<>("beperktBeoordeelbaarRedenText", beperktBeoordeelbaarReden);
+		var beperktBeoordeelbaarReden = getModelObject().getBeperktBeoordeelbaarReden();
+		var beperktBeoordeelbaarRedenText = new EnumLabel<MammaBeperktBeoordeelbaarReden>("beperktBeoordeelbaarRedenText", beperktBeoordeelbaarReden);
 		beperktBeoordeelbaarRedenText.setVisible(alleenInzien);
 		add(beperktBeoordeelbaarRedenText);
 
 		beperktBeoordeelbaarTekstContainer.setOutputMarkupPlaceholderTag(true);
 		beperktBeoordeelbaarTekstContainer.setOutputMarkupId(true);
 		beperktBeoordeelbaarTekstContainer.setVisible(MammaBeperktBeoordeelbaarReden.GEEN_BEOORDELING_MOGELIJK == beperktBeoordeelbaarReden);
-		final TextArea<String> waaromGeenBeoordelingMogelijkTextArea = new TextArea<>("waaromGeenBeoordelingMogelijk");
+		final var waaromGeenBeoordelingMogelijkTextArea = new TextArea<String>("waaromGeenBeoordelingMogelijk");
 		waaromGeenBeoordelingMogelijkTextArea.setEnabled(!alleenInzien);
 		MammaBeoordelenLezingPanel.tuneTextArea(beperktBeoordeelbaarTekstContainer, waaromGeenBeoordelingMogelijkTextArea, alleenInzien, true);
 
@@ -99,7 +98,7 @@ public class BeperktBeoordeelbaarPanel extends GenericPanel<MammaLezing>
 
 	public void updateGeenBeoordelingMogelijk(AjaxRequestTarget target)
 	{
-		boolean onbeoordeelbaar = MammaBeperktBeoordeelbaarReden.GEEN_BEOORDELING_MOGELIJK == getModelObject().getBeperktBeoordeelbaarReden();
+		var onbeoordeelbaar = MammaBeperktBeoordeelbaarReden.GEEN_BEOORDELING_MOGELIJK == getModelObject().getBeperktBeoordeelbaarReden();
 		beperktBeoordeelbaarTekstContainer.setVisible(onbeoordeelbaar);
 		target.add(beperktBeoordeelbaarTekstContainer);
 		if (!onbeoordeelbaar)
@@ -118,7 +117,7 @@ public class BeperktBeoordeelbaarPanel extends GenericPanel<MammaLezing>
 
 	public void updateDropdownClickable()
 	{
-		MammaLezing lezing = getModelObject();
+		var lezing = getModelObject();
 
 		if (baseBeoordelingService.isLezingVerwijzen(lezing))
 		{

@@ -27,8 +27,6 @@ import java.util.stream.Collectors;
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpFollowupPa;
-import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpMonstermateriaal;
-import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpPtnmEnGradering;
 import nl.rivm.screenit.model.verslag.DSValue;
 
 import org.apache.commons.lang.StringUtils;
@@ -66,27 +64,27 @@ public class MammaFollowUpPathologieVerslagInzienPanel extends GenericPanel<Mamm
 			@Override
 			protected void populateItem(ListItem<MammaFollowUpFollowupPa> followUpPaListItem)
 			{
-				MammaFollowUpFollowupPa pa = followUpPaListItem.getModelObject();
-				WebMarkupContainer table = new WebMarkupContainer("table", new CompoundPropertyModel<>(followUpPaListItem.getModel()));
+				var pa = followUpPaListItem.getModelObject();
+				var table = new WebMarkupContainer("table", new CompoundPropertyModel<>(followUpPaListItem.getModel()));
 
-				MammaFollowUpMonstermateriaal monstermateriaal = pa.getMonstermateriaal();
-				boolean verkrijgingsWijze = monstermateriaal != null && monstermateriaal.getVerkrijgingswijze() != null;
-				boolean locatietopologie = monstermateriaal != null && monstermateriaal.getLocatietopologie() != null;
-				boolean locatieUren = monstermateriaal != null && monstermateriaal.getLocatieuren() != null;
-				boolean zijdigheid = monstermateriaal != null && monstermateriaal.getZijdigheid() != null;
-				boolean cclassificatiePuntie = pa.getCclassificatiePunctie() != null;
-				boolean oestrogeenReceptorStatus = pa.getOestrogeenReceptorStatus() != null;
-				boolean progesteronReceptorStatus = pa.getProgesteronReceptorStatus() != null;
-				boolean her2Status = pa.getHer2Status() != null;
-				boolean bclassificatieOpMammabiopt = pa.getBclassificatieOpMammabiopt() != null;
-				boolean maligniteitsgraad = pa.getMaligniteitsgraad() != null;
-				MammaFollowUpPtnmEnGradering ptnmEnGradering = pa.getPtnmEnGradering();
-				boolean ptnmbreastGradering = ptnmEnGradering != null && ptnmEnGradering.getPtnmbreastGradering() != null;
-				boolean pt = ptnmEnGradering != null && ptnmEnGradering.getPt() != null;
-				boolean pn = ptnmEnGradering != null && ptnmEnGradering.getPn() != null;
-				boolean pm = ptnmEnGradering != null && ptnmEnGradering.getPm() != null;
-				boolean typeInvasieveTumor = pa.getTypeInvasieveTumorwhoOverige() != null;
-				boolean graderingDcis = pa.getGraderingDcis() != null;
+				var monstermateriaal = pa.getMonstermateriaal();
+				var verkrijgingsWijze = monstermateriaal != null && monstermateriaal.getVerkrijgingswijze() != null;
+				var locatietopologie = monstermateriaal != null && monstermateriaal.getLocatietopologie() != null;
+				var locatieUren = monstermateriaal != null && monstermateriaal.getLocatieuren() != null;
+				var zijdigheid = monstermateriaal != null && monstermateriaal.getZijdigheid() != null;
+				var cclassificatiePuntie = pa.getCclassificatiePunctie() != null;
+				var oestrogeenReceptorStatus = pa.getOestrogeenReceptorStatus() != null;
+				var progesteronReceptorStatus = pa.getProgesteronReceptorStatus() != null;
+				var her2Status = pa.getHer2Status() != null;
+				var bclassificatieOpMammabiopt = pa.getBclassificatieOpMammabiopt() != null;
+				var maligniteitsgraad = pa.getMaligniteitsgraad() != null;
+				var ptnmEnGradering = pa.getPtnmEnGradering();
+				var ptnmbreastGradering = ptnmEnGradering != null && ptnmEnGradering.getPtnmbreastGradering() != null;
+				var pt = ptnmEnGradering != null && ptnmEnGradering.getPt() != null;
+				var pn = ptnmEnGradering != null && ptnmEnGradering.getPn() != null;
+				var pm = ptnmEnGradering != null && ptnmEnGradering.getPm() != null;
+				var typeInvasieveTumor = pa.getTypeInvasieveTumorwhoOverige() != null;
+				var graderingDcis = pa.getGraderingDcis() != null;
 
 				table.add(new WebMarkupContainer("headerVerkrijgingswijze").setVisible(verkrijgingsWijze));
 				table.add(new WebMarkupContainer("headerLocatietopologie").setVisible(locatietopologie));
@@ -135,7 +133,7 @@ public class MammaFollowUpPathologieVerslagInzienPanel extends GenericPanel<Mamm
 
 	private void addMeerkeuzeKolom(WebMarkupContainer table, List<DSValue> values, String wicketIdValue)
 	{
-		boolean visible = !values.isEmpty();
+		var visible = !values.isEmpty();
 		var waarde = values.stream().map(DSValue::getDisplayNameNl).collect(Collectors.joining(", "));
 		var wicketIdHeader = "header" + StringUtils.capitalize(wicketIdValue);
 		table.add(new WebMarkupContainer(wicketIdHeader).setVisible(visible));
@@ -144,7 +142,7 @@ public class MammaFollowUpPathologieVerslagInzienPanel extends GenericPanel<Mamm
 
 	private String getInvoermethode()
 	{
-		MammaFollowUpVerslag followUpVerslag = getModelObject();
+		var followUpVerslag = getModelObject();
 		if (followUpVerslag != null && followUpVerslag.getInvoerder() == null)
 		{
 			return followUpVerslag.getVerslagContent().getPathologieMedischeObservatie().getVersieProtocol() != null ? "protocollair" : "niet.protocollair";

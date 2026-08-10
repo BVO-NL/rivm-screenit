@@ -52,7 +52,7 @@ public class MammaBeoordelingUtil
 
 	public static String waaromGeenBeoordelingMogelijk(MammaBeoordeling beoordeling)
 	{
-		String result = "";
+		var result = "";
 		if (beoordeling.getArbitrageLezing() != null && beoordeling.getArbitrageLezing().getBeperktBeoordeelbaarReden() == MammaBeperktBeoordeelbaarReden.GEEN_BEOORDELING_MOGELIJK)
 		{
 			result = beoordeling.getArbitrageLezing().getWaaromGeenBeoordelingMogelijk() + "\n\n";

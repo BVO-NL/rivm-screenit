@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.ext.logging.event.EventType;
 import org.apache.cxf.ext.logging.event.LogEvent;
 import org.apache.cxf.ext.logging.event.LogEventSender;
-import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,12 +42,12 @@ public class ScreenITLoggingSaver implements LogEventSender
 	@Override
 	public void send(LogEvent event)
 	{
-		String type = "HL7V3_" + event.getType().toString();
-		Long exchangeId = Long.valueOf(event.getExchangeId());
-		String message = formatEvent(event);
+		var type = "HL7V3_" + event.getType().toString();
+		var exchangeId = Long.valueOf(event.getExchangeId());
+		var message = formatEvent(event);
 		if (event.getType() == EventType.REQ_IN || event.getType() == EventType.REQ_OUT)
 		{
-			String operationName = event.getOperationName();
+			var operationName = event.getOperationName();
 			if (StringUtils.isBlank(operationName) && event.getPortName() != null)
 			{
 				operationName = event.getPortName().toString();
@@ -71,7 +70,7 @@ public class ScreenITLoggingSaver implements LogEventSender
 
 	private String formatEvent(LogEvent event)
 	{
-		StringBuilder b = new StringBuilder();
+		var b = new StringBuilder();
 		write(b, "Address", event.getAddress());
 		write(b, "HttpMethod", event.getHttpMethod());
 		write(b, "Content-Type", event.getContentType());
@@ -88,7 +87,7 @@ public class ScreenITLoggingSaver implements LogEventSender
 		{
 			write(b, "Headers", event.getHeaders().toString());
 		}
-		String payload = event.getPayload();
+		var payload = event.getPayload();
 		if (StringUtil.containsControlCharacter(payload))
 		{
 			write(b, "Payload (Base64)", Base64.getEncoder().encodeToString(payload.getBytes()));
@@ -110,8 +109,8 @@ public class ScreenITLoggingSaver implements LogEventSender
 
 	public void createExchangeId(Message message)
 	{
-		Exchange exchange = message.getExchange();
-		String exchangeId = (String) exchange.get(LogEvent.KEY_EXCHANGE_ID);
+		var exchange = message.getExchange();
+		var exchangeId = (String) exchange.get(LogEvent.KEY_EXCHANGE_ID);
 		if (exchangeId == null)
 		{
 			exchangeId = Long.toString(technischeBerichtenLoggingSaverService.createExchangeId());

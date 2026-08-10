@@ -28,7 +28,6 @@ import org.apache.wicket.Application;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.apache.wicket.request.IRequestCycle;
-import org.apache.wicket.request.Response;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.resource.ContentDisposition;
@@ -51,7 +50,7 @@ public abstract class AjaxDownload extends AbstractAjaxBehavior
 
 	public void initiate(AjaxRequestTarget target)
 	{
-		String url = getCallbackUrl().toString();
+		var url = getCallbackUrl().toString();
 
 		if (addAntiCache)
 		{
@@ -65,13 +64,13 @@ public abstract class AjaxDownload extends AbstractAjaxBehavior
 	@Override
 	public void onRequest()
 	{
-		String fileName = getFileName();
-		ResourceStreamRequestHandler handler = new ResourceStreamRequestHandler(getResourceStream(), fileName)
+		var fileName = getFileName();
+		var handler = new ResourceStreamRequestHandler(getResourceStream(), fileName)
 		{
 			@Override
 			public void detach(IRequestCycle requestCycle)
 			{
-				String fileNameToLog = getFileNameToLog();
+				var fileNameToLog = getFileNameToLog();
 				if (StringUtils.isNotBlank(fileNameToLog))
 				{
 					super.setFileName(fileNameToLog);
@@ -81,12 +80,12 @@ public abstract class AjaxDownload extends AbstractAjaxBehavior
 		};
 		handler.setContentDisposition(ContentDisposition.ATTACHMENT);
 		handler.setCacheDuration(Duration.ofMinutes(30));
-		String contentType = getContentType();
+		var contentType = getContentType();
 		if (contentType == null && fileName != null)
 		{
 			contentType = Application.get().getMimeType(fileName);
 		}
-		Response response = getComponent().getRequestCycle().getResponse();
+		var response = getComponent().getRequestCycle().getResponse();
 		if (StringUtils.isNotBlank(contentType) && response instanceof WebResponse)
 		{
 			((WebResponse) response).setContentType(contentType);

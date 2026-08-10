@@ -74,7 +74,7 @@ public class ColonHuisartsWijzigenPanel extends AbstractClientContactActiePanel<
 
 	private WebMarkupContainer maakHuisartsPanel()
 	{
-		HuisartsPanel huisartsPanel = new HuisartsPanel("huisartsPanel", colonScreeningRonde, this, dialog, huisartsBerichtenVerzenden);
+		var huisartsPanel = new HuisartsPanel("huisartsPanel", colonScreeningRonde, this, dialog, huisartsBerichtenVerzenden);
 		huisartsPanel.setOutputMarkupId(true);
 		return huisartsPanel;
 	}
@@ -88,7 +88,7 @@ public class ColonHuisartsWijzigenPanel extends AbstractClientContactActiePanel<
 	@Override
 	public Map<ExtraOpslaanKey, Object> getOpslaanObjecten()
 	{
-		Map<ExtraOpslaanKey, Object> opslaanObjecten = super.getOpslaanObjecten();
+		var opslaanObjecten = super.getOpslaanObjecten();
 		opslaanObjecten.put(ExtraOpslaanKey.COLON_HUISARTS, colonScreeningRonde.getObject());
 		opslaanObjecten.put(ExtraOpslaanKey.COLON_HUISARTSBERICHTEN_VERZENDEN, huisartsBerichtenVerzenden.getObject());
 		return opslaanObjecten;
@@ -97,8 +97,8 @@ public class ColonHuisartsWijzigenPanel extends AbstractClientContactActiePanel<
 	@Override
 	public List<String> getOpslaanMeldingen()
 	{
-		List<String> opslaanMeldingen = super.getOpslaanMeldingen();
-		ColonScreeningRonde screeningRonde = colonScreeningRonde.getObject();
+		var opslaanMeldingen = super.getOpslaanMeldingen();
+		var screeningRonde = colonScreeningRonde.getObject();
 		if (Boolean.TRUE.equals(huisartsBerichtenVerzenden.getObject())
 			&& BezwaarUtil.isBezwaarActiefVoor(screeningRonde.getDossier().getClient(), BezwaarType.GEEN_UITWISSELING_MET_DE_HUISARTS, Bevolkingsonderzoek.COLON)
 			&& screeningRonde.getHuisarts() != null)
@@ -112,7 +112,7 @@ public class ColonHuisartsWijzigenPanel extends AbstractClientContactActiePanel<
 	public void validate()
 	{
 		super.validate();
-		ColonScreeningRonde screeningRonde = colonScreeningRonde.getObject();
+		var screeningRonde = colonScreeningRonde.getObject();
 
 		var isHuisartsGewijzigd = StringUtils.isNotBlank(
 			EntityAuditUtil.getDiffFieldsToLatestVersion(screeningRonde, hibernateService.getHibernateSession(), "huisarts"));

@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 import nl.rivm.screenit.dto.mamma.planning.PlanningConceptMeldingenDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningConceptMeldingenDto.PlanningMeldingDto;
-import nl.rivm.screenit.dto.mamma.planning.PlanningConceptMeldingenDto.PlanningMeldingenPerSeDto;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.enums.MammaMeldingNiveau;
@@ -65,12 +64,12 @@ public abstract class MammaRouteConceptAnnulerenMeldingenDialogPanel extends Gen
 	{
 		super(id, model);
 
-		boolean heeftMeldingen = !model.getObject().seMeldingen.isEmpty();
-		WebMarkupContainer title = new WebMarkupContainer("title");
-		WebMarkupContainer titleGeenWijzigingen = new WebMarkupContainer("title.geen.wijzigingen");
+		var heeftMeldingen = !model.getObject().seMeldingen.isEmpty();
+		var title = new WebMarkupContainer("title");
+		var titleGeenWijzigingen = new WebMarkupContainer("title.geen.wijzigingen");
 		add(title.setVisible(heeftMeldingen));
 		add(titleGeenWijzigingen.setVisible(!heeftMeldingen));
-		WebMarkupContainer listContainer = new WebMarkupContainer("listContainer");
+		var listContainer = new WebMarkupContainer("listContainer");
 		add(listContainer.setVisible(heeftMeldingen));
 		listContainer.add(createMeldingenView(model));
 		listContainer.setOutputMarkupId(true);
@@ -91,8 +90,8 @@ public abstract class MammaRouteConceptAnnulerenMeldingenDialogPanel extends Gen
 
 	private Component createMeldingenView(IModel<PlanningConceptMeldingenDto> model)
 	{
-		final WebMarkupContainer container = new WebMarkupContainer("container");
-		List<MammaScreeningsEenheid> screeningsEenheden = model.getObject().seMeldingen.keySet().stream().map(seId -> hibernateService.load(MammaScreeningsEenheid.class, seId))
+		final var container = new WebMarkupContainer("container");
+		var screeningsEenheden = model.getObject().seMeldingen.keySet().stream().map(seId -> hibernateService.load(MammaScreeningsEenheid.class, seId))
 			.collect(Collectors.toList());
 		Collections.sort(screeningsEenheden, new PropertyComparator<>("code", false, true));
 		container.add(new ListView<MammaScreeningsEenheid>("seMeldingen", ModelUtil.listRModel(screeningsEenheden, false))
@@ -103,10 +102,10 @@ public abstract class MammaRouteConceptAnnulerenMeldingenDialogPanel extends Gen
 			@Override
 			protected void populateItem(ListItem<MammaScreeningsEenheid> item)
 			{
-				MammaScreeningsEenheid screeningsEenheid = item.getModelObject();
-				PlanningMeldingenPerSeDto meldingenPerSeDto = model.getObject().seMeldingen.get(screeningsEenheid.getId());
-				Component content = createMeldingenView(meldingenPerSeDto.meldingen);
-				WebMarkupContainer collapseLink = new WebMarkupContainer("collapseLink");
+				var screeningsEenheid = item.getModelObject();
+				var meldingenPerSeDto = model.getObject().seMeldingen.get(screeningsEenheid.getId());
+				var content = createMeldingenView(meldingenPerSeDto.meldingen);
+				var collapseLink = new WebMarkupContainer("collapseLink");
 				collapseLink.add(new AttributeAppender("data-parent", Model.of("#" + container.getMarkupId())));
 				collapseLink.add(new AttributeAppender("href", Model.of("#" + content.getMarkupId())));
 				item.add(collapseLink);
@@ -120,7 +119,7 @@ public abstract class MammaRouteConceptAnnulerenMeldingenDialogPanel extends Gen
 
 	private Component createMeldingenView(List<PlanningMeldingDto> meldingen)
 	{
-		WebMarkupContainer content = new WebMarkupContainer("content");
+		var content = new WebMarkupContainer("content");
 		content.add(new ListView<PlanningMeldingDto>("meldingen", meldingen)
 		{
 

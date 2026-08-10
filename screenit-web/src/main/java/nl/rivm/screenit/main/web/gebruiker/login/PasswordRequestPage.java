@@ -49,18 +49,18 @@ public class PasswordRequestPage extends LoginBasePage
 
 	public PasswordRequestPage(PageParameters pageParameters)
 	{
-		Medewerker medewerker = new Medewerker();
+		var medewerker = new Medewerker();
 		if (pageParameters != null && pageParameters.get("naam") != null && !pageParameters.get("naam").equals("null"))
 		{
 			medewerker.setGebruikersnaam(pageParameters.get("naam").toString());
 		}
-		final Form<Medewerker> form = new Form<>("requestForm");
+		final var form = new Form<Medewerker>("requestForm");
 		form.setDefaultModel(ModelUtil.csModel(medewerker));
 
 		ComponentHelper.addTextField(form, "gebruikersnaam", false, 50, false).add(new FocusBehavior());
 		ComponentHelper.addTextField(form, "emailextra", false, 50, false);
 
-		AjaxButton zoeken = new AjaxButton("zoek", form)
+		var zoeken = new AjaxButton("zoek", form)
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)

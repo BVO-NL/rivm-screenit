@@ -58,7 +58,7 @@ public class TechnischeColonIntervalParameters extends GenericPanel<List<ColonUi
 		super(id, model);
 		Form<?> intervalForm = new Form<>("intervalForm");
 
-		ListView<ColonUitnodigingsinterval> intervals = new ListView<ColonUitnodigingsinterval>("intervals", model)
+		var intervals = new ListView<ColonUitnodigingsinterval>("intervals", model)
 		{
 			@Override
 			protected void populateItem(ListItem<ColonUitnodigingsinterval> item)
@@ -72,12 +72,12 @@ public class TechnischeColonIntervalParameters extends GenericPanel<List<ColonUi
 
 		intervalForm.add(intervals);
 		add(intervalForm);
-		AjaxSubmitLink parametersOpslaan = new AjaxSubmitLink("parametersOpslaan")
+		var parametersOpslaan = new AjaxSubmitLink("parametersOpslaan")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				List<ColonUitnodigingsinterval> parameters = model.getObject();
+				var parameters = model.getObject();
 				if (valideParameters(parameters))
 				{
 					parameterisatieService.saveColonIntervalParameters(parameters);
@@ -92,7 +92,7 @@ public class TechnischeColonIntervalParameters extends GenericPanel<List<ColonUi
 
 	private boolean valideParameters(List<ColonUitnodigingsinterval> parameters)
 	{
-		final boolean[] valide = { true };
+		final var valide = new boolean[] { true };
 		parameters.forEach(parameter ->
 		{
 			if (parameter.getAantal() != null && parameter.getAantal() == 0)
@@ -102,7 +102,7 @@ public class TechnischeColonIntervalParameters extends GenericPanel<List<ColonUi
 			if (parameter.getAantal() == null && !IntervalEenheidAanduiding.GEEN.equals(parameter.getEenheid()) ||
 				parameter.getAantal() != null && IntervalEenheidAanduiding.GEEN.equals(parameter.getEenheid()))
 			{
-				String aantalDisplay = parameter.getAantal() == null ? "leeg" : parameter.getAantal().toString();
+				var aantalDisplay = parameter.getAantal() == null ? "leeg" : parameter.getAantal().toString();
 				error(String.format("Invalide parameter combinatie voor: \"%s\" [aantal: %s, eenheid: %s]",
 					parameter.getType().naam(), aantalDisplay, parameter.getEenheid().getNaam()));
 				valide[0] = false;

@@ -48,8 +48,8 @@ public abstract class ClientContactAfrondenPopupPanel extends Panel
 		Form<BezwaarMoment> form = new ScreenitForm<>("uploadForm");
 		add(form);
 
-		RepeatingView actie = new RepeatingView("actie");
-		for (String melding : meldingen)
+		var actie = new RepeatingView("actie");
+		for (var melding : meldingen)
 		{
 			actie.add(new Label(actie.newChildId(), melding));
 		}

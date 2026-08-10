@@ -30,9 +30,6 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActie;
-import nl.rivm.screenit.model.mamma.MammaAfspraak;
-import nl.rivm.screenit.model.mamma.MammaDossier;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -69,7 +66,7 @@ public class MammaClientContactDoelgroepVastleggenPanel extends AbstractClientCo
 		this.client = client;
 
 		oldDoelgroep = client.getObject().getMammaDossier().getDoelgroep();
-		WebMarkupContainer doelgroepContainer = new WebMarkupContainer("doelgroepContainer", new CompoundPropertyModel<>(client));
+		var doelgroepContainer = new WebMarkupContainer("doelgroepContainer", new CompoundPropertyModel<>(client));
 
 		ScreenitDropdown dropdown = new ScreenitDropdown<MammaDoelgroep>("mammaDossier.doelgroep", Arrays.asList(MammaDoelgroep.values()),
 			new EnumChoiceRenderer<MammaDoelgroep>());
@@ -92,7 +89,7 @@ public class MammaClientContactDoelgroepVastleggenPanel extends AbstractClientCo
 		doelgroepContainer.setOutputMarkupId(true);
 		doelgroepContainer.add(dropdown);
 
-		boolean hadAlDubbeleTijdDoelgroep = client.getObject().getMammaDossier().getDoelgroep().equals(MammaDoelgroep.DUBBELE_TIJD);
+		var hadAlDubbeleTijdDoelgroep = client.getObject().getMammaDossier().getDoelgroep().equals(MammaDoelgroep.DUBBELE_TIJD);
 		dubbeleTijdRedenContainer = new WebMarkupContainer("dubbeleTijdRedenContainer", new CompoundPropertyModel<>(client));
 		dubbeleTijdReden = ComponentHelper.newTextField("mammaDossier.dubbeleTijdReden", 255, true);
 		dubbeleTijdRedenContainer.setOutputMarkupId(true);
@@ -105,7 +102,7 @@ public class MammaClientContactDoelgroepVastleggenPanel extends AbstractClientCo
 	public void validate()
 	{
 		super.validate();
-		MammaDossier dossier = client.getObject().getMammaDossier();
+		var dossier = client.getObject().getMammaDossier();
 
 		if (dossier.getDoelgroep().equals(oldDoelgroep))
 		{
@@ -114,11 +111,11 @@ public class MammaClientContactDoelgroepVastleggenPanel extends AbstractClientCo
 
 		if (dossier.getTehuis() == null)
 		{
-			MammaScreeningRonde screeningRonde = dossier.getLaatsteScreeningRonde();
+			var screeningRonde = dossier.getLaatsteScreeningRonde();
 
 			if (screeningRonde != null)
 			{
-				MammaAfspraak laatsteAfspraak = MammaScreeningRondeUtil.getLaatsteAfspraak(screeningRonde);
+				var laatsteAfspraak = MammaScreeningRondeUtil.getLaatsteAfspraak(screeningRonde);
 				if (laatsteAfspraak != null && laatsteAfspraak.getStatus().equals(MammaAfspraakStatus.GEPLAND) && laatsteAfspraak.getVanaf().compareTo(dateSupplier.getDate()) >= 0)
 				{
 					ScreenitSession.get().warn(getString("client.heeft.afspraak"));

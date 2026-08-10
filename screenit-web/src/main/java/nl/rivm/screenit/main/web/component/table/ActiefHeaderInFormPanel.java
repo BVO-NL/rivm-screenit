@@ -40,7 +40,7 @@ public class ActiefHeaderInFormPanel<T extends IActief> extends ActiefHeaderPane
 	@Override
 	protected void createLinks()
 	{
-		AjaxSubmitLink all = new AjaxSubmitLink("all")
+		var all = new AjaxSubmitLink("all")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -56,7 +56,7 @@ public class ActiefHeaderInFormPanel<T extends IActief> extends ActiefHeaderPane
 		}
 		add(all);
 
-		AjaxSubmitLink active = new AjaxSubmitLink("active")
+		var active = new AjaxSubmitLink("active")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -71,7 +71,7 @@ public class ActiefHeaderInFormPanel<T extends IActief> extends ActiefHeaderPane
 		}
 		add(active);
 
-		AjaxSubmitLink inactive = new AjaxSubmitLink("inactive")
+		var inactive = new AjaxSubmitLink("inactive")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)

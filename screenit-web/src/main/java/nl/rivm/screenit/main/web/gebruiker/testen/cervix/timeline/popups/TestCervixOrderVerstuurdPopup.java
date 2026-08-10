@@ -47,7 +47,7 @@ public class TestCervixOrderVerstuurdPopup extends TestCervixUitnodigingenPopup
 	@Override
 	protected void opslaan()
 	{
-		for (CervixUitnodiging uitnodiging : getCurrentUitnodigingen())
+		for (var uitnodiging : getCurrentUitnodigingen())
 		{
 			baseTestTimelineService.orderVerstuurd(uitnodiging);
 		}

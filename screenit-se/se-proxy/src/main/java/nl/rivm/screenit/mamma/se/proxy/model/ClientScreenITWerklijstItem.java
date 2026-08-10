@@ -59,7 +59,7 @@ public class ClientScreenITWerklijstItem extends ScreenITWerklijstItem
 	@JsonIgnore
 	public PersonName getPersonName()
 	{
-		PersonName name = new PersonName();
+		var name = new PersonName();
 		name.set(PersonName.Component.GivenName, voorletters);
 		name.set(PersonName.Component.MiddleName, tussenvoegsel);
 		name.set(PersonName.Component.FamilyName, achternaam);

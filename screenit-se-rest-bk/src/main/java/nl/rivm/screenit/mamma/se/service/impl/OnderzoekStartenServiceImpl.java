@@ -30,7 +30,6 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
@@ -68,7 +67,7 @@ public class OnderzoekStartenServiceImpl implements OnderzoekStartenService
 	@Override
 	public void starten(OnderzoekStartenDto action, MammaScreeningsEenheid screeningsEenheid, LocalDateTime transactieDatumTijd, OrganisatieMedewerker organisatieMedewerker)
 	{
-		final MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
+		final var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
 		zetAfspraakInOnderzoek(afspraak);
 		maakOnderzoek(afspraak, screeningsEenheid, action, transactieDatumTijd);
 		volgendeUitnodigingService.updateVolgendeUitnodigingNaDeelname(afspraak.getUitnodiging().getScreeningRonde().getDossier());
@@ -85,7 +84,7 @@ public class OnderzoekStartenServiceImpl implements OnderzoekStartenService
 	{
 		if (afspraak.getOnderzoek() == null)
 		{
-			MammaOnderzoek onderzoek = new MammaOnderzoek();
+			var onderzoek = new MammaOnderzoek();
 			onderzoek.setAfspraak(afspraak);
 			onderzoek.setCreatieDatum(DateUtil.toUtilDate(transactieDatumTijd));
 			onderzoek.setScreeningsEenheid(screeningsEenheid);
@@ -97,7 +96,7 @@ public class OnderzoekStartenServiceImpl implements OnderzoekStartenService
 
 			afspraak.setOnderzoek(onderzoek);
 
-			MammaScreeningRonde screeningRonde = afspraak.getUitnodiging().getScreeningRonde();
+			var screeningRonde = afspraak.getUitnodiging().getScreeningRonde();
 			screeningRonde.setLaatsteOnderzoek(onderzoek);
 			baseKansberekeningService.screeningRondeSampleHerzien(screeningRonde);
 

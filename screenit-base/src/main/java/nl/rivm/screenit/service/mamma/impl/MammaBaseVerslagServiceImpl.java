@@ -23,7 +23,6 @@ package nl.rivm.screenit.service.mamma.impl;
 
 import java.io.File;
 
-import nl.rivm.screenit.model.BriefDefinitie;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -77,22 +76,22 @@ public class MammaBaseVerslagServiceImpl implements MammaBaseVerslagService
 	@Override
 	public File maakFileVoorPdfViewer(MammaBeoordeling beoordeling) throws Exception
 	{
-		Document document = genereerVerslag(beoordeling, BriefType.MAMMA_VERWIJSVERSLAG);
+		var document = genereerVerslag(beoordeling, BriefType.MAMMA_VERWIJSVERSLAG);
 		return briefService.genereerPdf(document, "verwijsverslag", false);
 	}
 
 	@Override
 	public File maakFileVoorPdfViewer(MammaBeoordeling beoordeling, BriefType briefType) throws Exception
 	{
-		Document document = genereerVerslag(beoordeling, briefType);
+		var document = genereerVerslag(beoordeling, briefType);
 		return briefService.genereerPdf(document, "verwijsverslag", false);
 	}
 
 	@Override
 	public void verslagNaarFileStoreSchrijven(MammaBeoordeling beoordeling) throws Exception
 	{
-		File tmpVerslag = maakFileVoorPdfViewer(beoordeling);
-		UploadDocument document = new UploadDocument();
+		var tmpVerslag = maakFileVoorPdfViewer(beoordeling);
+		var document = new UploadDocument();
 		document.setActief(true);
 		document.setContentType("application/pdf");
 		document.setFile(tmpVerslag);
@@ -109,8 +108,8 @@ public class MammaBaseVerslagServiceImpl implements MammaBaseVerslagService
 
 	private Document genereerVerslag(MammaBeoordeling beoordeling, BriefType briefType) throws Exception
 	{
-		MailMergeContext context = maakMailMergeContext(beoordeling);
-		File briefTemplate = haalBriefTemplateOp(briefType);
+		var context = maakMailMergeContext(beoordeling);
+		var briefTemplate = haalBriefTemplateOp(briefType);
 		if (briefType.equals(BriefType.MAMMA_VERWIJSVERSLAG))
 		{
 			beoordeling.getVerslagLezing().setBeoordeling(beoordeling);
@@ -124,7 +123,7 @@ public class MammaBaseVerslagServiceImpl implements MammaBaseVerslagService
 
 	private MailMergeContext maakMailMergeContext(MammaBeoordeling beoordeling)
 	{
-		MailMergeContext context = new MailMergeContext();
+		var context = new MailMergeContext();
 		context.putValue(MailMergeContext.CONTEXT_MAMMA_BEOORDELING, beoordeling);
 		context.setClient(beoordelingService.getClientVanBeoordeling(beoordeling));
 		context.setBrief(beoordeling.getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getLaatsteBrief());
@@ -134,7 +133,7 @@ public class MammaBaseVerslagServiceImpl implements MammaBaseVerslagService
 
 	private File haalBriefTemplateOp(BriefType briefType)
 	{
-		BriefDefinitie definitie = briefService.getNieuwsteBriefDefinitie(briefType);
+		var definitie = briefService.getNieuwsteBriefDefinitie(briefType);
 		return uploadDocumentService.load(definitie.getDocument());
 	}
 

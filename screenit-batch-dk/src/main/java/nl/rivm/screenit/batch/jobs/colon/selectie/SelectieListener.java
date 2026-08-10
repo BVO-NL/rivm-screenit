@@ -25,7 +25,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import lombok.AllArgsConstructor;
 
@@ -141,11 +140,11 @@ public class SelectieListener extends BaseLogListener
 	protected void beforeEindeLogging(JobExecution jobExecution)
 	{
 		var context = jobExecution.getExecutionContext();
-		int waarschuwingClienten = context.getInt(SelectieConstants.COLONSELECTIEWAARSCHUWINGIFOBTS);
-		int maximaalClienten = context.getInt(SelectieConstants.COLONSELECTIEMAXIMAALIFOBTS);
+		var waarschuwingClienten = context.getInt(SelectieConstants.COLONSELECTIEWAARSCHUWINGIFOBTS);
+		var maximaalClienten = context.getInt(SelectieConstants.COLONSELECTIEMAXIMAALIFOBTS);
 		if (waarschuwingClienten != 0 || maximaalClienten != 0)
 		{
-			LogEvent logEvent = getLogEventLimietIfobts(waarschuwingClienten, maximaalClienten);
+			var logEvent = getLogEventLimietIfobts(waarschuwingClienten, maximaalClienten);
 			logService.logGebeurtenis(LogGebeurtenis.COLON_LIMIET_UITNODIGINGEN, logEvent, Bevolkingsonderzoek.COLON);
 		}
 
@@ -155,8 +154,8 @@ public class SelectieListener extends BaseLogListener
 			var stepContext = stepExecution.getExecutionContext();
 			if (stepContext.containsKey(SelectieConstants.GEMEENTE_ZONDER_SCREENING_ORGANISATIES))
 			{
-				Map<Long, String> map = (Map<Long, String>) stepContext.get(SelectieConstants.GEMEENTE_ZONDER_SCREENING_ORGANISATIES);
-				for (Entry<Long, String> entry : map.entrySet())
+				var map = (Map<Long, String>) stepContext.get(SelectieConstants.GEMEENTE_ZONDER_SCREENING_ORGANISATIES);
+				for (var entry : map.entrySet())
 				{
 					if (!gemeenteLongs.contains(entry.getKey()))
 					{
@@ -173,8 +172,8 @@ public class SelectieListener extends BaseLogListener
 	private LogEvent getLogEventLimietIfobts(int waarschuwingClienten, int maximaalClienten)
 	{
 		var logEvent = new LogEvent();
-		Level level = Level.INFO;
-		String melding = "";
+		var level = Level.INFO;
+		var melding = "";
 		if (waarschuwingClienten > 0)
 		{
 			melding += "Aantal cliënten geselecteerd waarbij de waarschuwingslimiet is overschreden: " + waarschuwingClienten + "; ";
@@ -209,15 +208,15 @@ public class SelectieListener extends BaseLogListener
 		var logEvent = getEindLogEvent();
 		if (logEvent != null)
 		{
-			ColonSelectieRondeBeeindigdLogEvent result = (ColonSelectieRondeBeeindigdLogEvent) logEvent;
+			var result = (ColonSelectieRondeBeeindigdLogEvent) logEvent;
 
 			if (!jobExecution.getAllFailureExceptions().isEmpty())
 			{
-				for (Throwable throwable : jobExecution.getAllFailureExceptions())
+				for (var throwable : jobExecution.getAllFailureExceptions())
 				{
 					result.getExceptionStackTrace().add(getStackTrace(throwable));
 				}
-				Throwable exception = jobExecution.getAllFailureExceptions().get(0);
+				var exception = jobExecution.getAllFailureExceptions().get(0);
 				result.setMelding("De job heeft onsuccesvol gedraaid, neem contact op met de helpdesk.");
 				if (exception instanceof IllegalStateException)
 				{
@@ -228,9 +227,9 @@ public class SelectieListener extends BaseLogListener
 
 			if (!Level.ERROR.equals(result.getLevel()))
 			{
-				ColonSelectieRapportage rapportage = result.getRapportage();
+				var rapportage = result.getRapportage();
 				Long totaalAantalUitnodigingen = (long) 0;
-				for (ColonSelectieRapportageEntry entry : rapportage.getEntries())
+				for (var entry : rapportage.getEntries())
 				{
 					if (SelectieType.UITNODIGING_GEMAAKT.equals(entry.getSelectieType()))
 					{

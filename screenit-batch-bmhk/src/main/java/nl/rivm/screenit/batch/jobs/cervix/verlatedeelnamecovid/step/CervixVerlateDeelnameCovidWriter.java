@@ -84,7 +84,7 @@ public class CervixVerlateDeelnameCovidWriter extends BaseWriter<CervixBrief>
 		var context = getExecutionContext();
 		if (!context.containsKey(CervixVerlateDeelnameCovidConstants.PROJECT_GROEP_ID))
 		{
-			String groepsNaam = "Populatie van run " + DateUtil.formatShortDate(currentDateSupplier.getDate());
+			var groepsNaam = "Populatie van run " + DateUtil.formatShortDate(currentDateSupplier.getDate());
 			Long projectId = context.getLong(CervixVerlateDeelnameCovidConstants.PROJECT_ID);
 			var project = hibernateService.load(Project.class, projectId);
 			LOG.info("Maak project groep " + groepsNaam + " voor project '" + project.getNaam() + "'");

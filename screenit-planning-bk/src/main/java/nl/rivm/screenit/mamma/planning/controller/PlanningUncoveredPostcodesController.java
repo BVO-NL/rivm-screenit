@@ -41,7 +41,7 @@ public class PlanningUncoveredPostcodesController
 	@GetMapping("/{screeningsOrganisatieId}")
 	public ResponseEntity<NavigableSet<String>> uncoveredPostcodes(@PathVariable Long screeningsOrganisatieId)
 	{
-		ResponseEntity<NavigableSet<String>> response = new ResponseEntity<>(
+		var response = new ResponseEntity<NavigableSet<String>>(
 			PlanningClientZonderPostcodeReeksIndex.getPostcodes(PlanningScreeningsOrganisatieIndex.get(screeningsOrganisatieId)),
 			HttpStatus.OK);
 		return response;

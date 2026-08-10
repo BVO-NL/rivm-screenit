@@ -38,13 +38,11 @@ import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.OrganisatieType;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
+import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheidStatus;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheidStatus_;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
 import nl.rivm.screenit.service.BerichtToSeRestBkService;
@@ -101,8 +99,8 @@ public class MammaSEStatusPage extends MedewerkerBasePage
 
 	private ScreenitDataTable<MammaScreeningsEenheid, String> maakStatusTabel()
 	{
-		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
-		MammaSEStatusDataProvider dataProvider = new MammaSEStatusDataProvider(Model.of(ingelogdNamensRegio));
+		var ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
+		var dataProvider = new MammaSEStatusDataProvider(Model.of(ingelogdNamensRegio));
 
 		return new ScreenitDataTable<>("tabel", getColumns(), dataProvider, 100, Model.of("screeningseenheden"), false);
 	}
@@ -127,7 +125,7 @@ public class MammaSEStatusPage extends MedewerkerBasePage
 			@Override
 			public IModel<?> getDataModel(IModel<MammaScreeningsEenheid> rowModel)
 			{
-				IModel<?> model = super.getDataModel(rowModel);
+				var model = super.getDataModel(rowModel);
 				return StringUtils.isBlank((String) model.getObject()) ? model
 					: Model.of(Arrays.stream(((String) model.getObject()).split(", "))
 					.map(this::getFormattedDate).collect(Collectors.joining(", ")));
@@ -162,7 +160,7 @@ public class MammaSEStatusPage extends MedewerkerBasePage
 
 	private void populateStamgegevensKolom(Item<ICellPopulator<MammaScreeningsEenheid>> cell, String id, IModel<MammaScreeningsEenheid> model)
 	{
-		MammaScreeningsEenheidStatus status = model.getObject().getStatus();
+		var status = model.getObject().getStatus();
 		if (status == null)
 		{
 			cell.add(new EmptyPanel(id));
@@ -181,7 +179,7 @@ public class MammaSEStatusPage extends MedewerkerBasePage
 
 	private void populateOnlineKolom(Item<ICellPopulator<MammaScreeningsEenheid>> cell, String id, IModel<MammaScreeningsEenheid> model)
 	{
-		MammaScreeningsEenheidStatus status = model.getObject().getStatus();
+		var status = model.getObject().getStatus();
 		if (status == null)
 		{
 			cell.add(new EmptyPanel(id));

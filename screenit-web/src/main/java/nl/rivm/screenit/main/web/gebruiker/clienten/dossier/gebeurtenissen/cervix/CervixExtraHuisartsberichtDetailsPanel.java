@@ -25,7 +25,6 @@ import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.AbstractGebeurtenisDetailPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.controleren.CervixHuisartsLocatiePanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.cervix.CervixHuisartsBericht;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -56,7 +55,7 @@ public class CervixExtraHuisartsberichtDetailsPanel extends AbstractGebeurtenisD
 		add(new Label("huisartsBericht.aanmaakDatum"));
 		add(DateLabel.forDatePattern("huisartsBericht.extraHuisartsLocatieVerstuurdDatum", "dd-MM-yyyy HH:mm"));
 
-		CervixHuisartsBericht huisartsBericht = getModelObject().getHuisartsBericht();
+		var huisartsBericht = getModelObject().getHuisartsBericht();
 		WebMarkupContainer huisartsLocatiePanel = maakInzienHuisartsLocatiePanel(huisartsBericht.getExtraHuisartsLocatie());
 		add(huisartsLocatiePanel);
 	}

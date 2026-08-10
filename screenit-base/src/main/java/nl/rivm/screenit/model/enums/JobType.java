@@ -204,10 +204,10 @@ public enum JobType
 
 	static
 	{
-		Set<JobType> colon = getJobTypes(BatchApplicationType.COLON);
-		Set<JobType> cervix = getJobTypes(BatchApplicationType.CERVIX);
-		Set<JobType> mamma = getJobTypes(BatchApplicationType.MAMMA);
-		Set<JobType> generalis = getJobTypes(BatchApplicationType.GENERALIS);
+		var colon = getJobTypes(BatchApplicationType.COLON);
+		var cervix = getJobTypes(BatchApplicationType.CERVIX);
+		var mamma = getJobTypes(BatchApplicationType.MAMMA);
+		var generalis = getJobTypes(BatchApplicationType.GENERALIS);
 
 		Set<JobType> colonCervix = new HashSet<>();
 		colonCervix.addAll(colon);
@@ -223,7 +223,7 @@ public enum JobType
 
 		Set<JobType> inpakcentrum = EnumSet.of(UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM_JOB_DK, CERVIX_ZAS_UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM);
 
-		for (JobType jobType : colon)
+		for (var jobType : colon)
 		{
 			jobType.parallelleJobs.addAll(cervixMamma);
 			if (jobType == JobType.UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM_JOB_DK)
@@ -232,7 +232,7 @@ public enum JobType
 			}
 		}
 
-		for (JobType jobType : cervix)
+		for (var jobType : cervix)
 		{
 			jobType.parallelleJobs.addAll(colonMamma);
 			if (jobType == JobType.CERVIX_ZAS_UITNODIGING_VERSTUREN_NAAR_INPAKCENTRUM)
@@ -241,7 +241,7 @@ public enum JobType
 			}
 		}
 
-		for (JobType jobType : mamma)
+		for (var jobType : mamma)
 		{
 			jobType.parallelleJobs.addAll(colonCervix);
 			if (jobType == JobType.MAMMA_KANSBEREKENING)
@@ -250,7 +250,7 @@ public enum JobType
 			}
 		}
 
-		for (JobType jobType : generalis)
+		for (var jobType : generalis)
 		{
 			jobType.parallelleJobs.add(MAMMA_KANSBEREKENING);
 		}

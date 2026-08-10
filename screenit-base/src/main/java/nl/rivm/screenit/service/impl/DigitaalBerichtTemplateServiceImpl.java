@@ -151,7 +151,7 @@ public class DigitaalBerichtTemplateServiceImpl implements DigitaalBerichtTempla
 
 		for (var mergeField : mergefields)
 		{
-			String searchString = "{" + mergeField.getFieldName() + "}";
+			var searchString = "{" + mergeField.getFieldName() + "}";
 			if (bodyTekst.contains(searchString) || subjectTekst != null && subjectTekst.contains(searchString))
 			{
 				var mergeFieldString = zetMergeFieldValueString(mailMergeContext, mergeField);
@@ -177,7 +177,7 @@ public class DigitaalBerichtTemplateServiceImpl implements DigitaalBerichtTempla
 
 	private String zetMergeFieldValueString(MailMergeContext mailMergeContext, MergeField mergeField)
 	{
-		Object mergeFieldValue = mergeField.getValue(mailMergeContext);
+		var mergeFieldValue = mergeField.getValue(mailMergeContext);
 
 		if (mergeFieldValue != null)
 		{

@@ -42,7 +42,6 @@ import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaDossier_;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseOnderzoekService;
@@ -114,7 +113,7 @@ public class MammaPortfolioZoekenPanel extends Panel
 		{
 			super(id, model);
 
-			List<Medewerker> medewerkers = medewerkerService.getActieveMedewerkersMetRecht(Recht.MEDEWERKER_SCREENING_MAMMA_SE_ONDERZOEK);
+			var medewerkers = medewerkerService.getActieveMedewerkersMetRecht(Recht.MEDEWERKER_SCREENING_MAMMA_SE_ONDERZOEK);
 
 			add(new ScreenitListMultipleChoice<>("medewerkers", ModelUtil.listRModel(medewerkers, false),
 				new ChoiceRenderer<>()
@@ -133,14 +132,14 @@ public class MammaPortfolioZoekenPanel extends Panel
 			add(totEnMet);
 			add(new DependantDateValidator(vanaf, totEnMet, DependantDateValidator.Operator.AFTER));
 
-			IndicatingAjaxSubmitLink submit = new IndicatingAjaxSubmitLink("submit")
+			var submit = new IndicatingAjaxSubmitLink("submit")
 			{
 				@Override
 				protected void onSubmit(AjaxRequestTarget target)
 				{
-					List<String> namen = NaamUtil.getNamenMedewerkers(zoekObjectModel.getObject().getMedewerkers());
+					var namen = NaamUtil.getNamenMedewerkers(zoekObjectModel.getObject().getMedewerkers());
 
-					String logRegel = String.format("Gezocht op medewerker(s): %s van %s t/m %s als %s",
+					var logRegel = String.format("Gezocht op medewerker(s): %s van %s t/m %s als %s",
 						String.join(", ", namen),
 						DateUtil.LOCAL_DATE_FORMAT.format(DateUtil.toLocalDate(zoekObjectModel.getObject().getVanaf())),
 						DateUtil.LOCAL_DATE_FORMAT.format(DateUtil.toLocalDate(zoekObjectModel.getObject().getTotEnMet())),
@@ -170,8 +169,8 @@ public class MammaPortfolioZoekenPanel extends Panel
 				@Override
 				public IModel<Object> getDataModel(IModel<Client> rowModel)
 				{
-					Client persoon = rowModel.getObject();
-					String naam = NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(persoon);
+					var persoon = rowModel.getObject();
+					var naam = NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(persoon);
 					return new Model(naam);
 				}
 
@@ -181,16 +180,16 @@ public class MammaPortfolioZoekenPanel extends Panel
 			columns.add(new PropertyColumn(Model.of("Laatste mammografie"), propertyChain(Client_.MAMMA_DOSSIER, MammaDossier_.LAATSTE_MAMMOGRAFIE_AFGEROND),
 				"mammaDossier.laatsteMammografieAfgerond"));
 
-			MammaPortfolioDataProvider mammaPortfolioDataProvider = new MammaPortfolioDataProvider("mammaDossier.laatsteMammografieAfgerond", getModel());
-			final ScreenitDataTable<Client, String> tabel = new ScreenitDataTable<Client, String>("tabel", columns,
+			var mammaPortfolioDataProvider = new MammaPortfolioDataProvider("mammaDossier.laatsteMammografieAfgerond", getModel());
+			final var tabel = new ScreenitDataTable<Client, String>("tabel", columns,
 				mammaPortfolioDataProvider, Model.of("client(en)"))
 			{
 				@Override
 				public void onClick(AjaxRequestTarget target, IModel<Client> model)
 				{
-					List<MammaOnderzoek> onderzoekenMetBeelden = onderzoekService.getOnderzoekenMetBeelden(model.getObject());
+					var onderzoekenMetBeelden = onderzoekService.getOnderzoekenMetBeelden(model.getObject());
 
-					List<Long> clientenIds = dataProviderService.zoekPortfolioClientenIds(zoekObjectModel.getObject(),
+					var clientenIds = dataProviderService.zoekPortfolioClientenIds(zoekObjectModel.getObject(),
 						WicketSpringDataUtil.toSpringSort(mammaPortfolioDataProvider.getSort()));
 					clientenIds.subList(0, clientenIds.indexOf(model.getObject().getId())).clear();
 					setResponsePage(new MammaBeeldenInzienPage(clientenIds, onderzoekenMetBeelden, MammaPortfolioZoekenPage.class));

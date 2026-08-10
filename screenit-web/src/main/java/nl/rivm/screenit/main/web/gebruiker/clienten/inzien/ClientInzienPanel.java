@@ -117,7 +117,7 @@ public class ClientInzienPanel extends GenericPanel<Client>
 		var contactGegevens = new ClientContactGegevensPanel("contactGegevens", getModel());
 		add(contactGegevens);
 
-		IModel<String> laatseBekendeRegioBijRni = laatseBekendeRegioBijRni(client.getPersoon().getGbaAdres());
+		var laatseBekendeRegioBijRni = laatseBekendeRegioBijRni(client.getPersoon().getGbaAdres());
 		add(new Label("persoon.gbaAdres.gbaGemeente.screeningOrganisatie.naam", laatseBekendeRegioBijRni));
 
 		var tijdelijkAdres = client.getPersoon().getTijdelijkAdres();
@@ -266,7 +266,7 @@ public class ClientInzienPanel extends GenericPanel<Client>
 
 			query.addOrder(AuditEntity.revisionNumber().desc());
 			var resultList = query.getResultList();
-			for (Object auditRow : resultList)
+			for (var auditRow : resultList)
 			{
 				var auditGemeente = ((BagAdres) ((Object[]) auditRow)[0]).getGbaGemeente();
 				if (auditGemeente != null)

@@ -40,7 +40,7 @@ public class TestMammaKiesSeVoorAfspraakPopup extends TestMammaKiesSeEnUitnodigi
 	{
 		if (getScreeningsEenheid() != null)
 		{
-			for (Client client : getModelObject())
+			for (var client : getModelObject())
 			{
 				mammaBaseTestTimelineService.maakAfspraak(client.getMammaDossier().getLaatsteScreeningRonde(), getScreeningsEenheid());
 			}

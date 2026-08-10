@@ -43,7 +43,7 @@ public class WoonplaatsServiceImpl implements WoonplaatsService
 	@Transactional
 	public void saveScreenITWoonplaats(WoonplaatsDto object)
 	{
-		Woonplaats woonplaats = woonplaatsRepository.findByScreenitId(object.getScreenitId());
+		var woonplaats = woonplaatsRepository.findByScreenitId(object.getScreenitId());
 		if (woonplaats == null)
 		{
 			woonplaats = new Woonplaats();
@@ -62,7 +62,7 @@ public class WoonplaatsServiceImpl implements WoonplaatsService
 		List<WoonplaatsDto> woonplaatsDtos = new ArrayList<WoonplaatsDto>();
 		woonplaatsen.forEach(woonplaats ->
 		{
-			WoonplaatsDto woonplaatsDto = new WoonplaatsDto();
+			var woonplaatsDto = new WoonplaatsDto();
 			woonplaatsDto.setGemeente(woonplaats.getGemeente());
 			woonplaatsDto.setNaam(woonplaats.getNaam());
 			woonplaatsDto.setHuisartsportaalId(woonplaats.getHuisartsportaalId());

@@ -33,11 +33,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name = "BezwaarHerstellenDto", description = "Gegevens om een BRP-bezwaar van een client te herstellen.")
 public class BezwaarHerstellenDto
 {
-	String bsn;
+	private String bsn;
 
 	@Schema(description = "Geboortedatum van de client als tekst in kort formaat")
-	String geboortedatum;
+	private String geboortedatum;
 
 	@Schema(description = "PDF-bestand waarmee het bezwaar hersteld wordt")
-	MultipartFile bestand;
+	private MultipartFile bestand;
 }

@@ -629,7 +629,18 @@ public class MammaBaseBeoordelingServiceImpl implements MammaBaseBeoordelingServ
 	{
 		if (!briefService.briefTypeAlVerstuurdInDezeRonde(ronde, Collections.singletonList(briefType)))
 		{
-			briefService.maakBvoBrief(ronde, briefType, briefGegenereerd);
+			var brief = briefService.maakBvoBrief(ronde, briefType, briefGegenereerd);
+			if (briefGegenereerd)
+			{
+				var verstuurdVoorAfdrukkenOp = currentDateSupplier.getLocalDateTime();
+				brief.setVerstuurdVoorAfdrukkenOp(verstuurdVoorAfdrukkenOp);
+				var projectBrief = brief.getProjectBrief();
+				if (projectBrief != null)
+				{
+					projectBrief.setGegenereerd(true);
+					projectBrief.setVerstuurdVoorAfdrukkenOp(verstuurdVoorAfdrukkenOp);
+				}
+			}
 			return true;
 		}
 		return false;

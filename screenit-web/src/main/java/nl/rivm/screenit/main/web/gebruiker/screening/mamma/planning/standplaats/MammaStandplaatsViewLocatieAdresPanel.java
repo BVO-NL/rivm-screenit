@@ -52,20 +52,20 @@ public class MammaStandplaatsViewLocatieAdresPanel extends GenericPanel<MammaSta
 		super(id, model);
 		this.standplaatModel = standplaatModel;
 		setOutputMarkupId(true);
-		boolean tijdelijkeLocatie = Boolean.TRUE.equals(model.getObject().getTijdelijk());
-		String titel = getString("titel.locatie");
+		var tijdelijkeLocatie = Boolean.TRUE.equals(model.getObject().getTijdelijk());
+		var titel = getString("titel.locatie");
 		if (tijdelijkeLocatie)
 		{
 			titel = getString("titel.tijdelijke.locatie");
 		}
 
 		add(new Label("titel", titel));
-		boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN)
+		var magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN)
 			&& ScreenitSession.get().getScreeningOrganisatie() != null;
 
-		MammaStandplaatsLocatie locatie = model.getObject();
-		boolean isLocatieGevuld = StringUtils.isNotBlank(locatie.getPlaats()) || StringUtils.isNotBlank(locatie.getPostcode());
-		boolean toonTM = tijdelijkeLocatie && (locatie.getStartDatum() != null || locatie.getEindDatum() != null);
+		var locatie = model.getObject();
+		var isLocatieGevuld = StringUtils.isNotBlank(locatie.getPlaats()) || StringUtils.isNotBlank(locatie.getPostcode());
+		var toonTM = tijdelijkeLocatie && (locatie.getStartDatum() != null || locatie.getEindDatum() != null);
 
 		add(new Label("straat"));
 		add(new Label("huisnummer"));

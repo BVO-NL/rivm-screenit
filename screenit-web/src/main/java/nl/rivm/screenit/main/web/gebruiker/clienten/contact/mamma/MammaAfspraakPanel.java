@@ -21,10 +21,8 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact.mamma;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Map;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -41,9 +39,6 @@ import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.SmsStatus;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
-import nl.rivm.screenit.model.mamma.MammaDossier;
-import nl.rivm.screenit.model.mamma.MammaStandplaats;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -106,21 +101,21 @@ public class MammaAfspraakPanel extends AbstractClientContactActiePanel<MammaAfs
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		boolean isClientportaal = ScreenitSession.get().checkPermission(Recht.CLIENT_DASHBOARD, Actie.INZIEN);
+		var isClientportaal = ScreenitSession.get().checkPermission(Recht.CLIENT_DASHBOARD, Actie.INZIEN);
 		add(new Label("title", getString(isNieuweAfspraak ? "nieuwe.afspraak" : "huidige.afspraak")));
 		add(new Label("standplaatsPeriode.standplaatsRonde.standplaats.naam").setVisible(!isClientportaal));
 		add(new Label("capaciteitBlok.screeningsEenheid.naam").setVisible(!isClientportaal));
 
-		MammaAfspraak afspraak = getModelObject();
-		MammaStandplaats standplaats = afspraak.getStandplaatsPeriode().getStandplaatsRonde().getStandplaats();
-		MammaStandplaatsLocatie locatie = standplaats.getLocatie();
-		MammaStandplaatsLocatie tijdelijkeLocatie = standplaats.getTijdelijkeLocatie();
+		var afspraak = getModelObject();
+		var standplaats = afspraak.getStandplaatsPeriode().getStandplaatsRonde().getStandplaats();
+		var locatie = standplaats.getLocatie();
+		var tijdelijkeLocatie = standplaats.getTijdelijkeLocatie();
 		if (tijdelijkeLocatie.getStartDatum() != null)
 		{
-			Date eindDatum = tijdelijkeLocatie.getEindDatum();
+			var eindDatum = tijdelijkeLocatie.getEindDatum();
 			eindDatum.setHours(23);
 			eindDatum.setMinutes(59);
-			Date vanaf = afspraak.getVanaf();
+			var vanaf = afspraak.getVanaf();
 			if (tijdelijkeLocatie.getStartDatum().compareTo(vanaf) * vanaf.compareTo(eindDatum) > 0)
 			{
 				locatie = tijdelijkeLocatie;
@@ -133,21 +128,21 @@ public class MammaAfspraakPanel extends AbstractClientContactActiePanel<MammaAfs
 
 		add(DateLabel.forDatePattern("vanaf", "EEEE dd-MM-yyyy HH:mm"));
 
-		boolean vanuitPlanning = getPage().getMetaData(ClientContactPanel.CREATE_CONTEXT_KEY).bkVanuitPlanning;
+		var vanuitPlanning = getPage().getMetaData(ClientContactPanel.CREATE_CONTEXT_KEY).bkVanuitPlanning;
 
 		add(maakAfspraakBevestigingsOpties(afspraak));
 		mailveld = maakEmailInvoer();
 		add(mailveld);
 		maakSmsBevestigingVelden(afspraak);
 
-		WebMarkupContainer redenContainer = new WebMarkupContainer("redenContainer");
+		var redenContainer = new WebMarkupContainer("redenContainer");
 		redenContainer.setOutputMarkupPlaceholderTag(true);
 		redenContainer.add(new EnumLabel<>("verzettenReden", afspraak.getVerzettenReden()));
 		redenContainer.setVisible(isNieuweAfspraak && vanuitPlanning);
 		add(redenContainer);
 
-		MammaDossier dossier = afspraak.getUitnodiging().getScreeningRonde().getDossier();
-		WebMarkupContainer waarschuwing = new WebMarkupContainer("waarschuwing");
+		var dossier = afspraak.getUitnodiging().getScreeningRonde().getDossier();
+		var waarschuwing = new WebMarkupContainer("waarschuwing");
 		waarschuwing.setVisible(isNieuweAfspraak && afspraakService.kortVoorVolgendeRonde(afspraak) && dossier.getTehuis() == null);
 		add(waarschuwing);
 
@@ -173,7 +168,7 @@ public class MammaAfspraakPanel extends AbstractClientContactActiePanel<MammaAfs
 			mogelijkeBevestigingLijst.remove(BevestigingsType.BRIEF);
 		}
 
-		RadioChoice<BevestigingsType> afspraakBevestigingRadio = new RadioChoice<>("afspraakBevestiging", new PropertyModel<>(this, "gekozenBevestiging"),
+		var afspraakBevestigingRadio = new RadioChoice<BevestigingsType>("afspraakBevestiging", new PropertyModel<>(this, "gekozenBevestiging"),
 			mogelijkeBevestigingLijst, new EnumChoiceRenderer<>(this));
 		afspraakBevestigingRadio.setRequired(true);
 		afspraakBevestigingRadio.setVisible(isNieuweAfspraak);
@@ -203,7 +198,7 @@ public class MammaAfspraakPanel extends AbstractClientContactActiePanel<MammaAfs
 
 	private RadioChoice<SmsStatus> maakSmsBevestigingKeuzeRadio(boolean magSmsBevestiging)
 	{
-		RadioChoice<SmsStatus> smsBevestigingsKeuzeRadio = new RadioChoice<>("smsStatus", new PropertyModel<>(this, "gekozenSmsStatus"),
+		var smsBevestigingsKeuzeRadio = new RadioChoice<SmsStatus>("smsStatus", new PropertyModel<>(this, "gekozenSmsStatus"),
 			SmsStatus.handmatigTeKiezenStatussen(), new EnumChoiceRenderer<>(this));
 		smsBevestigingsKeuzeRadio.setRequired(true);
 		smsBevestigingsKeuzeRadio.setVisible(magSmsBevestiging && isNieuweAfspraak);
@@ -242,12 +237,12 @@ public class MammaAfspraakPanel extends AbstractClientContactActiePanel<MammaAfs
 	public void validate()
 	{
 		super.validate();
-		MammaAfspraak nieuweAfspraak = getModelObject();
+		var nieuweAfspraak = getModelObject();
 		if (nieuweAfspraak != null)
 		{
-			MammaVerzettenReden verzettenReden = nieuweAfspraak.getVerzettenReden();
+			var verzettenReden = nieuweAfspraak.getVerzettenReden();
 			int aantalWerkdagenVerzettenVanaf = preferenceService.getInteger(PreferenceKey.MAMMA_AFSPRAAK_VERZETTEN_ZONDER_CLIENT_CONTACT_VANAF_AANTAL_WERKDAGEN.name());
-			LocalDate minimumAfspraakDatum = DateUtil.plusWerkdagen(dateSupplier.getLocalDate(), aantalWerkdagenVerzettenVanaf);
+			var minimumAfspraakDatum = DateUtil.plusWerkdagen(dateSupplier.getLocalDate(), aantalWerkdagenVerzettenVanaf);
 			if (MammaVerzettenReden.briefVerplicht(verzettenReden) && DateUtil.toUtilDate(minimumAfspraakDatum).after(nieuweAfspraak.getVanaf()))
 			{
 				error("Voor deze afspraak wordt een bevestiging gestuurd omdat er geen overleg met client is geweest. De afspraak mag niet eerder zijn dan "
@@ -259,7 +254,7 @@ public class MammaAfspraakPanel extends AbstractClientContactActiePanel<MammaAfs
 	@Override
 	public Map<ExtraOpslaanKey, Object> getOpslaanObjecten()
 	{
-		Map<ExtraOpslaanKey, Object> opslaanObjecten = super.getOpslaanObjecten();
+		var opslaanObjecten = super.getOpslaanObjecten();
 		opslaanObjecten.put(ExtraOpslaanKey.BEVESTIGINGS_TYPE, gekozenBevestiging);
 		opslaanObjecten.put(ExtraOpslaanKey.SMS_STATUS, gekozenSmsStatus);
 		if (BevestigingsType.MAIL == gekozenBevestiging)

@@ -33,7 +33,6 @@ import nl.rivm.screenit.model.project.ProjectBestand;
 import nl.rivm.screenit.model.project.ProjectBestandType;
 import nl.rivm.screenit.model.project.ProjectBestandVerwerking;
 import nl.rivm.screenit.model.project.ProjectBestandVerwerkingEntry;
-import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -71,7 +70,7 @@ public class ProjectBestandVerwerkingPage extends ProjectBasePage
 
 	private WebMarkupContainer getStatistiekenContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("statistiekenContainer");
+		var container = new WebMarkupContainer("statistiekenContainer");
 		container.setOutputMarkupId(true);
 
 		container.add(new Label("projectBestand.uploadDocument.naam"));
@@ -83,7 +82,7 @@ public class ProjectBestandVerwerkingPage extends ProjectBasePage
 		container.add(DateLabel.forDatePattern("projectBestand.uploadDatum", "dd-MM-yyyy HH:mm:ss"));
 		container.add(new EnumLabel<BestandStatus>("projectBestand.status"));
 		container.add(getToegepastOpLabel());
-		ProjectBestandType projectBestandType = bestandModel.getObject().getType();
+		var projectBestandType = bestandModel.getObject().getType();
 		container.add(new Label("projectBestand.dynamischeInactiveerReden")
 			.setVisible(ProjectBestandType.INACTIVEREN.equals(projectBestandType) || ProjectBestandType.HERACTIVEREN.equals(projectBestandType)));
 
@@ -92,8 +91,8 @@ public class ProjectBestandVerwerkingPage extends ProjectBasePage
 
 	private Label getToegepastOpLabel()
 	{
-		ProjectBestand bestand = bestandModel.getObject();
-		ProjectGroep groep = bestand.getGroep();
+		var bestand = bestandModel.getObject();
+		var groep = bestand.getGroep();
 		if (groep != null)
 		{
 			return new Label("toegepastOp", Model.of(groep.getNaam()));
@@ -103,14 +102,14 @@ public class ProjectBestandVerwerkingPage extends ProjectBasePage
 
 	private WebMarkupContainer getFoutenContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("meldingenContainer");
+		var container = new WebMarkupContainer("meldingenContainer");
 		container.setOutputMarkupId(true);
 
 		List<IColumn<ProjectBestandVerwerkingEntry, String>> columns = new ArrayList<>();
 		columns.add(new PropertyColumn<>(Model.of("Regelnummer"), REGEL_NUMMER, REGEL_NUMMER));
 		columns.add(new PropertyColumn<>(Model.of("Reden regel niet verwerkt"), MELDING, MELDING));
 
-		ScreenitDataTable<ProjectBestandVerwerkingEntry, String> dataTable = new ScreenitDataTable<>("meldingen", columns,
+		var dataTable = new ScreenitDataTable<>("meldingen", columns,
 			new ProjectBestandVerwerkingDataProvider((IModel<ProjectBestandVerwerking>) getDefaultModel()), 10, Model.of("Meldingen"))
 		{
 			@Override
@@ -126,7 +125,7 @@ public class ProjectBestandVerwerkingPage extends ProjectBasePage
 
 	private WebMarkupContainer getPassPoortContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("projectPasspoortContainer");
+		var container = new WebMarkupContainer("projectPasspoortContainer");
 		container.setOutputMarkupId(true);
 
 		container.add(new ProjectPaspoortPanel("projectPasspoort", getProjectModel()));

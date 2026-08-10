@@ -63,7 +63,7 @@ public class ZorgmailImportPoolExecuterServiceImpl implements ZorgmailImportPool
 	{
 		executorService.submit(() ->
 		{
-			try (FileInputStream xlsStream = new FileInputStream(csvFile))
+			try (var xlsStream = new FileInputStream(csvFile))
 			{
 				databaseRunner.runInSessionOnly(() -> importService.importHandmatigAdresboek(xlsStream, ediAdresOverschrijven));
 			}

@@ -89,7 +89,7 @@ public class DeelnamemodusDossierServiceImpl implements DeelnamemodusDossierServ
 		List<Bevolkingsonderzoek> selectieblokkadeBvos = new ArrayList<>();
 		bepaalDeelnamewensBvoLijsten(bevolkingsonderzoeken, Bevolkingsonderzoek.CERVIX, deelnamewensDto.isDeelnamewensBmhk(), deelnameBvos, selectieblokkadeBvos);
 		bepaalDeelnamewensBvoLijsten(bevolkingsonderzoeken, Bevolkingsonderzoek.MAMMA, deelnamewensDto.isDeelnamewensBk(), deelnameBvos, selectieblokkadeBvos);
-		String melding = "Expliciete deelnamewens vastgelegd voor bevolkingsonderzoek(en): " + Bevolkingsonderzoek.getAfkortingen(deelnameBvos);
+		var melding = "Expliciete deelnamewens vastgelegd voor bevolkingsonderzoek(en): " + Bevolkingsonderzoek.getAfkortingen(deelnameBvos);
 		melding += !selectieblokkadeBvos.isEmpty() ?
 			", dossiers met selectieblokkade aangemaakt voor bevolkingsonderzoek(en): " + Bevolkingsonderzoek.getAfkortingen(selectieblokkadeBvos) : "";
 		return melding;

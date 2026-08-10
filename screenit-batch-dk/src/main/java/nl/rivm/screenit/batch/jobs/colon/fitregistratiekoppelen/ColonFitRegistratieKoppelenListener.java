@@ -70,7 +70,7 @@ public class ColonFitRegistratieKoppelenListener extends BaseLogListener
 	@Override
 	protected LogEvent getEindLogEvent()
 	{
-		String key = ColonFitRegistratieKoppelenConstants.RAPPORTAGE_KEY_FIT_REGISTRATIE_KOPPELEN;
+		var key = ColonFitRegistratieKoppelenConstants.RAPPORTAGE_KEY_FIT_REGISTRATIE_KOPPELEN;
 		var context = getJobExecution().getExecutionContext();
 		if (context.containsKey(key))
 		{
@@ -94,11 +94,11 @@ public class ColonFitRegistratieKoppelenListener extends BaseLogListener
 			var koppelLogEvent = (ColonFitRegistratieKoppelenBeeindigdLogEvent) logEvent;
 			if (!Level.ERROR.equals(koppelLogEvent.getLevel()) && jobHasExitCode(ExitStatus.FAILED))
 			{
-				String error = "De job heeft onsuccesvol gedraaid, neem contact op met de helpdesk";
+				var error = "De job heeft onsuccesvol gedraaid, neem contact op met de helpdesk";
 
 				if (CollectionUtils.isNotEmpty(jobExecution.getAllFailureExceptions()))
 				{
-					Throwable exception = jobExecution.getAllFailureExceptions().get(0);
+					var exception = jobExecution.getAllFailureExceptions().get(0);
 					error = exception.getMessage();
 				}
 				koppelLogEvent.setMelding(error);

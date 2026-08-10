@@ -60,8 +60,8 @@ public class Vo105UploadTasklet implements Tasklet, StepExecutionListener
 	public RepeatStatus execute(@NotNull StepContribution contribution, ChunkContext chunkContext)
 	{
 		var executionContext = chunkContext.getStepContext().getJobExecutionContext();
-		GbaVerwerkingsLog verwerkingsLog = (GbaVerwerkingsLog) executionContext.get(GbaConstants.RAPPORTAGEKEYGBA);
-		String vo105Bestand = (String) executionContext.get(Vo105ItemWriter.VO105_BESTAND_KEY);
+		var verwerkingsLog = (GbaVerwerkingsLog) executionContext.get(GbaConstants.RAPPORTAGEKEYGBA);
+		var vo105Bestand = (String) executionContext.get(Vo105ItemWriter.VO105_BESTAND_KEY);
 
 		if (vo105Bestand != null)
 		{

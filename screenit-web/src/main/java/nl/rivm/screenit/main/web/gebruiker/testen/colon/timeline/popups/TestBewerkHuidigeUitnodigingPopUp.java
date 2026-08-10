@@ -29,9 +29,6 @@ import nl.rivm.screenit.main.service.colon.ColonTestTimelineService;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.components.TestEnumRadioChoice;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.popups.AbstractTestBasePopupPanel;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.colon.ColonDossier;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
-import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
@@ -74,11 +71,11 @@ public class TestBewerkHuidigeUitnodigingPopUp extends AbstractTestBasePopupPane
 
 	private boolean isColonUitnodigingAlVerstuurdNaarInpakcentrum()
 	{
-		ColonDossier dossier = getModelObject().get(0).getColonDossier();
+		var dossier = getModelObject().get(0).getColonDossier();
 		if (dossier.getLaatsteScreeningRonde() != null && dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging() != null)
 		{
-			ColonScreeningRonde ronde = dossier.getLaatsteScreeningRonde();
-			ColonUitnodiging uitnodiging = ronde.getLaatsteUitnodiging();
+			var ronde = dossier.getLaatsteScreeningRonde();
+			var uitnodiging = ronde.getLaatsteUitnodiging();
 			return uitnodiging.isVerstuurd();
 		}
 		return false;
@@ -87,8 +84,8 @@ public class TestBewerkHuidigeUitnodigingPopUp extends AbstractTestBasePopupPane
 	@Override
 	protected void opslaan()
 	{
-		TestTimeLineDossierTijdstip tijdStip = dossierTijdStipModel.getObject();
-		for (Client client : getModelObject())
+		var tijdStip = dossierTijdStipModel.getObject();
+		for (var client : getModelObject())
 		{
 			colonTestTimeLineService.bewerkUitnodiging(client, tijdStip);
 		}

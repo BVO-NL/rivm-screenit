@@ -51,23 +51,23 @@ public enum PlanningBlokkadeIndex
 		switch (blokkade.getBlokkadeType())
 		{
 		case SCREENINGS_ORGANISATIE:
-			PlanningScreeningsOrganisatie screeningsOrganisatie = blokkade.getScreeningsOrganisatie();
+			var screeningsOrganisatie = blokkade.getScreeningsOrganisatie();
 
-			Map<LocalDate, Set<PlanningBlokkade>> screeningsOrganisatieDatumMap = screeningsOrganisatieBlokkadeMap.computeIfAbsent(screeningsOrganisatie, k -> new HashMap<>());
+			var screeningsOrganisatieDatumMap = screeningsOrganisatieBlokkadeMap.computeIfAbsent(screeningsOrganisatie, k -> new HashMap<>());
 
 			addToMap(blokkade, screeningsOrganisatieDatumMap);
 			break;
 		case SCREENINGS_EENHEID:
-			PlanningScreeningsEenheid screeningsEenheid = blokkade.getScreeningsEenheid();
+			var screeningsEenheid = blokkade.getScreeningsEenheid();
 
-			Map<LocalDate, Set<PlanningBlokkade>> screeningsEenheidDatumMap = screeningsEenheidBlokkadeMap.computeIfAbsent(screeningsEenheid, k -> new HashMap<>());
+			var screeningsEenheidDatumMap = screeningsEenheidBlokkadeMap.computeIfAbsent(screeningsEenheid, k -> new HashMap<>());
 
 			addToMap(blokkade, screeningsEenheidDatumMap);
 			break;
 		case STANDPLAATS:
-			PlanningStandplaats standplaats = blokkade.getStandplaats();
+			var standplaats = blokkade.getStandplaats();
 
-			Map<LocalDate, Set<PlanningBlokkade>> standplaatsDatumMap = standplaatsBlokkadeMap.computeIfAbsent(standplaats, k -> new HashMap<>());
+			var standplaatsDatumMap = standplaatsBlokkadeMap.computeIfAbsent(standplaats, k -> new HashMap<>());
 
 			addToMap(blokkade, standplaatsDatumMap);
 			break;
@@ -78,9 +78,9 @@ public enum PlanningBlokkadeIndex
 
 	private static void addToMap(PlanningBlokkade blokkade, Map<LocalDate, Set<PlanningBlokkade>> datumMap)
 	{
-		for (LocalDate date = blokkade.getVanaf(); date.compareTo(blokkade.getTotEnMet()) <= 0; date = date.plusDays(1))
+		for (var date = blokkade.getVanaf(); date.compareTo(blokkade.getTotEnMet()) <= 0; date = date.plusDays(1))
 		{
-			Set<PlanningBlokkade> blokkadeSet = datumMap.computeIfAbsent(date, k -> new HashSet<>());
+			var blokkadeSet = datumMap.computeIfAbsent(date, k -> new HashSet<>());
 			blokkadeSet.add(blokkade);
 		}
 	}
@@ -91,9 +91,9 @@ public enum PlanningBlokkadeIndex
 		switch (blokkade.getBlokkadeType())
 		{
 		case SCREENINGS_ORGANISATIE:
-			PlanningScreeningsOrganisatie screeningsOrganisatie = blokkade.getScreeningsOrganisatie();
+			var screeningsOrganisatie = blokkade.getScreeningsOrganisatie();
 
-			Map<LocalDate, Set<PlanningBlokkade>> screeningsOrganisatieDatumMap = screeningsOrganisatieBlokkadeMap.get(screeningsOrganisatie);
+			var screeningsOrganisatieDatumMap = screeningsOrganisatieBlokkadeMap.get(screeningsOrganisatie);
 			removeFromMap(blokkade, screeningsOrganisatieDatumMap);
 
 			if (screeningsOrganisatieDatumMap.isEmpty())
@@ -102,9 +102,9 @@ public enum PlanningBlokkadeIndex
 			}
 			break;
 		case SCREENINGS_EENHEID:
-			PlanningScreeningsEenheid screeningsEenheid = blokkade.getScreeningsEenheid();
+			var screeningsEenheid = blokkade.getScreeningsEenheid();
 
-			Map<LocalDate, Set<PlanningBlokkade>> screeningsEenheidDatumMap = screeningsEenheidBlokkadeMap.get(screeningsEenheid);
+			var screeningsEenheidDatumMap = screeningsEenheidBlokkadeMap.get(screeningsEenheid);
 			removeFromMap(blokkade, screeningsEenheidDatumMap);
 
 			if (screeningsEenheidDatumMap.isEmpty())
@@ -113,9 +113,9 @@ public enum PlanningBlokkadeIndex
 			}
 			break;
 		case STANDPLAATS:
-			PlanningStandplaats standplaats = blokkade.getStandplaats();
+			var standplaats = blokkade.getStandplaats();
 
-			Map<LocalDate, Set<PlanningBlokkade>> standplaatsDatumMap = standplaatsBlokkadeMap.get(standplaats);
+			var standplaatsDatumMap = standplaatsBlokkadeMap.get(standplaats);
 			removeFromMap(blokkade, standplaatsDatumMap);
 
 			if (standplaatsDatumMap.isEmpty())
@@ -128,9 +128,9 @@ public enum PlanningBlokkadeIndex
 
 	private static void removeFromMap(PlanningBlokkade blokkade, Map<LocalDate, Set<PlanningBlokkade>> datumMap)
 	{
-		for (LocalDate date = blokkade.getVanaf(); date.compareTo(blokkade.getTotEnMet()) <= 0; date = date.plusDays(1))
+		for (var date = blokkade.getVanaf(); date.compareTo(blokkade.getTotEnMet()) <= 0; date = date.plusDays(1))
 		{
-			Set<PlanningBlokkade> blokkadeSet = datumMap.get(date);
+			var blokkadeSet = datumMap.get(date);
 			blokkadeSet.remove(blokkade);
 			if (blokkadeSet.isEmpty())
 			{

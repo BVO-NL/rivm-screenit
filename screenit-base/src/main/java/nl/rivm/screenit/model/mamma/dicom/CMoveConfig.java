@@ -39,7 +39,7 @@ public class CMoveConfig
 
 	public static CMoveConfig parse(String moveConnectionsString)
 	{
-		CMoveConfig result = new CMoveConfig();
+		var result = new CMoveConfig();
 		String moveConnections[] = moveConnectionsString.split(",");
 		result.queryRetrieve = SCPConfig.parse(moveConnections[0], "localhost", 11112);
 		result.store = SCPConfig.parse(moveConnections[1], "localhost", 11113);

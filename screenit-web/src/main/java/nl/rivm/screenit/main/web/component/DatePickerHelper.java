@@ -41,7 +41,7 @@ public final class DatePickerHelper
 
 	public static DatePicker<Date> newDatePicker(String id, IModel<Date> model)
 	{
-		DatePicker<Date> datePicker = new DatePicker<Date>(id, model);
+		var datePicker = new DatePicker<Date>(id, model);
 		datePicker.setDateFormat("dd-mm-yy");
 		return datePicker;
 	}

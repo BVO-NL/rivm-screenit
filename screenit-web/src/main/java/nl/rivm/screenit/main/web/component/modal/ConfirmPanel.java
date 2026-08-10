@@ -49,7 +49,7 @@ public class ConfirmPanel extends Panel
 		{
 			add(new Label("content", "").setVisible(false));
 		}
-		Form<Void> customForm = new Form<>("form");
+		var customForm = new Form<Void>("form");
 		createCustomComponent("customComponent", customForm);
 		add(customForm);
 		add(new IndicatingAjaxLink<Void>("close")

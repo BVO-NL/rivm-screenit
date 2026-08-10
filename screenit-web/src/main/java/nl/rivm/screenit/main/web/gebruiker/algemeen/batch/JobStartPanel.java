@@ -77,8 +77,8 @@ public class JobStartPanel extends BatchBvoFilterPanel
 		jobsContainer.setOutputMarkupId(true);
 		addOrReplace(jobsContainer);
 
-		List<JobType> jobs = teTonenJobTypes();
-		boolean magToevoegen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BATCH_STATUS, Actie.TOEVOEGEN);
+		var jobs = teTonenJobTypes();
+		var magToevoegen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BATCH_STATUS, Actie.TOEVOEGEN);
 		jobsContainer.add(new WebMarkupContainer("startHeader").setVisible(magToevoegen));
 		jobsContainer.add(new WebMarkupContainer("configHeader").setVisible(magToevoegen));
 		jobsContainer.add(maakJobsListView(jobs, magToevoegen));
@@ -88,10 +88,10 @@ public class JobStartPanel extends BatchBvoFilterPanel
 	{
 		List<JobType> jobs = new ArrayList<>();
 
-		for (JobType jobType : JobType.values())
+		for (var jobType : JobType.values())
 		{
-			Boolean heeftBVO = Boolean.FALSE;
-			for (Bevolkingsonderzoek bvo : jobType.getBevolkingsOnderzoeken())
+			var heeftBVO = Boolean.FALSE;
+			for (var bvo : jobType.getBevolkingsOnderzoeken())
 			{
 				if (getBatchJobZoekCriteria().getBevolkingsonderzoeken().contains(bvo) || getBatchJobZoekCriteria().getBevolkingsonderzoeken().isEmpty())
 				{
@@ -113,14 +113,14 @@ public class JobStartPanel extends BatchBvoFilterPanel
 			@Override
 			protected void populateItem(final ListItem<JobType> item)
 			{
-				JobType jobType = item.getModelObject();
+				var jobType = item.getModelObject();
 				item.add(new Label("bvoLabel", Bevolkingsonderzoek.getAfkortingen(jobType.getBevolkingsOnderzoeken())));
 				item.add(new EnumLabel<>("naam", jobType));
 				item.add(new Label("beschrijving", getString(EnumStringUtil.getPropertyString(jobType) + ".beschrijving")));
 				var jobStartButton = jobStartButton(item);
 				item.add(jobStartButton.setVisible(magToevoegen));
 
-				WebMarkupContainer configButtonContainer = jobConfigContainer(jobType);
+				var configButtonContainer = jobConfigContainer(jobType);
 				configButtonContainer.setVisible(magToevoegen);
 				item.add(configButtonContainer);
 			}
@@ -136,17 +136,17 @@ public class JobStartPanel extends BatchBvoFilterPanel
 			@Override
 			protected IModel<String> getHeaderStringModel()
 			{
-				JobType job = item.getModelObject();
+				var job = item.getModelObject();
 				return Model.of(getJobName(job));
 			}
 
 			@Override
 			protected IModel<String> getContentStringModel()
 			{
-				JobType job = item.getModelObject();
-				String beginQuestion = "Weet u zeker dat u de batchjob ";
-				String endQuestion = " wilt starten?";
-				String naam = getJobName(job);
+				var job = item.getModelObject();
+				var beginQuestion = "Weet u zeker dat u de batchjob ";
+				var endQuestion = " wilt starten?";
+				var naam = getJobName(job);
 				return Model.of(beginQuestion + naam + endQuestion);
 			}
 
@@ -160,7 +160,7 @@ public class JobStartPanel extends BatchBvoFilterPanel
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				BatchJob batchJob = new BatchJob();
+				var batchJob = new BatchJob();
 				batchJob.setJobType(getModelObject());
 				customPopupPanel.vulJobParameters(batchJob.getJobParameters());
 				jobService.startJob(batchJob, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
@@ -170,7 +170,7 @@ public class JobStartPanel extends BatchBvoFilterPanel
 
 	private WebMarkupContainer jobConfigContainer(JobType jobType)
 	{
-		WebMarkupContainer configButtonContainer = new WebMarkupContainer("configButtonContainer");
+		var configButtonContainer = new WebMarkupContainer("configButtonContainer");
 		Component config = new IndicatingAjaxLink<JobType>("config")
 		{
 			@Override

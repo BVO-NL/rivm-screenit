@@ -79,7 +79,7 @@ public class MammaAdhocMeekijkverzoekOnderzoekInzienPage extends AbstractMammaBe
 	{
 		List<AbstractBEAccordionPanel<?>> rondePanels = new ArrayList<>();
 
-		MammaAdhocMeekijkverzoek adhocMeekijkverzoek = hibernateService.load(MammaAdhocMeekijkverzoek.class,
+		var adhocMeekijkverzoek = hibernateService.load(MammaAdhocMeekijkverzoek.class,
 			onderzoekenIdMapping.get(getOnderzoek().getId()));
 		huidigeRondePanel = new MammaAdhocMeekijkverzoekHuidigeRondePanel("rondeItem", onderzoekModel,
 			ModelUtil.sModel(adhocMeekijkverzoek));
@@ -91,7 +91,7 @@ public class MammaAdhocMeekijkverzoekOnderzoekInzienPage extends AbstractMammaBe
 	@Override
 	public void volgendeBeoordeling(AjaxRequestTarget target)
 	{
-		Long volgendeOnderzoekId = beoordelingService.getVolgendeBeoordelingId(huidigeOnderzoekId(), new ArrayList<>(onderzoekenIdMapping.keySet()));
+		var volgendeOnderzoekId = beoordelingService.getVolgendeBeoordelingId(huidigeOnderzoekId(), new ArrayList<>(onderzoekenIdMapping.keySet()));
 
 		gaNaarBeoordeling(volgendeOnderzoekId, target);
 	}

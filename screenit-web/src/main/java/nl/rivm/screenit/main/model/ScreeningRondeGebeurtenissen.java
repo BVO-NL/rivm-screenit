@@ -60,7 +60,7 @@ public class ScreeningRondeGebeurtenissen implements Serializable, IDetachable
 
 	public void addGebeurtenissen(List<ScreeningRondeGebeurtenis> gebeurtenissen)
 	{
-		for (ScreeningRondeGebeurtenis screeningRondeGebeurtenis : gebeurtenissen)
+		for (var screeningRondeGebeurtenis : gebeurtenissen)
 		{
 			addGebeurtenis(screeningRondeGebeurtenis);
 		}
@@ -79,7 +79,7 @@ public class ScreeningRondeGebeurtenissen implements Serializable, IDetachable
 	public void detach()
 	{
 		ModelUtil.nullSafeDetach(screeningRonde);
-		for (ScreeningRondeGebeurtenis gebeurtenis : gebeurtenissen)
+		for (var gebeurtenis : gebeurtenissen)
 		{
 			ModelUtil.nullSafeDetach(gebeurtenis);
 		}

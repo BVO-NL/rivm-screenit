@@ -78,12 +78,12 @@ public class CervixOrderListener extends CervixBaseLogListener
 		var event = super.eindLogging(jobExecution);
 
 		var context = jobExecution.getExecutionContext();
-		long aangemaakt = context.getLong(CervixOrderConstants.KEY_ORDER_AANGEMAAKT, 0);
+		var aangemaakt = context.getLong(CervixOrderConstants.KEY_ORDER_AANGEMAAKT, 0);
 
-		long verstuurd = context.getLong(CervixOrderConstants.KEY_ORDER_VERSTUURD, 0);
+		var verstuurd = context.getLong(CervixOrderConstants.KEY_ORDER_VERSTUURD, 0);
 		if (StringUtils.isBlank(event.getMelding()))
 		{
-			String melding = "Er zijn " + aangemaakt + " order bericht(en) aangemaakt en " + verstuurd + " order bericht(en) verstuurd";
+			var melding = "Er zijn " + aangemaakt + " order bericht(en) aangemaakt en " + verstuurd + " order bericht(en) verstuurd";
 			event.setMelding(melding);
 		}
 		return event;

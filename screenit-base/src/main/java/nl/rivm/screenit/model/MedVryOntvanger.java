@@ -22,7 +22,6 @@ package nl.rivm.screenit.model;
  */
 
 import nl.rivm.screenit.edi.model.IMedVryOntvanger;
-import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
 import nl.rivm.screenit.model.colon.ColonHuisartsBericht;
 import nl.rivm.screenit.util.NaamUtil;
@@ -106,7 +105,7 @@ public class MedVryOntvanger implements IMedVryOntvanger
 
 	private void setVoorHuisarts(CervixHuisartsLocatie huisartsLocatie, String ediAfleverAdres)
 	{
-		CervixHuisarts huisarts = huisartsLocatie.getHuisarts();
+		var huisarts = huisartsLocatie.getHuisarts();
 		this.volledigeOntvangerNaam = NaamUtil.getNaamHuisarts(huisarts);
 
 		this.ediMailAdres = ediAfleverAdres;

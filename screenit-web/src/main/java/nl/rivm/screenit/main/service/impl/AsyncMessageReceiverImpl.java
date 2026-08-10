@@ -24,6 +24,12 @@ package nl.rivm.screenit.main.service.impl;
 
 import java.util.concurrent.Future;
 
+import jakarta.jms.Destination;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.Session;
+
 import nl.rivm.screenit.main.service.AsyncMessageReceiver;
 
 import org.slf4j.Logger;
@@ -34,12 +40,6 @@ import org.springframework.jms.core.SessionCallback;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
-
-import jakarta.jms.Destination;
-import jakarta.jms.JMSException;
-import jakarta.jms.Message;
-import jakarta.jms.MessageConsumer;
-import jakarta.jms.Session;
 
 @Service
 public class AsyncMessageReceiverImpl implements AsyncMessageReceiver
@@ -65,7 +65,7 @@ public class AsyncMessageReceiverImpl implements AsyncMessageReceiver
 				try
 				{
 					messageConsumer = session.createConsumer(destination);
-					Message receive = messageConsumer.receive(timeout);
+					var receive = messageConsumer.receive(timeout);
 					LOGGER.trace("doInJms: messageConsumer.receive");
 					return receive;
 				}

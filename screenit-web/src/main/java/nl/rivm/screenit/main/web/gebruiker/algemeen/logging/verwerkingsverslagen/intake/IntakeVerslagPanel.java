@@ -26,9 +26,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 
-import nl.rivm.screenit.model.colon.IntakeMakenLogEventRegel;
 import nl.rivm.screenit.model.logging.IntakeMakenLogEvent;
 import nl.rivm.screenit.service.ScopeService;
 import nl.rivm.screenit.util.DateUtil;
@@ -60,9 +58,9 @@ public class IntakeVerslagPanel extends GenericPanel<IntakeMakenLogEvent>
 	{
 		super(id, new CompoundPropertyModel<>(model));
 
-		Iterator<String> meldingen = Arrays.asList(model.getObject().getMelding().split("<br>")).iterator();
+		var meldingen = Arrays.asList(model.getObject().getMelding().split("<br>")).iterator();
 		meldingen.next();
-		String melding = StringUtils.join(meldingen, "<br>");
+		var melding = StringUtils.join(meldingen, "<br>");
 		prepareAantalen();
 
 		add(DateLabel.forDatePattern("datumVerwerking", Model.of(datumVerwerking), "dd-MM-yyyy HH:mm:ss"));
@@ -90,9 +88,9 @@ public class IntakeVerslagPanel extends GenericPanel<IntakeMakenLogEvent>
 
 	private void prepareAantalen()
 	{
-		IntakeMakenLogEvent logEvent = getModelObject();
+		var logEvent = getModelObject();
 
-		for (IntakeMakenLogEventRegel regel : logEvent.getRegels())
+		for (var regel : logEvent.getRegels())
 		{
 			if (regel.getAfspraakId() != null)
 			{

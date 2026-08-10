@@ -23,14 +23,12 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.brieven;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.model.MailMergeContext;
-import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -85,10 +83,10 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 	protected List<ScreeningOrganisatie> getRegios()
 	{
 		List<ScreeningOrganisatie> soLijst = new ArrayList<>();
-		Project project = briefactieModel.getObject().getProject();
+		var project = briefactieModel.getObject().getProject();
 		if (project != null && project.getScreeningOrganisaties() != null)
 		{
-			for (Organisatie organisatie : project.getScreeningOrganisaties())
+			for (var organisatie : project.getScreeningOrganisaties())
 			{
 				soLijst.add(hibernateService.load(ScreeningOrganisatie.class, organisatie.getId()));
 			}
@@ -111,9 +109,9 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 
 	private String getLaatstGewijzigdDatum()
 	{
-		ProjectBriefActie projectBriefActie = briefactieModel.getObject();
-		String laatstGewijzigd = "";
-		Date datum = projectBriefActie.getLaatstGewijzigd();
+		var projectBriefActie = briefactieModel.getObject();
+		var laatstGewijzigd = "";
+		var datum = projectBriefActie.getLaatstGewijzigd();
 		if (datum != null)
 		{
 			laatstGewijzigd = DateUtil.formatShortDate(datum);
@@ -123,8 +121,8 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 
 	private String getSoortText()
 	{
-		ProjectBriefActie projectBriefActie = briefactieModel.getObject();
-		String soortText = "";
+		var projectBriefActie = briefactieModel.getObject();
+		var soortText = "";
 		if (projectBriefActie != null && projectBriefActie.getType() != null)
 		{
 			soortText = getString(EnumStringUtil.getPropertyString(projectBriefActie.getType()));
@@ -134,9 +132,9 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 
 	private String getMomentText()
 	{
-		ProjectBriefActie projectBriefActie = briefactieModel.getObject();
-		String momentTekst = "";
-		ProjectBriefActieType type = projectBriefActie.getType();
+		var projectBriefActie = briefactieModel.getObject();
+		var momentTekst = "";
+		var type = projectBriefActie.getType();
 
 		if (ProjectBriefActieType.DATUM.equals(type))
 		{
@@ -145,7 +143,7 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 		else if (ProjectBriefActieType.XDAGENNAY.equals(type))
 		{
 			momentTekst = projectBriefActie.getAantalDagen() + " dagen na ";
-			BriefType briefType = projectBriefActie.getBriefType();
+			var briefType = projectBriefActie.getBriefType();
 			if (briefType != null)
 			{
 				momentTekst += briefType.getWeergaveNaam();
@@ -154,7 +152,7 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 		else if (ProjectBriefActieType.XMETY.equals(type))
 		{
 			momentTekst = "Tegelijk met ";
-			BriefType briefType = projectBriefActie.getBriefType();
+			var briefType = projectBriefActie.getBriefType();
 			if (briefType != null)
 			{
 				momentTekst += briefType.getWeergaveNaam();
@@ -162,7 +160,7 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 		}
 		else if (ProjectBriefActieType.VERVANGENDEBRIEF.equals(type))
 		{
-			BriefType briefType = projectBriefActie.getBriefType();
+			var briefType = projectBriefActie.getBriefType();
 			if (briefType != null)
 			{
 				momentTekst += briefType.getWeergaveNaam();

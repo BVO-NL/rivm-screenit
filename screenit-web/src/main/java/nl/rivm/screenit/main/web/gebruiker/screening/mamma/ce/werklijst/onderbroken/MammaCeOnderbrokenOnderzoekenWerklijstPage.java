@@ -42,7 +42,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.werklijst.Telefoon
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Huisarts;
 import nl.rivm.screenit.model.Organisatie_;
@@ -109,7 +108,7 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 		onderbrokenOnderzoekDataProvider = new MammaCeOnderbrokenOnderzoekenDataProvider("creatieDatum", zoekObjectModel);
 		var alleMogelijkeCentraleEenheden = getAlleMogelijkeCentraleEenheden();
 		showCentraleEenheidSelector = alleMogelijkeCentraleEenheden.size() > 1;
-		MammaCeWerklijstZoekObject zoekObject = zoekObjectModel.getObject();
+		var zoekObject = zoekObjectModel.getObject();
 		if (zoekObject.getCentraleEenheden() == null)
 		{
 			zoekObject.setCentraleEenheden(alleMogelijkeCentraleEenheden);
@@ -127,9 +126,9 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 	private List<MammaScreeningsEenheid> getAlleMogelijkeScreeningsEenheden()
 	{
 		List<MammaScreeningsEenheid> mogelijkeScreeningsEenheden = new ArrayList<>();
-		for (CentraleEenheid ce : zoekObjectModel.getObject().getCentraleEenheden())
+		for (var ce : zoekObjectModel.getObject().getCentraleEenheden())
 		{
-			for (BeoordelingsEenheid be : organisatieService.getChildrenOrganisaties(ce, BeoordelingsEenheid.class))
+			for (var be : organisatieService.getChildrenOrganisaties(ce, BeoordelingsEenheid.class))
 			{
 				mogelijkeScreeningsEenheden.addAll(screeningsEenheidService.getActieveScreeningsEenhedenVoorBeoordelingsEenheid(be));
 			}
@@ -190,7 +189,7 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 
 		private void addZoekButton()
 		{
-			IndicatingAjaxSubmitLink zoekenButton = new IndicatingAjaxSubmitLink("zoeken", this)
+			var zoekenButton = new IndicatingAjaxSubmitLink("zoeken", this)
 			{
 				private static final long serialVersionUID = 1L;
 
@@ -279,8 +278,8 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 				List<Object> extraParameters = new ArrayList<>();
 				extraParameters.add(Constants.CONTACT_EXTRA_PARAMETER_VANUIT_BK_PLANNING);
 				extraParameters.add(Constants.CONTACT_EXTRA_PARAMETER_ALLEEN_CLIENT_CONTACT);
-				ClientContactActieTypeWrapper actie = ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN;
-				Client client = model.getObject().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient();
+				var actie = ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN;
+				var client = model.getObject().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient();
 				setResponsePage(new ClientContactPage(ModelUtil.sModel(client), extraParameters, actie));
 			}
 		});

@@ -38,7 +38,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.IModel;
@@ -76,7 +75,7 @@ public class ProefBVOAfmeldenPage extends ProefBVOPage
 
 		final IModel<List<FileUpload>> clientenBestanden = new ListModel<>();
 
-		FormComponent<List<FileUpload>> clientenBestand = new FileUploadField("clientenBestand", clientenBestanden)
+		var clientenBestand = new FileUploadField("clientenBestand", clientenBestanden)
 			.add(new FileValidator(FileType.CSV));
 		form.add(clientenBestand);
 		clientenBestand.setRequired(true);
@@ -85,14 +84,14 @@ public class ProefBVOAfmeldenPage extends ProefBVOPage
 
 		final IModel<List<FileUpload>> afmeldBrieven = new ListModel<>();
 
-		FormComponent<List<FileUpload>> afmeldBrief = new FileUploadField("afmeldBrief", afmeldBrieven).add(new FileValidator(FileType.PDF));
+		var afmeldBrief = new FileUploadField("afmeldBrief", afmeldBrieven).add(new FileValidator(FileType.PDF));
 		form.add(afmeldBrief.setRequired(true).setOutputMarkupId(true));
 		afmeldBrief.setRequired(true);
 		afmeldBrief.setOutputMarkupId(true);
 		afmeldBrief.setLabel(Model.of("Afmeldbrief"));
 
-		final Model<String> meldingenModel = new Model<String>("");
-		final MultiLineLabel meldingen = new MultiLineLabel("meldingen", meldingenModel);
+		final var meldingenModel = new Model<String>("");
+		final var meldingen = new MultiLineLabel("meldingen", meldingenModel);
 		meldingen.setEscapeModelStrings(false);
 		meldingen.setOutputMarkupId(true);
 		form.add(meldingen);
@@ -107,11 +106,11 @@ public class ProefBVOAfmeldenPage extends ProefBVOPage
 				if (clientenBestanden.getObject().size() == 1)
 				{
 
-					FileUpload clientenBestandFileUpload = clientenBestanden.getObject().get(0);
+					var clientenBestandFileUpload = clientenBestanden.getObject().get(0);
 					if (afmeldBrieven.getObject().size() == 1)
 					{
 
-						FileUpload afmeldingBriefFileUpload = afmeldBrieven.getObject().get(0);
+						var afmeldingBriefFileUpload = afmeldBrieven.getObject().get(0);
 						try
 						{
 							meldingenModel

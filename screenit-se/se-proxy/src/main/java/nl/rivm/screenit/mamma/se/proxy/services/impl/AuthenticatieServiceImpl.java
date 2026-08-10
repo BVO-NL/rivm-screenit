@@ -72,14 +72,14 @@ public class AuthenticatieServiceImpl implements AuthenticatieService
 	@Override
 	public String hashWachtwoord(String plainWachtwoord, Long accountId)
 	{
-		Sha512Hash hash = new Sha512Hash(plainWachtwoord, accountId.toString(), PASSWORDHASHINGITERATIONS);
+		var hash = new Sha512Hash(plainWachtwoord, accountId.toString(), PASSWORDHASHINGITERATIONS);
 		return hash.toHex();
 	}
 
 	@Override
 	public void administreerOnlineInlog(LoginContext loginContext, String loginResponse)
 	{
-		IngelogdeMedewerkerDto ingelogdeOrganisatieMedewerkerDto = new IngelogdeMedewerkerDto(loginContext.getGebruikersnaam(), loginContext.getEncryptedWachtwoord(),
+		var ingelogdeOrganisatieMedewerkerDto = new IngelogdeMedewerkerDto(loginContext.getGebruikersnaam(), loginContext.getEncryptedWachtwoord(),
 			DateUtil.getCurrentDateTime().toLocalDate(), loginContext.getYubikeyIdentificatie(), loginResponse, loginContext.getAccountId());
 		insertOrUpdateIngelogdeMedewerker(ingelogdeOrganisatieMedewerkerDto);
 	}

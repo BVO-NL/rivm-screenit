@@ -54,8 +54,8 @@ public abstract class TijdelijkGbaAdresDialogPanel extends GenericPanel<Client>
 	{
 		super(id, clientModel);
 
-		boolean heeftLocatieOmschrijving = StringUtils.isNotBlank(clientModel.getObject().getPersoon().getTijdelijkGbaAdres().getLocatieBeschrijving());
-		ScreenitForm<TijdelijkGbaAdres> form = new ScreenitForm<>("form");
+		var heeftLocatieOmschrijving = StringUtils.isNotBlank(clientModel.getObject().getPersoon().getTijdelijkGbaAdres().getLocatieBeschrijving());
+		var form = new ScreenitForm<TijdelijkGbaAdres>("form");
 		ComponentHelper.addTextField(form, "persoon.tijdelijkGbaAdres.straat", !heeftLocatieOmschrijving, 43, false);
 		ComponentHelper.addTextField(form, "persoon.tijdelijkGbaAdres.huisnummer", !heeftLocatieOmschrijving, 10, Integer.class, false);
 		ComponentHelper.addTextField(form, "persoon.tijdelijkGbaAdres.huisletter", false, 1, false).add(new PatternValidator(".*[a-zA-Z].*"));
@@ -65,7 +65,7 @@ public abstract class TijdelijkGbaAdresDialogPanel extends GenericPanel<Client>
 		ComponentHelper.addTextField(form, "persoon.tijdelijkGbaAdres.plaats", true, 200, false);
 		form.add(new Label("persoon.tijdelijkGbaAdres.locatieBeschrijving").setVisible(heeftLocatieOmschrijving));
 		add(form);
-		BootstrapDialog dialog = new BootstrapDialog("dialog");
+		var dialog = new BootstrapDialog("dialog");
 		add(dialog);
 		add(new ConfirmingIndicatingAjaxLink<Void>("verwijderen", dialog, "label.tijdelijkGbaAdres.verwijderen")
 		{

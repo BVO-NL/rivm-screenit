@@ -27,7 +27,6 @@ import java.util.concurrent.Executors;
 
 import nl.rivm.screenit.main.service.impl.KoppelresultatenKankerregistratieVerwerkenThread;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
-import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
@@ -63,22 +62,22 @@ public class UploadKoppelresultatenKankerregistratiePage extends AlgemeenPage
 
 	public UploadKoppelresultatenKankerregistratiePage()
 	{
-		Form<Persoon> form = new Form<>("form");
+		var form = new Form<Persoon>("form");
 		add(form);
 
 		IModel<List<FileUpload>> files = new ListModel<>();
 
 		IModel<Bevolkingsonderzoek> bvoModel = Model.of(Bevolkingsonderzoek.COLON);
-		ScreenitDropdown<Bevolkingsonderzoek> bvo = ComponentHelper.addDropDownChoice(form, "bvo", true, Arrays.asList(Bevolkingsonderzoek.COLON), false);
+		var bvo = ComponentHelper.addDropDownChoice(form, "bvo", true, Arrays.asList(Bevolkingsonderzoek.COLON), false);
 		bvo.setModel(bvoModel);
 		form.add(bvo);
 
-		FileUploadField upload = new FileUploadField("bestand", files);
+		var upload = new FileUploadField("bestand", files);
 		upload.add(new FileValidator(FileType.CSV));
 		upload.setRequired(true);
 		form.add(upload);
 
-		IndicatingAjaxSubmitLink submit = new IndicatingAjaxSubmitLink("submit", form)
+		var submit = new IndicatingAjaxSubmitLink("submit", form)
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -90,7 +89,7 @@ public class UploadKoppelresultatenKankerregistratiePage extends AlgemeenPage
 				if (files.getObject().size() == 1)
 				{
 
-					FileUpload fileUpload = files.getObject().get(0);
+					var fileUpload = files.getObject().get(0);
 
 					try
 					{

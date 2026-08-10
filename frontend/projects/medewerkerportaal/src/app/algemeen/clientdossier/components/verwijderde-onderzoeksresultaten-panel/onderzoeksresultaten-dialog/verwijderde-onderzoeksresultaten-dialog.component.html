@@ -1,0 +1,58 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog titel="Verwijderde onderzoeksresultaten" size="lg">
+  <div body>
+    <div class="row">
+      <div class="col-4 info-label">Brief verstuurd</div>
+      <div class="col-8">
+        <ul class="no-bullets">
+          @for (brief of onderzoeksresultaat.brieven; track brief) {
+            <li>{{ brief.documentNaam }}</li>
+          }
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-4 info-label">Ontvangen op</div>
+      <div class="col-8">{{ onderzoeksresultaat.moment | datumTijd }}</div>
+    </div>
+
+    @if (toonDocumentVervangen()) {
+      <div class="row">
+        <div class="col-4 info-label">Bestand uploaden</div>
+        <app-single-file-selector class="col-8" acceptedExtensie="pdf" [required]="false" [formControl]="uploadDocumentCtrl"/>
+      </div>
+    }
+
+  </div>
+  <ng-container buttons>
+    @if (heeftBrief) {
+      <button (click)="inzien()" data-testid="inzien_btn" ds-button-secondary>Formulier inzien</button>
+      <button (click)="nogmaalsVersturen()" data-testid="nogmaals_versturen_btn" ds-button-secondary>Nogmaals
+        versturen
+      </button>
+    }
+    <button *appAutorisatie="documentVervangenConstraint" data-testid="document_vervangen_btn" ds-button-secondary (click)="toggleDocumentVervangen()">
+      Formulier vervangen
+    </button>
+    <button (click)="sluitDialog()" data-testid="annuleren_btn" ds-button-primary>Sluiten</button>
+  </ng-container>
+</app-base-dialog>

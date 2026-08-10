@@ -27,19 +27,19 @@ public class EnvironmentUtil
 {
 	public static Integer getIntegerEnvironmentVariable(String key, Integer defaultValue)
 	{
-		String property = System.getenv(key);
+		var property = System.getenv(key);
 		return StringUtils.isNotBlank(property) ? Integer.parseInt(property) : defaultValue;
 	}
 
 	public static String getStringEnvironmentVariable(String key, String defaultValue)
 	{
-		String property = System.getenv(key);
+		var property = System.getenv(key);
 		return StringUtils.isNotBlank(property) ? property : defaultValue;
 	}
 
 	public static Boolean getBooleanEnvironmentVariable(String key, Boolean defaultValue)
 	{
-		String property = System.getenv(key);
+		var property = System.getenv(key);
 		return StringUtils.isNotBlank(property) ? Boolean.parseBoolean(property) : defaultValue;
 	}
 }

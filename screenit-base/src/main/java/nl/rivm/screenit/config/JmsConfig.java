@@ -185,7 +185,7 @@ public class JmsConfig
 	@Bean
 	ActiveMQPrefetchPolicy prefetchPolicy()
 	{
-		final ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
+		final var prefetchPolicy = new ActiveMQPrefetchPolicy();
 		prefetchPolicy.setQueuePrefetch(1);
 		return prefetchPolicy;
 	}
@@ -193,7 +193,7 @@ public class JmsConfig
 	@Bean
 	RedeliveryPolicy redeliveryPolicy()
 	{
-		final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
+		final var redeliveryPolicy = new RedeliveryPolicy();
 		redeliveryPolicy.setMaximumRedeliveries(3);
 		redeliveryPolicy.setInitialRedeliveryDelay(3000);
 		return redeliveryPolicy;
@@ -203,7 +203,7 @@ public class JmsConfig
 	@Bean
 	ActiveMQConnectionFactory activeMQConnectionFactory()
 	{
-		final ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
+		final var connectionFactory = new ActiveMQConnectionFactory();
 		connectionFactory.setUseAsyncSend(true);
 		connectionFactory.setPrefetchPolicy(prefetchPolicy());
 		connectionFactory.setRedeliveryPolicy(redeliveryPolicy());
@@ -222,7 +222,7 @@ public class JmsConfig
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	public PooledConnectionFactory jmsFactory()
 	{
-		final PooledConnectionFactory jmsFactory = new PooledConnectionFactory();
+		final var jmsFactory = new PooledConnectionFactory();
 		jmsFactory.setConnectionFactory(activeMQConnectionFactory());
 		jmsFactory.setIdleTimeout(0);
 		return jmsFactory;
@@ -232,7 +232,7 @@ public class JmsConfig
 	@Profile("!filler")
 	public JmsTemplate jmsTemplate()
 	{
-		final JmsTemplate jmsTemplate = new JmsTemplate();
+		final var jmsTemplate = new JmsTemplate();
 		jmsTemplate.setConnectionFactory(jmsFactory());
 		return jmsTemplate;
 	}

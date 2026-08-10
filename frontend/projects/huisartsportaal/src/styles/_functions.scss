@@ -1,0 +1,50 @@
+/*-
+ * ========================LICENSE_START=================================
+ * huisartsportaal
+ * %%
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+@use './variables';
+@use 'sass:map';
+@use 'sass:list';
+
+@function breakpoint-next(
+  $name,
+  $breakpoints: variables.$grid-breakpoints,
+  $breakpoint-names: map.keys($breakpoints)
+) {
+  $n: list.index($breakpoint-names, $name);
+  @if not $n {
+    @error 'breakpoint `#{$name}` not found in `#{$breakpoints}`';
+  }
+  @return if(sass($n < list.length($breakpoint-names)): list.nth($breakpoint-names, $n + 1));
+}
+
+@function breakpoint-min($name, $breakpoints: variables.$grid-breakpoints) {
+  $min: map.get($breakpoints, $name);
+  @return if(sass($min != 0): $min);
+}
+
+@function breakpoint-max($name, $breakpoints: variables.$grid-breakpoints) {
+  $next: breakpoint-next($name, $breakpoints);
+  @return if(sass($next): breakpoint-min($next, $breakpoints) - 0.02);
+}
+
+@function breakpoint-infix($name, $breakpoints: variables.$grid-breakpoints) {
+  @return if(sass(breakpoint-min($name, $breakpoints) == null): ""; else: "-#{$name}");
+}
+

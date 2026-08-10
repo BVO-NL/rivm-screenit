@@ -68,8 +68,8 @@ public class MammaPlanningBeheerPage extends MammaPlanningBasePage
 
 	private void addSoDropdown()
 	{
-		ScreeningOrganisatie sessionSo = ScreenitSession.get().getScreeningOrganisatie();
-		List<ScreeningOrganisatie> actieveScreeningOrganisaties = organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class);
+		var sessionSo = ScreenitSession.get().getScreeningOrganisatie();
+		var actieveScreeningOrganisaties = organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class);
 
 		screeningOrganisatieModel = ModelUtil.csModel(sessionSo != null ? sessionSo : actieveScreeningOrganisaties.get(0));
 		IModel<List<ScreeningOrganisatie>> screeningOrganisatiesModel = ModelUtil.listRModel(actieveScreeningOrganisaties, false);

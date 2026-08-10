@@ -39,6 +39,7 @@ import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.timefield.TimeField;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -92,9 +93,24 @@ public abstract class MammaDagKopierenPopup extends GenericPanel<MammaScreenings
 		var doelSePicker = maakDoelScreeningsEenheidPicker();
 		form.add(doelSePicker);
 
-		var doelDagPicker = maakDatumField("doelDag", null, DateUtil.toUtilDate(currentDateSupplier.getLocalDate().plusDays(1)),
+		var doelDagPicker = maakDatumField("doelDag", initieleWaarde, DateUtil.toUtilDate(currentDateSupplier.getLocalDate().plusDays(1)),
 			baseConceptPlanningsApplicatie.getPlannenTotEnMetDatum());
 		form.add(doelDagPicker);
+
+		bronDagPicker.add(new AjaxFormComponentUpdatingBehavior("change")
+		{
+			@Override
+			protected void onUpdate(AjaxRequestTarget target)
+			{
+				var bronDag = bronDagPicker.getModelObject();
+				if (bronDag == null)
+				{
+					return;
+				}
+				doelDagPicker.setModelObject(bronDag);
+				target.add(doelDagPicker);
+			}
+		});
 
 		var doelOpenen = new CheckBox("doelOpenen", Model.of(true));
 		form.add(doelOpenen);

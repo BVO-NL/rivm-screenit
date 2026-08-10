@@ -72,7 +72,7 @@ public class CervixHoudbaarheidZasReeksEditPage extends HoudbaarheidEditPage<Cer
 	@Override
 	protected IModel<String> getTitleModel(IModel<CervixHoudbaarheidZasReeks> model)
 	{
-		final boolean isNieuw = model.getObject().getId() == null;
+		final var isNieuw = model.getObject().getId() == null;
 		return new IModel<String>()
 		{
 			@Override
@@ -90,7 +90,7 @@ public class CervixHoudbaarheidZasReeksEditPage extends HoudbaarheidEditPage<Cer
 	@Override
 	protected void customizeBarcodeFields(TextField<String> barcodeStart, TextField<String> barcodeEnd)
 	{
-		PatternValidator validator = new PatternValidator("^(Z|C){1}\\d{8}$");
+		var validator = new PatternValidator("^(Z|C){1}\\d{8}$");
 		barcodeStart.add(validator);
 		barcodeEnd.add(validator);
 	}

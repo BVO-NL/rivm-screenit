@@ -34,7 +34,6 @@ import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.mamma.MammaBaseOnderzoekService;
@@ -76,8 +75,8 @@ public class MammaBeeldenZoekenPanel extends Panel
 	public MammaBeeldenZoekenPanel(String id)
 	{
 		super(id);
-		Client zoekobject = new Client();
-		Persoon persoon = new Persoon();
+		var zoekobject = new Client();
+		var persoon = new Persoon();
 		persoon.setGbaAdres(new BagAdres());
 		zoekobject.setPersoon(persoon);
 
@@ -110,16 +109,16 @@ public class MammaBeeldenZoekenPanel extends Panel
 				}
 			}));
 
-			IndicatingAjaxSubmitLink submit = new IndicatingAjaxSubmitLink("submit")
+			var submit = new IndicatingAjaxSubmitLink("submit")
 			{
 
 				@Override
 				protected void onSubmit(AjaxRequestTarget target)
 				{
-					Client client = getModelObject();
+					var client = getModelObject();
 					if (StringUtils.isNotBlank(client.getPersoon().getBsn()))
 					{
-						String logRegel = String.format("Gezocht op bsn: %s en geboortedatum: %s",
+						var logRegel = String.format("Gezocht op bsn: %s en geboortedatum: %s",
 							client.getPersoon().getBsn(),
 							DateUtil.LOCAL_DATE_FORMAT.format(DateUtil.toLocalDate(client.getPersoon().getGeboortedatum())));
 
@@ -150,8 +149,8 @@ public class MammaBeeldenZoekenPanel extends Panel
 				@Override
 				public IModel<Object> getDataModel(IModel<Client> rowModel)
 				{
-					Client persoon = rowModel.getObject();
-					String naam = NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(persoon);
+					var persoon = rowModel.getObject();
+					var naam = NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(persoon);
 					return new Model(naam);
 				}
 
@@ -159,12 +158,12 @@ public class MammaBeeldenZoekenPanel extends Panel
 			columns.add(new PropertyColumn<>(Model.of("Bsn"), "persoon.bsn", "persoon.bsn"));
 			columns.add(new GeboortedatumColumn<>("persoon.geboortedatum", "persoon"));
 
-			final ScreenitDataTable<Client, String> tabel = new ScreenitDataTable<Client, String>("tabel", columns, new SortableDataProvider<Client, String>()
+			final var tabel = new ScreenitDataTable<Client, String>("tabel", columns, new SortableDataProvider<Client, String>()
 			{
 				@Override
 				public Iterator<? extends Client> iterator(long first, long count)
 				{
-					List<Client> clienten = getClienten();
+					var clienten = getClienten();
 					return clienten.iterator();
 				}
 
@@ -184,7 +183,7 @@ public class MammaBeeldenZoekenPanel extends Panel
 				@Override
 				public void onClick(AjaxRequestTarget target, IModel<Client> model)
 				{
-					List<MammaOnderzoek> onderzoekenMetBeelden = onderzoekService.getOnderzoekenMetBeelden(model.getObject());
+					var onderzoekenMetBeelden = onderzoekService.getOnderzoekenMetBeelden(model.getObject());
 					if (!onderzoekenMetBeelden.isEmpty())
 					{
 						setResponsePage(new MammaBeeldenInzienPage(Arrays.asList(model.getObject().getId()), onderzoekenMetBeelden, MammaBeeldenZoekenPage.class));
@@ -203,8 +202,8 @@ public class MammaBeeldenZoekenPanel extends Panel
 		private List<Client> getClienten()
 		{
 			List<Client> clienten = new ArrayList<>();
-			Client zoekClient = MammaBeeldenZoekenPanel.MammaClientZoekenForm.this.getModelObject();
-			Persoon zoekPersoon = zoekClient.getPersoon();
+			var zoekClient = MammaBeeldenZoekenPanel.MammaClientZoekenForm.this.getModelObject();
+			var zoekPersoon = zoekClient.getPersoon();
 			if (StringUtils.isNotBlank(zoekPersoon.getBsn()) && zoekPersoon.getGeboortedatum() != null)
 			{
 				clienten = clientService.zoekClienten(zoekClient);

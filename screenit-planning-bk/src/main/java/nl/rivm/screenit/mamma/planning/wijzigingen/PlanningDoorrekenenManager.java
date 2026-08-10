@@ -21,7 +21,6 @@ package nl.rivm.screenit.mamma.planning.wijzigingen;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -33,7 +32,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsEenheidIndex;
-import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
 
 @Slf4j
@@ -62,7 +60,7 @@ public enum PlanningDoorrekenenManager
 			PlanningWijzigingen.getTehuisSet().forEach(PlanningDoorrekenen::run);
 			PlanningWijzigingen.getStandplaatsSet().parallelStream().forEach(PlanningDoorrekenen::run);
 
-			Collection<PlanningWijzigingenRoute> wijzigingenRoutes = PlanningWijzigingen.getWijzigingenRoutes();
+			var wijzigingenRoutes = PlanningWijzigingen.getWijzigingenRoutes();
 			if (!wijzigingenRoutes.isEmpty())
 			{
 				executor.setCorePoolSize(PlanningScreeningsEenheidIndex.size());
@@ -109,7 +107,7 @@ public enum PlanningDoorrekenenManager
 				wijzigingenRoute.getDagSet().forEach(PlanningDoorrekenenRoute::run);
 				wijzigingenRoute.getWeekSet().forEach(PlanningDoorrekenenRoute::run);
 
-				PlanningStandplaatsPeriode vanafStandplaatsPeriode = wijzigingenRoute.getVanafStandplaatsPeriode();
+				var vanafStandplaatsPeriode = wijzigingenRoute.getVanafStandplaatsPeriode();
 				if (vanafStandplaatsPeriode != null)
 				{
 					PlanningDoorrekenenRoute.run(vanafStandplaatsPeriode);
@@ -117,7 +115,7 @@ public enum PlanningDoorrekenenManager
 
 				barrier.await(10, TimeUnit.SECONDS);
 
-				PlanningScreeningsEenheid screeningsEenheid = wijzigingenRoute.getScreeningsEenheid();
+				var screeningsEenheid = wijzigingenRoute.getScreeningsEenheid();
 				if (vanafStandplaatsPeriode != null)
 				{
 					screeningsEenheid.getStandplaatsPeriodeNavigableSet().tailSet(vanafStandplaatsPeriode, true).stream()
@@ -151,8 +149,8 @@ public enum PlanningDoorrekenenManager
 	{
 		if (wijzigingenRoute.getVanafStandplaatsPeriode() != null)
 		{
-			PlanningStandplaatsPeriode vanafStandplaatsPeriode = wijzigingenRoute.getVanafStandplaatsPeriode();
-			PlanningScreeningsEenheid screeningsEenheid = vanafStandplaatsPeriode.getScreeningsEenheid();
+			var vanafStandplaatsPeriode = wijzigingenRoute.getVanafStandplaatsPeriode();
+			var screeningsEenheid = vanafStandplaatsPeriode.getScreeningsEenheid();
 			screeningsEenheid.getStandplaatsPeriodeNavigableSet().tailSet(vanafStandplaatsPeriode, true).stream().filter(PlanningStandplaatsPeriode::gesplitst)
 				.forEach(standplaatsPeriode ->
 				{

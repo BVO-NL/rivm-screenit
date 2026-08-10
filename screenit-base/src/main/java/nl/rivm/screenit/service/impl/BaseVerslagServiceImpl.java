@@ -22,7 +22,6 @@ package nl.rivm.screenit.service.impl;
  */
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -363,8 +362,8 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 	@Override
 	public void getBerichtXml(OntvangenCdaBericht ontvangenCdaBericht, OutputStream outputStream)
 	{
-		String xmlBericht = ontvangenCdaBericht.getXmlBericht();
-		try (InputStream writer = IOUtils.toInputStream(xmlBericht, StandardCharsets.UTF_8); outputStream)
+		var xmlBericht = ontvangenCdaBericht.getXmlBericht();
+		try (var writer = IOUtils.toInputStream(xmlBericht, StandardCharsets.UTF_8); outputStream)
 		{
 			IOUtils.copy(writer, outputStream);
 		}

@@ -76,7 +76,7 @@ public class MammaPostcodeReeksZoekenPage extends MammaPlanningBasePage
 
 	public MammaPostcodeReeksZoekenPage()
 	{
-		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
+		var ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
 		IModel<MammaPostcodeReeks> criteriaModel;
 		if (ScreenitSession.get().isZoekObjectGezetForComponent(MammaPostcodeReeksZoekenPage.class))
 		{
@@ -84,7 +84,7 @@ public class MammaPostcodeReeksZoekenPage extends MammaPlanningBasePage
 		}
 		else
 		{
-			MammaPostcodeReeks zoekObject = new MammaPostcodeReeks();
+			var zoekObject = new MammaPostcodeReeks();
 			criteriaModel = ModelUtil.cModel(zoekObject);
 		}
 		setDefaultModel(criteriaModel);
@@ -100,7 +100,7 @@ public class MammaPostcodeReeksZoekenPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaPostcodeReeks postcodeReeks = new MammaPostcodeReeks();
+				var postcodeReeks = new MammaPostcodeReeks();
 				setResponsePage(new MammaPostcodeReeksEditPage(ModelUtil.cModel(postcodeReeks)));
 			}
 		};
@@ -112,13 +112,13 @@ public class MammaPostcodeReeksZoekenPage extends MammaPlanningBasePage
 		add(zoekForm);
 
 		zoekForm.add(new PostcodeField("vanPostcode").setAlleenCijfersToegestaan(true));
-		ScreenitDropdown<MammaStandplaats> standplaatsDropdown = new ScreenitDropdown<>("standplaats",
+		var standplaatsDropdown = new ScreenitDropdown<MammaStandplaats>("standplaats",
 			ModelUtil.listRModel(standplaatsService.getActieveStandplaatsen(ingelogdNamensRegio), false), new ChoiceRenderer<MammaStandplaats>("naam"));
 
 		standplaatsDropdown.setNullValid(true);
 		zoekForm.add(standplaatsDropdown);
 
-		ScreenitDropdown<ScreeningOrganisatie> regioDropdown = new ScreenitDropdown<>("standplaats.regio",
+		var regioDropdown = new ScreenitDropdown<ScreeningOrganisatie>("standplaats.regio",
 			ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class), false), new ChoiceRenderer<ScreeningOrganisatie>("naam"));
 
 		if (ingelogdNamensRegio == null)
@@ -133,7 +133,7 @@ public class MammaPostcodeReeksZoekenPage extends MammaPlanningBasePage
 				@Override
 				protected void onUpdate(AjaxRequestTarget target)
 				{
-					MammaStandplaats standplaats = zoekForm.getModelObject().getStandplaats();
+					var standplaats = zoekForm.getModelObject().getStandplaats();
 					regioDropdown.setEnabled(standplaats == null);
 					target.add(zoekForm);
 				}
@@ -147,8 +147,8 @@ public class MammaPostcodeReeksZoekenPage extends MammaPlanningBasePage
 				@Override
 				protected void onUpdate(AjaxRequestTarget target)
 				{
-					MammaStandplaats standplaats = zoekForm.getModelObject().getStandplaats();
-					ScreeningOrganisatie regio = ingelogdNamensRegio;
+					var standplaats = zoekForm.getModelObject().getStandplaats();
+					var regio = ingelogdNamensRegio;
 					if (standplaats != null && standplaats.getRegio() != null)
 					{
 						regio = standplaats.getRegio();
@@ -166,7 +166,7 @@ public class MammaPostcodeReeksZoekenPage extends MammaPlanningBasePage
 		regioDropdown.setNullValid(true);
 		zoekForm.add(regioDropdown);
 
-		IndicatingAjaxSubmitLink zoekenBtn = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
+		var zoekenBtn = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
 		{
 
 			private static final long serialVersionUID = 1L;

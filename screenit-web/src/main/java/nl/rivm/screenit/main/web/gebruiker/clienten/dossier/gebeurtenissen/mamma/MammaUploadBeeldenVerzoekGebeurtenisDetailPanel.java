@@ -29,7 +29,6 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.mamma.MammaUploadBeeldenPoging;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenVerzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.service.BerichtToBatchService;
@@ -82,12 +81,12 @@ public class MammaUploadBeeldenVerzoekGebeurtenisDetailPanel extends AbstractGeb
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		MammaUploadBeeldenVerzoekGebeurtenis uploadBeeldenVerzoekGebeurtenis = (MammaUploadBeeldenVerzoekGebeurtenis) getModelObject();
-		MammaUploadBeeldenVerzoek uploadBeeldenVerzoek = uploadBeeldenVerzoekGebeurtenis.getUploadBeeldenVerzoek();
-		MammaUploadBeeldenPoging uploadBeeldenPoging = uploadBeeldenVerzoek.getLaatsteUploadPoging();
+		var uploadBeeldenVerzoekGebeurtenis = (MammaUploadBeeldenVerzoekGebeurtenis) getModelObject();
+		var uploadBeeldenVerzoek = uploadBeeldenVerzoekGebeurtenis.getUploadBeeldenVerzoek();
+		var uploadBeeldenPoging = uploadBeeldenVerzoek.getLaatsteUploadPoging();
 
 		add(new EnumLabel<>("uploadBeeldenVerzoek.laatsteUploadPoging.ilmStatus"));
-		WebMarkupContainer verzoekContainer = new WebMarkupContainer("verzoek", ModelUtil.csModel(uploadBeeldenVerzoekGebeurtenis.getUploadBeeldenVerzoek()));
+		var verzoekContainer = new WebMarkupContainer("verzoek", ModelUtil.csModel(uploadBeeldenVerzoekGebeurtenis.getUploadBeeldenVerzoek()));
 
 		verzoekContainer.add(new Label("ziekenhuis.naam"));
 		verzoekContainer.add(new Label("gemaaktDoor.organisatie.naam"));
@@ -95,27 +94,27 @@ public class MammaUploadBeeldenVerzoekGebeurtenisDetailPanel extends AbstractGeb
 		verzoekContainer.add(new EnumLabel<>("verzoekType"));
 		verzoekContainer.add(new EnumLabel<>("status"));
 
-		WebMarkupContainer accessionNumberContainer = new WebMarkupContainer("accessionNumberContainer");
+		var accessionNumberContainer = new WebMarkupContainer("accessionNumberContainer");
 		accessionNumberContainer.add(new Label("laatsteUploadPoging.accessionNumber"));
 		accessionNumberContainer.setVisible(uploadBeeldenPoging != null && uploadBeeldenPoging.getAccessionNumber() != null);
 		verzoekContainer.add(accessionNumberContainer);
 
-		WebMarkupContainer ingevuldContainer = new WebMarkupContainer("ingevuldContainer");
+		var ingevuldContainer = new WebMarkupContainer("ingevuldContainer");
 		ingevuldContainer.add(new EnumLabel<>("conclusieBirads"));
 		ingevuldContainer.add(new Label("conclusieEersteUitslagRadiologie"));
 		ingevuldContainer.setVisible(uploadBeeldenVerzoek.getConclusieBirads() != null && uploadBeeldenVerzoek.getConclusieEersteUitslagRadiologie() != null);
 		ingevuldContainer.setOutputMarkupId(true);
 		verzoekContainer.add(ingevuldContainer);
 
-		WebMarkupContainer verwijderenContainer = new WebMarkupContainer("verwijderenContainer");
+		var verwijderenContainer = new WebMarkupContainer("verwijderenContainer");
 		IndicatingAjaxLink<Void> verwijderButton = new IndicatingAjaxLink<>("verwijderen")
 		{
 
 			@Override
 			public void onClick(AjaxRequestTarget ajaxRequestTarget)
 			{
-				MammaUploadBeeldenVerzoek uploadBeeldenVerzoek = (MammaUploadBeeldenVerzoek) verzoekContainer.getDefaultModelObject();
-				MammaUploadBeeldenPoging uploadBeeldenPoging = uploadBeeldenVerzoek.getLaatsteUploadPoging();
+				var uploadBeeldenVerzoek = (MammaUploadBeeldenVerzoek) verzoekContainer.getDefaultModelObject();
+				var uploadBeeldenPoging = uploadBeeldenVerzoek.getLaatsteUploadPoging();
 				uitwisselportaalService.verwijderBeelden(uploadBeeldenPoging);
 				logService.logGebeurtenis(LogGebeurtenis.MAMMA_UPLOAD_VERZOEK, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(),
 					uploadBeeldenVerzoek.getScreeningRonde().getDossier().getClient(),
@@ -126,7 +125,7 @@ public class MammaUploadBeeldenVerzoekGebeurtenisDetailPanel extends AbstractGeb
 
 			}
 		};
-		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_MAMMA_BEELDEN_VERWIJDEREN_UPLOADVERZOEK, Actie.VERWIJDEREN);
+		var magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_MAMMA_BEELDEN_VERWIJDEREN_UPLOADVERZOEK, Actie.VERWIJDEREN);
 		verwijderenContainer.setVisible(magVerwijderen && uploadBeeldenPoging != null && MammaMammografieIlmStatus.BESCHIKBAAR.equals(uploadBeeldenPoging.getIlmStatus()));
 		verwijderenContainer.add(verwijderButton);
 		verwijderenContainer.setOutputMarkupId(true);

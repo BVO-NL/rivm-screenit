@@ -46,7 +46,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -65,10 +64,10 @@ public class BlokkadeListViewPage extends PlanningBasePage
 	{
 		super();
 
-		ColonIntakelocatie intakelocatie = ScreenitSession.get().getIntakelocatie();
+		var intakelocatie = ScreenitSession.get().getIntakelocatie();
 		add(new Label("intakelocatie", intakelocatie.getNaam()));
 
-		RoosterListViewFilter filter = new RoosterListViewFilter();
+		var filter = new RoosterListViewFilter();
 		filter.setStartDatum(currentDateSupplier.getDate());
 		filter.setEindDatum(currentDateSupplier.getDate());
 		filter.setStatus(null);
@@ -78,13 +77,13 @@ public class BlokkadeListViewPage extends PlanningBasePage
 		setDefaultModel(zoekModel);
 		maakTabel(intakelocatie, zoekModel);
 
-		Form<RoosterListViewFilter> form = new Form<>("form", new CompoundPropertyModel<>(zoekModel));
+		var form = new Form<RoosterListViewFilter>("form", new CompoundPropertyModel<>(zoekModel));
 		add(form);
 
-		FormComponent<Date> startDatum = ComponentHelper.addTextField(form, "startDatum", false, 10, Date.class, false);
+		var startDatum = ComponentHelper.addTextField(form, "startDatum", false, 10, Date.class, false);
 		startDatum.setType(Date.class);
 
-		FormComponent<Date> eindDatum = ComponentHelper.addTextField(form, "eindDatum", false, 10, Date.class, false);
+		var eindDatum = ComponentHelper.addTextField(form, "eindDatum", false, 10, Date.class, false);
 		eindDatum.setType(Date.class);
 
 		startDatum.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -92,7 +91,7 @@ public class BlokkadeListViewPage extends PlanningBasePage
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				String melding = updateTabel(target, startDatum.getModelObject(), eindDatum.getModelObject());
+				var melding = updateTabel(target, startDatum.getModelObject(), eindDatum.getModelObject());
 
 				if (StringUtils.isNotBlank(melding))
 				{
@@ -107,7 +106,7 @@ public class BlokkadeListViewPage extends PlanningBasePage
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				String melding = updateTabel(target, startDatum.getModelObject(), eindDatum.getModelObject());
+				var melding = updateTabel(target, startDatum.getModelObject(), eindDatum.getModelObject());
 
 				if (StringUtils.isNotBlank(melding))
 				{
@@ -131,7 +130,7 @@ public class BlokkadeListViewPage extends PlanningBasePage
 			{
 				IModel<?> labelModel = super.getDataModel(embeddedModel);
 
-				String label = labelModel.getObject().toString();
+				var label = labelModel.getObject().toString();
 				label += " - " + DateUtil.formatLocalTime(embeddedModel.getObject().getTot());
 				return new Model(label);
 			}

@@ -21,7 +21,6 @@ package nl.rivm.screenit.service.cervix.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -124,7 +123,7 @@ public class CervixFactoryImpl implements CervixFactory
 	{
 		LOG.info("CervixScreeningRonde aanmaken voor client (id: '{}')", dossier.getClient().getId());
 
-		CervixScreeningRonde vorigeRonde = dossier.getLaatsteScreeningRonde();
+		var vorigeRonde = dossier.getLaatsteScreeningRonde();
 		if (vorigeRonde != null && vorigeRonde.getStatus() == ScreeningRondeStatus.LOPEND)
 		{
 			vorigeRonde.setStatus(ScreeningRondeStatus.AFGEROND);
@@ -133,14 +132,14 @@ public class CervixFactoryImpl implements CervixFactory
 			logService.logGebeurtenis(LogGebeurtenis.CERVIX_RONDE_VERLOPEN, dossier.getClient(), Bevolkingsonderzoek.CERVIX);
 		}
 
-		CervixScreeningRonde ronde = new CervixScreeningRonde();
+		var ronde = new CervixScreeningRonde();
 		ronde.setStatus(ScreeningRondeStatus.LOPEND);
 		ronde.setStatusDatum(dateSupplier.getDate());
 		ronde.setCreatieDatum(DateUtil.toUtilDate(creatiedatum));
 		ronde.setAangemeld(true);
 		ronde.setDossier(dossier);
-		LocalDate geboortedatum = DateUtil.toLocalDate(dossier.getClient().getPersoon().getGeboortedatum());
-		CervixLeeftijdcategorie leeftijdcategorie = CervixLeeftijdcategorie.getLeeftijdcategorie(geboortedatum, creatiedatum);
+		var geboortedatum = DateUtil.toLocalDate(dossier.getClient().getPersoon().getGeboortedatum());
+		var leeftijdcategorie = CervixLeeftijdcategorie.getLeeftijdcategorie(geboortedatum, creatiedatum);
 		ronde.setLeeftijdcategorie(leeftijdcategorie);
 
 		dossier.getScreeningRondes().add(ronde);
@@ -158,9 +157,9 @@ public class CervixFactoryImpl implements CervixFactory
 	@Override
 	public void updateDossierMetVolgendeRondeDatum(CervixDossier dossier, LocalDateTime creatiedatum)
 	{
-		LocalDate geboortedatum = DateUtil.toLocalDate(dossier.getClient().getPersoon().getGeboortedatum());
-		CervixLeeftijdcategorie leeftijdcategorie = CervixLeeftijdcategorie.getLeeftijdcategorie(geboortedatum, creatiedatum);
-		LocalDate volgendeRondeVanaf = geboortedatum.plusYears(leeftijdcategorie.volgende().getLeeftijd());
+		var geboortedatum = DateUtil.toLocalDate(dossier.getClient().getPersoon().getGeboortedatum());
+		var leeftijdcategorie = CervixLeeftijdcategorie.getLeeftijdcategorie(geboortedatum, creatiedatum);
+		var volgendeRondeVanaf = geboortedatum.plusYears(leeftijdcategorie.volgende().getLeeftijd());
 
 		if (geboortedatum.getDayOfMonth() != volgendeRondeVanaf.getDayOfMonth())
 		{
@@ -224,7 +223,7 @@ public class CervixFactoryImpl implements CervixFactory
 	@Override
 	public CervixUitnodiging maakUitnodiging(CervixScreeningRonde ronde, BriefType briefType, boolean herinneren, boolean herinneringOnderbreken)
 	{
-		CervixBrief brief = briefService.maakBvoBrief(ronde, briefType);
+		var brief = briefService.maakBvoBrief(ronde, briefType);
 		return maakUitnodiging(ronde, brief, herinneren, herinneringOnderbreken);
 	}
 
@@ -238,13 +237,13 @@ public class CervixFactoryImpl implements CervixFactory
 			screeningrondeService.annuleerHerinnering(ronde);
 		}
 
-		CervixMonsterType monsterType = CervixMonsterType.getMonsterType(brief.getBriefType());
+		var monsterType = CervixMonsterType.getMonsterType(brief.getBriefType());
 
-		CervixUitnodiging uitnodiging = new CervixUitnodiging();
+		var uitnodiging = new CervixUitnodiging();
 		uitnodiging.setAangevraagdeHerdruk(brief.isAangevraagdeHerdruk());
 		uitnodiging.setUitnodigingsId(uitnodigingsDao.getNextUitnodigingsId());
 		uitnodiging.setMonsterType(monsterType);
-		Date nu = dateSupplier.getDate();
+		var nu = dateSupplier.getDate();
 		uitnodiging.setCreatieDatum(nu);
 		uitnodiging.setUitnodigingsDatum(nu);
 		uitnodiging.setHerinnering(false);
@@ -383,11 +382,11 @@ public class CervixFactoryImpl implements CervixFactory
 
 	private CervixUitstrijkje maakUitstrijkje(CervixUitnodiging uitnodiging)
 	{
-		Long monsterIdLong = monsterDao.getNextMonsterId();
+		var monsterIdLong = monsterDao.getNextMonsterId();
 
-		String monsterId = monsterIdLong < 100 ? "%010d".formatted(monsterIdLong) : monsterIdLong.toString();
+		var monsterId = monsterIdLong < 100 ? "%010d".formatted(monsterIdLong) : monsterIdLong.toString();
 
-		CervixUitstrijkje uitstrijkje = new CervixUitstrijkje();
+		var uitstrijkje = new CervixUitstrijkje();
 		uitnodiging.setMonster(uitstrijkje);
 		hibernateService.saveOrUpdate(uitnodiging);
 
@@ -396,8 +395,8 @@ public class CervixFactoryImpl implements CervixFactory
 		uitstrijkje.setMonsterId(monsterId);
 		uitstrijkje.setUitnodiging(uitnodiging);
 
-		CervixDossier cervixDossier = uitnodiging.getScreeningRonde().getDossier();
-		String monsterControleLetters = CervixMonsterUtil.getMonsterControleLetters(cervixDossier);
+		var cervixDossier = uitnodiging.getScreeningRonde().getDossier();
+		var monsterControleLetters = CervixMonsterUtil.getMonsterControleLetters(cervixDossier);
 		uitstrijkje.setControleLetters(monsterControleLetters);
 
 		hibernateService.saveOrUpdate(uitstrijkje);
@@ -414,7 +413,7 @@ public class CervixFactoryImpl implements CervixFactory
 		LOG.info("ZAS monster met monsterId '{}' aanmaken voor uitnodiging (uitnodigingId: '{}') van client (id: '{}')", monsterId, uitnodiging.getUitnodigingsId(),
 			uitnodiging.getScreeningRonde().getDossier().getClient().getId());
 
-		CervixZas zas = new CervixZas();
+		var zas = new CervixZas();
 		zas.setZasStatus(CervixZasStatus.VERSTUURD);
 		zas.setStatusDatum(dateSupplier.getDate());
 		zas.setMonsterId(monsterId);
@@ -432,7 +431,7 @@ public class CervixFactoryImpl implements CervixFactory
 	{
 		LOG.info("CervixHpvBericht aanmaken voor laboratorium: {} met messageId: '{}'", laboratorium.getNaam(), messageId);
 
-		CervixHpvBericht hpvBericht = new CervixHpvBericht();
+		var hpvBericht = new CervixHpvBericht();
 		hpvBericht.setStatus(BerichtStatus.NIEUW);
 		hpvBericht.setStatusDatum(dateSupplier.getDate());
 		hpvBericht.setOntvangen(dateSupplier.getDate());
@@ -453,7 +452,7 @@ public class CervixFactoryImpl implements CervixFactory
 		LOG.info("CervixHpvBeoordeling aanmaken voor client (id: '{}') met monster (id: '{}')", monster.getUitnodiging().getScreeningRonde().getDossier().getClient().getId(),
 			monster.getId());
 
-		CervixHpvBeoordeling hpvBeoordeling = new CervixHpvBeoordeling();
+		var hpvBeoordeling = new CervixHpvBeoordeling();
 		hpvBeoordeling.setAnalyseDatum(analyseDatum);
 		hpvBeoordeling.setAutorisatieDatum(autorisatieDatum);
 		hpvBeoordeling.setHpvUitslag(hpvUitslag);
@@ -473,7 +472,7 @@ public class CervixFactoryImpl implements CervixFactory
 	{
 		if (analyseresultaten != null)
 		{
-			CervixHpvAnalyseresultaten persistentAnalyseresultaten = new CervixHpvAnalyseresultaten();
+			var persistentAnalyseresultaten = new CervixHpvAnalyseresultaten();
 			hpvBeoordeling.setAnalyseresultaten(persistentAnalyseresultaten);
 			persistentAnalyseresultaten.setBeoordeling(hpvBeoordeling);
 			persistentAnalyseresultaten.setHpvhr(getResultValue(analyseresultaten, CervixHpvOrderCode.PAN, CervixHpvResultCode.HR));
@@ -497,7 +496,7 @@ public class CervixFactoryImpl implements CervixFactory
 		LOG.info("CervixCytologieOrder aanmaken voor client (id: '{}') met monster (id: '{}')", uitstrijkje.getUitnodiging().getScreeningRonde().getDossier().getClient().getId(),
 			uitstrijkje.getId());
 
-		CervixCytologieOrder cytologieOrder = new CervixCytologieOrder();
+		var cytologieOrder = new CervixCytologieOrder();
 		cytologieOrder.setUitstrijkje(uitstrijkje);
 		cytologieOrder.setStatus(CervixCytologieOrderStatus.AANGEMAAKT);
 		cytologieOrder.setStatusDatum(dateSupplier.getDate());
@@ -515,7 +514,7 @@ public class CervixFactoryImpl implements CervixFactory
 	@Override
 	public CervixUitstel maakUitstel(CervixScreeningRonde ronde, Date uitstellenTotDatum, CervixUitstelType uitstelType)
 	{
-		CervixUitstel uitstel = new CervixUitstel();
+		var uitstel = new CervixUitstel();
 		uitstel.setScreeningRonde(ronde);
 		uitstel.setUitstellenTotDatum(uitstellenTotDatum);
 		uitstel.setUitstelType(uitstelType);

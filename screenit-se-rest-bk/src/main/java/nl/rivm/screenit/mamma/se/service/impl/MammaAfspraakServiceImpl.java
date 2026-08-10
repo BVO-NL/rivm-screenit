@@ -152,7 +152,7 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 		var client = clientService.getClientByBsn(actionDto.getBsn());
 		if (client != null && DateUtil.isGeboortedatumGelijk(actionDto.getGeboortedatum(), client))
 		{
-			PassantValidatorResult validatorResult = passantInschrijvenValidatorService.isGeldigPassantScenario(client, currentDateSupplier.getLocalDate(), screeningsEenheid);
+			var validatorResult = passantInschrijvenValidatorService.isGeldigPassantScenario(client, currentDateSupplier.getLocalDate(), screeningsEenheid);
 			if (validatorResult == PassantValidatorResult.OK)
 			{
 				var laatsteUitnodiging = client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging();

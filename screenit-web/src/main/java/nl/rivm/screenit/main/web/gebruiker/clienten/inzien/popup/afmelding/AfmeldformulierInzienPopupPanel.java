@@ -36,16 +36,13 @@ import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixAfmelding;
-import nl.rivm.screenit.model.cervix.enums.CervixAfmeldingReden;
 import nl.rivm.screenit.model.colon.ColonAfmelding;
 import nl.rivm.screenit.model.colon.enums.ColonAfmeldingReden;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
-import nl.rivm.screenit.model.enums.GebeurtenisBron;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaAfmelding;
-import nl.rivm.screenit.model.mamma.enums.MammaAfmeldingReden;
 import nl.rivm.screenit.service.BaseAfmeldService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BriefHerdrukkenService;
@@ -113,7 +110,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 
 		add(new Label("wijzeAfmelding", Model.of(getWijzeVanAfmeldingTekst(getModelObject()))));
 
-		WebMarkupContainer verstuurdFormulierContainer = new WebMarkupContainer("formulierVerstuurdContainer");
+		var verstuurdFormulierContainer = new WebMarkupContainer("formulierVerstuurdContainer");
 		add(verstuurdFormulierContainer);
 
 		verstuurdFormulierContainer.add(new ListView<>("brievenLijst", creatieDatumCreaterAfmelding(getModelObject()))
@@ -121,7 +118,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 			@Override
 			protected void populateItem(ListItem<String> item)
 			{
-				String tekst = item.getModelObject();
+				var tekst = item.getModelObject();
 				item.add(new Label("brief", Model.of(tekst)));
 			}
 
@@ -132,21 +129,21 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 		switch (getModelObject().getBevolkingsonderzoek())
 		{
 		case COLON:
-			ColonAfmeldingReden colonAfmeldingReden = ((ColonAfmelding) getModelObject()).getReden();
+			var colonAfmeldingReden = ((ColonAfmelding) getModelObject()).getReden();
 			add(new EnumLabel<>("reden", colonAfmeldingReden));
 			break;
 		case CERVIX:
-			CervixAfmeldingReden cervixAfmeldingReden = ((CervixAfmelding) getModelObject()).getReden();
+			var cervixAfmeldingReden = ((CervixAfmelding) getModelObject()).getReden();
 			add(new EnumLabel<>("reden", cervixAfmeldingReden));
 			break;
 		case MAMMA:
-			MammaAfmeldingReden mammaAfmeldingReden = ((MammaAfmelding) getModelObject()).getReden();
+			var mammaAfmeldingReden = ((MammaAfmelding) getModelObject()).getReden();
 			add(new EnumLabel<>("reden", mammaAfmeldingReden));
 			break;
 		}
 
-		Date heroverwegersBriefVerstuurd = heeftHeroverwegersBrief();
-		WebMarkupContainer heroverwegersBriefVerstuurdContainer = new WebMarkupContainer("heroverwegersbrief");
+		var heroverwegersBriefVerstuurd = heeftHeroverwegersBrief();
+		var heroverwegersBriefVerstuurdContainer = new WebMarkupContainer("heroverwegersbrief");
 		heroverwegersBriefVerstuurdContainer.setVisible(heroverwegersBriefVerstuurd != null);
 		add(heroverwegersBriefVerstuurdContainer);
 		heroverwegersBriefVerstuurdContainer.add(DateLabel.forDatePattern("datumHeroverwegersbriefVerstuurd", new Model<>(heroverwegersBriefVerstuurd), "dd-MM-yyyy"));
@@ -159,7 +156,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 		}
 		else
 		{
-			EmptyPanel downloadLink = new EmptyPanel("afmeldformulierHandImg");
+			var downloadLink = new EmptyPanel("afmeldformulierHandImg");
 			downloadLink.setVisible(false);
 			add(downloadLink);
 		}
@@ -174,7 +171,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 		if (getModelObject().getBevolkingsonderzoek().equals(Bevolkingsonderzoek.CERVIX))
 		{
 			List<ClientBrief> brieven = getModelObject().getBrieven();
-			for (ClientBrief brief : brieven)
+			for (var brief : brieven)
 			{
 				if (brief.getBriefType().equals(BriefType.CERVIX_HEROVERWEGERS))
 				{
@@ -193,7 +190,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 	{
 		if (Hibernate.unproxy(a) instanceof CervixAfmelding)
 		{
-			CervixAfmelding afmelding = (CervixAfmelding) a;
+			var afmelding = (CervixAfmelding) a;
 			return afmelding.getDossier().getCisHistorie() != null && afmelding.equals(afmelding.getDossier().getCisHistorie().getAfmelding());
 		}
 		return false;
@@ -201,7 +198,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 
 	private void addButtons()
 	{
-		ClientBrief laatsteBrief = getLaatsteBrief();
+		var laatsteBrief = getLaatsteBrief();
 		var dossier = getModelObject().getDossier();
 
 		if (dossier == null)
@@ -213,7 +210,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				ClientBrief brief = AfmeldformulierInzienPopupPanel.this.getModelObject().getAfmeldingBevestiging();
+				var brief = AfmeldformulierInzienPopupPanel.this.getModelObject().getAfmeldingBevestiging();
 				briefHerdrukkenService.opnieuwAanmaken(brief, ScreenitSession.get().getIngelogdAccount());
 
 				info(getString("info.afmeldingnogmaalsverstuurd"));
@@ -222,7 +219,7 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 
 		}.setVisible(DossierStatus.INACTIEF.equals(dossier.getStatus()) && !isAfmeldingUitCISHistorie(getModelObject())));
 
-		boolean magTegenhouden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
+		var magTegenhouden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
 		add(new AjaxLink<Void>("tegenhouden")
 		{
 			@Override
@@ -299,8 +296,8 @@ public abstract class AfmeldformulierInzienPopupPanel<A extends Afmelding> exten
 
 	private String getWijzeVanAfmeldingTekst(A afmelding)
 	{
-		String wijzeAfmelding = "";
-		GebeurtenisBron bron = dossierService.bepaalGebeurtenisBron(afmelding,
+		var wijzeAfmelding = "";
+		var bron = dossierService.bepaalGebeurtenisBron(afmelding,
 			AuditEntity.and(AuditEntity.property("heraanmeldStatus").isNull(), AuditEntity.property("statusHeraanmeldDatum").isNull()));
 		if (bron != null)
 		{

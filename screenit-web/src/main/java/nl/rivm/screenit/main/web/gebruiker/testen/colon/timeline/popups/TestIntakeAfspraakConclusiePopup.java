@@ -50,7 +50,7 @@ public class TestIntakeAfspraakConclusiePopup extends AbstractTestBasePopupPanel
 		super(id, clientModel);
 
 		List<ColonConclusieType> choices = new ArrayList<>(Arrays.asList(ColonConclusieType.values()));
-		ScreenitDropdown<ColonConclusieType> conclusieDropDown = new ScreenitDropdown<>("conclusieDropDown", typeModel,
+		var conclusieDropDown = new ScreenitDropdown<ColonConclusieType>("conclusieDropDown", typeModel,
 			choices, new EnumChoiceRenderer<>(this));
 		add(conclusieDropDown);
 	}
@@ -58,7 +58,7 @@ public class TestIntakeAfspraakConclusiePopup extends AbstractTestBasePopupPanel
 	@Override
 	protected void opslaan()
 	{
-		for (Client client : getModelObject())
+		for (var client : getModelObject())
 		{
 			colonTestTimelineService.maakIntakeAfspraakConclusieVoorClient(client, typeModel.getObject());
 		}

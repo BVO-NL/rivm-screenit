@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.cis;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import nl.rivm.screenit.main.util.CervixCisHistoryUtil;
@@ -32,7 +31,6 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.cervix.cis.CervixCISHistorieOngestructureerdRegel;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
 
-import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -41,6 +39,7 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
+import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public class ClientCISHistoriePanel extends GenericPanel<Client>
 {
@@ -57,10 +56,10 @@ public class ClientCISHistoriePanel extends GenericPanel<Client>
 
 		if (client.getObject().getCervixDossier() != null && client.getObject().getCervixDossier().getCisHistorie() != null)
 		{
-			Map<String, List<CervixCISHistorieOngestructureerdRegel>> regelsPerRonde = CervixCisHistoryUtil.getOngestructureerdeRegelsPerRonde(
+			var regelsPerRonde = CervixCisHistoryUtil.getOngestructureerdeRegelsPerRonde(
 				client.getObject().getCervixDossier().getCisHistorie(), false);
 			rondeList = CervixCisHistoryUtil.getOrderdKeys(regelsPerRonde, false);
-			for (Entry<String, List<CervixCISHistorieOngestructureerdRegel>> ronde : regelsPerRonde.entrySet())
+			for (var ronde : regelsPerRonde.entrySet())
 			{
 				this.regelsPerRonde.put(ronde.getKey(), new SimpleListHibernateModel<>(ronde.getValue()));
 			}
@@ -71,7 +70,7 @@ public class ClientCISHistoriePanel extends GenericPanel<Client>
 
 	private ListView<String> getCISRondeOverzicht()
 	{
-		ListView<String> listView = new ListView<String>("rondes", Model.ofList(this.rondeList))
+		var listView = new ListView<String>("rondes", Model.ofList(this.rondeList))
 		{
 			@Override
 			protected void populateItem(ListItem<String> item)
@@ -110,7 +109,7 @@ public class ClientCISHistoriePanel extends GenericPanel<Client>
 	protected void onDetach()
 	{
 		super.onDetach();
-		for (IModel<List<CervixCISHistorieOngestructureerdRegel>> model : regelsPerRonde.values())
+		for (var model : regelsPerRonde.values())
 		{
 			model.detach();
 		}

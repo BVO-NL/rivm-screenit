@@ -23,6 +23,10 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
 
 import java.io.Serializable;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
+
 import nl.rivm.screenit.huisartsenportaal.dto.AanvraagDto;
 import nl.rivm.screenit.huisartsenportaal.dto.AdresDto;
 import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
@@ -47,11 +51,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-
-import jakarta.jms.JMSException;
-import jakarta.jms.Message;
-import jakarta.jms.Session;
 
 @Service
 public class SynchronisatieServiceImpl implements SynchronisatieService
@@ -72,14 +71,14 @@ public class SynchronisatieServiceImpl implements SynchronisatieService
 	@Override
 	public void syncHuisarts(Huisarts huisarts)
 	{
-		HuisartsDto dto = getHuisartsDto(huisarts);
+		var dto = getHuisartsDto(huisarts);
 		sendingObject(destination, dto);
 	}
 
 	@Override
 	public void syncAanvraag(LabformulierAanvraag aanvraag)
 	{
-		AanvraagDto dto = new AanvraagDto();
+		var dto = new AanvraagDto();
 		modelMapper.map(aanvraag, dto);
 		sendingObject(destination, dto);
 	}
@@ -87,7 +86,7 @@ public class SynchronisatieServiceImpl implements SynchronisatieService
 	@Override
 	public void syncLocatie(Huisarts huisarts, Locatie locatie, Boolean herzendVerificatieMail)
 	{
-		LocatieDto dto = getLocatieDto(huisarts, locatie, herzendVerificatieMail);
+		var dto = getLocatieDto(huisarts, locatie, herzendVerificatieMail);
 		sendingObject(destination, dto);
 	}
 
@@ -95,7 +94,7 @@ public class SynchronisatieServiceImpl implements SynchronisatieService
 	{
 		try
 		{
-			ObjectWriter writer = objectMapper.writer();
+			var writer = objectMapper.writer();
 			LOG.info(object.getClass().getSimpleName() + ": " + writer.writeValueAsString(object));
 		}
 		catch (JsonProcessingException e)
@@ -107,7 +106,7 @@ public class SynchronisatieServiceImpl implements SynchronisatieService
 			@Override
 			public Message createMessage(Session session) throws JMSException
 			{
-				ActiveMQObjectMessage messageObject = new ActiveMQObjectMessage();
+				var messageObject = new ActiveMQObjectMessage();
 
 				messageObject.setObject(object);
 
@@ -119,7 +118,7 @@ public class SynchronisatieServiceImpl implements SynchronisatieService
 	@Override
 	public HuisartsDto getHuisartsDto(Huisarts huisarts)
 	{
-		HuisartsDto dto = new HuisartsDto();
+		var dto = new HuisartsDto();
 		dto.setScreenitId(huisarts.getScreenitId());
 		dto.setHuisartsportaalId(huisarts.getHuisartsportaalId());
 		dto.setAgbcode(huisarts.getAgbcode());
@@ -144,13 +143,13 @@ public class SynchronisatieServiceImpl implements SynchronisatieService
 	@Override
 	public void herzendVerificatieMail(Huisarts huisarts, Locatie locatie)
 	{
-		LocatieDto dto = getLocatieDto(huisarts, locatie, true);
+		var dto = getLocatieDto(huisarts, locatie, true);
 		sendingObject(destination, dto);
 	}
 
 	private LocatieDto getLocatieDto(Huisarts huisarts, Locatie locatie, Boolean herzendVerificatieMail)
 	{
-		LocatieDto locatieDto = new LocatieDto();
+		var locatieDto = new LocatieDto();
 		locatieDto.setScreenitId(locatie.getScreenitId());
 		locatieDto.setHuisartsportaalId(locatie.getHuisartsportaalId());
 		locatieDto.setIban(locatie.getIban());
@@ -171,7 +170,7 @@ public class SynchronisatieServiceImpl implements SynchronisatieService
 
 	private AdresDto getAdresDto(Adres adres)
 	{
-		AdresDto adresDto = new AdresDto();
+		var adresDto = new AdresDto();
 		adresDto.setHuisartsportaalId(adres.getHuisartsportaalId());
 		adresDto.setScreenitId(adres.getScreenitId());
 		adresDto.setStraat(adres.getStraat());
@@ -184,7 +183,7 @@ public class SynchronisatieServiceImpl implements SynchronisatieService
 
 	private WoonplaatsDto getWoonplaatsDto(Woonplaats woonplaats)
 	{
-		WoonplaatsDto woonplaatsDto = new WoonplaatsDto();
+		var woonplaatsDto = new WoonplaatsDto();
 		woonplaatsDto.setHuisartsportaalId(woonplaats.getHuisartsportaalId());
 		woonplaatsDto.setScreenitId(woonplaats.getScreenitId());
 		woonplaatsDto.setNaam(woonplaats.getNaam());

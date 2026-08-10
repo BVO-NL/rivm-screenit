@@ -280,12 +280,12 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 			var nu = dateSupplier.getDate();
 
 			MammaMergedBrieven mergedBrieven = null;
-			boolean overbruggingssituatieParagonStarted = baseBriefService.isOverbruggingssituatieParagonStarted();
+			var overbruggingssituatieParagonStarted = baseBriefService.isOverbruggingssituatieParagonStarted();
 			if (!baseBriefService.isAutomatischAfdrukkenParagonActief())
 			{
 				mergedBrieven = new MammaMergedBrieven();
 				mergedBrieven.setScreeningOrganisatie(
-				overbruggingssituatieParagonStarted ? organisatieService.getLandelijkeScreeningsorganisatie() : standplaats.getRegio());
+					overbruggingssituatieParagonStarted ? organisatieService.getLandelijkeScreeningsorganisatie() : standplaats.getRegio());
 				mergedBrieven.setCreatieDatum(nu);
 				mergedBrieven.setBriefType(brieven.get(0).getBriefType());
 				mergedBrieven.setActief(false);
@@ -295,7 +295,8 @@ public class MammaBaseStandplaatsServiceImpl implements MammaBaseStandplaatsServ
 			}
 			try
 			{
-				baseBriefService.createOrAddMergedBrieven(brieven, new AfspraakBrievenGeneratorHelper(mergedBrieven, standplaats, brieven.get(0).getBriefType(), overbruggingssituatieParagonStarted));
+				baseBriefService.createOrAddMergedBrieven(brieven,
+					new AfspraakBrievenGeneratorHelper(mergedBrieven, standplaats, brieven.get(0).getBriefType(), overbruggingssituatieParagonStarted));
 				if (mergedBrieven != null)
 				{
 					baseBriefService.completePdf(mergedBrieven);

@@ -33,7 +33,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.From;
 
 import lombok.extern.slf4j.Slf4j;
@@ -53,8 +52,6 @@ import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.Persoon_;
-import nl.rivm.screenit.model.TijdelijkAdres;
-import nl.rivm.screenit.model.TijdelijkGbaAdres;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
@@ -66,9 +63,7 @@ import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaDossier;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.enums.MammaDoelgroep;
 import nl.rivm.screenit.model.mamma.enums.MammaUitnodigingsintervalType;
 import nl.rivm.screenit.model.project.ProjectClient;
@@ -403,13 +398,13 @@ public class ClientServiceImpl implements ClientService
 			return null;
 		}
 
-		Client client = getClientByBsnFromNg01Bericht(bsn, null);
+		var client = getClientByBsnFromNg01Bericht(bsn, null);
 		if (client != null && client.getPersoon().getBsn().length() == 12)
 		{
 			bsn = client.getPersoon().getBsn();
 		}
 
-		int ng01Value = 0;
+		var ng01Value = 0;
 		if (bsn != null && bsn.length() == 12)
 		{
 			ng01Value = Integer.parseInt(bsn.substring(0, 3));
@@ -436,7 +431,7 @@ public class ClientServiceImpl implements ClientService
 		var bsn = persoon.getBsn();
 		var postcode = gbaAdres.getPostcode();
 
-		boolean specificationToegevoegd = false;
+		var specificationToegevoegd = false;
 		var spec = heeftNietGbaStatussen(List.of(GbaStatus.AFGEVOERD, GbaStatus.BEZWAAR));
 
 		if (StringUtils.isNotBlank(bsn))
@@ -478,7 +473,7 @@ public class ClientServiceImpl implements ClientService
 	@Transactional
 	public void saveOrUpdateClient(Client client)
 	{
-		TijdelijkAdres tijdelijkAdres = client.getPersoon().getTijdelijkAdres();
+		var tijdelijkAdres = client.getPersoon().getTijdelijkAdres();
 		if (tijdelijkAdres != null && (tijdelijkAdres.getStartDatum() == null && tijdelijkAdres.getEindDatum() == null || StringUtils.isBlank(tijdelijkAdres.getStraat())))
 		{
 			if (tijdelijkAdres.getId() != null)
@@ -517,7 +512,7 @@ public class ClientServiceImpl implements ClientService
 	public CervixUitnodiging getLaatstVerstuurdeUitnodiging(CervixScreeningRonde ronde, boolean inclusiefZas)
 	{
 		CervixUitnodiging laatsteUitnodiging = null;
-		for (CervixUitnodiging uitnodiging : ronde.getUitnodigingen())
+		for (var uitnodiging : ronde.getUitnodigingen())
 		{
 			if ((laatsteUitnodiging == null || laatsteUitnodiging.getId() < uitnodiging.getId()) &&
 				(uitnodiging.getMonsterType() == CervixMonsterType.UITSTRIJKJE && BriefUtil.isGegenereerd(uitnodiging.getBrief())
@@ -548,7 +543,7 @@ public class ClientServiceImpl implements ClientService
 	@Transactional
 	public void saveDocumentForClient(UploadDocument uploadDocument, Client client)
 	{
-		List<UploadDocument> documents = client.getDocuments();
+		var documents = client.getDocuments();
 		try
 		{
 			uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.CLIENT_DOCUMENTEN, client.getId());
@@ -575,7 +570,7 @@ public class ClientServiceImpl implements ClientService
 	{
 		if (client.getPersoon() != null)
 		{
-			Persoon persoon = client.getPersoon();
+			var persoon = client.getPersoon();
 			if (persoon.getOverlijdensdatum() != null)
 			{
 				alleProjectClientenInactiveren(client, ProjectInactiefReden.OVERLEDEN, null);
@@ -602,7 +597,7 @@ public class ClientServiceImpl implements ClientService
 
 			hibernateService.saveOrUpdate(pClient);
 
-			String melding = String.format("Project: %s, groep: %s, reden: %s",
+			var melding = String.format("Project: %s, groep: %s, reden: %s",
 				pClient.getProject().getNaam(),
 				pClient.getGroep().getNaam(),
 				reden.naam);
@@ -616,10 +611,10 @@ public class ClientServiceImpl implements ClientService
 	@Transactional
 	public void alleProjectClientenInactiveren(Client client, ProjectInactiefReden projectInactiefReden, Bevolkingsonderzoek bvo)
 	{
-		List<ProjectClient> projectClienten = ProjectUtil.getHuidigeProjectClienten(client, currentDateSupplier.getDate(), false);
+		var projectClienten = ProjectUtil.getHuidigeProjectClienten(client, currentDateSupplier.getDate(), false);
 		if (!projectClienten.isEmpty())
 		{
-			for (ProjectClient projectClient : projectClienten)
+			for (var projectClient : projectClienten)
 			{
 				projectClientInactiveren(projectClient, projectInactiefReden, bvo);
 			}
@@ -630,7 +625,7 @@ public class ClientServiceImpl implements ClientService
 	@Transactional
 	public void projectClientInactiveren(Client client, ProjectInactiefReden reden, Bevolkingsonderzoek bevolkingsonderzoek)
 	{
-		ProjectClient pClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate());
+		var pClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate());
 		if (pClient != null)
 		{
 			projectClientInactiveren(pClient, reden, bevolkingsonderzoek);
@@ -708,9 +703,9 @@ public class ClientServiceImpl implements ClientService
 	@Transactional
 	public void saveOrUpdateTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		String melding = "Gewijzigd.";
-		Persoon persoon = client.getPersoon();
-		TijdelijkGbaAdres tijdelijkGbaAdres = persoon.getTijdelijkGbaAdres();
+		var melding = "Gewijzigd.";
+		var persoon = client.getPersoon();
+		var tijdelijkGbaAdres = persoon.getTijdelijkGbaAdres();
 		if (tijdelijkGbaAdres != null && tijdelijkGbaAdres.getId() == null)
 		{
 			melding = "Aangemaakt.";
@@ -723,9 +718,9 @@ public class ClientServiceImpl implements ClientService
 	@Transactional
 	public void verwijderTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		String melding = "Handmatig verwijderd.";
-		Persoon persoon = client.getPersoon();
-		TijdelijkGbaAdres tijdelijkGbaAdres = persoon.getTijdelijkGbaAdres();
+		var melding = "Handmatig verwijderd.";
+		var persoon = client.getPersoon();
+		var tijdelijkGbaAdres = persoon.getTijdelijkGbaAdres();
 		persoon.setTijdelijkGbaAdres(null);
 		hibernateService.delete(tijdelijkGbaAdres);
 		logService.logGebeurtenis(LogGebeurtenis.GBA_TIJDELIJK_ADRES, ingelogdeOrganisatieMedewerker, client, melding);
@@ -742,22 +737,22 @@ public class ClientServiceImpl implements ClientService
 			briefkenmerk = briefkenmerk.replace(" ", "").toUpperCase();
 			if (briefkenmerk.startsWith("K"))
 			{
-				Client client = getClientMetBriefkenmerk(briefkenmerk);
+				var client = getClientMetBriefkenmerk(briefkenmerk);
 
-				boolean heeftBriefPersoon = client != null && client.getPersoon() != null;
-				boolean heeftZoekClientPersoon = zoekClient != null && zoekClient.getPersoon() != null;
-				boolean kloptIngevoerdeGeboortedatum = heeftBriefPersoon && heeftZoekClientPersoon
+				var heeftBriefPersoon = client != null && client.getPersoon() != null;
+				var heeftZoekClientPersoon = zoekClient != null && zoekClient.getPersoon() != null;
+				var kloptIngevoerdeGeboortedatum = heeftBriefPersoon && heeftZoekClientPersoon
 					&& zoekClient.getPersoon().getGeboortedatum().equals(client.getPersoon().getGeboortedatum());
 				if (heeftBriefPersoon && heeftZoekClientPersoon)
 				{
-					Persoon zoekPersoon = zoekClient.getPersoon();
-					Persoon briefPersoon = client.getPersoon();
+					var zoekPersoon = zoekClient.getPersoon();
+					var briefPersoon = client.getPersoon();
 
-					boolean kloptIngevoerdeBsn = zoekPersoon.getBsn() == null
+					var kloptIngevoerdeBsn = zoekPersoon.getBsn() == null
 						|| zoekPersoon.getBsn() != null && zoekPersoon.getBsn().equals(briefPersoon.getBsn());
 
-					BagAdres zoekAdres = zoekPersoon.getGbaAdres();
-					boolean kloptIngevoerdePostcodeEnHuisNr = zoekAdres == null
+					var zoekAdres = zoekPersoon.getGbaAdres();
+					var kloptIngevoerdePostcodeEnHuisNr = zoekAdres == null
 						|| zoekAdres.getPostcode() == null && zoekAdres.getHuisnummer() == null
 						|| zoekAdres.getPostcode() != null && zoekAdres.getHuisnummer() != null
 						&& zoekAdres.getPostcode().equals(briefPersoon.getGbaAdres().getPostcode())
@@ -795,7 +790,7 @@ public class ClientServiceImpl implements ClientService
 			{
 				Map<String, Object> parameters = new HashMap<>();
 				parameters.put("uitnodigingsId", Long.parseLong(briefkenmerk, 16));
-				ColonUitnodiging uitnodiging = hibernateService.getUniqueByParameters(ColonUitnodiging.class, parameters);
+				var uitnodiging = hibernateService.getUniqueByParameters(ColonUitnodiging.class, parameters);
 				if (uitnodiging != null)
 				{
 					client = uitnodiging.getScreeningRonde().getDossier().getClient();
@@ -824,11 +819,11 @@ public class ClientServiceImpl implements ClientService
 	@Override
 	public CentraleEenheid bepaalCe(Client client)
 	{
-		MammaStandplaatsPeriode periode = baseStandplaatsService
+		var periode = baseStandplaatsService
 			.getEerstvolgendeStandplaatsPeriode(baseStandplaatsService.getStandplaatsMetPostcode(client));
 		if (periode == null && client.getMammaDossier().getLaatsteScreeningRonde() != null)
 		{
-			MammaScreeningRonde screeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
+			var screeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
 			if (screeningRonde.getLaatsteUitnodiging() != null && screeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak() != null)
 			{
 				periode = screeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak().getStandplaatsPeriode();

@@ -45,9 +45,9 @@ public class AutorisatieServiceImpl implements AutorisatieService
 	@Override
 	public boolean isGeautoriseerdVoorInloggen(IngelogdeMedewerkerDto ingelogdeOrganisatieMedewerkerDto) throws IOException
 	{
-		AutorisatieDto responseObject = objectMapper.readValue(ingelogdeOrganisatieMedewerkerDto.getLoginResponse(), AutorisatieDto.class);
-		SERechtDto inschrijven = responseObject.getInschrijvenRecht();
-		SERechtDto connectieStatus = responseObject.getConnectiestatusRecht();
+		var responseObject = objectMapper.readValue(ingelogdeOrganisatieMedewerkerDto.getLoginResponse(), AutorisatieDto.class);
+		var inschrijven = responseObject.getInschrijvenRecht();
+		var connectieStatus = responseObject.getConnectiestatusRecht();
 		return isGeautoriseerd(inschrijven) || isGeautoriseerd(connectieStatus);
 	}
 

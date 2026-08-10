@@ -34,7 +34,7 @@ public class PlanningDtoMapper
 
 	public PlanningSeDto createPlanningSeDto(List<MammaCapaciteitBlok> blokken)
 	{
-		PlanningSeDto planningSeDto = new PlanningSeDto();
+		var planningSeDto = new PlanningSeDto();
 
 		planningSeDto.setGeenScreeningBlokken(blokken.stream().map(this::createGeenScreeningBlokSeDto).collect(Collectors.toList()));
 
@@ -43,7 +43,7 @@ public class PlanningDtoMapper
 
 	private GeenScreeningBlokSeDto createGeenScreeningBlokSeDto(MammaCapaciteitBlok blok)
 	{
-		GeenScreeningBlokSeDto geenScreeningBlokSeDto = new GeenScreeningBlokSeDto();
+		var geenScreeningBlokSeDto = new GeenScreeningBlokSeDto();
 		geenScreeningBlokSeDto.setVanaf(DateUtil.toLocalDateTime(blok.getVanaf()));
 		geenScreeningBlokSeDto.setTot(DateUtil.toLocalDateTime(blok.getTot()));
 		geenScreeningBlokSeDto.setOpmerking(blok.getOpmerkingen());

@@ -39,7 +39,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -55,7 +54,7 @@ public class GbaListener extends BaseLogListener
 	@Override
 	protected void beforeStarting(JobExecution jobExecution)
 	{
-		GbaVerwerkingsLog verwerkingsLog = new GbaVerwerkingsLog();
+		var verwerkingsLog = new GbaVerwerkingsLog();
 		verwerkingsLog.setDatumVerwerking(currentDateSupplier.getDate());
 		jobExecution.getExecutionContext().put(GbaConstants.RAPPORTAGEKEYGBA, verwerkingsLog);
 	}
@@ -63,7 +62,7 @@ public class GbaListener extends BaseLogListener
 	@Override
 	protected LogEvent getStartLogEvent()
 	{
-		LogEvent logEvent = new LogEvent();
+		var logEvent = new LogEvent();
 		if (JobType.GBA_ZONDER_VO105.equals(getJobType()))
 		{
 			logEvent.setMelding("Zonder vo105");
@@ -86,11 +85,11 @@ public class GbaListener extends BaseLogListener
 	@Override
 	protected LogEvent getEindLogEvent()
 	{
-		GbaVerwerkingBeeindigdLogEvent gbaVerwerkingBeeindigdLogEvent = new GbaVerwerkingBeeindigdLogEvent();
-		ExecutionContext executionContext = getJobExecution().getExecutionContext();
+		var gbaVerwerkingBeeindigdLogEvent = new GbaVerwerkingBeeindigdLogEvent();
+		var executionContext = getJobExecution().getExecutionContext();
 		if (executionContext.containsKey(GbaConstants.RAPPORTAGEKEYGBA))
 		{
-			GbaVerwerkingsLog gbaVerwerkingsLog = (GbaVerwerkingsLog) executionContext.get(GbaConstants.RAPPORTAGEKEYGBA);
+			var gbaVerwerkingsLog = (GbaVerwerkingsLog) executionContext.get(GbaConstants.RAPPORTAGEKEYGBA);
 			gbaVerwerkingsLog.setAantalNieuweColonDossiers(executionContext.getLong(GbaConstants.AANTAL_COLON_DOSSIERS_KEY, 0));
 			gbaVerwerkingsLog.setAantalNieuweCervixDossiers(executionContext.getLong(GbaConstants.AANTAL_CERVIX_DOSSIERS_KEY, 0));
 			gbaVerwerkingsLog.setAantalNieuweMammaDossiers(executionContext.getLong(GbaConstants.AANTAL_MAMMA_DOSSIERS_KEY, 0));
@@ -105,19 +104,19 @@ public class GbaListener extends BaseLogListener
 	@Override
 	protected LogEvent eindLogging(JobExecution jobExecution)
 	{
-		LogEvent logEvent = getEindLogEvent();
+		var logEvent = getEindLogEvent();
 		if (logEvent != null)
 		{
-			GbaVerwerkingBeeindigdLogEvent gbaVerwerkingBeeindigdLogEvent = (GbaVerwerkingBeeindigdLogEvent) logEvent;
-			GbaVerwerkingsLog gbaVerwerkingsLog = gbaVerwerkingBeeindigdLogEvent.getVerwerkingsLog();
+			var gbaVerwerkingBeeindigdLogEvent = (GbaVerwerkingBeeindigdLogEvent) logEvent;
+			var gbaVerwerkingsLog = gbaVerwerkingBeeindigdLogEvent.getVerwerkingsLog();
 			if (!gbaVerwerkingsLog.getFouten().isEmpty())
 			{
-				for (GbaFoutRegel fout : gbaVerwerkingsLog.getFouten())
+				for (var fout : gbaVerwerkingsLog.getFouten())
 				{
 					if (GbaFoutCategorie.PROCES.equals(fout.getFoutCategorie()))
 					{
 						gbaVerwerkingBeeindigdLogEvent.setLevel(Level.ERROR);
-						String melding = "";
+						var melding = "";
 						if (gbaVerwerkingBeeindigdLogEvent.getMelding() != null)
 						{
 							melding += gbaVerwerkingBeeindigdLogEvent.getMelding();
@@ -130,12 +129,12 @@ public class GbaListener extends BaseLogListener
 				}
 				if (!Level.WARNING.equals(gbaVerwerkingBeeindigdLogEvent.getLevel()) && !Level.ERROR.equals(gbaVerwerkingBeeindigdLogEvent.getLevel()))
 				{
-					for (GbaFoutRegel fout : gbaVerwerkingsLog.getFouten())
+					for (var fout : gbaVerwerkingsLog.getFouten())
 					{
 						if (GbaFoutCategorie.OVERIG.equals(fout.getFoutCategorie()))
 						{
 							gbaVerwerkingBeeindigdLogEvent.setLevel(Level.WARNING);
-							String melding = "";
+							var melding = "";
 							if (gbaVerwerkingBeeindigdLogEvent.getMelding() != null)
 							{
 								melding += gbaVerwerkingBeeindigdLogEvent.getMelding();
@@ -151,9 +150,9 @@ public class GbaListener extends BaseLogListener
 			if (jobHasExitCode(ExitStatus.FAILED) && gbaVerwerkingBeeindigdLogEvent.getVerwerkingsLog() != null
 				&& CollectionUtils.isNotEmpty(jobExecution.getAllFailureExceptions()))
 			{
-				GbaFoutRegel foutRegel = new GbaFoutRegel();
-				Throwable exception = jobExecution.getAllFailureExceptions().get(0);
-				String error = exception.getMessage();
+				var foutRegel = new GbaFoutRegel();
+				var exception = jobExecution.getAllFailureExceptions().get(0);
+				var error = exception.getMessage();
 				gbaVerwerkingBeeindigdLogEvent.setLevel(Level.ERROR);
 				if (StringUtils.isBlank(error) && ArrayUtils.isNotEmpty(exception.getStackTrace()))
 				{

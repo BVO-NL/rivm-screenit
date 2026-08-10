@@ -51,9 +51,9 @@ public enum CervixLeeftijdcategorie
 
 	public static CervixLeeftijdcategorie getLeeftijdcategorie(LocalDate geboortedatum, LocalDateTime peilDatum)
 	{
-		int leeftijd = DateUtil.getLeeftijd(geboortedatum, peilDatum.toLocalDate());
-		int remainder = leeftijd % 5;
-		int leeftijdCategorieInteger = leeftijd - remainder;
+		var leeftijd = DateUtil.getLeeftijd(geboortedatum, peilDatum.toLocalDate());
+		var remainder = leeftijd % 5;
+		var leeftijdCategorieInteger = leeftijd - remainder;
 		switch (leeftijdCategorieInteger)
 		{
 		case 25:

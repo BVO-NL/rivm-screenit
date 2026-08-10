@@ -46,7 +46,7 @@ public class RequiredScreenitDropdown<T> extends ScreenitDropdown<T> implements 
 	public boolean isRequired()
 	{
 		Form<?> form = findParent(Form.class);
-		boolean required = false;
+		var required = false;
 		if (formSubmittingComponents != null && form != null)
 		{
 			required = formSubmittingComponents.contains(findSubmittingButton(form.getRootForm()));

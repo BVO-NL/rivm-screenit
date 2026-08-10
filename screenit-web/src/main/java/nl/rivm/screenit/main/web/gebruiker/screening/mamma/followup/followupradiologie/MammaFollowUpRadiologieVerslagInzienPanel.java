@@ -47,7 +47,7 @@ public class MammaFollowUpRadiologieVerslagInzienPanel extends GenericPanel<Mamm
 		super.onInitialize();
 		add(new Label("aangemaaktIn.naam"));
 
-		WebMarkupContainer informatieContainer = new WebMarkupContainer("informatie");
+		var informatieContainer = new WebMarkupContainer("informatie");
 		informatieContainer.setVisible(getModelObject().getInformatieBeschikbaar());
 		informatieContainer.add(DateLabel.forDatePattern("ingevoerdOp", Constants.DEFAULT_DATE_TIME_FORMAT));
 		informatieContainer.add(new Label("radioloogTumorGrootte"));
@@ -59,7 +59,7 @@ public class MammaFollowUpRadiologieVerslagInzienPanel extends GenericPanel<Mamm
 		informatieContainer.add(new Label("paVerslagNietTeVerwachten").setVisible(getModelObject().getPaVerslagNietTeVerwachten() != null));
 		add(informatieContainer);
 
-		WebMarkupContainer geenInformatieContainer = new WebMarkupContainer("geenInformatie");
+		var geenInformatieContainer = new WebMarkupContainer("geenInformatie");
 		geenInformatieContainer.setVisible(Boolean.FALSE.equals(getModelObject().getInformatieBeschikbaar()));
 		add(geenInformatieContainer);
 	}

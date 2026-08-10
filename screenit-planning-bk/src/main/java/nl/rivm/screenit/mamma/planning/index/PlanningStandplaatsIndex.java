@@ -52,7 +52,7 @@ public enum PlanningStandplaatsIndex
 	public static List<Long> getStandplaatsenZonderRoute(Long screeningsOrganisatieId)
 	{
 		List<Long> standplaatsen = new ArrayList<>();
-		for (PlanningStandplaats standplaats : standplaatsMap.values())
+		for (var standplaats : standplaatsMap.values())
 		{
 			if (standplaats.getScreeningsOrganisatie().getId().equals(screeningsOrganisatieId)
 				&& standplaats.getStandplaatsRondeNavigableSet().isEmpty())
@@ -66,7 +66,7 @@ public enum PlanningStandplaatsIndex
 	public static List<Long> getStandplaatsenMetRoute(Long screeningsOrganisatieId)
 	{
 		List<Long> standplaatsen = new ArrayList<>();
-		for (PlanningStandplaats standplaats : standplaatsMap.values())
+		for (var standplaats : standplaatsMap.values())
 		{
 			if (standplaats.getScreeningsOrganisatie().getId().equals(screeningsOrganisatieId)
 				&& !standplaats.getStandplaatsRondeNavigableSet().isEmpty())

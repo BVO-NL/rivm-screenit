@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -174,7 +173,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 	{
 		executorService = Executors.newSingleThreadExecutor();
 
-		try (InputStream inputStream = getClass().getResourceAsStream("/aspose/BetalingSpecificatie.docx"))
+		try (var inputStream = getClass().getResourceAsStream("/aspose/BetalingSpecificatie.docx"))
 		{
 			template = File.createTempFile("BetalingSpecificatie", ".docx");
 			FileUtils.copyInputStreamToFile(inputStream, template);
@@ -204,7 +203,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 
 		var md = MessageDigest.getInstance("SHA-256");
 		var hexStringBuilder = new StringBuilder();
-		try (FileInputStream fis = new FileInputStream(sepaBestand))
+		try (var fis = new FileInputStream(sepaBestand))
 		{
 			var dataBytes = new byte[1024];
 			var nread = 0;
@@ -213,7 +212,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 				md.update(dataBytes, 0, nread);
 			}
 			var mdbytes = md.digest();
-			for (byte mdbyte : mdbytes)
+			for (var mdbyte : mdbytes)
 			{
 				hexStringBuilder.append(Integer.toHexString(0xFF & mdbyte));
 			}
@@ -250,7 +249,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 
 	private void berekenEinddatum(List<? extends CervixTarief> tarieven)
 	{
-		for (int i = 0; i < tarieven.size(); i++)
+		for (var i = 0; i < tarieven.size(); i++)
 		{
 			var oldTarief = tarieven.get(i);
 			if (i + 1 != tarieven.size())
@@ -276,7 +275,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 	private String getLogMeldingLabTariefVerwijderd(CervixLabTarief labTarief)
 	{
 		var logMelding = "Labtarief verwijderd met de bedragen: ";
-		for (CervixTariefType labTariefType : getTariefTypenVoorLaboratorium(labTarief.getBmhkLaboratorium()))
+		for (var labTariefType : getTariefTypenVoorLaboratorium(labTarief.getBmhkLaboratorium()))
 		{
 			logMelding += String.format("%s:  %s; ", labTariefType.getNaam(), labTariefType.getBedragStringVanTarief(labTarief));
 		}
@@ -287,7 +286,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 	private String queueHerindexeringVanVerrichtingen(CervixTarief nieuweTarief, List<CervixTarief> oudeTarieven)
 	{
 		var melding = "";
-		for (CervixTarief oudeTarief : oudeTarieven)
+		for (var oudeTarief : oudeTarieven)
 		{
 			if (!melding.isEmpty())
 			{
@@ -305,7 +304,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 		var logMelding = "";
 		if (corrigeerOudeTarievenMelding.isEmpty())
 		{
-			CervixTarief previousTarief = verrichtingService.getTariefVoorDatum(
+			var previousTarief = verrichtingService.getTariefVoorDatum(
 				DateUtil.toUtilDate(DateUtil.toLocalDate(nieuwTarief.getGeldigVanafDatum()).minusDays(1)), null);
 			logMelding = String.format("Van oud bedrag (%s) naar nieuw bedrag (%s); ", CervixTariefType.HUISARTS_UITSTRIJKJE.getBedragStringVanTarief(previousTarief),
 				CervixTariefType.HUISARTS_UITSTRIJKJE.getBedragStringVanTarief(nieuwTarief));
@@ -324,7 +323,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 
 	private void checkVoorGesplitsteOudeTarieven(List<CervixTarief> oudeTarieven, CervixTarief nieuweTarief)
 	{
-		for (CervixTarief tarief : oudeTarieven)
+		for (var tarief : oudeTarieven)
 		{
 			if (tarief.getGeldigVanafDatum().before(nieuweTarief.getGeldigVanafDatum()) && tarief.getGeldigTotenmetDatum() != null && nieuweTarief.getGeldigTotenmetDatum() != null
 				&& tarief.getGeldigTotenmetDatum().after(nieuweTarief.getGeldigTotenmetDatum()))
@@ -361,7 +360,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 	private String corrigeerOudeTarieven(List<CervixTarief> tarieven, CervixTarief nieuweTarief)
 	{
 		var melding = "";
-		for (CervixTarief oudeTarief : tarieven)
+		for (var oudeTarief : tarieven)
 		{
 			if (!melding.isEmpty())
 			{
@@ -383,7 +382,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 			}
 			else
 			{
-				CervixTarief deproxiedTarief = (CervixTarief) Hibernate.unproxy(oudeTarief);
+				var deproxiedTarief = (CervixTarief) Hibernate.unproxy(oudeTarief);
 				if (CervixTariefType.isHuisartsTarief(oudeTarief))
 				{
 					melding += getLogMeldingHuisartsTariefVerwijderd((CervixHuisartsTarief) deproxiedTarief);
@@ -429,7 +428,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 			var previousTarief = verrichtingService.getTariefVoorDatum(
 				DateUtil.toUtilDate(DateUtil.toLocalDate(nieuwTarief.getGeldigVanafDatum()).minusDays(1)),
 				nieuwTarief.getBmhkLaboratorium());
-			for (CervixTariefType labTariefType : getTariefTypenVoorLaboratorium(nieuwTarief.getBmhkLaboratorium()))
+			for (var labTariefType : getTariefTypenVoorLaboratorium(nieuwTarief.getBmhkLaboratorium()))
 			{
 				var logMelding = String.format("; %s: Van oud bedrag (%s) naar nieuw bedrag %s", labTariefType.getNaam(),
 					labTariefType.getBedragStringVanTarief(previousTarief),
@@ -490,16 +489,16 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 			+ opdracht.getOmschrijving();
 		logService.logGebeurtenis(LogGebeurtenis.CERVIX_EXPORTEER_BETAALOPDRACHT, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.CERVIX);
 
-		for (CervixBetaalopdrachtRegel regel : opdracht.getBetaalopdrachtRegels())
+		for (var regel : opdracht.getBetaalopdrachtRegels())
 		{
 
 			if (IBANValidator.getInstance().isValid(regel.getNaarIban()))
 			{
 				hibernateService.saveOrUpdate(regel);
-				for (CervixBetaalopdrachtRegelSpecificatie spec : regel.getSpecificaties())
+				for (var spec : regel.getSpecificaties())
 				{
 					hibernateService.saveOrUpdate(spec);
-					for (CervixBoekRegel boekRegel : spec.getBoekRegels())
+					for (var boekRegel : spec.getBoekRegels())
 					{
 						boekRegel.setSpecificatie(spec);
 						hibernateService.saveOrUpdate(boekRegel);
@@ -533,7 +532,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 	{
 		try (var fileOutputStream = new FileOutputStream(sepaBestand))
 		{
-			Date nu = currentDateSupplier.getDate();
+			var nu = currentDateSupplier.getDate();
 
 			var transfer = new SEPACreditTransfer();
 			transfer.buildGroupHeader(String.valueOf(betaalOpdracht.getId()), betaalOpdracht.getVanTenaamstelling(), nu);
@@ -708,7 +707,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 
 				var specificatieNaam = betaalopdracht.getBetalingskenmerk() + "-specificatie";
 				var specificatieSuffix = "pdf";
-				File specificatie = File.createTempFile(specificatieNaam, specificatieSuffix);
+				var specificatie = File.createTempFile(specificatieNaam, specificatieSuffix);
 				cervixBetalingService.maakSpecificatieBestand(specificatie, betaalopdracht);
 
 				var document = new UploadDocument();
@@ -721,7 +720,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 
 				var sepaNaam = betaalopdracht.getBetalingskenmerk() + "-sepa";
 				var sepaSuffix = "xml";
-				File sepaBestand = File.createTempFile(sepaNaam, sepaSuffix);
+				var sepaBestand = File.createTempFile(sepaNaam, sepaSuffix);
 				cervixBetalingService.maakSepaBestand(sepaBestand, betaalopdracht);
 				var hashtotaal = getSepaHash(sepaBestand);
 

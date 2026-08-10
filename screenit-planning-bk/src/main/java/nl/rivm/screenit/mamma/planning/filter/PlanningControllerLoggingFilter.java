@@ -35,10 +35,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.io.output.TeeOutputStream;
-
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -53,6 +49,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
+
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.io.output.TeeOutputStream;
 
 @Slf4j
 public class PlanningControllerLoggingFilter implements Filter
@@ -69,12 +69,12 @@ public class PlanningControllerLoggingFilter implements Filter
 	{
 		if (LOG.isDebugEnabled())
 		{
-			HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-			HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+			var httpServletRequest = (HttpServletRequest) request;
+			var httpServletResponse = (HttpServletResponse) response;
 
-			Map<String, String> requestMap = getTypesafeRequestMap(httpServletRequest);
-			BufferedRequestWrapper bufferedReqest = new BufferedRequestWrapper(httpServletRequest);
-			BufferedResponseWrapper bufferedResponse = new BufferedResponseWrapper(httpServletResponse);
+			var requestMap = getTypesafeRequestMap(httpServletRequest);
+			var bufferedReqest = new BufferedRequestWrapper(httpServletRequest);
+			var bufferedResponse = new BufferedResponseWrapper(httpServletResponse);
 
 			try
 			{
@@ -111,8 +111,8 @@ public class PlanningControllerLoggingFilter implements Filter
 		Enumeration<?> requestParamNames = request.getParameterNames();
 		while (requestParamNames.hasMoreElements())
 		{
-			String requestParamName = (String) requestParamNames.nextElement();
-			String requestParamValue = request.getParameter(requestParamName);
+			var requestParamName = (String) requestParamNames.nextElement();
+			var requestParamValue = request.getParameter(requestParamName);
 			typesafeRequestMap.put(requestParamName, requestParamValue);
 		}
 		return typesafeRequestMap;
@@ -154,9 +154,9 @@ public class PlanningControllerLoggingFilter implements Filter
 
 		String getRequestBody() throws IOException
 		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(this.getInputStream()));
+			var reader = new BufferedReader(new InputStreamReader(this.getInputStream()));
 			String line = null;
-			StringBuilder inputBuffer = new StringBuilder();
+			var inputBuffer = new StringBuilder();
 			do
 			{
 				line = reader.readLine();

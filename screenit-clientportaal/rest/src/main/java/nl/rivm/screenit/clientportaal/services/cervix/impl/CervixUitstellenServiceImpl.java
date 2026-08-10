@@ -33,10 +33,6 @@ import nl.rivm.screenit.clientportaal.model.cervix.CervixUitstellenStatusDto;
 import nl.rivm.screenit.clientportaal.services.DatumValidatieService;
 import nl.rivm.screenit.clientportaal.services.cervix.CervixUitstellenService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.cervix.CervixDossier;
-import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
-import nl.rivm.screenit.model.cervix.CervixUitnodiging;
-import nl.rivm.screenit.model.cervix.CervixUitstel;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
@@ -69,15 +65,15 @@ public class CervixUitstellenServiceImpl implements CervixUitstellenService
 	@Override
 	public CervixUitstellenStatusDto getUitstelStatus(Client client)
 	{
-		CervixDossier cervixDossier = client.getCervixDossier();
-		CervixScreeningRonde laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
-		CervixUitnodiging laatsteZasUitnodiging = laatsteScreeningRonde.getLaatsteZasUitnodiging();
+		var cervixDossier = client.getCervixDossier();
+		var laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
+		var laatsteZasUitnodiging = laatsteScreeningRonde.getLaatsteZasUitnodiging();
 
-		boolean zasAanvraagNogInBehandeling = laatsteZasUitnodiging != null && laatsteZasUitnodiging.getMonster() == null;
+		var zasAanvraagNogInBehandeling = laatsteZasUitnodiging != null && laatsteZasUitnodiging.getMonster() == null;
 
-		Integer uitstelBijZwangerschap = preferenceService.getInteger(PreferenceKey.UITSTEL_BIJ_ZWANGERSCHAP_CERVIX.name());
+		var uitstelBijZwangerschap = preferenceService.getInteger(PreferenceKey.UITSTEL_BIJ_ZWANGERSCHAP_CERVIX.name());
 
-		LocalDate datumVolgendeRonde = DateUtil.toLocalDate(cervixDossier.getVolgendeRondeVanaf());
+		var datumVolgendeRonde = DateUtil.toLocalDate(cervixDossier.getVolgendeRondeVanaf());
 
 		return new CervixUitstellenStatusDto(zasAanvraagNogInBehandeling, uitstelBijZwangerschap, datumVolgendeRonde);
 	}
@@ -85,12 +81,12 @@ public class CervixUitstellenServiceImpl implements CervixUitstellenService
 	@Override
 	public CervixUitstelDto getHuidigeCervixUitstel(Client client)
 	{
-		CervixDossier cervixDossier = client.getCervixDossier();
-		CervixScreeningRonde laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
+		var cervixDossier = client.getCervixDossier();
+		var laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
 
 		if (laatsteScreeningRonde != null)
 		{
-			CervixUitstel cervixUitstel = laatsteScreeningRonde.getUitstel();
+			var cervixUitstel = laatsteScreeningRonde.getUitstel();
 			if (cervixUitstel != null)
 			{
 				return cervixUitstelMapper.cervixUitstelToDto(cervixUitstel);
@@ -102,15 +98,15 @@ public class CervixUitstellenServiceImpl implements CervixUitstellenService
 	@Override
 	public void valideerDatumBijZwangerschap(LocalDate uitstellenTotDatum)
 	{
-		Integer uitstelBijZwangerschap = preferenceService.getInteger(PreferenceKey.UITSTEL_BIJ_ZWANGERSCHAP_CERVIX.name());
+		var uitstelBijZwangerschap = preferenceService.getInteger(PreferenceKey.UITSTEL_BIJ_ZWANGERSCHAP_CERVIX.name());
 
-		LocalDate minDatum = currentDateSupplier.getLocalDate().minusDays(uitstelBijZwangerschap);
+		var minDatum = currentDateSupplier.getLocalDate().minusDays(uitstelBijZwangerschap);
 		if (uitstellenTotDatum.isBefore(minDatum))
 		{
 			throw new NotValidException("Datum ligt te ver in het verleden");
 		}
 
-		LocalDate maxDatum = currentDateSupplier.getLocalDate().plusMonths(DUUR_ZWANGERSCHAP).plusDays(uitstelBijZwangerschap);
+		var maxDatum = currentDateSupplier.getLocalDate().plusMonths(DUUR_ZWANGERSCHAP).plusDays(uitstelBijZwangerschap);
 		if (uitstellenTotDatum.isAfter(maxDatum))
 		{
 			throw new NotValidException("Datum ligt te ver in de toekomst");
@@ -125,7 +121,7 @@ public class CervixUitstellenServiceImpl implements CervixUitstellenService
 			throw new NotValidException("Datum ligt in het verleden");
 		}
 
-		LocalDate maxDatum = currentDateSupplier.getLocalDate().plusMonths(MAX_TERMIJN_UITSTELLEN);
+		var maxDatum = currentDateSupplier.getLocalDate().plusMonths(MAX_TERMIJN_UITSTELLEN);
 		if (uitstellenTotDatum.isAfter(maxDatum))
 		{
 			throw new NotValidException("Datum ligt te ver in de toekomst");

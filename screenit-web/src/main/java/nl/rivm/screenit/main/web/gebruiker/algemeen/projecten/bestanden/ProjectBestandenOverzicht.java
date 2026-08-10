@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.bestanden;
  * =========================LICENSE_END==================================
  */
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +35,6 @@ import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectBestand;
 import nl.rivm.screenit.model.project.ProjectBestandType;
-import nl.rivm.screenit.model.project.ProjectBestandVerwerking;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.BooleanStringPropertyColumn;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
@@ -68,7 +66,7 @@ public class ProjectBestandenOverzicht extends ProjectBasePage
 	{
 		super(model);
 		filterModel = ModelUtil.ccModel(new ProjectBestand());
-		ProjectBestand bestand = filterModel.getObject();
+		var bestand = filterModel.getObject();
 		bestand.setProject(model.getObject());
 
 		bestandenContainer = getBestandenContainer();
@@ -79,10 +77,10 @@ public class ProjectBestandenOverzicht extends ProjectBasePage
 
 	private WebMarkupContainer getBestandenContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("projectBestandenContainer");
+		var container = new WebMarkupContainer("projectBestandenContainer");
 		container.setOutputMarkupId(true);
 
-		SimpleDateFormat format = Constants.getDateTimeSecondsFormat();
+		var format = Constants.getDateTimeSecondsFormat();
 
 		List<IColumn<ProjectBestand, String>> columns = new ArrayList<IColumn<ProjectBestand, String>>();
 		columns.add(new PropertyColumn<>(Model.of("Naam"), UPLOAD_DOCUMENT + "." + NAAM, UPLOAD_DOCUMENT + "." + NAAM));
@@ -93,8 +91,8 @@ public class ProjectBestandenOverzicht extends ProjectBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<ProjectBestand>> cellItem, String componentId, IModel<ProjectBestand> rowModel)
 			{
-				String waarde = "Hele project";
-				ProjectBestand bestand = ModelUtil.nullSafeGet(rowModel);
+				var waarde = "Hele project";
+				var bestand = ModelUtil.nullSafeGet(rowModel);
 				if (bestand.getGroep() != null)
 				{
 					waarde = bestand.getGroep().getNaam();
@@ -112,9 +110,9 @@ public class ProjectBestandenOverzicht extends ProjectBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<ProjectBestand>> cellItem, String componentId, IModel<ProjectBestand> rowModel)
 			{
-				String value = "0";
-				ProjectBestand bestand = rowModel.getObject();
-				ProjectBestandVerwerking verwerking = bestand.getVerwerking();
+				var value = "0";
+				var bestand = rowModel.getObject();
+				var verwerking = bestand.getVerwerking();
 				if (verwerking != null)
 				{
 					value = verwerking.getRegelsMislukt() + "";
@@ -127,9 +125,9 @@ public class ProjectBestandenOverzicht extends ProjectBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<ProjectBestand>> cellItem, String componentId, IModel<ProjectBestand> rowModel)
 			{
-				String value = "0";
-				ProjectBestand bestand = rowModel.getObject();
-				ProjectBestandVerwerking verwerking = bestand.getVerwerking();
+				var value = "0";
+				var bestand = rowModel.getObject();
+				var verwerking = bestand.getVerwerking();
 				if (verwerking != null)
 				{
 					value = verwerking.getRegelsVerwerkt() + "";
@@ -142,14 +140,14 @@ public class ProjectBestandenOverzicht extends ProjectBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<ProjectBestand>> cellItem, String componentId, IModel<ProjectBestand> rowModel)
 			{
-				ProjectBestand bestand = rowModel.getObject();
-				String status = bestand.getStatus().getNaam();
-				Label label = new Label(componentId, Model.of(status));
+				var bestand = rowModel.getObject();
+				var status = bestand.getStatus().getNaam();
+				var label = new Label(componentId, Model.of(status));
 				cellItem.add(label);
 			}
 		});
 
-		ScreenitDataTable<ProjectBestand, String> dataTable = new ScreenitDataTable<ProjectBestand, String>("projectBestanden", columns,
+		var dataTable = new ScreenitDataTable<ProjectBestand, String>("projectBestanden", columns,
 			new ProjectBestandenDataProvider(filterModel), 10, Model.of("bestanden"))
 		{
 			@Override
@@ -161,7 +159,7 @@ public class ProjectBestandenOverzicht extends ProjectBasePage
 			@Override
 			protected boolean isRowClickable(IModel<ProjectBestand> rowModel)
 			{
-				ProjectBestand bestand = rowModel.getObject();
+				var bestand = rowModel.getObject();
 				return BestandStatus.NOG_TE_VERWERKEN != bestand.getStatus();
 			}
 		};
@@ -172,7 +170,7 @@ public class ProjectBestandenOverzicht extends ProjectBasePage
 
 	private WebMarkupContainer getPassPoortContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("projectPasspoortContainer");
+		var container = new WebMarkupContainer("projectPasspoortContainer");
 		container.setOutputMarkupId(true);
 
 		container.add(new ProjectPaspoortPanel("projectPasspoort", getProjectModel()));

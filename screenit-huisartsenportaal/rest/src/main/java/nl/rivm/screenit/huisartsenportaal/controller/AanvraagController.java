@@ -62,7 +62,7 @@ public class AanvraagController extends BaseController
 	@PostMapping("/huisarts")
 	public ResponseEntity<AanvraagTotalenDto> getHuidigeAanvragen(@RequestBody AanvragenZoekObjectDto zoekObjectDto, BindingResult result)
 	{
-		AanvraagTotalenDto aanvragen = labformulierService.getAanvragenHuisarts(getIngelogdeHuisarts(), zoekObjectDto.getResultOptions());
+		var aanvragen = labformulierService.getAanvragenHuisarts(getIngelogdeHuisarts(), zoekObjectDto.getResultOptions());
 		return new ResponseEntity<>(aanvragen, HttpStatus.OK);
 	}
 

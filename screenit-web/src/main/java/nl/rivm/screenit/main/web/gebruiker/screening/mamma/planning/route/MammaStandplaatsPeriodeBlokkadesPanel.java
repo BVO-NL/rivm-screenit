@@ -37,9 +37,9 @@ public abstract class MammaStandplaatsPeriodeBlokkadesPanel extends GenericPanel
 	public MammaStandplaatsPeriodeBlokkadesPanel(String id, IModel<PlanningStandplaatsPeriodeDto> model)
 	{
 		super(id, model);
-		PlanningStandplaatsPeriodeDto standplaatsPeriodeDto = getModelObject();
+		var standplaatsPeriodeDto = getModelObject();
 
-		WebMarkupContainer blokkades = new WebMarkupContainer("blokkades");
+		var blokkades = new WebMarkupContainer("blokkades");
 
 		if (CollectionUtils.isNotEmpty(standplaatsPeriodeDto.blokkadeIds))
 		{

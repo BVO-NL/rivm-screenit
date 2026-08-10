@@ -46,7 +46,7 @@ public class TestColonVerzetDatumPopup extends TestAbstractVerzetDatumPopup
 	protected void opslaan()
 	{
 		EnversSwitch.off();
-		for (Client client : getModelObject())
+		for (var client : getModelObject())
 		{
 			colonTestTimelineService.verzetDossierAchteruitInTijd(client, getAantalDagen());
 		}

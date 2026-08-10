@@ -88,7 +88,6 @@ import nl.rivm.screenit.service.MessageService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.UploadDocumentService;
-import nl.rivm.screenit.specification.algemeen.ClientBriefSpecification;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
@@ -183,7 +182,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 		{
 
 			var briefDefinitiesVanDitBriefType = new ArrayList<BriefDefinitie>();
-			int eersteOngebruikteVolgnummer = 1;
+			var eersteOngebruikteVolgnummer = 1;
 			var briefDefinities = briefDefinitieRepository.findByBriefTypeOrderByLaatstGewijzigdAsc(briefType);
 			var matchMetNaamFilter = filterOpNaamMatchtMetEenBriefDefinitie(briefDefinities, naam);
 
@@ -208,7 +207,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 				briefDefinitiesVanDitBriefType.add(legeBriefDefinitie);
 			}
 
-			for (int i = briefDefinitiesVanDitBriefType.size() - 1; i >= 0; i--)
+			for (var i = briefDefinitiesVanDitBriefType.size() - 1; i >= 0; i--)
 			{
 				result.add(briefDefinitiesVanDitBriefType.get(i));
 			}
@@ -231,7 +230,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	public void saveBriefDefinitie(BriefDefinitie nieuweBriefDefinitie, File uploadFile, String contentType, String filename) throws IOException
 	{
 
-		UploadDocument uploadDocument = new UploadDocument();
+		var uploadDocument = new UploadDocument();
 		uploadDocument.setActief(Boolean.TRUE);
 		uploadDocument.setContentType(contentType);
 		uploadDocument.setFile(uploadFile);
@@ -255,14 +254,6 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	public ProjectBrief maakProjectBrief(ProjectClient pClient, ProjectBriefActie actie, ProjectBrief origineleBrief)
 	{
 		return briefFactory.maakProjectBrief(pClient, actie, origineleBrief);
-	}
-
-	@Override
-	public <B extends ClientBrief<?, ?, ?>> boolean clientHeeftOngegenereerdeBriefVanType(BriefType type, Client client, Class<B> briefClass)
-	{
-		var specification = ClientBriefSpecification.<B> heeftTeGenererenBrieven(type, client);
-		var repository = briefFactory.getBriefTypeRepository(briefClass);
-		return repository.exists(specification);
 	}
 
 	@Override
@@ -468,7 +459,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 		{
 			setOrAppendPdf(mergedBrieven, pdfBestand, briefGenerator);
 
-			for (Brief brief : succesvolleBrieven)
+			for (var brief : succesvolleBrieven)
 			{
 				brief.setMergedBrieven(mergedBrieven);
 				mergedBrieven.setAantalBrieven(mergedBrieven.getAantalBrieven() + 1);
@@ -556,7 +547,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 		briefafdrukopdrachtDto.setResources(List.of(BriefafdrukopdrachtDto.Resource.builder().order(1).path(bestandsNaam).build()));
 		var message = messageService.queueMessage(MessageType.BRIEF_AFDRUKKEN, briefafdrukopdrachtDto, batchApplicationType.name());
 		LOG.info("Briefafdrukopdracht message id '{}' aangemaakt voor brief id '{}' in {}", message.getId(), briefafdrukopdrachtDto.getEntityId(),
-			briefafdrukopdrachtDto.getEntityType());
+			briefafdrukopdrachtDto.getEntityType().getSimpleName());
 	}
 
 	@Override
@@ -569,6 +560,14 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	private <B extends Brief> void setBriefGegenereerdInfo(B brief, IDocument documentDefinitie)
 	{
 		brief.setGegenereerd(true);
+		if (brief instanceof ProjectBrief projectBrief && projectBrief.getBrief() != null)
+		{
+			projectBrief.getBrief().setGegenereerd(true);
+		}
+		else if (brief instanceof ClientBrief<?, ?, ?> clientBrief && clientBrief.getProjectBrief() != null)
+		{
+			clientBrief.getProjectBrief().setGegenereerd(true);
+		}
 		brief.setTemplateNaam(documentDefinitie.getDocument().getNaam());
 		if (documentDefinitie instanceof BriefDefinitie definitie)
 		{ 
@@ -580,15 +579,15 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	private <B extends Brief, MB extends MergedBrieven<?>> Document appendDocument(UploadDocument briefTemplateDocument, B brief, Document chunkDocument,
 		IBrievenGeneratorHelper<B, MB> briefGenerator) throws Exception
 	{
-		File briefTemplate = uploadDocumentService.load(briefTemplateDocument);
-		byte[] briefTemplateBytes = FileUtils.readFileToByteArray(briefTemplate);
+		var briefTemplate = uploadDocumentService.load(briefTemplateDocument);
+		var briefTemplateBytes = FileUtils.readFileToByteArray(briefTemplate);
 
-		Client client = getClientFromBrief(brief);
-		MailMergeContext context = getMailMergeContext(brief, client);
+		var client = getClientFromBrief(brief);
+		var context = getMailMergeContext(brief, client);
 		briefGenerator.additionalMergedContext(context);
 
 		Document document;
-		BaseDocumentCreator creator = briefGenerator.getDocumentCreator(context);
+		var creator = briefGenerator.getDocumentCreator(context);
 		if (creator == null)
 		{
 			document = asposeService.processDocument(briefTemplateBytes, context);
@@ -652,13 +651,13 @@ public class BaseBriefServiceImpl implements BaseBriefService
 		IBrievenGeneratorHelper<B, MB> briefGenerator)
 		throws IOException
 	{
-		UploadDocument huidigePdfMetMergedBrievenContainer = mergedBrieven.getMergedBrieven();
-		File huidigePdfMetMergedBrieven = uploadDocumentService.load(huidigePdfMetMergedBrievenContainer);
+		var huidigePdfMetMergedBrievenContainer = mergedBrieven.getMergedBrieven();
+		var huidigePdfMetMergedBrieven = uploadDocumentService.load(huidigePdfMetMergedBrievenContainer);
 		Integer maxMergedBrievenPdfSizeMB = organisatieParameterService.getOrganisatieParameter(mergedBrieven.getScreeningOrganisatie(),
 			OrganisatieParameterKey.MAX_MERGED_BRIEVEN_PDF_SIZE_MB);
 		if (maxMergedBrievenPdfSizeMB != null && huidigePdfMetMergedBrieven.length() + nieuwPdfMetMergedBrieven.length() > (long) maxMergedBrievenPdfSizeMB * BYTES_TO_MBS)
 		{
-			MB createdMergedBrieven = briefGenerator.createMergedBrieven(mergedBrieven.getCreatieDatum());
+			var createdMergedBrieven = briefGenerator.createMergedBrieven(mergedBrieven.getCreatieDatum());
 			if (createdMergedBrieven != null)
 			{
 				completePdf(mergedBrieven);
@@ -673,14 +672,14 @@ public class BaseBriefServiceImpl implements BaseBriefService
 
 	private <MB extends MergedBrieven<?>> void joinPdfs(MB huidigeMergedBrieven, File nieuwPdfMetMergedBrieven) throws IOException
 	{
-		UploadDocument huidigePdfMetMergeBrievenContainer = huidigeMergedBrieven.getMergedBrieven();
-		File huidigePdfMetMergeBrieven = uploadDocumentService.load(huidigePdfMetMergeBrievenContainer);
-		File copyHuidigePdfMetMergedBrieven = File.createTempFile("copyMergedBrieven", ".pdf");
+		var huidigePdfMetMergeBrievenContainer = huidigeMergedBrieven.getMergedBrieven();
+		var huidigePdfMetMergeBrieven = uploadDocumentService.load(huidigePdfMetMergeBrievenContainer);
+		var copyHuidigePdfMetMergedBrieven = File.createTempFile("copyMergedBrieven", ".pdf");
 		FileUtils.copyFile(huidigePdfMetMergeBrieven, copyHuidigePdfMetMergedBrieven);
 
-		try (FileOutputStream outputStream = new FileOutputStream(huidigePdfMetMergeBrieven))
+		try (var outputStream = new FileOutputStream(huidigePdfMetMergeBrieven))
 		{
-			PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+			var pdfMergerUtility = new PDFMergerUtility();
 			pdfMergerUtility.addSource(copyHuidigePdfMetMergedBrieven);
 			pdfMergerUtility.addSource(nieuwPdfMetMergedBrieven);
 			pdfMergerUtility.setDestinationStream(outputStream);
@@ -701,7 +700,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 
 	private void correctPdfFileNameIfNeeded(UploadDocument huidigePdfMetMergedBrievenContainer)
 	{
-		String huidigePdfNaam = huidigePdfMetMergedBrievenContainer.getNaam();
+		var huidigePdfNaam = huidigePdfMetMergedBrievenContainer.getNaam();
 		huidigePdfNaam = huidigePdfNaam.replace(".pdf", "");
 		if (!Pattern.compile("_\\d{2}$").matcher(huidigePdfNaam).find())
 		{
@@ -725,42 +724,42 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	public <B extends Brief> File maakPdfVanBrief(B brief, BaseDocumentCreator documentCreator,
 		Consumer<MailMergeContext> mergeContextConsumer) throws Exception
 	{
-		Client client = getClientFromBrief(brief);
-		File briefTemplate = getBriefDefinitieFile(brief);
-		MailMergeContext context = getMailMergeContext(brief, client);
+		var client = getClientFromBrief(brief);
+		var briefTemplate = getBriefDefinitieFile(brief);
+		var context = getMailMergeContext(brief, client);
 		if (mergeContextConsumer != null)
 		{
 			mergeContextConsumer.accept(context);
 		}
-		Document document = asposeService.processDocumentWithCreator(context, briefTemplate, documentCreator, true);
+		var document = asposeService.processDocumentWithCreator(context, briefTemplate, documentCreator, true);
 		return genereerPdf(document, brief.getBriefType().toString(), true);
 	}
 
 	@Override
 	public <B extends Brief> File maakPdfVanBrief(B brief, Consumer<MailMergeContext> mergeContextConsumer) throws Exception
 	{
-		Client client = getClientFromBrief(brief);
-		File briefTemplate = getBriefDefinitieFile(brief);
-		MailMergeContext context = getMailMergeContext(brief, client);
+		var client = getClientFromBrief(brief);
+		var briefTemplate = getBriefDefinitieFile(brief);
+		var context = getMailMergeContext(brief, client);
 		if (mergeContextConsumer != null)
 		{
 			mergeContextConsumer.accept(context);
 		}
-		byte[] briefTemplateBytes = FileUtils.readFileToByteArray(briefTemplate);
-		Document document = asposeService.processDocument(briefTemplateBytes, context);
+		var briefTemplateBytes = FileUtils.readFileToByteArray(briefTemplate);
+		var document = asposeService.processDocument(briefTemplateBytes, context);
 		return genereerPdf(document, brief.getBriefType().toString(), true);
 	}
 
 	private <B extends Brief> File getBriefDefinitieFile(B brief)
 	{
-		IDocument briefDefinitie = getDefinitiveBriefDefinitie(brief);
-		UploadDocument uploadDocument = briefDefinitie.getDocument();
+		var briefDefinitie = getDefinitiveBriefDefinitie(brief);
+		var uploadDocument = briefDefinitie.getDocument();
 		return uploadDocumentService.load(uploadDocument);
 	}
 
 	private <B extends Brief> MailMergeContext getMailMergeContext(B brief, Client client)
 	{
-		MailMergeContext context = new MailMergeContext();
+		var context = new MailMergeContext();
 		context.setClient(client);
 		context.setBrief(brief);
 		return context;
@@ -771,7 +770,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 		Client client = null;
 		if (ClientBrief.class.isAssignableFrom(Hibernate.getClass(brief)))
 		{
-			ClientBrief<?, ?, ?> clientBrief = (ClientBrief<?, ?, ?>) Hibernate.unproxy(brief);
+			var clientBrief = (ClientBrief<?, ?, ?>) Hibernate.unproxy(brief);
 			client = clientBrief.getClient();
 		}
 		return client;
@@ -783,7 +782,7 @@ public class BaseBriefServiceImpl implements BaseBriefService
 		var briefClass = Hibernate.getClass(brief);
 		if (ProjectBrief.class.isAssignableFrom(briefClass))
 		{
-			ProjectBrief projectBrief = (ProjectBrief) Hibernate.unproxy(brief);
+			var projectBrief = (ProjectBrief) Hibernate.unproxy(brief);
 			briefDefinitie = projectBrief.getDefinitie();
 		}
 		return briefDefinitie;

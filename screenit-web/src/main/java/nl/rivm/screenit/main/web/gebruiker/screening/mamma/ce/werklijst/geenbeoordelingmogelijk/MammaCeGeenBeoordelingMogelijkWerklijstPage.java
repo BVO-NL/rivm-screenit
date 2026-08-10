@@ -63,7 +63,7 @@ public class MammaCeGeenBeoordelingMogelijkWerklijstPage extends AbstractMammaCe
 		geenBeoordelingMogelijkDataProvider = new MammaCeGeenBeoordelingMogelijkDataProvider(propertyChain(MammaOnderzoek_.LAATSTE_BEOORDELING, MammaBeoordeling_.STATUS_DATUM),
 			zoekObjectModel);
 		createResultTable();
-		MammaCeZoekPanel zoekPanel = new MammaCeZoekPanel("zoekContainer", zoekObjectModel, this, resultatenContainer)
+		var zoekPanel = new MammaCeZoekPanel("zoekContainer", zoekObjectModel, this, resultatenContainer)
 		{
 
 			@Override

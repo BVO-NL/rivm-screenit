@@ -24,8 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.colo
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.AbstractGebeurtenisDetailPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.colon.ColonConclusie;
-import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -58,8 +56,8 @@ public class ConclusieInzienPanel extends AbstractGebeurtenisDetailPanel
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		ColonIntakeAfspraak afspraak = getModelObject().getAfspraak();
-		ColonConclusie conclusie = afspraak.getConclusie();
+		var afspraak = getModelObject().getAfspraak();
+		var conclusie = afspraak.getConclusie();
 
 		add(new EnumLabel<ColonConclusieType>("afspraak.conclusie.type"));
 		add(DateLabel.forDatePattern("afspraak.conclusie.datum", "dd-MM-yyyy HH:mm"));

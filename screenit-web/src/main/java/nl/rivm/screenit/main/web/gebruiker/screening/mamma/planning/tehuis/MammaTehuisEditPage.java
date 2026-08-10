@@ -54,8 +54,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPlannin
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Medewerker;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.model.TijdelijkGbaAdres;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -202,13 +200,13 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaTehuis tehuis = (MammaTehuis) getForm().getModelObject();
-				MammaStandplaats origineleStandplaats = tehuis.getStandplaats();
-				MammaStandplaats nieuweStandplaats = standplaatsModel.getObject();
+				var tehuis = (MammaTehuis) getForm().getModelObject();
+				var origineleStandplaats = tehuis.getStandplaats();
+				var nieuweStandplaats = standplaatsModel.getObject();
 				tehuis.setStandplaats(nieuweStandplaats);
 				nieuweStandplaats.getTehuizen().add(tehuis);
 
-				boolean succes = baseTehuisService.saveOrUpdateTehuis(tehuis, origineleStandplaats, getIngelogdeOrganisatieMedewerker());
+				var succes = baseTehuisService.saveOrUpdateTehuis(tehuis, origineleStandplaats, getIngelogdeOrganisatieMedewerker());
 				if (succes)
 				{
 					success(getString("message.gegevensopgeslagen"));
@@ -250,7 +248,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 
 	private void createAdresToevoegenForm()
 	{
-		WebMarkupContainer tehuisAdressenContainer = new WebMarkupContainer("tehuisAdressenContainer");
+		var tehuisAdressenContainer = new WebMarkupContainer("tehuisAdressenContainer");
 		tehuisAdressenContainer.setOutputMarkupId(true);
 		persistentContainer.add(tehuisAdressenContainer);
 
@@ -276,7 +274,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 				@Override
 				public void onClickDeleteAction(AjaxRequestTarget target, IModel<MammaTehuisAdres> adresModel)
 				{
-					MammaTehuisAdres adres = adresModel.getObject();
+					var adres = adresModel.getObject();
 					if (baseTehuisClientenDao.countClienten(adres.getTehuis(), MammaTehuisSelectie.GEKOPPELD, adres) > 0)
 					{
 						error(getString("error.adres.kan.niet.verwijderd.worden"));
@@ -308,7 +306,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaTehuisAdres tehuisAdres = new MammaTehuisAdres();
+				var tehuisAdres = new MammaTehuisAdres();
 				tehuisAdres.setTehuis(getTehuis());
 				tehuisAdres.setLocatieVanTehuis(true);
 				openAdresDialog(target, tehuisAdressenContainer, tehuisAdres);
@@ -338,9 +336,9 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 
 	private void createClientZoekenForm()
 	{
-		MammaTehuisAdres adres = new MammaTehuisAdres();
+		var adres = new MammaTehuisAdres();
 		adres.setTehuis(getTehuis());
-		IModel<MammaTehuisAdres> clientZoekenModel = ModelUtil.ccModel(adres);
+		var clientZoekenModel = ModelUtil.ccModel(adres);
 		Form<MammaTehuisAdres> clientZoekenForm = new ScreenitForm<>("clientZoekenForm", clientZoekenModel);
 		clientZoekenForm.add(new PostcodeField("postcode"));
 		clientZoekenForm.add(new TextField<>("huisnummer"));
@@ -359,7 +357,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 			@Override
 			public IModel<String> getDataModel(IModel<Client> rowModel)
 			{
-				TijdelijkGbaAdres tijdelijkGbaAdres = rowModel.getObject().getPersoon().getTijdelijkGbaAdres();
+				var tijdelijkGbaAdres = rowModel.getObject().getPersoon().getTijdelijkGbaAdres();
 				return Model.of(tijdelijkGbaAdres != null ? AdresUtil.getVolledigeAdresString(tijdelijkGbaAdres)
 					: AdresUtil.getVolledigeAdresString(rowModel.getObject().getPersoon().getGbaAdres()));
 			}
@@ -378,7 +376,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 			@Override
 			public IModel<String> getDataModel(IModel<Client> rowModel)
 			{
-				MammaTehuis tehuis = rowModel.getObject().getMammaDossier().getTehuis();
+				var tehuis = rowModel.getObject().getMammaDossier().getTehuis();
 				if (tehuis != null && tehuis.equals(getTehuis()))
 				{
 					return Model.of("Ja");
@@ -394,7 +392,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 			@Override
 			public IModel<String> getDataModel(IModel<Client> rowModel)
 			{
-				Boolean uitTeNodigen = rowModel.getObject().getMammaDossier().getUitTeNodigen();
+				var uitTeNodigen = rowModel.getObject().getMammaDossier().getUitTeNodigen();
 				if (uitTeNodigen == null)
 				{
 					return Model.of("");
@@ -416,7 +414,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 				@Override
 				public IModel<Object> getDataModel(IModel<Client> embeddedModel)
 				{
-					IModel<Object> vanafStringModel = super.getDataModel(embeddedModel);
+					var vanafStringModel = super.getDataModel(embeddedModel);
 					if (StringUtils.isNotBlank(vanafStringModel.getObject().toString()) && MammaAfspraakStatus
 						.isGeannuleerd(embeddedModel.getObject().getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak().getStatus()))
 					{
@@ -434,16 +432,16 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 			}
 		});
 
-		ScreenitDataTable<Client, String> tehuisClientenTabel = new ScreenitDataTable<>("tehuisClientenTabel", columns,
+		var tehuisClientenTabel = new ScreenitDataTable<>("tehuisClientenTabel", columns,
 			new MammaTehuisClientenDataProvider("persoon.achternaam", clientZoekenModel), 10, Model.of("cliënt(en)"))
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<Client> model)
 			{
-				MammaTehuis gekoppeldeTehuis = model.getObject().getMammaDossier().getTehuis();
-				final boolean isGekoppeld = gekoppeldeTehuis != null;
-				String header = "Koppelen aan tehuis";
-				String content = "Weet u zeker dat u deze cliënt wilt koppelen?";
+				var gekoppeldeTehuis = model.getObject().getMammaDossier().getTehuis();
+				final var isGekoppeld = gekoppeldeTehuis != null;
+				var header = "Koppelen aan tehuis";
+				var content = "Weet u zeker dat u deze cliënt wilt koppelen?";
 
 				if (isGekoppeld)
 				{
@@ -502,7 +500,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 
 		tehuisClientenContainer.add(tehuisClientenTabel);
 
-		IndicatingAjaxSubmitLink zoekenButton = new IndicatingAjaxSubmitLink("clientZoekenBtn", clientZoekenForm)
+		var zoekenButton = new IndicatingAjaxSubmitLink("clientZoekenBtn", clientZoekenForm)
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -529,9 +527,9 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 
 	private ScreenitDropdown<MammaStandplaats> maakStandplaatsenDropdown(MammaStandplaats huidigeStandplaats)
 	{
-		List<MammaStandplaats> mogelijkeStandplaatsen = getMogelijkeStandplaatsen(huidigeStandplaats);
+		var mogelijkeStandplaatsen = getMogelijkeStandplaatsen(huidigeStandplaats);
 
-		ScreenitDropdown<MammaStandplaats> standplaatsenDropdown = new ScreenitDropdown<>("standplaats", standplaatsModel,
+		var standplaatsenDropdown = new ScreenitDropdown<MammaStandplaats>("standplaats", standplaatsModel,
 			ModelUtil.listRModel(mogelijkeStandplaatsen, false), new ChoiceRenderer<>("naam"));
 
 		standplaatsenDropdown.setRequired(true);
@@ -542,8 +540,8 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 
 	private List<MammaStandplaats> getMogelijkeStandplaatsen(MammaStandplaats huidigeStandplaats)
 	{
-		ScreeningOrganisatie regio = ScreenitSession.get().getScreeningOrganisatie();
-		List<MammaStandplaats> mogelijkeStandplaatsen = standplaatsService.getActieveStandplaatsen(regio);
+		var regio = ScreenitSession.get().getScreeningOrganisatie();
+		var mogelijkeStandplaatsen = standplaatsService.getActieveStandplaatsen(regio);
 
 		if (huidigeStandplaats != null && !mogelijkeStandplaatsen.contains(huidigeStandplaats))
 		{
@@ -562,9 +560,9 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				boolean magInActiveren = getTehuis().getId() != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.VERWIJDEREN)
+				var magInActiveren = getTehuis().getId() != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.VERWIJDEREN)
 					&& ingelogdNamensRegio;
-				boolean isEnabled = getTehuis().getDossiers().isEmpty() || !getTehuis().getActief();
+				var isEnabled = getTehuis().getDossiers().isEmpty() || !getTehuis().getActief();
 				inActiverenBtn.setEnabled(isEnabled);
 				inActiverenBtn.add(new AttributeToggleModifier("title", Model.of(getString("inactiveren.title")))
 				{
@@ -580,7 +578,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaTehuis tehuis = getTehuis();
+				var tehuis = getTehuis();
 				tehuis.setActief(Boolean.FALSE.equals(tehuis.getActief()));
 				if (Boolean.FALSE.equals(tehuis.getActief()))
 				{
@@ -622,10 +620,10 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 			{
 				super.onConfigure();
 
-				boolean uitnodigenVisible = false;
-				boolean uitnodigenEnabled = false;
+				var uitnodigenVisible = false;
+				var uitnodigenEnabled = false;
 
-				MammaTehuis tehuis = getTehuis();
+				var tehuis = getTehuis();
 				if (tehuis.getId() != null)
 				{
 					uitnodigenVisible = ingelogdNamensRegio && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.AANPASSEN);
@@ -639,9 +637,9 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				AtomicInteger aantalClientenMetProjectBrief = new AtomicInteger(0);
-				AtomicInteger aantalClientenMetBrief = new AtomicInteger(0);
-				AtomicInteger aantalClientenMetSuspectBrief = new AtomicInteger(0);
+				var aantalClientenMetProjectBrief = new AtomicInteger(0);
+				var aantalClientenMetBrief = new AtomicInteger(0);
+				var aantalClientenMetSuspectBrief = new AtomicInteger(0);
 				tehuisService.uitnodigen(getTehuis(), aantalClientenMetProjectBrief, aantalClientenMetBrief, aantalClientenMetSuspectBrief,
 					getIngelogdeOrganisatieMedewerker());
 

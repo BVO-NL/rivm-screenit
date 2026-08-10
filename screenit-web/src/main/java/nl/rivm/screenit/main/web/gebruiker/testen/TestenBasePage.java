@@ -52,10 +52,8 @@ import nl.rivm.screenit.main.web.gebruiker.testen.mamma.timeline.MammaTestTimeli
 import nl.rivm.screenit.main.web.gebruiker.testen.postcode.TestPostcodePage;
 import nl.rivm.screenit.main.web.gebruiker.testen.preferences.TestPreferencesPage;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
@@ -129,11 +127,11 @@ public class TestenBasePage extends MedewerkerBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				TestTimelineModel object = model.getObject();
+				var object = model.getObject();
 				object.setBsn(TestBsnGenerator.getValideBsn());
 				target.add(bsnField);
 
-				WebMarkupContainer geContainer = getGebeurtenissenContainer();
+				var geContainer = getGebeurtenissenContainer();
 				gebeurtenissenContainer.replaceWith(geContainer);
 				gebeurtenissenContainer = geContainer;
 				gebeurtenissenContainer.setVisible(false);
@@ -147,7 +145,7 @@ public class TestenBasePage extends MedewerkerBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				TestTimelineModel object = model.getObject();
+				var object = model.getObject();
 				if (!StringUtils.isEmpty(object.getBsnsString()))
 				{
 					object.setBsn(object.getBsnsString() + "," + TestBsnGenerator.getValideBsn());
@@ -158,7 +156,7 @@ public class TestenBasePage extends MedewerkerBasePage
 				}
 				target.add(bsnField);
 
-				WebMarkupContainer geContainer = getGebeurtenissenContainer();
+				var geContainer = getGebeurtenissenContainer();
 				gebeurtenissenContainer.replaceWith(geContainer);
 				gebeurtenissenContainer = geContainer;
 				gebeurtenissenContainer.setVisible(false);
@@ -176,12 +174,12 @@ public class TestenBasePage extends MedewerkerBasePage
 
 	protected TestTimelineModel refreshTimelineModel(TestTimelineModel timelineModel, List<Client> clienten)
 	{
-		Client client = clienten.get(0);
-		Persoon persoon = client.getPersoon();
+		var client = clienten.get(0);
+		var persoon = client.getPersoon();
 		timelineModel.setGeslacht(persoon.getGeslacht());
 		timelineModel.setGeboortedatum(persoon.getGeboortedatum());
 		timelineModel.setGemeente(persoon.getGbaAdres().getGbaGemeente());
-		MammaDossier mammaDossier = client.getMammaDossier();
+		var mammaDossier = client.getMammaDossier();
 		if (mammaDossier != null)
 		{
 			timelineModel.setDoelgroep(mammaDossier.getDoelgroep());
@@ -211,7 +209,7 @@ public class TestenBasePage extends MedewerkerBasePage
 				{
 					if (!model.getObject().getBsns().isEmpty())
 					{
-						Client client = clientService.getClientByBsn(model.getObject().getBsns().get(0));
+						var client = clientService.getClientByBsn(model.getObject().getBsns().get(0));
 						setResponsePage(new ClientInzienPage(new SimpleHibernateModel<>(client)));
 					}
 					else
@@ -223,7 +221,7 @@ public class TestenBasePage extends MedewerkerBasePage
 		}
 		else
 		{
-			EmptyPanel directNaarClientDossier = new EmptyPanel("directNaarClientDossier");
+			var directNaarClientDossier = new EmptyPanel("directNaarClientDossier");
 			directNaarClientDossier.setVisible(false);
 			return directNaarClientDossier;
 		}
@@ -236,17 +234,17 @@ public class TestenBasePage extends MedewerkerBasePage
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
-				List<String> bsns = model.getObject().getBsns();
+				var bsns = model.getObject().getBsns();
 				if (!bsns.isEmpty())
 				{
 					try
 					{
-						String openTab = "window.open('%s', '_blank')";
+						var openTab = "window.open('%s', '_blank')";
 						if (Boolean.getBoolean("clientportaalSameTab"))
 						{
 							openTab = "window.open('%s', '_self')";
 						}
-						String url = constructAutoInlogClientportaalUrl(bsns.get(0));
+						var url = constructAutoInlogClientportaalUrl(bsns.get(0));
 						target.appendJavaScript(String.format(openTab, url));
 					}
 					catch (RuntimeException e)
@@ -267,17 +265,17 @@ public class TestenBasePage extends MedewerkerBasePage
 				try
 				{
 					url = String.format(newClientportaalUrlAutoLogin, bsn, TARGET_URI_PLACEHOLDER, DateTimeFormatter.ofPattern("yyyyMMddHHmmss").format(LocalDateTime.now()));
-					String urlPartToHash = url.substring(url.indexOf("bsn"));
-					String urlFirstPart = url.substring(0, url.indexOf("bsn"));
-					String clientportaalUrlAutoLogin = newClientportaalUrl;
+					var urlPartToHash = url.substring(url.indexOf("bsn"));
+					var urlFirstPart = url.substring(0, url.indexOf("bsn"));
+					var clientportaalUrlAutoLogin = newClientportaalUrl;
 					if (!clientportaalUrlAutoLogin.endsWith("/"))
 					{
 						clientportaalUrlAutoLogin += "/";
 					}
 					clientportaalUrlAutoLogin += "autologin";
-					byte[] hashedUrlPart = calcHmacSha256(newClientportaalUrlAutoLoginSecret.getBytes(StandardCharsets.UTF_8),
+					var hashedUrlPart = calcHmacSha256(newClientportaalUrlAutoLoginSecret.getBytes(StandardCharsets.UTF_8),
 						urlPartToHash.replace(TARGET_URI_PLACEHOLDER, clientportaalUrlAutoLogin).getBytes(StandardCharsets.UTF_8));
-					String base64HashedUrlPart = URLEncoder.encode(Base64.getEncoder().encodeToString(hashedUrlPart), StandardCharsets.UTF_8.toString());
+					var base64HashedUrlPart = URLEncoder.encode(Base64.getEncoder().encodeToString(hashedUrlPart), StandardCharsets.UTF_8.toString());
 					url = urlFirstPart
 						+ urlPartToHash.replace(TARGET_URI_PLACEHOLDER, URLEncoder.encode(clientportaalUrlAutoLogin, StandardCharsets.UTF_8.toString())) + "&hash="
 						+ base64HashedUrlPart;
@@ -294,8 +292,8 @@ public class TestenBasePage extends MedewerkerBasePage
 				byte[] hmacSha256;
 				try
 				{
-					Mac mac = Mac.getInstance("HmacSHA256");
-					SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "HmacSHA256");
+					var mac = Mac.getInstance("HmacSHA256");
+					var secretKeySpec = new SecretKeySpec(secretKey, "HmacSHA256");
 					mac.init(secretKeySpec);
 					hmacSha256 = mac.doFinal(message);
 				}
@@ -315,13 +313,13 @@ public class TestenBasePage extends MedewerkerBasePage
 		{
 			clientModel = ModelUtil.listModel(clienten);
 			refreshTimelineModel(model, clienten);
-			WebMarkupContainer fCcontainer = getFormComponentsContainer();
+			var fCcontainer = getFormComponentsContainer();
 			formComponents.replaceWith(fCcontainer);
 			formComponents = fCcontainer;
 			target.add(formComponents);
 		}
 
-		WebMarkupContainer geContainer = getGebeurtenissenContainer();
+		var geContainer = getGebeurtenissenContainer();
 		gebeurtenissenContainer.replaceWith(geContainer);
 		gebeurtenissenContainer = geContainer;
 		target.add(gebeurtenissenContainer);

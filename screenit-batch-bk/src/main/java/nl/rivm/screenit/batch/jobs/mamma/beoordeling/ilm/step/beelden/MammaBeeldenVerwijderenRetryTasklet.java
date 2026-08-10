@@ -31,7 +31,6 @@ import nl.rivm.screenit.batch.jobs.mamma.beoordeling.ilm.MammaIlmJobListener;
 import nl.rivm.screenit.batch.model.dto.MammaIlmRetryDto;
 import nl.rivm.screenit.batch.service.MammaIlmService;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
-import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaIlmBeeldenStatusRapportage;
 import nl.rivm.screenit.model.verwerkingverslag.mamma.MammaIlmBeeldenStatusRapportageEntry;
 import nl.rivm.screenit.service.BerichtToBatchService;
 
@@ -62,7 +61,7 @@ public class MammaBeeldenVerwijderenRetryTasklet implements Tasklet
 	private void retryBeelden(StepContribution stepContribution)
 	{
 		bepaalFailedRetries(stepContribution);
-		List<MammaIlmRetryDto> dtoList = getDtoList(stepContribution);
+		var dtoList = getDtoList(stepContribution);
 		if (!CollectionUtils.isEmpty(dtoList))
 		{
 			dtoList.stream().filter(dto -> !dto.isFailedRetry()).forEach(retryEntry ->
@@ -85,22 +84,22 @@ public class MammaBeeldenVerwijderenRetryTasklet implements Tasklet
 
 	private List<MammaIlmRetryDto> getDtoList(StepContribution stepContribution)
 	{
-		List<MammaIlmRetryDto> dtoList = (List<MammaIlmRetryDto>) stepContribution.getStepExecution().getJobExecution().getExecutionContext()
+		var dtoList = (List<MammaIlmRetryDto>) stepContribution.getStepExecution().getJobExecution().getExecutionContext()
 			.get(MammaIlmJobListener.KEY_BEELDEN_STATUS_ENTRIES);
 		return dtoList;
 	}
 
 	private void bepaalFailedRetries(StepContribution stepContribution)
 	{
-		List<MammaIlmRetryDto> dtoList = getDtoList(stepContribution);
+		var dtoList = getDtoList(stepContribution);
 
 		if (dtoList != null)
 		{
-			MammaIlmBeeldenStatusRapportage meestRecenteStatusRapportage = ilmService.getMeestRecenteStatusRapportage();
+			var meestRecenteStatusRapportage = ilmService.getMeestRecenteStatusRapportage();
 
 			if (meestRecenteStatusRapportage != null)
 			{
-				List<Long> retriedAccessionNumbers = meestRecenteStatusRapportage.getEntries().stream()
+				var retriedAccessionNumbers = meestRecenteStatusRapportage.getEntries().stream()
 					.map(MammaIlmBeeldenStatusRapportageEntry::getAccessionNumber)
 					.collect(Collectors.toList());
 

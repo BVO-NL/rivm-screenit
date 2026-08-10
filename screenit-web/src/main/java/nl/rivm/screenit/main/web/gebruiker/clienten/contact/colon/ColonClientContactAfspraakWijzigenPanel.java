@@ -59,7 +59,7 @@ public class ColonClientContactAfspraakWijzigenPanel extends AbstractClientConta
 			@Override
 			public void afspraakWijzigen(AjaxRequestTarget target, ColonIntakeAfspraak intakeAfspraak, boolean locatieWijzigen)
 			{
-				ColonClientAfspraakVerplaatsenPanel afspraakVerplaatsen = new ColonClientAfspraakVerplaatsenPanel(container.getId(), ModelUtil.cModel(intakeAfspraak),
+				var afspraakVerplaatsen = new ColonClientAfspraakVerplaatsenPanel(container.getId(), ModelUtil.cModel(intakeAfspraak),
 					locatieWijzigen);
 				afspraakVerplaatsen.setOutputMarkupId(true);
 				container.replaceWith(afspraakVerplaatsen);
@@ -70,7 +70,7 @@ public class ColonClientContactAfspraakWijzigenPanel extends AbstractClientConta
 			@Override
 			public void afspraakAfzeggen(AjaxRequestTarget target, ColonIntakeAfspraak intakeAfspraak)
 			{
-				ColonClientAfspraakAfzeggenPanel afspraakAfzeggen = new ColonClientAfspraakAfzeggenPanel(container.getId(), ModelUtil.cModel(intakeAfspraak));
+				var afspraakAfzeggen = new ColonClientAfspraakAfzeggenPanel(container.getId(), ModelUtil.cModel(intakeAfspraak));
 				afspraakAfzeggen.setOutputMarkupId(true);
 				container.replaceWith(afspraakAfzeggen);
 				container = afspraakAfzeggen;
@@ -84,10 +84,10 @@ public class ColonClientContactAfspraakWijzigenPanel extends AbstractClientConta
 		var afspraak = (ColonIntakeAfspraak) extraPanelParams.stream().filter(ColonIntakeAfspraak.class::isInstance).findFirst().orElse(null);
 		if (afspraak != null)
 		{
-			ColonAfspraakStatus status = (ColonAfspraakStatus) extraPanelParams.stream().filter(ColonAfspraakStatus.class::isInstance).findFirst().orElse(null);
+			var status = (ColonAfspraakStatus) extraPanelParams.stream().filter(ColonAfspraakStatus.class::isInstance).findFirst().orElse(null);
 			if (ColonAfspraakStatus.VERPLAATST.equals(status))
 			{
-				Boolean locatieWijzigen = (Boolean) extraPanelParams.stream().filter(Boolean.class::isInstance).findFirst().orElse(null);
+				var locatieWijzigen = (Boolean) extraPanelParams.stream().filter(Boolean.class::isInstance).findFirst().orElse(null);
 				container = new ColonClientAfspraakVerplaatsenPanel("container", ModelUtil.cModel(afspraak), locatieWijzigen);
 			}
 			else

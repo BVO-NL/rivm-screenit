@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld.brievenafdrukken;
 import java.text.SimpleDateFormat;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.MergedBrieven;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -67,7 +66,7 @@ public abstract class AfdrukkenControlePanel<MB extends MergedBrieven<?>> extend
 	public AfdrukkenControlePanel(String id, IModel<MB> model)
 	{
 		super(id, model);
-		Form<MB> form = new Form<>("form", model);
+		var form = new Form<MB>("form", model);
 		add(form);
 
 		aantalBrievenContainer = getTextFieldContainer(form, model.getObject());
@@ -76,7 +75,7 @@ public abstract class AfdrukkenControlePanel<MB extends MergedBrieven<?>> extend
 		controleLink = getControleLink(form);
 		add(controleLink);
 
-		IndicatingAjaxLink<Void> sluiten = new IndicatingAjaxLink<Void>("close")
+		var sluiten = new IndicatingAjaxLink<Void>("close")
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -94,7 +93,7 @@ public abstract class AfdrukkenControlePanel<MB extends MergedBrieven<?>> extend
 
 	private IndicatingAjaxSubmitLink getControleLink(Form<?> form)
 	{
-		IndicatingAjaxSubmitLink link = new IndicatingAjaxSubmitLink("controle", form)
+		var link = new IndicatingAjaxSubmitLink("controle", form)
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -102,8 +101,8 @@ public abstract class AfdrukkenControlePanel<MB extends MergedBrieven<?>> extend
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MB mBrieven = (MB) form.getModelObject();
-				String meldingInvoering = "ingevoerde aantal: " + aantalBrieven.getObject() + " correcte aantal: " + mBrieven.getAantalBrieven() + ".";
+				var mBrieven = (MB) form.getModelObject();
+				var meldingInvoering = "ingevoerde aantal: " + aantalBrieven.getObject() + " correcte aantal: " + mBrieven.getAantalBrieven() + ".";
 				if (isAantalGelijk(mBrieven))
 				{
 
@@ -111,10 +110,10 @@ public abstract class AfdrukkenControlePanel<MB extends MergedBrieven<?>> extend
 					mBrieven.setControle(true);
 					hibernateService.saveOrUpdate(mBrieven);
 
-					String melding = getMelding(mBrieven, "Correcte aantal ingevoerd,") + meldingInvoering;
+					var melding = getMelding(mBrieven, "Correcte aantal ingevoerd,") + meldingInvoering;
 					logging(Level.INFO, melding);
 
-					WebMarkupContainer container = getTextFieldContainer(form, mBrieven);
+					var container = getTextFieldContainer(form, mBrieven);
 					aantalBrievenContainer.replaceWith(container);
 					aantalBrievenContainer = container;
 					target.add(aantalBrievenContainer);
@@ -127,7 +126,7 @@ public abstract class AfdrukkenControlePanel<MB extends MergedBrieven<?>> extend
 				else
 				{
 					ScreenitSession.get().error("Het ingevoegde aantal komt niet overeen met het aantal brieven.");
-					String melding = getMelding(mBrieven, "Incorrecte aantal ingevoerd,") + meldingInvoering;
+					var melding = getMelding(mBrieven, "Incorrecte aantal ingevoerd,") + meldingInvoering;
 					logging(Level.ERROR, melding);
 				}
 			}
@@ -139,7 +138,7 @@ public abstract class AfdrukkenControlePanel<MB extends MergedBrieven<?>> extend
 
 	private WebMarkupContainer getTextFieldContainer(Form<?> form, MB mBrieven)
 	{
-		WebMarkupContainer container = new WebMarkupContainer("aantalBrievenContainer");
+		var container = new WebMarkupContainer("aantalBrievenContainer");
 
 		aantalBrieven = Model.of();
 		if (mBrieven.getControle())
@@ -147,7 +146,7 @@ public abstract class AfdrukkenControlePanel<MB extends MergedBrieven<?>> extend
 			aantalBrieven = Model.of(mBrieven.getAantalBrieven());
 		}
 
-		TextField<Integer> aantalBrievenInput = new TextField<>("aantalBrieven", aantalBrieven);
+		var aantalBrievenInput = new TextField<Integer>("aantalBrieven", aantalBrieven);
 		aantalBrievenInput.setType(Integer.class);
 		aantalBrievenInput.setEnabled(!mBrieven.getControle());
 		container.add(aantalBrievenInput);
@@ -159,9 +158,9 @@ public abstract class AfdrukkenControlePanel<MB extends MergedBrieven<?>> extend
 
 	private void logging(Level level, String melding)
 	{
-		Account account = ScreenitSession.get().getIngelogdAccount();
+		var account = ScreenitSession.get().getIngelogdAccount();
 
-		LogEvent event = new LogEvent(melding);
+		var event = new LogEvent(melding);
 		event.setLevel(level);
 
 		logService.logGebeurtenis(LogGebeurtenis.BRIEVEN_CONTROLE, event, account, null);
@@ -169,14 +168,14 @@ public abstract class AfdrukkenControlePanel<MB extends MergedBrieven<?>> extend
 
 	private boolean isAantalGelijk(MB mBrieven)
 	{
-		Integer aantal = Integer.valueOf(mBrieven.getAantalBrieven());
-		Integer ingevoerdeAantal = Integer.valueOf(aantalBrieven.getObject());
+		var aantal = Integer.valueOf(mBrieven.getAantalBrieven());
+		var ingevoerdeAantal = Integer.valueOf(aantalBrieven.getObject());
 		return aantal.equals(ingevoerdeAantal);
 	}
 
 	private String getMelding(MB mBrieven, String melding)
 	{
-		SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");
+		var format = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");
 		if (mBrieven.getMergedBrieven() != null)
 		{
 			if (mBrieven.getMergedBrieven().getNaam() != null)

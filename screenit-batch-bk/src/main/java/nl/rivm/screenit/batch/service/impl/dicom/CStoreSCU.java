@@ -27,17 +27,13 @@ import java.io.StringReader;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import nl.rivm.screenit.model.mamma.dicom.CStoreConfig;
 import nl.rivm.screenit.model.mamma.dicom.SCPConfig;
 
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.ElementDictionary;
-import org.dcm4che3.data.Sequence;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.data.UID;
 import org.dcm4che3.io.DicomInputStream;
@@ -78,10 +74,10 @@ public class CStoreSCU extends Device
 
 	public boolean store(File file, String sopClasses, Long accessionNumber, String bsn)
 	{
-		ApplicationEntity ae = new ApplicationEntity(dicomCStoreConfig.getScuConfig().getAeTitle());
-		Connection conn = new Connection();
-		Connection remote = new Connection();
-		AAssociateRQ rq = new AAssociateRQ();
+		var ae = new ApplicationEntity(dicomCStoreConfig.getScuConfig().getAeTitle());
+		var conn = new Connection();
+		var remote = new Connection();
+		var rq = new AAssociateRQ();
 		Association as = null;
 
 		addConnection(conn);
@@ -93,15 +89,15 @@ public class CStoreSCU extends Device
 
 		try
 		{
-			Properties p = new Properties();
+			var p = new Properties();
 			p.load(new StringReader(sopClasses));
 			relatedSOPClasses.init(p);
 
-			try (DicomInputStream dicomInputStream = new DicomInputStream(file))
+			try (var dicomInputStream = new DicomInputStream(file))
 			{
 				dicomInputStream.setIncludeBulkData(DicomInputStream.IncludeBulkData.NO);
-				Attributes attributes = dicomInputStream.readFileMetaInformation();
-				Attributes ds = dicomInputStream.readDatasetUntilPixelData();
+				var attributes = dicomInputStream.readFileMetaInformation();
+				var ds = dicomInputStream.readDatasetUntilPixelData();
 				if (attributes == null || !attributes.containsValue(Tag.TransferSyntaxUID)
 					|| !attributes.containsValue(Tag.MediaStorageSOPClassUID)
 					|| !attributes.containsValue(Tag.MediaStorageSOPInstanceUID))
@@ -109,9 +105,9 @@ public class CStoreSCU extends Device
 					attributes = ds.createFileMetaInformation(dicomInputStream.getTransferSyntax());
 				}
 
-				String cuid = attributes.getString(Tag.MediaStorageSOPClassUID);
-				String iuid = attributes.getString(Tag.MediaStorageSOPInstanceUID);
-				String ts = attributes.getString(Tag.TransferSyntaxUID);
+				var cuid = attributes.getString(Tag.MediaStorageSOPClassUID);
+				var iuid = attributes.getString(Tag.MediaStorageSOPInstanceUID);
+				var ts = attributes.getString(Tag.TransferSyntaxUID);
 
 				if (!rq.containsPresentationContextFor(cuid))
 				{
@@ -134,8 +130,8 @@ public class CStoreSCU extends Device
 				rq.addPresentationContext(new PresentationContext(rq
 					.getNumberOfPresentationContexts() * 2 + 1, cuid, ts));
 
-				ExecutorService executorService = Executors.newSingleThreadExecutor();
-				ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+				var executorService = Executors.newSingleThreadExecutor();
+				var scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 				setExecutor(executorService);
 				setScheduledExecutor(scheduledExecutorService);
 
@@ -221,30 +217,30 @@ public class CStoreSCU extends Device
 	private void send(final File f, String cuid, String iuid,
 		String filets, Association as, Long accessionNumber, String bsn) throws IOException, InterruptedException
 	{
-		String ts = selectTransferSyntax(cuid, filets, as);
+		var ts = selectTransferSyntax(cuid, filets, as);
 
-		DicomInputStream in = new DicomInputStream(f);
+		var in = new DicomInputStream(f);
 		try
 		{
 			in.setIncludeBulkData(DicomInputStream.IncludeBulkData.URI);
-			Attributes data = in.readDataset();
+			var data = in.readDataset();
 
 			data.setString(Tag.AccessionNumber, ElementDictionary.vrOf(Tag.AccessionNumber, data.getPrivateCreator(Tag.AccessionNumber)), String.valueOf(accessionNumber));
 			data.setString(Tag.StudyID, ElementDictionary.vrOf(Tag.StudyID, data.getPrivateCreator(Tag.StudyID)), String.valueOf(accessionNumber));
 			data.setString(Tag.CodeValue, ElementDictionary.vrOf(Tag.CodeValue, data.getPrivateCreator(Tag.CodeValue)), "ZHOND");
 			data.setString(Tag.OperatorsName, ElementDictionary.vrOf(Tag.OperatorsName, data.getPrivateCreator(Tag.OperatorsName)));
 
-			String oldPatientId = data.getString(Tag.PatientID, null);
-			String oldIssuerOfPatientId = data.getString(Tag.IssuerOfPatientID, null);
+			var oldPatientId = data.getString(Tag.PatientID, null);
+			var oldIssuerOfPatientId = data.getString(Tag.IssuerOfPatientID, null);
 			data.setString(Tag.PatientID, ElementDictionary.vrOf(Tag.PatientID, data.getPrivateCreator(Tag.PatientID)), bsn);
 			data.setString(Tag.IssuerOfPatientID, ElementDictionary.vrOf(Tag.IssuerOfPatientID, data.getPrivateCreator(Tag.IssuerOfPatientID)), "2.16.840.1.113883.2.4.6.3");
 
-			Attributes sq = new Attributes();
+			var sq = new Attributes();
 			sq.setString(Tag.PatientID, ElementDictionary.vrOf(Tag.PatientID, data.getPrivateCreator(Tag.PatientID)), oldPatientId);
-			Attributes sq2 = new Attributes();
+			var sq2 = new Attributes();
 			sq2.setString(Tag.IssuerOfPatientID, ElementDictionary.vrOf(Tag.IssuerOfPatientID, data.getPrivateCreator(Tag.IssuerOfPatientID)), oldIssuerOfPatientId);
 
-			Sequence sequence = data.newSequence(Tag.OtherPatientIDsSequence, 2);
+			var sequence = data.newSequence(Tag.OtherPatientIDsSequence, 2);
 			sequence.add(sq);
 			sequence.add(sq2);
 
@@ -272,7 +268,7 @@ public class CStoreSCU extends Device
 
 	private String selectTransferSyntax(String cuid, String filets, Association as)
 	{
-		Set<String> tss = as.getTransferSyntaxesFor(cuid);
+		var tss = as.getTransferSyntaxesFor(cuid);
 		if (tss.contains(filets))
 		{
 			return filets;
@@ -290,7 +286,7 @@ public class CStoreSCU extends Device
 	{
 		this.response = cmd;
 
-		int status = cmd.getInt(Tag.Status, -1);
+		var status = cmd.getInt(Tag.Status, -1);
 		switch (status)
 		{
 		case Status.Success:
@@ -336,7 +332,7 @@ public class CStoreSCU extends Device
 
 		public void init(Properties props)
 		{
-			for (String cuid : props.stringPropertyNames())
+			for (var cuid : props.stringPropertyNames())
 			{
 				commonExtNegs.put(cuid, new CommonExtendedNegotiation(cuid,
 					UID.Storage,
@@ -347,7 +343,7 @@ public class CStoreSCU extends Device
 
 		private CommonExtendedNegotiation getCommonExtendedNegotiation(String cuid)
 		{
-			CommonExtendedNegotiation commonExtNeg = commonExtNegs.get(cuid);
+			var commonExtNeg = commonExtNegs.get(cuid);
 			return commonExtNeg != null
 				? commonExtNeg
 				: new CommonExtendedNegotiation(cuid, UID.Storage);

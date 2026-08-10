@@ -32,16 +32,12 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.service.HibernateService;
-import nl.rivm.screenit.config.hibernate.BaseHibernateConfig;
-import nl.rivm.screenit.config.hibernate.HibernateOrmMappingResourceProvider;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 
@@ -67,9 +63,6 @@ public class HibernateServiceImpl implements HibernateService
 
 	@PersistenceContext
 	private EntityManager entityManager;
-
-	@Setter
-	private HibernateOrmMappingResourceProvider ormMappingResourceProvider;
 
 	@Override
 	@Transactional
@@ -321,7 +314,7 @@ public class HibernateServiceImpl implements HibernateService
 		var predicates = new ArrayList<Predicate>();
 		parameters.forEach((key, value) ->
 		{
-			final Path<Object> field = r.get(key);
+			final var field = r.get(key);
 			predicates.add(cb.equal(field, value));
 		});
 		q.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
@@ -336,7 +329,7 @@ public class HibernateServiceImpl implements HibernateService
 			return Collections.emptyList();
 		}
 
-		final CriteriaQuery<T> criteria = getCriteriaQueryForParameters(clazz, parameters);
+		final var criteria = getCriteriaQueryForParameters(clazz, parameters);
 		return getEntityManager().createQuery(criteria).getResultList();
 	}
 
@@ -349,7 +342,7 @@ public class HibernateServiceImpl implements HibernateService
 			return null;
 		}
 
-		final CriteriaQuery<T> criteria = getCriteriaQueryForParameters(clazz, parameters);
+		final var criteria = getCriteriaQueryForParameters(clazz, parameters);
 		return ((org.hibernate.query.Query<T>) getEntityManager().createQuery(criteria)).uniqueResult();
 	}
 
@@ -366,10 +359,6 @@ public class HibernateServiceImpl implements HibernateService
 		var sources = new MetadataSources(registry);
 		sfi.getJpaMetamodel().getEntities().forEach(entity ->
 			sources.addAnnotatedClass(entity.getJavaType()));
-		for (var ormMappingResource : BaseHibernateConfig.maakOrmMappingResources(ormMappingResourceProvider))
-		{
-			sources.addResource(ormMappingResource);
-		}
 
 		var metadata = sources.buildMetadata();
 

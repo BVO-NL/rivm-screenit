@@ -21,13 +21,11 @@ package nl.rivm.screenit.main.web.component.bezwaar.tekst;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.main.web.component.SimpleStringResourceModel;
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
 import nl.rivm.screenit.model.algemeen.BezwaarViewWrapper;
-import nl.rivm.screenit.service.BezwaarService;
+import nl.rivm.screenit.service.BaseBezwaarService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.markup.html.basic.Label;
@@ -41,7 +39,7 @@ public class BezwaarTekstPanel extends GenericPanel<BezwaarMoment>
 {
 
 	@SpringBean
-	private BezwaarService bezwaarService;
+	private BaseBezwaarService bezwaarService;
 
 	public BezwaarTekstPanel(String id, IModel<BezwaarMoment> model)
 	{
@@ -51,24 +49,24 @@ public class BezwaarTekstPanel extends GenericPanel<BezwaarMoment>
 	public BezwaarTekstPanel(String id, IModel<BezwaarMoment> model, boolean verwijderDossierZichtBaar)
 	{
 		super(id, ModelUtil.sModel(model.getObject()));
-		BezwaarMoment moment = model.getObject();
+		var moment = model.getObject();
 
-		List<BezwaarGroupViewWrapper> wrappers = bezwaarService.getBezwaarGroupViewWrappers(moment, verwijderDossierZichtBaar);
+		var wrappers = bezwaarService.getBezwaarGroupViewWrappers(moment, verwijderDossierZichtBaar);
 
-		ListView<BezwaarGroupViewWrapper> listView = new ListView<BezwaarGroupViewWrapper>("listView", wrappers)
+		var listView = new ListView<BezwaarGroupViewWrapper>("listView", wrappers)
 		{
 			@Override
 			protected void populateItem(ListItem<BezwaarGroupViewWrapper> item)
 			{
-				final BezwaarGroupViewWrapper entry = item.getModelObject();
+				final var entry = item.getModelObject();
 				item.add(new Label("bvo", getString("Bevolkingsonderzoek." + entry.getKey())));
-				ListView<BezwaarViewWrapper> bezwaren = new ListView<BezwaarViewWrapper>("bezwaren", entry.getBezwaren())
+				var bezwaren = new ListView<BezwaarViewWrapper>("bezwaren", entry.getBezwaren())
 				{
 
 					@Override
 					protected void populateItem(ListItem<BezwaarViewWrapper> item)
 					{
-						BezwaarViewWrapper wrapper = item.getModelObject();
+						var wrapper = item.getModelObject();
 						item.add(new Label("bezwaar", new SimpleStringResourceModel(wrapper.getResourceKey())));
 					}
 				};

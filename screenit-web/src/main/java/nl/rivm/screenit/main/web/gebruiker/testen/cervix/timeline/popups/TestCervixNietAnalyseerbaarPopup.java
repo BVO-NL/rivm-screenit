@@ -47,7 +47,7 @@ public class TestCervixNietAnalyseerbaarPopup extends TestCervixUitnodigingenPop
 	@Override
 	protected void opslaan()
 	{
-		for (CervixUitnodiging uitnodiging : getCurrentUitnodigingen())
+		for (var uitnodiging : getCurrentUitnodigingen())
 		{
 			baseTestTimelineService.nietAnalyseerbaar(uitnodiging);
 		}

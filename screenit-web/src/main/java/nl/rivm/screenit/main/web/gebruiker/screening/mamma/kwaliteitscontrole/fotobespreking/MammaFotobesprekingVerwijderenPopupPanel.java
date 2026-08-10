@@ -55,7 +55,7 @@ public abstract class MammaFotobesprekingVerwijderenPopupPanel extends GenericPa
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaFotobespreking fotobespreking = MammaFotobesprekingVerwijderenPopupPanel.this.getModelObject();
+				var fotobespreking = MammaFotobesprekingVerwijderenPopupPanel.this.getModelObject();
 				try
 				{
 					kwaliteitscontroleService.deleteFotobespreking(fotobespreking);

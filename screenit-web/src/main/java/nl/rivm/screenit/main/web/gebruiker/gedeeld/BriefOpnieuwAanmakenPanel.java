@@ -59,22 +59,22 @@ public class BriefOpnieuwAanmakenPanel extends GenericPanel<ClientBrief<?, ?, ?>
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		Date datum = BriefUtil.geefDatumVoorGebeurtenisoverzicht(getModelObject());
+		var datum = BriefUtil.geefDatumVoorGebeurtenisoverzicht(getModelObject());
 		maakBriefOpnieuwAanmakenContent(getModelObject(), datum);
 	}
 
 	private void maakBriefOpnieuwAanmakenContent(ClientBrief<?, ?, ?> brief, Date datum)
 	{
-		WebMarkupContainer opnieuwContainer = new WebMarkupContainer("opnieuwContainer");
+		var opnieuwContainer = new WebMarkupContainer("opnieuwContainer");
 		opnieuwContainer.setOutputMarkupId(true);
 		opnieuwContainer.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_OPNIEUW_KLAARZETTEN, Actie.AANPASSEN));
-		WebMarkupContainer opnieuwMogelijkContainer = new WebMarkupContainer("opnieuwMogelijk");
+		var opnieuwMogelijkContainer = new WebMarkupContainer("opnieuwMogelijk");
 
 		GebeurtenisUtil.voegBriefTypeOfNaamBriefToe(opnieuwMogelijkContainer, brief);
 
-		boolean magOpnieuwAanvragen = briefHerdrukkenService.magHerdrukken(brief);
+		var magOpnieuwAanvragen = briefHerdrukkenService.magHerdrukken(brief);
 
-		WebMarkupContainer nietOpnieuw = new WebMarkupContainer("nietOpnieuw");
+		var nietOpnieuw = new WebMarkupContainer("nietOpnieuw");
 		nietOpnieuw.setOutputMarkupId(true);
 
 		nietOpnieuw.add(new Label("tekstNietOpnieuw", Model.of(geefBriefNietOpnieuwAanmakenTekst(brief))));

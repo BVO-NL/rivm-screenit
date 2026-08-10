@@ -45,9 +45,9 @@ public class MedewerkersBestandVerwerkingContext extends BaseBestandVerwerkingCo
 		var headers = getHuidigeRegel();
 		if (CollectionUtils.isNotEmpty(headers))
 		{
-			for (String header : headers)
+			for (var header : headers)
 			{
-				String geformatteerdeHeader = header.toLowerCase().trim();
+				var geformatteerdeHeader = header.toLowerCase().trim();
 				if (MEDEWERKERCODE.equals(geformatteerdeHeader))
 				{
 					medewerkercodeColumn = headers.indexOf(header);
@@ -63,7 +63,7 @@ public class MedewerkersBestandVerwerkingContext extends BaseBestandVerwerkingCo
 
 	public String getMedewerkercodeVanHuidigeRegel() throws IllegalStateException
 	{
-		String value = huidigeLine[medewerkercodeColumn];
+		var value = huidigeLine[medewerkercodeColumn];
 		if (value != null)
 		{
 			return value.trim();

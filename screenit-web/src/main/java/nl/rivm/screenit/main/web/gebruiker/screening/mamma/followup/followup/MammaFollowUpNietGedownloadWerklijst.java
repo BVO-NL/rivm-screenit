@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.rivm.screenit.main.model.mamma.beoordeling.MammaCeWerklijstZoekObject;
 import nl.rivm.screenit.main.service.mamma.MammaFollowUpService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.table.NotClickableAbstractColumn;
@@ -46,7 +45,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek_;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaFollowUpConclusieStatus;
@@ -94,15 +92,15 @@ public class MammaFollowUpNietGedownloadWerklijst extends AbstractMammaCeWerklij
 	{
 		super();
 		dataProvider = new MammaCeFollowUpDataProvider(MammaOnderzoek_.CREATIE_DATUM, zoekObjectModel);
-		List<CentraleEenheid> alleMogelijkeCentraleEenheden = getAlleMogelijkeCentraleEenheden();
-		MammaCeWerklijstZoekObject zoekObject = zoekObjectModel.getObject();
+		var alleMogelijkeCentraleEenheden = getAlleMogelijkeCentraleEenheden();
+		var zoekObject = zoekObjectModel.getObject();
 		if (zoekObject.getCentraleEenheden() == null)
 		{
 			zoekObject.setCentraleEenheden(alleMogelijkeCentraleEenheden);
 		}
 		createResultTable();
 
-		MammaCeZoekPanel zoekPanel = new MammaCeZoekPanel("zoekContainer", zoekObjectModel, this, resultatenContainer)
+		var zoekPanel = new MammaCeZoekPanel("zoekContainer", zoekObjectModel, this, resultatenContainer)
 		{
 			@Override
 			protected List<MammaBeoordelingStatus> getRemoveFromDefaultFilter()
@@ -152,7 +150,7 @@ public class MammaFollowUpNietGedownloadWerklijst extends AbstractMammaCeWerklij
 					protected void onOpslaan(AjaxRequestTarget ajaxRequestTarget)
 					{
 						super.onOpslaan(ajaxRequestTarget);
-						MammaScreeningRonde screeningRonde = beoordelingModel.getObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde();
+						var screeningRonde = beoordelingModel.getObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde();
 						screeningRonde.setLaatstGebeldFollowUpNietGedownload(dateSupplier.getDate());
 						hibernateService.saveOrUpdate(screeningRonde);
 						ajaxRequestTarget.add(resultatenContainer);
@@ -173,8 +171,8 @@ public class MammaFollowUpNietGedownloadWerklijst extends AbstractMammaCeWerklij
 					{
 						super.onOpslaan(ajaxRequestTarget);
 
-						MammaScreeningRonde screeningRonde = beoordelingModel.getObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde();
-						MammaFollowUpConclusieStatus conclusieStatus = MammaFollowUpConclusieStatus.NIET_TE_VERWACHTEN;
+						var screeningRonde = beoordelingModel.getObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde();
+						var conclusieStatus = MammaFollowUpConclusieStatus.NIET_TE_VERWACHTEN;
 						followUpService.saveFollowUpConclusieStatus(screeningRonde, conclusieStatus, ScreenitSession.get().getIngelogdAccount());
 						ajaxRequestTarget.add(resultatenContainer);
 					}

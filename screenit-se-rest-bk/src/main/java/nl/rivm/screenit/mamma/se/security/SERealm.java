@@ -25,11 +25,9 @@ import jakarta.annotation.PostConstruct;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
-import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.Permissie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
@@ -103,14 +101,14 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals)
 	{
-		SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-		ScreenitPrincipal screenitPrincipal = (ScreenitPrincipal) principals.fromRealm(getName()).iterator().next();
+		var info = new SimpleAuthorizationInfo();
+		var screenitPrincipal = (ScreenitPrincipal) principals.fromRealm(getName()).iterator().next();
 
 		if (OrganisatieMedewerker.class.isAssignableFrom(screenitPrincipal.getAccountClass()))
 		{
-			OrganisatieMedewerker organisatieMedewerker = hibernateService.load(OrganisatieMedewerker.class, 
+			var organisatieMedewerker = hibernateService.load(OrganisatieMedewerker.class, 
 				screenitPrincipal.getAccountId());
-			final Medewerker medewerker = organisatieMedewerker.getMedewerker();
+			final var medewerker = organisatieMedewerker.getMedewerker();
 			if (Boolean.TRUE.equals(organisatieMedewerker.getActief()) && MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDateMidnight()))
 			{
 				if (LOG.isTraceEnabled())
@@ -118,15 +116,15 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 					LOG.trace("AuthorizationInfo voor " + medewerker.getGebruikersnaam());
 				}
 
-				for (OrganisatieMedewerkerRol rol : organisatieMedewerker.getRollen())
+				for (var rol : organisatieMedewerker.getRollen())
 				{
 					if (rol.isRolActief())
 					{
-						for (Permissie permissie : rol.getRol().getPermissies())
+						for (var permissie : rol.getRol().getPermissies())
 						{
 							if (!Boolean.FALSE.equals(permissie.getActief()))
 							{
-								Recht recht = permissie.getRecht();
+								var recht = permissie.getRecht();
 								if (CollectionUtils.isEmpty(recht.getOrganisatieTypes()) || recht.getOrganisatieTypes()
 									.contains(organisatieMedewerker.getOrganisatie().getOrganisatieType()))
 								{
@@ -151,7 +149,7 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 			{
 				LOG.trace("AuthorizationInfo voor client");
 			}
-			Permissie permissie = new Permissie();
+			var permissie = new Permissie();
 			permissie.setActie(Actie.INZIEN);
 			permissie.setRecht(Recht.CLIENT_DASHBOARD);
 			permissie.setToegangLevel(ToegangLevel.EIGEN);
@@ -160,7 +158,7 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 			{
 				LOG.trace("* " + permissie.getRecht().name());
 			}
-			Permissie permissie2 = new Permissie();
+			var permissie2 = new Permissie();
 			permissie2.setActie(Actie.AANPASSEN);
 			permissie2.setRecht(Recht.CLIENT_GEGEVENS);
 			permissie2.setToegangLevel(ToegangLevel.EIGEN);
@@ -179,7 +177,7 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 	{
 		if (authcToken instanceof UsernamePasswordToken token)
 		{
-			Medewerker medewerker = medewerkerService.getMedewerkerByGebruikersnaam(token.getUsername()).orElse(null);
+			var medewerker = medewerkerService.getMedewerkerByGebruikersnaam(token.getUsername()).orElse(null);
 			if (medewerker == null)
 			{
 				return null;
@@ -206,7 +204,7 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 	@Override
 	public void clearCachedAuthorizationInfo(OrganisatieMedewerker organisatieMedewerker)
 	{
-		PrincipalCollection principalCollection = createPrincipalCollection(organisatieMedewerker, false);
+		var principalCollection = createPrincipalCollection(organisatieMedewerker, false);
 		super.clearCachedAuthorizationInfo(principalCollection);
 	}
 
@@ -218,7 +216,7 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 	@Override
 	protected Object getAuthorizationCacheKey(PrincipalCollection principals)
 	{
-		ScreenitPrincipal principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
+		var principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
 		return principal.getAccountId() + "_" + principal.getAccountClass();
 	}
 
@@ -227,11 +225,11 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 	{
 		if (LOG.isTraceEnabled())
 		{
-			AuthorizationInfo info = getAuthorizationInfo(principals);
+			var info = getAuthorizationInfo(principals);
 			LOG.trace("isPermitted start " + permission.toString());
 			if (info.getObjectPermissions() != null)
 			{
-				for (Permission perm : info.getObjectPermissions())
+				for (var perm : info.getObjectPermissions())
 				{
 					if (perm instanceof Permissie permissie)
 					{
@@ -245,7 +243,7 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 			}
 		}
 
-		boolean permissionResult = super.isPermitted(principals, permission);
+		var permissionResult = super.isPermitted(principals, permission);
 		if (LOG.isTraceEnabled())
 		{
 			LOG.trace("permissionResult1 " + permissionResult);
@@ -254,9 +252,9 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 		if (permissionResult && permission instanceof Constraint constraint && ((Constraint) permission).isCheckScope())
 		{
 
-			ScreenitPrincipal principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
+			var principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
 
-			Account account = hibernateService.load(principal.getAccountClass(), principal.getAccountId());
+			var account = hibernateService.load(principal.getAccountClass(), principal.getAccountId());
 			permissionResult = scopeService.isObjectInScope(constraint, account, principals);
 
 		}
@@ -267,18 +265,18 @@ public class SERealm extends AuthorizingRealm implements IScreenitRealm
 
 		if (permissionResult && permission instanceof Constraint constraint)
 		{
-			ScreenitPrincipal principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
-			Account account = hibernateService.load(principal.getAccountClass(), principal.getAccountId());
+			var principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
+			var account = hibernateService.load(principal.getAccountClass(), principal.getAccountId());
 			if (account instanceof OrganisatieMedewerker instgeb)
 			{
 				permissionResult = false;
-				for (OrganisatieMedewerkerRol rol : instgeb.getRollen())
+				for (var rol : instgeb.getRollen())
 				{
 					if (rol.getActief())
 					{
-						for (Permissie permissie : rol.getRol().getPermissies())
+						for (var permissie : rol.getRol().getPermissies())
 						{
-							Recht recht = permissie.getRecht();
+							var recht = permissie.getRecht();
 							if (recht.equals(constraint.getRecht()) && !Boolean.FALSE.equals(permissie.getActief())
 								&& (CollectionUtils.isEmpty(recht.getOrganisatieTypes()) || recht.getOrganisatieTypes().contains(instgeb.getOrganisatie().getOrganisatieType())))
 							{

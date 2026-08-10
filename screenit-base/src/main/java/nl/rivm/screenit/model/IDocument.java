@@ -23,7 +23,6 @@ package nl.rivm.screenit.model;
 
 import java.util.Date;
 
-import nl.rivm.screenit.model.UploadDocument;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 
 public interface IDocument extends HibernateObject

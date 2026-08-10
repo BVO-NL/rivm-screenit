@@ -70,7 +70,7 @@ public class AfmeldenServiceImpl implements AfmeldenService
 		List<String> afmeldRedenenTijdelijk = new ArrayList<>();
 		List<String> afmeldRedenenDefinitief = new ArrayList<>();
 		List<Integer> mogelijkeAfmeldJaren = new ArrayList<>();
-		boolean heeftOpenIntakeAfspraak = false;
+		var heeftOpenIntakeAfspraak = false;
 
 		switch (bvo)
 		{
@@ -80,7 +80,7 @@ public class AfmeldenServiceImpl implements AfmeldenService
 			break;
 		case COLON:
 			afmeldOpties = clientContactService.getAvailableAfmeldoptiesColon(client, true);
-			List<ColonAfmeldingReden> gefilterdeColonAfmeldingRedenen = Arrays.stream(ColonAfmeldingReden.values())
+			var gefilterdeColonAfmeldingRedenen = Arrays.stream(ColonAfmeldingReden.values())
 				.filter(afmeldingReden -> !afmeldingReden.equals(ColonAfmeldingReden.ONTERECHT)
 					&& !afmeldingReden.equals(ColonAfmeldingReden.PROEF_BEVOLKINGSONDERZOEK))
 				.collect(Collectors.toList());
@@ -113,7 +113,7 @@ public class AfmeldenServiceImpl implements AfmeldenService
 			throw new IllegalStateException("Afmeldtype " + afmeldingDto.getAfmeldType().name() + " is ongeldig");
 		}
 
-		CervixAfmelding cervixAfmelding = vulAfmelding(afmeldingDto, new CervixAfmelding(), client.getCervixDossier());
+		var cervixAfmelding = vulAfmelding(afmeldingDto, new CervixAfmelding(), client.getCervixDossier());
 
 		if (AfmeldingType.DEFINITIEF.equals(cervixAfmelding.getType()))
 		{
@@ -142,7 +142,7 @@ public class AfmeldenServiceImpl implements AfmeldenService
 			throw new IllegalStateException("Tijdelijke afmelding zonder jaartal tot wanneer er afgemeld moet worden!");
 		}
 
-		ColonAfmelding colonAfmelding = vulAfmelding(afmeldingDto, new ColonAfmelding(), client.getColonDossier());
+		var colonAfmelding = vulAfmelding(afmeldingDto, new ColonAfmelding(), client.getColonDossier());
 
 		if (afmeldingDto.getAfmeldenTotJaartal() != null)
 		{
@@ -177,7 +177,7 @@ public class AfmeldenServiceImpl implements AfmeldenService
 		var laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
 		if (laatsteScreeningRonde != null)
 		{
-			A laatsteAfmelding = laatsteScreeningRonde.getLaatsteAfmelding();
+			var laatsteAfmelding = laatsteScreeningRonde.getLaatsteAfmelding();
 			if (AfmeldingUtil.isAangevraagdeTijdelijkeAfmelding(laatsteAfmelding))
 			{
 				afmelding = laatsteAfmelding;
@@ -198,7 +198,7 @@ public class AfmeldenServiceImpl implements AfmeldenService
 			throw new IllegalStateException("Afmeldtype " + afmeldingDto.getAfmeldType().name() + " is ongeldig");
 		}
 
-		MammaAfmelding mammaAfmelding = vulAfmelding(afmeldingDto, new MammaAfmelding(), client.getMammaDossier());
+		var mammaAfmelding = vulAfmelding(afmeldingDto, new MammaAfmelding(), client.getMammaDossier());
 
 		mammaAfmelding.setReden(afmeldingDto.getAfmeldReden());
 

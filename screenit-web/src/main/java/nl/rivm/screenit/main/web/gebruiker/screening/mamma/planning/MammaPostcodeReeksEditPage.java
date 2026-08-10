@@ -95,9 +95,9 @@ public class MammaPostcodeReeksEditPage extends MammaPlanningBasePage
 
 	private void addOrReplaceMainForm(AjaxRequestTarget target)
 	{
-		WebMarkupContainer nieuwMainContainer = new WebMarkupContainer("mainContainer");
+		var nieuwMainContainer = new WebMarkupContainer("mainContainer");
 		nieuwMainContainer.setOutputMarkupId(true);
-		ScreenitForm<MammaPostcodeReeks> mainForm = new ScreenitForm<>("mainForm", (IModel<MammaPostcodeReeks>) getDefaultModel());
+		var mainForm = new ScreenitForm<MammaPostcodeReeks>("mainForm", (IModel<MammaPostcodeReeks>) getDefaultModel());
 		mainForm.setOutputMarkupId(true);
 		nieuwMainContainer.add(mainForm);
 		ComponentHelper.newPostcodeTextField(mainForm, "vanPostcode", true, !magAanpassen);
@@ -149,21 +149,21 @@ public class MammaPostcodeReeksEditPage extends MammaPlanningBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaPostcodeReeks postcodeReeks = (MammaPostcodeReeks) getForm().getModelObject();
+				var postcodeReeks = (MammaPostcodeReeks) getForm().getModelObject();
 				if (postcodeReeks.getVanPostcode().compareToIgnoreCase(postcodeReeks.getTotPostcode()) > 0)
 				{
 					error(getString("vanGroterDanTotPostcode"));
 				}
 				else
 				{
-					String overlap = postcodeReeksService.overlaptBestaandeReeks(postcodeReeks);
+					var overlap = postcodeReeksService.overlaptBestaandeReeks(postcodeReeks);
 					if (StringUtils.isNotBlank(overlap))
 					{
 						error(getString("overlap") + overlap);
 					}
 					if (!hasErrorMessage())
 					{
-						boolean changed = postcodeReeksService.saveOrUpdatePostcodeReeks(postcodeReeks, getIngelogdeOrganisatieMedewerker());
+						var changed = postcodeReeksService.saveOrUpdatePostcodeReeks(postcodeReeks, getIngelogdeOrganisatieMedewerker());
 						if (changed)
 						{
 							success(getString("message.gegevensopgeslagen"));
@@ -186,7 +186,7 @@ public class MammaPostcodeReeksEditPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaPostcodeReeks postcodeReeks = mainForm.getModelObject();
+				var postcodeReeks = mainForm.getModelObject();
 				postcodeReeksService.deletePostcodeReeks(postcodeReeks, getIngelogdeOrganisatieMedewerker());
 				ScreenitSession.get().success(getString("postcodeReeks.verwijderd"));
 				setResponsePage(MammaPostcodeReeksZoekenPage.class);

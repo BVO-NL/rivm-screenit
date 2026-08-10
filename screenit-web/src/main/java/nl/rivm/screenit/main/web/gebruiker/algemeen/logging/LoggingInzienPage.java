@@ -54,7 +54,6 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.logging.LogRegel;
 import nl.rivm.screenit.model.logging.LoggingZoekCriteria;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieZoekService;
 import nl.rivm.screenit.util.DateUtil;
@@ -117,7 +116,7 @@ public class LoggingInzienPage extends AlgemeenPage
 		}
 		else
 		{
-			LoggingZoekCriteria criteria = new LoggingZoekCriteria();
+			var criteria = new LoggingZoekCriteria();
 			criteria.setVanaf(DateUtil.minusTijdseenheid(currentDateSupplier.getDateMidnight(), 4, ChronoUnit.WEEKS));
 			criteria.setTot(DateUtil.plusDagen(currentDateSupplier.getDateMidnight(), 1));
 			logZoekCriteria = new Model<>(criteria);
@@ -145,7 +144,7 @@ public class LoggingInzienPage extends AlgemeenPage
 			{
 				ScreeningOrganisatie regio = null;
 
-				LogRegel logRegel = rowModel.getObject();
+				var logRegel = rowModel.getObject();
 
 				regio = Optional.ofNullable(logRegel.getClient())
 					.map(Client::getPersoon)
@@ -249,12 +248,12 @@ public class LoggingInzienPage extends AlgemeenPage
 			add(new TextField<>("melding"));
 			add(new TextField<>("bsnClient").add(new BSNValidator()));
 
-			DateTimeField vanaf = new DateTimeField("vanaf")
+			var vanaf = new DateTimeField("vanaf")
 			{
 				@Override
 				protected DatePicker<Date> newDatePicker(String wicketId, IModel<Date> model)
 				{
-					DatePicker<Date> datePicker = super.newDatePicker(wicketId, model);
+					var datePicker = super.newDatePicker(wicketId, model);
 					datePicker.setLabel(new Model<>("Datum/tijd vanaf"));
 					return datePicker;
 				}
@@ -267,7 +266,7 @@ public class LoggingInzienPage extends AlgemeenPage
 						@Override
 						protected TextField<Integer> getHoursField()
 						{
-							TextField<Integer> hours = super.getHoursField();
+							var hours = super.getHoursField();
 							hours.setLabel(new Model<>("Datum/tijd vanaf uren"));
 							return hours;
 						}
@@ -275,7 +274,7 @@ public class LoggingInzienPage extends AlgemeenPage
 						@Override
 						protected TextField<Integer> getMinutesField()
 						{
-							TextField<Integer> minutes = super.getMinutesField();
+							var minutes = super.getMinutesField();
 							minutes.setLabel(new Model<>("Datum/tijd vanaf minuten"));
 							return minutes;
 						}
@@ -283,8 +282,8 @@ public class LoggingInzienPage extends AlgemeenPage
 						@Override
 						public void convertInput()
 						{
-							Integer m = getMinutesField().getConvertedInput();
-							Integer h = getHoursField().getConvertedInput();
+							var m = getMinutesField().getConvertedInput();
+							var h = getHoursField().getConvertedInput();
 
 							if (h == null)
 							{
@@ -300,12 +299,12 @@ public class LoggingInzienPage extends AlgemeenPage
 				}
 
 			};
-			DateTimeField tot = new DateTimeField("tot")
+			var tot = new DateTimeField("tot")
 			{
 				@Override
 				protected DatePicker<Date> newDatePicker(String wicketId, IModel<Date> model)
 				{
-					DatePicker<Date> datePicker = super.newDatePicker(wicketId, model);
+					var datePicker = super.newDatePicker(wicketId, model);
 					datePicker.setLabel(new Model<>("Datum/tijd tot"));
 					return datePicker;
 				}
@@ -318,7 +317,7 @@ public class LoggingInzienPage extends AlgemeenPage
 						@Override
 						protected TextField<Integer> getHoursField()
 						{
-							TextField<Integer> hours = super.getHoursField();
+							var hours = super.getHoursField();
 							hours.setLabel(new Model<>("Datum/tijd tot uren"));
 							return hours;
 						}
@@ -326,7 +325,7 @@ public class LoggingInzienPage extends AlgemeenPage
 						@Override
 						protected TextField<Integer> getMinutesField()
 						{
-							TextField<Integer> minutes = super.getMinutesField();
+							var minutes = super.getMinutesField();
 							minutes.setLabel(new Model<>("Datum/tijd tot minuten"));
 							return minutes;
 						}
@@ -334,8 +333,8 @@ public class LoggingInzienPage extends AlgemeenPage
 						@Override
 						public void convertInput()
 						{
-							Integer m = getMinutesField().getConvertedInput();
-							Integer h = getHoursField().getConvertedInput();
+							var m = getMinutesField().getConvertedInput();
+							var h = getHoursField().getConvertedInput();
 
 							if (h == null)
 							{
@@ -370,9 +369,9 @@ public class LoggingInzienPage extends AlgemeenPage
 
 			add(new ScreenitListMultipleChoice<>("level", Arrays.asList(Level.values()), new EnumChoiceRenderer<>()));
 
-			List<MammaScreeningsEenheid> screeningsEenheden = screeningsEenheidService.getActieveScreeningsEenheden();
-			List<Long> seIds = screeningsEenheden.stream().map(AbstractHibernateObject::getId).collect(Collectors.toList());
-			final ScreenitDropdown<Long> screeningsEenheidDropdown = new ScreenitDropdown<>("screeningsEenheidId", seIds,
+			var screeningsEenheden = screeningsEenheidService.getActieveScreeningsEenheden();
+			var seIds = screeningsEenheden.stream().map(AbstractHibernateObject::getId).collect(Collectors.toList());
+			final var screeningsEenheidDropdown = new ScreenitDropdown<Long>("screeningsEenheidId", seIds,
 				new HibernateIdChoiceRenderer(screeningsEenheden, "naam"));
 			screeningsEenheidDropdown.setNullValid(true);
 			screeningsEenheidDropdown.setVisible(ScreenitSession.get().getOnderzoeken().contains(Bevolkingsonderzoek.MAMMA));
@@ -384,7 +383,7 @@ public class LoggingInzienPage extends AlgemeenPage
 
 			add(new DependantDateValidator(vanaf, tot, Operator.AFTER));
 
-			List<Organisatie> soLijst = organisatieZoekService.getAllActieveOrganisatiesWithType(ScreeningOrganisatie.class);
+			var soLijst = organisatieZoekService.getAllActieveOrganisatiesWithType(ScreeningOrganisatie.class);
 
 			add(new ScreenitDropdown<>("regio", soLijst.stream().map(Organisatie::getId).collect(Collectors.toList()),
 				new HibernateIdChoiceRenderer(soLijst, "naam")).setNullValid(true));

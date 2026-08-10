@@ -80,7 +80,7 @@ public class SeProxyWebsocket implements ApplicationContextAware
 			{
 				if (webSocketMessage.equals(WebsocketBerichtType.PING.name()))
 				{
-					String se = getSeCodeVanSession(session);
+					var se = getSeCodeVanSession(session);
 					if (SE_CODE_ONBEKEND.equals(se))
 					{
 						session.close();
@@ -95,8 +95,8 @@ public class SeProxyWebsocket implements ApplicationContextAware
 				}
 				else if (webSocketMessage.startsWith(WebsocketBerichtType.REGISTREER_SE.name()))
 				{
-					String seCode = webSocketMessage.replace(WebsocketBerichtType.REGISTREER_SE.name(), "");
-					Session oldSession = proxySessionMap.get(seCode);
+					var seCode = webSocketMessage.replace(WebsocketBerichtType.REGISTREER_SE.name(), "");
+					var oldSession = proxySessionMap.get(seCode);
 					if (oldSession != null)
 					{
 						oldSession.close();
@@ -115,9 +115,9 @@ public class SeProxyWebsocket implements ApplicationContextAware
 
 	public void sendDaglijstUpdate(String seCodeEnDatum)
 	{
-		String seCode = seCodeEnDatum.split(":")[0];
+		var seCode = seCodeEnDatum.split(":")[0];
 
-		Session proxySession = proxySessionMap.get(seCode);
+		var proxySession = proxySessionMap.get(seCode);
 		if (proxySession == null)
 		{
 			LOG.info("Kon geen websocket vinden voor SE met code '{}', update commando wordt niet verzonden.", seCode);
@@ -209,9 +209,9 @@ public class SeProxyWebsocket implements ApplicationContextAware
 						synchronized (proxySessionMap)
 						{
 							LOG.info("Commando '{}' wordt verzonden naar de volgende SE's: {}", commando, proxySessionMap.keySet());
-							for (String seCode : proxySessionMap.keySet())
+							for (var seCode : proxySessionMap.keySet())
 							{
-								Session proxySession = proxySessionMap.get(seCode);
+								var proxySession = proxySessionMap.get(seCode);
 								if (proxySession == null)
 								{
 									LOG.info("Kon geen websocket vinden voor SE met code '{}', commando '{}' wordt niet verzonden.", seCode, commando);
@@ -248,7 +248,7 @@ public class SeProxyWebsocket implements ApplicationContextAware
 	{
 		synchronized (proxySessionMap)
 		{
-			String seCode = getSeCodeVanSession(session);
+			var seCode = getSeCodeVanSession(session);
 			LOG.warn("Websocket verbinding SE '{}' verbroken door '{}'; session: {}" + seCode, error.getMessage(), session.hashCode());
 			session.close();
 		}
@@ -259,7 +259,7 @@ public class SeProxyWebsocket implements ApplicationContextAware
 	{
 		synchronized (proxySessionMap)
 		{
-			String seCode = getSeCodeVanSession(session);
+			var seCode = getSeCodeVanSession(session);
 			LOG.warn("afterConnectionClosed: status={}, message={}, seCode={}, session={}", status, message, seCode, session.hashCode());
 			if (!SE_CODE_ONBEKEND.equals(seCode))
 			{
@@ -273,8 +273,8 @@ public class SeProxyWebsocket implements ApplicationContextAware
 
 	private String getSeCodeVanSession(Session session)
 	{
-		String seCode = SE_CODE_ONBEKEND;
-		for (Map.Entry<String, Session> entry : proxySessionMap.entrySet())
+		var seCode = SE_CODE_ONBEKEND;
+		for (var entry : proxySessionMap.entrySet())
 		{
 			if (Objects.equals(session, entry.getValue()))
 			{

@@ -21,10 +21,10 @@ package nl.rivm.screenit.huisartsenportaal.controller;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.validation.Valid;
+
 import nl.rivm.screenit.huisartsenportaal.dto.LocatieDto;
 import nl.rivm.screenit.huisartsenportaal.exception.ValidatieException;
-import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
-import nl.rivm.screenit.huisartsenportaal.model.Locatie;
 import nl.rivm.screenit.huisartsenportaal.service.LocatieService;
 import nl.rivm.screenit.huisartsenportaal.service.SynchronisatieService;
 import nl.rivm.screenit.huisartsenportaal.validator.LocatieValidator;
@@ -40,8 +40,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("locatie")
@@ -66,7 +64,7 @@ public class LocatieController extends BaseController
 	@GetMapping
 	public ResponseEntity getLocaties()
 	{
-		Huisarts arts = getIngelogdeHuisarts();
+		var arts = getIngelogdeHuisarts();
 		if (arts != null)
 		{
 			var locaties = locatieService.getAllLocatiesFromHuisartsInDto(arts);
@@ -98,8 +96,8 @@ public class LocatieController extends BaseController
 			throw new ValidatieException(result.getAllErrors());
 		}
 
-		Huisarts arts = getIngelogdeHuisarts();
-		Locatie locatie = locatieService.updateAndGetLocatie(arts, locatieDto);
+		var arts = getIngelogdeHuisarts();
+		var locatie = locatieService.updateAndGetLocatie(arts, locatieDto);
 		locatieService.nietVerstuurdeLabformulierenVerwijderen(locatieDto);
 		syncService.syncLocatie(arts, locatie, locatieDto.getHerzendVerificatieMail());
 		return ResponseEntity.ok(locatieService.getLocatieDto(locatie));

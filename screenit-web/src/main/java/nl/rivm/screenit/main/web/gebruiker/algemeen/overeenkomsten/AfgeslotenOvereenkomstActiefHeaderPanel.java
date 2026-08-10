@@ -52,7 +52,7 @@ public class AfgeslotenOvereenkomstActiefHeaderPanel extends Panel
 
 	protected void createLinks()
 	{
-		AjaxLink<Void> all = new AjaxLink<Void>("all")
+		var all = new AjaxLink<Void>("all")
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -71,7 +71,7 @@ public class AfgeslotenOvereenkomstActiefHeaderPanel extends Panel
 		}
 		add(all);
 
-		AjaxLink<Void> active = new AjaxLink<Void>("active")
+		var active = new AjaxLink<Void>("active")
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -89,7 +89,7 @@ public class AfgeslotenOvereenkomstActiefHeaderPanel extends Panel
 		}
 		add(active);
 
-		AjaxLink<Void> inactive = new AjaxLink<Void>("inactive")
+		var inactive = new AjaxLink<Void>("inactive")
 		{
 
 			private static final long serialVersionUID = 1L;

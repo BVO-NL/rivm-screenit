@@ -23,14 +23,14 @@ package nl.rivm.screenit.webcommons.config;
 
 import java.util.function.Supplier;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
 import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
 import org.springframework.util.StringUtils;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 public class SpaCsrfTokenRequestHandler implements CsrfTokenRequestHandler
 {
@@ -49,7 +49,7 @@ public class SpaCsrfTokenRequestHandler implements CsrfTokenRequestHandler
 	@Override
 	public String resolveCsrfTokenValue(HttpServletRequest request, CsrfToken csrfToken)
 	{
-		String headerValue = request.getHeader(csrfToken.getHeaderName());
+		var headerValue = request.getHeader(csrfToken.getHeaderName());
 		return (StringUtils.hasText(headerValue) ? this.plain : this.xor).resolveCsrfTokenValue(request, csrfToken);
 	}
 }

@@ -21,9 +21,7 @@ package nl.rivm.screenit.service.mamma.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
@@ -54,12 +52,12 @@ public class MammaKansberekeningAfspraakContext extends MammaKansberekeningScree
 		this.uitnodiging = afspraak.getUitnodiging();
 		this.briefTypeUitnodiging = uitnodiging.getBrief().getBriefType();
 
-		MammaAfspraak laatsteAfspraak = uitnodiging.getLaatsteAfspraak();
+		var laatsteAfspraak = uitnodiging.getLaatsteAfspraak();
 
 		if (laatsteAfspraak != null && MammaAfspraakStatus.NIET_GEANNULEERD.contains(laatsteAfspraak.getStatus()) && !afspraak.equals(laatsteAfspraak))
 		{
 
-			Map.Entry<LocalDate, MammaAfspraak> last = afspraakNavigableMap.lastEntry();
+			var last = afspraakNavigableMap.lastEntry();
 			if (last.getValue().getStatus() == MammaAfspraakStatus.GEPLAND)
 			{
 				afspraakNavigableMap.remove(last.getKey());

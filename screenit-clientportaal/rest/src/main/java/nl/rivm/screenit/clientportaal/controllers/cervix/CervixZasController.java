@@ -27,9 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.clientportaal.controllers.AbstractController;
 import nl.rivm.screenit.clientportaal.model.cervix.CervixZasStatusDto;
 import nl.rivm.screenit.clientportaal.services.cervix.CervixZasService;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
-import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.service.ClientContactService;
 
 import org.springframework.http.ResponseEntity;
@@ -56,7 +54,7 @@ public class CervixZasController extends AbstractController
 	@GetMapping("status")
 	public ResponseEntity<CervixZasStatusDto> getZasStatus(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.CERVIX_ZAS_AANVRAGEN))
 		{
@@ -69,11 +67,11 @@ public class CervixZasController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> vraagZasAan(@PathVariable Boolean ontvangenNaUitstel, Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.CERVIX_ZAS_AANVRAGEN))
 		{
-			CervixScreeningRonde laatsteRonde = client.getCervixDossier().getLaatsteScreeningRonde();
+			var laatsteRonde = client.getCervixDossier().getLaatsteScreeningRonde();
 			if (!ontvangenNaUitstel)
 			{
 				zasService.vraagZasAan(getClient(authentication), false);

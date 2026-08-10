@@ -79,12 +79,12 @@ public class OrganisatieMedewerkerRol extends AbstractHibernateObject implements
 	@Transient
 	public boolean isRolActief()
 	{
-		Boolean isActief = actief;
+		var isActief = actief;
 
-		Calendar cal = Calendar.getInstance();
+		var cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 
-		Date nu = new Date();
+		var nu = new Date();
 		if (beginDatum != null && nu.before(beginDatum))
 		{
 			isActief = false;
@@ -118,7 +118,7 @@ public class OrganisatieMedewerkerRol extends AbstractHibernateObject implements
 	@Override
 	protected boolean concreateEquals(AbstractHibernateObject obj)
 	{
-		OrganisatieMedewerkerRol other = (OrganisatieMedewerkerRol) obj;
+		var other = (OrganisatieMedewerkerRol) obj;
 		if (getRol() == null)
 		{
 			if (other.getRol() != null)

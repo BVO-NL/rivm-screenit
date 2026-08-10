@@ -43,7 +43,7 @@ public class BrievenGenererenVerslagPanel extends GenericPanel<BrievenGenererenR
 
 		add(DateLabel.forDatePattern("datumVerwerking", "dd-MM-yyyy HH:mm:ss"));
 
-		List<BrievenGenererenRapportageEntry> entries = model.getObject().getEntries();
+		var entries = model.getObject().getEntries();
 
 		add(new Label("aantalTotaalBrieven", getAantalTotaalBrieven(entries)));
 		add(new Label("aantalTotaalScreeningOrganisaties", getAantalTotaalScreeningOrganisaties(entries)));

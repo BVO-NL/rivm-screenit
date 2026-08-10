@@ -41,7 +41,6 @@ import nl.rivm.screenit.model.enums.FileType;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.MammaFotobespreking;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.enums.MammaFotobesprekingType;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -85,12 +84,12 @@ public abstract class MammaFotobesprekingEditPopupPanel extends GenericPanel<Mam
 		form.setEnabled(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_FOTOBESPREKING, Actie.AANPASSEN) && model.getObject().getGestartOp() == null);
 		add(form);
 
-		List<BeoordelingsEenheid> beoordelingsEenheden = beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getOrganisatie());
+		var beoordelingsEenheden = beoordelingsEenheidService.getBeoordelingsEenheden(ScreenitSession.get().getOrganisatie());
 		ComponentHelper.addTextField(form, "omschrijving", true, HibernateMagicNumber.L256, String.class, false)
 			.add(new ScreenitUniqueFieldValidator<>(MammaFotobespreking.class, getModelObject().getId(), "omschrijving", false));
-		WebMarkupContainer beContainer = new WebMarkupContainer("beoordelingsEenheidContainer");
+		var beContainer = new WebMarkupContainer("beoordelingsEenheidContainer");
 		form.add(beContainer);
-		ScreenitDropdown<BeoordelingsEenheid> beDropdown = new ScreenitDropdown<>("beoordelingsEenheid", ModelUtil.listRModel(beoordelingsEenheden, false),
+		var beDropdown = new ScreenitDropdown<BeoordelingsEenheid>("beoordelingsEenheid", ModelUtil.listRModel(beoordelingsEenheden, false),
 			new ChoiceRenderer<>("naam"));
 		beDropdown.setNullValid(true);
 		beDropdown.setRequired(true);
@@ -104,20 +103,20 @@ public abstract class MammaFotobesprekingEditPopupPanel extends GenericPanel<Mam
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				MammaFotobespreking fotobespreking = form.getModelObject();
+				var fotobespreking = form.getModelObject();
 				showBE(beContainer, fotobespreking);
 				target.add(beContainer);
 			}
 
 		});
 		ComponentHelper.addDropDownChoice(form, "role", true, Arrays.asList(MammobridgeRole.values()), false);
-		FileUploadField clientenlijst = new FileUploadField("clientenlijst", filesUploaded);
+		var clientenlijst = new FileUploadField("clientenlijst", filesUploaded);
 		clientenlijst.add(new AantalBestandenUploadenValidator(1));
 		clientenlijst.add(new FileValidator(FileType.CSV));
 		clientenlijst.setVisible(model.getObject().getGestartOp() == null);
 		form.add(clientenlijst);
 
-		IndicatingAjaxButton opslaan = new IndicatingAjaxButton("opslaan")
+		var opslaan = new IndicatingAjaxButton("opslaan")
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -126,7 +125,7 @@ public abstract class MammaFotobesprekingEditPopupPanel extends GenericPanel<Mam
 			{
 				super.onSubmit(target);
 
-				MammaFotobespreking fotobespreking = MammaFotobesprekingEditPopupPanel.this.getModelObject();
+				var fotobespreking = MammaFotobesprekingEditPopupPanel.this.getModelObject();
 				if (fotobespreking.getBeoordelingsEenheid() == null && fotobespreking.getType() == MammaFotobesprekingType.MAATSCHAP)
 				{
 					error(getString("niets.gekozen"));
@@ -135,13 +134,13 @@ public abstract class MammaFotobesprekingEditPopupPanel extends GenericPanel<Mam
 				File file = null;
 				try
 				{
-					List<FileUpload> files = filesUploaded.getObject();
+					var files = filesUploaded.getObject();
 					if (CollectionUtils.isNotEmpty(files))
 					{
-						FileUpload upload = files.get(0);
+						var upload = files.get(0);
 						file = upload.writeToTempFile();
 					}
-					List<String> meldingen = kwaliteitscontroleService.saveOrUpdateFotobespreking(fotobespreking, file);
+					var meldingen = kwaliteitscontroleService.saveOrUpdateFotobespreking(fotobespreking, file);
 					if (CollectionUtils.isNotEmpty(meldingen))
 					{
 						meldingen.forEach(m -> warn(m));

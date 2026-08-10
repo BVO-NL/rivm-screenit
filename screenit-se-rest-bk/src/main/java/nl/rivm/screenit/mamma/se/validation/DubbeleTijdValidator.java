@@ -45,17 +45,21 @@ public class DubbeleTijdValidator extends Validator
 	@Override
 	protected void validateActions(List<ActionDto> actions)
 	{
-		if (actions.isEmpty()) {
+		if (actions.isEmpty())
+		{
 			return; 
-		} else if (actions.size() != 2) {
-			StringBuilder sb = new StringBuilder();
+		}
+		else if (actions.size() != 2)
+		{
+			var sb = new StringBuilder();
 			actions.forEach(a -> sb.append(" - " + a.getType()));
-			throw new IllegalArgumentException("Er moet (na ontdubbelen) 1 MAAK_DUBBELE_TIJD en 1 MAAK_DUBBELE_TIJD_REDEN actie zijn of geen van beide. Maar nu is er alleen " + sb.toString());
+			throw new IllegalArgumentException(
+				"Er moet (na ontdubbelen) 1 MAAK_DUBBELE_TIJD en 1 MAAK_DUBBELE_TIJD_REDEN actie zijn of geen van beide. Maar nu is er alleen " + sb.toString());
 		}
 		try
 		{
-			final MaakDubbeleTijdDto maakDubbeleTijdDto = objectMapper.readValue(actions.get(0).getNodeText(), MaakDubbeleTijdDto.class);
-			final MaakDubbeleTijdRedenDto maakDubbeleTijdRedenDto = objectMapper.readValue(actions.get(1).getNodeText(), MaakDubbeleTijdRedenDto.class);
+			final var maakDubbeleTijdDto = objectMapper.readValue(actions.get(0).getNodeText(), MaakDubbeleTijdDto.class);
+			final var maakDubbeleTijdRedenDto = objectMapper.readValue(actions.get(1).getNodeText(), MaakDubbeleTijdRedenDto.class);
 			if (maakDubbeleTijdDto.isDubbeleTijd())
 			{
 				if (maakDubbeleTijdRedenDto.getDubbeleTijdReden() == null || maakDubbeleTijdRedenDto.getDubbeleTijdReden().isEmpty())

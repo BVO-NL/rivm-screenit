@@ -23,7 +23,6 @@ package nl.rivm.screenit.batch.service.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
-import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
@@ -39,7 +38,6 @@ import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Persoon;
-import nl.rivm.screenit.model.TijdelijkGbaAdres;
 import nl.rivm.screenit.model.enums.DatumPrecisie;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.IndicatieGeheim;
@@ -50,6 +48,12 @@ import nl.rivm.screenit.model.gba.GbaFoutRegel;
 import nl.rivm.screenit.model.gba.GbaMutatie;
 import nl.rivm.screenit.model.gba.GbaVerwerkingEntry;
 import nl.rivm.screenit.model.gba.GbaVerwerkingsLog;
+import nl.rivm.screenit.model.vertrouwdverbonden.Vo107Bericht;
+import nl.rivm.screenit.model.vertrouwdverbonden.enums.Land;
+import nl.rivm.screenit.model.vertrouwdverbonden.enums.GbaRubriek;
+import nl.rivm.screenit.model.vertrouwdverbonden.enums.Vo107_ArecordVeld;
+import nl.rivm.screenit.model.vertrouwdverbonden.enums.VoxBrecordVeld;
+import nl.rivm.screenit.model.vertrouwdverbonden.utils.VoxHelper;
 import nl.rivm.screenit.repository.algemeen.GemeenteRepository;
 import nl.rivm.screenit.service.BaseGbaVraagService;
 import nl.rivm.screenit.service.ClientService;
@@ -60,13 +64,6 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.TransgenderService;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.DateUtil;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.GbaPartnerschap;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.Record;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo107Bericht;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.enums.GbaRubriek;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.enums.Vo107_ArecordVeld;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.enums.VoxBrecordVeld;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.utils.VoxHelper;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.NaamGebruik;
 import nl.topicuszorg.util.postcode.PostcodeFormatter;
@@ -115,7 +112,7 @@ public class GbaServiceImpl implements GbaService
 		try
 		{
 
-			String eref = bericht.getString(Vo107_ArecordVeld.EREF);
+			var eref = bericht.getString(Vo107_ArecordVeld.EREF);
 			LOG.debug("Verwerken vo107-bericht met EREF: {}", eref);
 
 			if (bericht.getBerichtType().equalsIgnoreCase("dt01") || bericht.getBerichtType().equalsIgnoreCase("dw01"))
@@ -125,15 +122,15 @@ public class GbaServiceImpl implements GbaService
 			}
 			else
 			{
-				String bsn = bericht.getBsn();
-				String bsnBRecord = getStringUitBericht(bericht, GbaRubriek.PERS_BSN);
-				String anummerARecord = bericht.getString(Vo107_ArecordVeld.ANR);
-				String oorspronkelijkBsn = bericht.getOorspronkelijkBsn();
+				var bsn = bericht.getBsn();
+				var bsnBRecord = getStringUitBericht(bericht, GbaRubriek.PERS_BSN);
+				var anummerARecord = bericht.getString(Vo107_ArecordVeld.ANR);
+				var oorspronkelijkBsn = bericht.getOorspronkelijkBsn();
 
 				if (Strings.isNullOrEmpty(bsn) || bericht.isVerstrekking() && Strings.isNullOrEmpty(bsnBRecord))
 				{
-					GbaFoutRegel foutRegel = new GbaFoutRegel();
-					String foutString = "Bericht geskipt: Geen BSN gevonden in A of B records. EREF: " + eref;
+					var foutRegel = new GbaFoutRegel();
+					var foutString = "Bericht geskipt: Geen BSN gevonden in A of B records. EREF: " + eref;
 					foutRegel.setFout(foutString);
 					foutRegel.setFoutCategorie(GbaFoutCategorie.INHOUDELIJK_ERNGSTIG);
 					foutRegel.setVerwerkingsLog(verwerkingLog);
@@ -146,7 +143,7 @@ public class GbaServiceImpl implements GbaService
 				if (!Strings.isNullOrEmpty(oorspronkelijkBsn))
 				{
 					client = clientService.getClientByBsn(oorspronkelijkBsn);
-					Client clientMetNieuwBsn = clientService.getClientByBsn(bsn);
+					var clientMetNieuwBsn = clientService.getClientByBsn(bsn);
 					Client afgevoerdeClientMetNieuwBsn = null;
 
 					if (clientMetNieuwBsn == null)
@@ -154,8 +151,8 @@ public class GbaServiceImpl implements GbaService
 						afgevoerdeClientMetNieuwBsn = clientService.getLaatstAfgevoerdeClient(bsn);
 					}
 
-					boolean oorspronkelijkeClientHeeftDossier = client != null && clientService.heeftDossierMetRondeOfAfmelding(client);
-					boolean afgevoerdeClientMetNieuwBsnHeeftDossier = afgevoerdeClientMetNieuwBsn != null
+					var oorspronkelijkeClientHeeftDossier = client != null && clientService.heeftDossierMetRondeOfAfmelding(client);
+					var afgevoerdeClientMetNieuwBsnHeeftDossier = afgevoerdeClientMetNieuwBsn != null
 						&& clientService.heeftDossierMetRondeOfAfmelding(afgevoerdeClientMetNieuwBsn);
 
 					if (!bsn.equals(oorspronkelijkBsn) && !oorspronkelijkeClientHeeftDossier && afgevoerdeClientMetNieuwBsnHeeftDossier)
@@ -169,7 +166,7 @@ public class GbaServiceImpl implements GbaService
 					}
 					else if (clientMetNieuwBsn != null && client != null && !bsn.equals(oorspronkelijkBsn))
 					{
-						String foutmelding = "Bericht geskipt: Wijziging van bsn van " + oorspronkelijkBsn + " naar " + bsn
+						var foutmelding = "Bericht geskipt: Wijziging van bsn van " + oorspronkelijkBsn + " naar " + bsn
 							+ " niet mogelijk, omdat er al andere client met het nieuwe bsn bestaat (anummer " + clientMetNieuwBsn.getPersoon().getAnummer() + "). "
 							+ getFoutmelding(bericht, verwerkingLog, client);
 						logService.logGebeurtenis(LogGebeurtenis.GBA_IMPORT_BSN_NIET_OVEREEN, clientService.getScreeningOrganisatieVan(clientMetNieuwBsn), clientMetNieuwBsn,
@@ -190,11 +187,11 @@ public class GbaServiceImpl implements GbaService
 					client = clientService.getClientByBsnFromNg01Bericht(bsn, anummerARecord);
 				}
 
-				boolean isVerwijderBericht = "Ng01".equalsIgnoreCase(bericht.getBerichtType());
-				boolean clientIsVerwijderd = client != null && GbaStatus.AFGEVOERD.equals(client.getGbaStatus());
+				var isVerwijderBericht = "Ng01".equalsIgnoreCase(bericht.getBerichtType());
+				var clientIsVerwijderd = client != null && GbaStatus.AFGEVOERD.equals(client.getGbaStatus());
 				if (client != null)
 				{
-					GbaValidatieWrapper validatieWrapper = valideerGevondenClient(client, bericht, verwerkingLog, isVerwijderBericht, clientIsVerwijderd);
+					var validatieWrapper = valideerGevondenClient(client, bericht, verwerkingLog, isVerwijderBericht, clientIsVerwijderd);
 					clientIsVerwijderd = validatieWrapper.isClientIsVerwijderd();
 					if (validatieWrapper.isStopVerwerking())
 					{
@@ -219,7 +216,7 @@ public class GbaServiceImpl implements GbaService
 						client.getPersoon().setBsn(bsn);
 						hibernateService.saveOrUpdate(client);
 						entityManager.flush();
-						String logmelding = "Client is heractiveerd met anummer wijziging naar: " + getStringUitBericht(bericht, GbaRubriek.PERS_A_NUMMER);
+						var logmelding = "Client is heractiveerd met anummer wijziging naar: " + getStringUitBericht(bericht, GbaRubriek.PERS_A_NUMMER);
 						logService.logGebeurtenis(LogGebeurtenis.GBA_IMPORT_HERACTIVATIE, clientService.getScreeningOrganisatieVan(client), client, logmelding);
 					}
 				}
@@ -241,7 +238,7 @@ public class GbaServiceImpl implements GbaService
 
 					if (client != null && clientIsVerwijderd)
 					{
-						String foutmelding = "Bericht geskipt: Ng01 bericht maar client is reeds eerder verwijderd. " + getFoutmelding(bericht, verwerkingLog, client);
+						var foutmelding = "Bericht geskipt: Ng01 bericht maar client is reeds eerder verwijderd. " + getFoutmelding(bericht, verwerkingLog, client);
 						logService.logGebeurtenis(LogGebeurtenis.GBA_IMPORT_SKIP, clientService.getScreeningOrganisatieVan(client), client, foutmelding);
 						createFout(null, verwerkingLog, foutmelding, GbaFoutCategorie.OVERIG);
 					}
@@ -289,8 +286,8 @@ public class GbaServiceImpl implements GbaService
 
 	private void wisselAnummers(Client clientA, Client clientB)
 	{
-		String anummerClientA = clientA.getPersoon().getAnummer();
-		String anummerClientB = clientB.getPersoon().getAnummer();
+		var anummerClientA = clientA.getPersoon().getAnummer();
+		var anummerClientB = clientB.getPersoon().getAnummer();
 		clientA.getPersoon().setAnummer(null);
 		clientB.getPersoon().setAnummer(null);
 		hibernateService.saveOrUpdate(clientA);
@@ -320,8 +317,8 @@ public class GbaServiceImpl implements GbaService
 
 	private void verwijderClient(Client client, GbaVerwerkingsLog verwerkingLog, String eref, String anummerARecord, boolean aantalBurgersBijwerken)
 	{
-		String oudeClientBsn = client.getPersoon().getBsn();
-		String nieuweClientBsn = clientService.getVoorNg01EenNieuweBsn(oudeClientBsn);
+		var oudeClientBsn = client.getPersoon().getBsn();
+		var nieuweClientBsn = clientService.getVoorNg01EenNieuweBsn(oudeClientBsn);
 		if (nieuweClientBsn != null)
 		{
 			plaatsBSNGewijzigdMarker(client, oudeClientBsn, nieuweClientBsn);
@@ -338,13 +335,13 @@ public class GbaServiceImpl implements GbaService
 		hibernateService.saveOrUpdate(client);
 		entityManager.flush();
 
-		String goedeString = "Bericht Verwerkt: bsn aangepast naar " + nieuweClientBsn + ", EREF " + eref + ", a-nummer uit bericht: " + anummerARecord
+		var goedeString = "Bericht Verwerkt: bsn aangepast naar " + nieuweClientBsn + ", EREF " + eref + ", a-nummer uit bericht: " + anummerARecord
 			+ ", anummer afgevoerde cliënt: " + client.getPersoon().getAnummer();
 		logService.logGebeurtenis(LogGebeurtenis.GBA_IMPORT_VERWIJDERD_VAN_PERSOONSLIJST, client, goedeString);
 
 		if (getScreeningOrganisatie(client) != null && aantalBurgersBijwerken)
 		{
-			GbaVerwerkingEntry verwerkingEntry = getOrCreateEntry(verwerkingLog, client);
+			var verwerkingEntry = getOrCreateEntry(verwerkingLog, client);
 			verwerkingEntry.setAantalBijgewerkteBugers(verwerkingEntry.getAantalBijgewerkteBugers() + 1);
 		}
 	}
@@ -352,8 +349,8 @@ public class GbaServiceImpl implements GbaService
 	private GbaValidatieWrapper valideerGevondenClient(Client client, Vo107Bericht bericht, GbaVerwerkingsLog verwerkingLog, boolean isVerwijderBericht,
 		boolean clientIsVerwijderd)
 	{
-		String anummerARecord = bericht.getString(Vo107_ArecordVeld.ANR);
-		String bsn = bericht.getBsn();
+		var anummerARecord = bericht.getString(Vo107_ArecordVeld.ANR);
+		var bsn = bericht.getBsn();
 
 		if (client != null)
 		{
@@ -366,8 +363,8 @@ public class GbaServiceImpl implements GbaService
 
 			registreerMutatie(client, bericht);
 
-			boolean isWijzigAnummerBericht = WA11.equalsIgnoreCase(bericht.getBerichtType());
-			String anummerClient = client.getPersoon().getAnummer();
+			var isWijzigAnummerBericht = WA11.equalsIgnoreCase(bericht.getBerichtType());
+			var anummerClient = client.getPersoon().getAnummer();
 
 			if (clientIsVerwijderd && !isVerwijderBericht && anummerClient != null && 
 				(isWijzigAnummerBericht || anummerClient.equals(anummerARecord)))
@@ -376,7 +373,7 @@ public class GbaServiceImpl implements GbaService
 				{
 					client.getPersoon().setBsn(bsn);
 					client.setGbaStatus(GbaStatus.INDICATIE_AANWEZIG);
-					String foutString =
+					var foutString =
 						"Verstrekking of mutatie bericht ontvangen voor burger die van persoonslijst verwijderd is. Verwijderindicatie wordt nu weer opgeheven en het juiste bsn teruggezet. "
 							+ getFoutmelding(bericht, verwerkingLog, client) + ", berichttype " + bericht.getBerichtType();
 					clientIsVerwijderd = false;
@@ -384,8 +381,8 @@ public class GbaServiceImpl implements GbaService
 				}
 				else
 				{
-					GbaFoutRegel foutRegel = new GbaFoutRegel();
-					String foutString = "Bericht geskipt: Bericht binnengekregen voor burger die van persoonslijst verwijderd is, "
+					var foutRegel = new GbaFoutRegel();
+					var foutString = "Bericht geskipt: Bericht binnengekregen voor burger die van persoonslijst verwijderd is, "
 						+ getFoutmelding(bericht, verwerkingLog, client) + ", berichttype " + bericht.getBerichtType();
 					foutRegel.setFout(foutString);
 					logService.logGebeurtenis(LogGebeurtenis.GBA_IMPORT_SKIP, clientService.getScreeningOrganisatieVan(client), client, foutString);
@@ -398,13 +395,13 @@ public class GbaServiceImpl implements GbaService
 				}
 			}
 
-			String anummerBRecord = getStringUitBericht(bericht, GbaRubriek.PERS_A_NUMMER);
+			var anummerBRecord = getStringUitBericht(bericht, GbaRubriek.PERS_A_NUMMER);
 			if (!clientIsVerwijderd && anummerClient != null &&
 				isWijzigAnummerBericht && !anummerClient.equals(anummerBRecord) ||
 				!isWijzigAnummerBericht && !anummerClient.equals(anummerARecord))
 			{
-				GbaFoutRegel foutRegel = new GbaFoutRegel();
-				String foutString = "Bericht geskipt: A-nummer in header van bericht en a-nummer van client (gevonden op basis van bsn) komen niet overeen. ";
+				var foutRegel = new GbaFoutRegel();
+				var foutString = "Bericht geskipt: A-nummer in header van bericht en a-nummer van client (gevonden op basis van bsn) komen niet overeen. ";
 				if (isWijzigAnummerBericht)
 				{
 					foutString = "Bericht geskipt: A-nummer in de b-record van bericht(Wa11) en a-nummer van client (gevonden op basis van bsn) komen niet overeen.";
@@ -440,17 +437,17 @@ public class GbaServiceImpl implements GbaService
 
 	protected String getFoutmelding(Vo107Bericht bericht, GbaVerwerkingsLog verwerkingLog, Client client)
 	{
-		String bestandsnaam = "onbekend";
+		var bestandsnaam = "onbekend";
 		if (!verwerkingLog.getBestanden().isEmpty())
 		{
 			bestandsnaam = verwerkingLog.getBestanden().get(verwerkingLog.getBestanden().size() - 1).getNaam();
 		}
 
-		Date geboorteDatum = getDateUitBericht(bericht, GbaRubriek.PERS_GEBOORTEDATUM);
-		String foutmelding = "Record met eref " + bericht.getString(Vo107_ArecordVeld.EREF) + " in bestand " + bestandsnaam + ", bsn uit bericht: "
+		var geboorteDatum = getDateUitBericht(bericht, GbaRubriek.PERS_GEBOORTEDATUM);
+		var foutmelding = "Record met eref " + bericht.getString(Vo107_ArecordVeld.EREF) + " in bestand " + bestandsnaam + ", bsn uit bericht: "
 			+ bericht.getString(Vo107_ArecordVeld.SOFINR) + ", a-nummer uit bericht: " + bericht.getString(Vo107_ArecordVeld.ANR);
 
-		boolean gebDatumAdded = false;
+		var gebDatumAdded = false;
 		if (client != null && client.getPersoon() != null && client.getPersoon().getGeboortedatum() != null)
 		{
 			foutmelding += ". Gegevens gevonden in client, bsn: " + client.getPersoon().getBsn() + ", a-nummer: " + client.getPersoon().getAnummer();
@@ -485,11 +482,11 @@ public class GbaServiceImpl implements GbaService
 
 			if (bericht.getBerichtType().equals(WA11))
 			{
-				String anummer = bericht.getString(Vo107_ArecordVeld.ANR);
-				Client otherClientWithSameAnummer = clientService.getClientByAnummer(anummer);
+				var anummer = bericht.getString(Vo107_ArecordVeld.ANR);
+				var otherClientWithSameAnummer = clientService.getClientByAnummer(anummer);
 				if (otherClientWithSameAnummer != null)
 				{
-					String foutmelding = "Bericht(Wa11) geskipt: Client met bsn " + bsn + " en anummer " + anummer
+					var foutmelding = "Bericht(Wa11) geskipt: Client met bsn " + bsn + " en anummer " + anummer
 						+ " kan niet gewijzigd worden, omdat er al een client met dit anummer (bsn " + otherClientWithSameAnummer.getPersoon().getBsn() + ") aanwezig is. "
 						+ getFoutmelding(bericht, verwerkingLog, client);
 					logService.logGebeurtenis(LogGebeurtenis.GBA_IMPORT_SKIP, clientService.getScreeningOrganisatieVan(otherClientWithSameAnummer), otherClientWithSameAnummer,
@@ -508,11 +505,11 @@ public class GbaServiceImpl implements GbaService
 
 	private boolean verstrekkingErrorClientMetAnderAnummerBestaatAl(Vo107Bericht bericht, GbaVerwerkingsLog verwerkingLog, Client client)
 	{
-		String anummer = getStringUitBericht(bericht, GbaRubriek.PERS_A_NUMMER);
-		Client otherClientWithSameAnummer = clientService.getClientByAnummer(anummer);
+		var anummer = getStringUitBericht(bericht, GbaRubriek.PERS_A_NUMMER);
+		var otherClientWithSameAnummer = clientService.getClientByAnummer(anummer);
 		if (otherClientWithSameAnummer != null)
 		{
-			String foutmelding = "Bericht geskipt: Client met bsn " + bericht.getBsn() + " en anummer " + anummer
+			var foutmelding = "Bericht geskipt: Client met bsn " + bericht.getBsn() + " en anummer " + anummer
 				+ " kan niet aangemaakt worden, omdat er al een client met dit anummer (bsn " + otherClientWithSameAnummer.getPersoon().getBsn() + ") aanwezig is. "
 				+ getFoutmelding(bericht, verwerkingLog, client);
 			logService.logGebeurtenis(LogGebeurtenis.GBA_IMPORT_SKIP, clientService.getScreeningOrganisatieVan(otherClientWithSameAnummer), otherClientWithSameAnummer,
@@ -548,8 +545,8 @@ public class GbaServiceImpl implements GbaService
 
 	private Client vulNieuweClient(Vo107Bericht bericht, GbaVerwerkingsLog verwerkingLog)
 	{
-		Client client = new Client();
-		Persoon persoon = new Persoon();
+		var client = new Client();
+		var persoon = new Persoon();
 		persoon.setClient(client);
 		client.setPersoon(persoon);
 		client.setGbaStatus(GbaStatus.INDICATIE_AANWEZIG);
@@ -577,14 +574,14 @@ public class GbaServiceImpl implements GbaService
 
 		if (getScreeningOrganisatie(client) != null)
 		{
-			GbaVerwerkingEntry verwerkingEntry = getOrCreateEntry(verwerkingLog, client);
+			var verwerkingEntry = getOrCreateEntry(verwerkingLog, client);
 			verwerkingEntry.setAantalBijgewerkteBugers(verwerkingEntry.getAantalBijgewerkteBugers() + 1);
 		}
 
 		var oudeGbaStatus = client.getGbaStatus();
 
-		boolean persoonsGegevensGewijzigd = vulPersoonsGegevens(client, bericht, verwerkingLog, false);
-		boolean adresGewijzigd = verwerkAdres(bericht, verwerkingLog, client);
+		var persoonsGegevensGewijzigd = vulPersoonsGegevens(client, bericht, verwerkingLog, false);
+		var adresGewijzigd = verwerkAdres(bericht, verwerkingLog, client);
 
 		gbaVraagService.gbaVraagAfrondenVoorMutatieOfVerstrekking(client, oudeGbaStatus, persoonsGegevensGewijzigd, adresGewijzigd);
 
@@ -594,7 +591,7 @@ public class GbaServiceImpl implements GbaService
 
 	private void registreerMutatie(Client client, Vo107Bericht bericht)
 	{
-		GbaMutatie gbaMutatie = new GbaMutatie();
+		var gbaMutatie = new GbaMutatie();
 		gbaMutatie.setMutatieDatum(currentDateSupplier.getDate());
 		client.setLaatsteGbaMutatie(gbaMutatie);
 		gbaMutatie.setTypeBericht(bericht.getBerichtType());
@@ -614,7 +611,7 @@ public class GbaServiceImpl implements GbaService
 	private GbaVerwerkingEntry getOrCreateEntry(GbaVerwerkingsLog verwerkingLog, Client client)
 	{
 		GbaVerwerkingEntry verwerkingEntry = null;
-		for (GbaVerwerkingEntry entry : verwerkingLog.getEntries())
+		for (var entry : verwerkingLog.getEntries())
 		{
 			if (entry.getScreeningOrganisatie().equals(getScreeningOrganisatie(client)))
 			{
@@ -635,21 +632,21 @@ public class GbaServiceImpl implements GbaService
 	private boolean verwerkAdres(Vo107Bericht bericht, GbaVerwerkingsLog verwerkingLog, Client client)
 	{
 
-		Persoon persoon = client.getPersoon();
-		BagAdres adres = persoon.getGbaAdres();
+		var persoon = client.getPersoon();
+		var adres = persoon.getGbaAdres();
 		if (adres == null)
 		{
 			adres = new BagAdres();
 		}
 
-		boolean adresGegevensGewijzigd = vulAdresMetGbaGegevens(adres, bericht, client, verwerkingLog);
+		var adresGegevensGewijzigd = vulAdresMetGbaGegevens(adres, bericht, client, verwerkingLog);
 		adresGegevensGewijzigd |= changeProperty(adres, "postcodeCoordinaten", coordinatenService.getCoordinaten(adres), true);
 		persoon.setGbaAdres(adres);
 
 		hibernateService.saveOrUpdate(adres);
 		hibernateService.saveOrUpdate(persoon);
 
-		boolean isTijdelijkGbaAdresVerwijderd = false;
+		var isTijdelijkGbaAdresVerwijderd = false;
 
 		if (".".equals(StringUtils.trim(adres.getStraat())) && StringUtils.isNotBlank(getStringUitBericht(bericht, GbaRubriek.VERBP_AAND_GEG_ONDERZOEK)))
 		{
@@ -665,20 +662,20 @@ public class GbaServiceImpl implements GbaService
 			{
 				if (adres.getGbaGemeente() != null && !adres.getGbaGemeente().getCode().equals(Gemeente.RNI_CODE) && client.getPersoon().getDatumVertrokkenUitNederland() == null)
 				{
-					String melding = "Lege postcode (08.11.60) en/of lege huisnummer (08.11.20) en/of lege woonplaats (08.11.70) en/of gevulde locatieomschrijving (08.12.10) "
+					var melding = "Lege postcode (08.11.60) en/of lege huisnummer (08.11.20) en/of lege woonplaats (08.11.70) en/of gevulde locatieomschrijving (08.12.10) "
 						+ getFoutmelding(bericht, verwerkingLog, client);
 					logService.logGebeurtenis(LogGebeurtenis.GBA_ADRES_ONVOLLEDIG, clientService.getScreeningOrganisatieVan(client), client, melding);
 				}
 			}
 			else
 			{
-				TijdelijkGbaAdres tijdelijkGbaAdres = persoon.getTijdelijkGbaAdres();
+				var tijdelijkGbaAdres = persoon.getTijdelijkGbaAdres();
 				if (tijdelijkGbaAdres != null)
 				{
 					if (tijdelijkGbaAdres.getId() != null)
 					{
 						isTijdelijkGbaAdresVerwijderd = true;
-						String melding = "Automatisch verwijderd. " + getFoutmelding(bericht, verwerkingLog, client);
+						var melding = "Automatisch verwijderd. " + getFoutmelding(bericht, verwerkingLog, client);
 						logService.logGebeurtenis(LogGebeurtenis.GBA_TIJDELIJK_ADRES, clientService.getScreeningOrganisatieVan(client), client, melding);
 						hibernateService.delete(tijdelijkGbaAdres);
 					}
@@ -694,7 +691,7 @@ public class GbaServiceImpl implements GbaService
 	private void setGbaAdresGewijzigdMarker(Client client, boolean adresGewijzigd, boolean tijdelijkGbaVerwijderd)
 	{
 
-		GbaMutatie huidigeMutatie = getHuidigeGbaMutatie(client);
+		var huidigeMutatie = getHuidigeGbaMutatie(client);
 		if (huidigeMutatie != null && client.getMammaDossier() != null
 			&& (client.getMammaDossier().getLaatsteScreeningRonde() != null || client.getMammaDossier().getLaatsteAfmelding() != null)
 			&& (adresGewijzigd || tijdelijkGbaVerwijderd))
@@ -705,7 +702,7 @@ public class GbaServiceImpl implements GbaService
 
 	private void plaatsBSNGewijzigdMarker(Client client, String oorspronkelijkBsn, String nieuweBsn)
 	{
-		GbaMutatie huidigeMutatie = getHuidigeGbaMutatie(client);
+		var huidigeMutatie = getHuidigeGbaMutatie(client);
 
 		if (huidigeMutatie != null && client.getMammaDossier() != null
 			&& (client.getMammaDossier().getLaatsteScreeningRonde() != null || client.getMammaDossier().getLaatsteAfmelding() != null)
@@ -733,7 +730,7 @@ public class GbaServiceImpl implements GbaService
 
 	private void plaatsMammaMarker(Client client, String marker)
 	{
-		GbaMutatie huidigeMutatie = getHuidigeGbaMutatie(client);
+		var huidigeMutatie = getHuidigeGbaMutatie(client);
 		if (huidigeMutatie != null && client.getMammaDossier() != null && client.getMammaDossier().getLaatsteScreeningRonde() != null
 			&& !StringUtils.contains(huidigeMutatie.getAanvullendeInformatie(), marker))
 		{
@@ -745,10 +742,10 @@ public class GbaServiceImpl implements GbaService
 	{
 		if (bericht.getRubriekMap().containsKey(GbaRubriek.TITEL_CODE.getNummer()))
 		{
-			String titelCode = getStringUitBericht(bericht, GbaRubriek.TITEL_CODE);
-			List<Client> clienten = clientService.getClientenMetTitel(titelCode);
+			var titelCode = getStringUitBericht(bericht, GbaRubriek.TITEL_CODE);
+			var clienten = clientService.getClientenMetTitel(titelCode);
 
-			for (Client client : clienten)
+			for (var client : clienten)
 			{
 				client.getPersoon().setTitel(getStringUitBericht(bericht, GbaRubriek.TITEL_OMSCHRIJVING));
 			}
@@ -757,7 +754,7 @@ public class GbaServiceImpl implements GbaService
 		}
 		else if (bericht.getRubriekMap().containsKey(GbaRubriek.GEMEENTE_CODE.getNummer()))
 		{
-			String gemeenteCode = getStringUitBericht(bericht, GbaRubriek.GEMEENTE_CODE);
+			var gemeenteCode = getStringUitBericht(bericht, GbaRubriek.GEMEENTE_CODE);
 			var gemeente = gemeenteRepository.findOneByCode(gemeenteCode).orElse(null);
 
 			if (gemeente == null)
@@ -766,11 +763,11 @@ public class GbaServiceImpl implements GbaService
 				gemeente.setCode(gemeenteCode);
 			}
 
-			String naam = getStringUitBericht(bericht, GbaRubriek.GEMEENTE_NAAM);
-			Date beginDatum = getDateUitBericht(bericht, GbaRubriek.GEMEENTE_BEGINDATUM);
-			Date eindDatum = getDateUitBericht(bericht, GbaRubriek.GEMEENTE_EINDDATUM);
+			var naam = getStringUitBericht(bericht, GbaRubriek.GEMEENTE_NAAM);
+			var beginDatum = getDateUitBericht(bericht, GbaRubriek.GEMEENTE_BEGINDATUM);
+			var eindDatum = getDateUitBericht(bericht, GbaRubriek.GEMEENTE_EINDDATUM);
 
-			String nieuweGemeenteCode = getStringUitBericht(bericht, GbaRubriek.NIEUWE_GEMEENTE_CODE);
+			var nieuweGemeenteCode = getStringUitBericht(bericht, GbaRubriek.NIEUWE_GEMEENTE_CODE);
 
 			if (naam != null)
 			{
@@ -789,7 +786,7 @@ public class GbaServiceImpl implements GbaService
 
 			if (nieuweGemeenteCode != null)
 			{
-				Gemeente nieuweGemeente = gemeenteRepository.findOneByCode(nieuweGemeenteCode).orElse(null);
+				var nieuweGemeente = gemeenteRepository.findOneByCode(nieuweGemeenteCode).orElse(null);
 				gemeente.setOpvolgGemeente(nieuweGemeente);
 			}
 
@@ -800,23 +797,23 @@ public class GbaServiceImpl implements GbaService
 	private boolean vulAdresMetGbaGegevens(BagAdres adres, Vo107Bericht bericht, Client client, GbaVerwerkingsLog verwerkingsLog)
 	{
 
-		String huisnummerString = getStringUitBericht(bericht, GbaRubriek.VERBP_HUISNR);
-		String postcode = getStringUitBericht(bericht, GbaRubriek.VERBP_POSTCODE);
-		String huisletter = getStringUitBericht(bericht, GbaRubriek.VERBP_HUISLETTER);
-		String toevoeging = getStringUitBericht(bericht, GbaRubriek.VERBP_HUISNRTOEV);
-		String aanduiding = getStringUitBericht(bericht, GbaRubriek.VERBP_AAND_HUISNR);
-		String straat = getStringUitBericht(bericht, GbaRubriek.VERBP_STRAATNAAM);
-		String gemeenteDeel = getStringUitBericht(bericht, GbaRubriek.VERBP_GEMEENTEDEEL);
-		String woonplaats = getStringUitBericht(bericht, GbaRubriek.VERBP_WOONPLAATS);
-		String locatieBeschrijving = getStringUitBericht(bericht, GbaRubriek.VERBP_LOC_BESCHR);
-		String gemeenteCode = getCodeUitBericht(bericht, GbaRubriek.VERBP_GEMEENTE_INSCHR);
-		String naamOpenbareRuimte = getStringUitBericht(bericht, GbaRubriek.VERBP_NAAMOPENBARERUIMTE);
-		String identificatieCodeVerblijfplaats = getStringUitBericht(bericht, GbaRubriek.VERBP_IDVERBLIJFPLAATS);
-		String identificatieCodeNummerAanduiding = getStringUitBericht(bericht, GbaRubriek.VERBP_IDNUMMERAANDUIDING);
+		var huisnummerString = getStringUitBericht(bericht, GbaRubriek.VERBP_HUISNR);
+		var postcode = getStringUitBericht(bericht, GbaRubriek.VERBP_POSTCODE);
+		var huisletter = getStringUitBericht(bericht, GbaRubriek.VERBP_HUISLETTER);
+		var toevoeging = getStringUitBericht(bericht, GbaRubriek.VERBP_HUISNRTOEV);
+		var aanduiding = getStringUitBericht(bericht, GbaRubriek.VERBP_AAND_HUISNR);
+		var straat = getStringUitBericht(bericht, GbaRubriek.VERBP_STRAATNAAM);
+		var gemeenteDeel = getStringUitBericht(bericht, GbaRubriek.VERBP_GEMEENTEDEEL);
+		var woonplaats = getStringUitBericht(bericht, GbaRubriek.VERBP_WOONPLAATS);
+		var locatieBeschrijving = getStringUitBericht(bericht, GbaRubriek.VERBP_LOC_BESCHR);
+		var gemeenteCode = getCodeUitBericht(bericht, GbaRubriek.VERBP_GEMEENTE_INSCHR);
+		var naamOpenbareRuimte = getStringUitBericht(bericht, GbaRubriek.VERBP_NAAMOPENBARERUIMTE);
+		var identificatieCodeVerblijfplaats = getStringUitBericht(bericht, GbaRubriek.VERBP_IDVERBLIJFPLAATS);
+		var identificatieCodeNummerAanduiding = getStringUitBericht(bericht, GbaRubriek.VERBP_IDNUMMERAANDUIDING);
 
-		boolean verstrekking = bericht.isVerstrekking();
+		var verstrekking = bericht.isVerstrekking();
 
-		adres.setLand(nl.topicuszorg.gba.model.Land.NEDERLAND);
+		adres.setLand(Land.NEDERLAND);
 
 		Integer huisnummer = null;
 		if (!Strings.isNullOrEmpty(huisnummerString))
@@ -824,7 +821,7 @@ public class GbaServiceImpl implements GbaService
 			huisnummer = Integer.valueOf(huisnummerString);
 		}
 
-		boolean adresGegevensGewijzigd = changeProperty(adres, "huisnummer", huisnummer, verstrekking || huisnummerString != null);
+		var adresGegevensGewijzigd = changeProperty(adres, "huisnummer", huisnummer, verstrekking || huisnummerString != null);
 		adresGegevensGewijzigd |= changeProperty(adres, "postcode", PostcodeFormatter.formatPostcode(postcode, false), verstrekking || postcode != null);
 
 		if (StringUtils.isBlank(huisletter))
@@ -883,39 +880,39 @@ public class GbaServiceImpl implements GbaService
 
 	private boolean vulPersoonsGegevens(Client client, Vo107Bericht bericht, GbaVerwerkingsLog verwerkingsLog, boolean isNieuw)
 	{
-		boolean persoonsGegevensGewijzigd = false;
+		var persoonsGegevensGewijzigd = false;
 
-		String bsn = getStringUitBericht(bericht, GbaRubriek.PERS_BSN);
-		String anummer = getStringUitBericht(bericht, GbaRubriek.PERS_A_NUMMER);
-		String arecordAnummer = bericht.getString(Vo107_ArecordVeld.ANR);
-		String tussenvoegselGeslachtsnaam = getStringUitBericht(bericht, GbaRubriek.PERS_VOORV_GESLACHTSNAAM);
-		String geslachtsnaam = getStringUitBericht(bericht, GbaRubriek.PERS_GESLACHTSNAAM);
-		String voornaam = getStringUitBericht(bericht, GbaRubriek.PERS_VOORNAMEN_01_02_10);
-		NaamGebruik naamgebruik = getNaamGebruikUitBericht(bericht, GbaRubriek.PERS_NAAMGEBRUIK);
-		String adelijkeTitel = getStringUitBericht(bericht, GbaRubriek.PERS_TITELPREDIKAAT);
-		String codeTitel = getCodeUitBericht(bericht, GbaRubriek.PERS_TITELPREDIKAAT);
+		var bsn = getStringUitBericht(bericht, GbaRubriek.PERS_BSN);
+		var anummer = getStringUitBericht(bericht, GbaRubriek.PERS_A_NUMMER);
+		var arecordAnummer = bericht.getString(Vo107_ArecordVeld.ANR);
+		var tussenvoegselGeslachtsnaam = getStringUitBericht(bericht, GbaRubriek.PERS_VOORV_GESLACHTSNAAM);
+		var geslachtsnaam = getStringUitBericht(bericht, GbaRubriek.PERS_GESLACHTSNAAM);
+		var voornaam = getStringUitBericht(bericht, GbaRubriek.PERS_VOORNAMEN_01_02_10);
+		var naamgebruik = getNaamGebruikUitBericht(bericht, GbaRubriek.PERS_NAAMGEBRUIK);
+		var adelijkeTitel = getStringUitBericht(bericht, GbaRubriek.PERS_TITELPREDIKAAT);
+		var codeTitel = getCodeUitBericht(bericht, GbaRubriek.PERS_TITELPREDIKAAT);
 
-		Date geboorteDatum = getDateUitBericht(bericht, GbaRubriek.PERS_GEBOORTEDATUM);
-		DatumPrecisie geboorteDatumPrecisie = getDatumPrecisieUitBericht(bericht, GbaRubriek.PERS_GEBOORTEDATUM);
-		Date overlijdensDatum = getDateUitBericht(bericht, GbaRubriek.OVL_DATUM_OVERLIJDEN);
+		var geboorteDatum = getDateUitBericht(bericht, GbaRubriek.PERS_GEBOORTEDATUM);
+		var geboorteDatumPrecisie = getDatumPrecisieUitBericht(bericht, GbaRubriek.PERS_GEBOORTEDATUM);
+		var overlijdensDatum = getDateUitBericht(bericht, GbaRubriek.OVL_DATUM_OVERLIJDEN);
 
-		Geslacht geslacht = getGeslachtUitBericht(bericht, GbaRubriek.PERS_GESLACHTSAANDUIDING);
+		var geslacht = getGeslachtUitBericht(bericht, GbaRubriek.PERS_GESLACHTSAANDUIDING);
 
-		Date datumVertrekUitNederland = getDateUitBericht(bericht, GbaRubriek.VERBP_DATUM_VERTREK_NED);
-		Date datumVestigingInNederland = getDateUitBericht(bericht, GbaRubriek.VERBP_DATUM_VESTIGING_NED);
-		String geheim = getStringUitBericht(bericht, GbaRubriek.INSCH_INDICATIE_GEHEIM);
-		Date datumAanvangAdreshouding = getDateUitBericht(bericht, GbaRubriek.VERBP_DATUM_AANV_ADRESH);
+		var datumVertrekUitNederland = getDateUitBericht(bericht, GbaRubriek.VERBP_DATUM_VERTREK_NED);
+		var datumVestigingInNederland = getDateUitBericht(bericht, GbaRubriek.VERBP_DATUM_VESTIGING_NED);
+		var geheim = getStringUitBericht(bericht, GbaRubriek.INSCH_INDICATIE_GEHEIM);
+		var datumAanvangAdreshouding = getDateUitBericht(bericht, GbaRubriek.VERBP_DATUM_AANV_ADRESH);
 
-		String registerGemeenteAkte = getCodeUitBericht(bericht, GbaRubriek.OVL_REGISTERGEMEENTE_AKTE);
-		String akteNummerOverlijden = getStringUitBericht(bericht, GbaRubriek.OVL_AKTENUMMER);
+		var registerGemeenteAkte = getCodeUitBericht(bericht, GbaRubriek.OVL_REGISTERGEMEENTE_AKTE);
+		var akteNummerOverlijden = getStringUitBericht(bericht, GbaRubriek.OVL_AKTENUMMER);
 
-		boolean verstrekking = bericht.isVerstrekking();
+		var verstrekking = bericht.isVerstrekking();
 
-		Persoon persoon = client.getPersoon();
+		var persoon = client.getPersoon();
 
 		if (!Strings.isNullOrEmpty(bsn))
 		{
-			String oorspronkelijkBsn = persoon.getBsn();
+			var oorspronkelijkBsn = persoon.getBsn();
 			persoonsGegevensGewijzigd |= changeProperty(persoon, "bsn", bsn, false);
 			if (persoonsGegevensGewijzigd)
 			{
@@ -932,15 +929,15 @@ public class GbaServiceImpl implements GbaService
 			persoonsGegevensGewijzigd |= changeProperty(persoon, "anummer", anummer, false);
 		}
 
-		boolean isAchternaamGewijzigd = changeProperty(persoon, "achternaam", geslachtsnaam, verstrekking);
+		var isAchternaamGewijzigd = changeProperty(persoon, "achternaam", geslachtsnaam, verstrekking);
 		persoonsGegevensGewijzigd |= isAchternaamGewijzigd;
-		boolean imsGegevensGewijzigd = isAchternaamGewijzigd;
+		var imsGegevensGewijzigd = isAchternaamGewijzigd;
 
-		boolean isTussenvoegselGewijzigd = changeProperty(persoon, "tussenvoegsel", tussenvoegselGeslachtsnaam, verstrekking);
+		var isTussenvoegselGewijzigd = changeProperty(persoon, "tussenvoegsel", tussenvoegselGeslachtsnaam, verstrekking);
 		persoonsGegevensGewijzigd |= isTussenvoegselGewijzigd;
 		imsGegevensGewijzigd |= isTussenvoegselGewijzigd;
 
-		boolean isVoornaamGewijzigd = changeProperty(persoon, "voornaam", voornaam, verstrekking);
+		var isVoornaamGewijzigd = changeProperty(persoon, "voornaam", voornaam, verstrekking);
 		persoonsGegevensGewijzigd |= isVoornaamGewijzigd;
 		imsGegevensGewijzigd |= isVoornaamGewijzigd;
 
@@ -959,18 +956,18 @@ public class GbaServiceImpl implements GbaService
 
 		if (overlijdensDatum != null)
 		{
-			boolean isOverlijdensdatumGewijzigd = changeProperty(persoon, "overlijdensdatum", overlijdensDatum, verstrekking);
+			var isOverlijdensdatumGewijzigd = changeProperty(persoon, "overlijdensdatum", overlijdensDatum, verstrekking);
 			persoonsGegevensGewijzigd |= isOverlijdensdatumGewijzigd;
 			imsGegevensGewijzigd |= isOverlijdensdatumGewijzigd;
 		}
 		else if (getStringUitBericht(bericht, GbaRubriek.OVL_DATUM_OVERLIJDEN) != null || verstrekking)
 		{
-			boolean isOverlijdingsdatumGewijzigd = changeProperty(persoon, "overlijdensdatum", null, true);
+			var isOverlijdingsdatumGewijzigd = changeProperty(persoon, "overlijdensdatum", null, true);
 			persoonsGegevensGewijzigd |= isOverlijdingsdatumGewijzigd;
 			imsGegevensGewijzigd |= isOverlijdingsdatumGewijzigd;
 		}
 
-		boolean isGeslachtGewijzigd = changeProperty(persoon, "geslacht", geslacht, verstrekking || getStringUitBericht(bericht, GbaRubriek.PERS_GESLACHTSAANDUIDING) != null);
+		var isGeslachtGewijzigd = changeProperty(persoon, "geslacht", geslacht, verstrekking || getStringUitBericht(bericht, GbaRubriek.PERS_GESLACHTSAANDUIDING) != null);
 		persoonsGegevensGewijzigd |= isGeslachtGewijzigd;
 		imsGegevensGewijzigd |= isGeslachtGewijzigd;
 
@@ -989,7 +986,7 @@ public class GbaServiceImpl implements GbaService
 		}
 		else
 		{
-			Gemeente gemeente = getOrCreateGemeente(bericht, client, verwerkingsLog, registerGemeenteAkte);
+			var gemeente = getOrCreateGemeente(bericht, client, verwerkingsLog, registerGemeenteAkte);
 			persoonsGegevensGewijzigd |= changeProperty(persoon, "registerGemeenteAkteOverlijden", gemeente, verstrekking);
 		}
 
@@ -1022,7 +1019,7 @@ public class GbaServiceImpl implements GbaService
 			persoonsGegevensGewijzigd |= changeProperty(persoon, "datumVertrokkenUitNederland", null, true);
 		}
 
-		GbaPartnerschap partnerschap = bericht.getMeestRecentPartnerschap();
+		var partnerschap = bericht.getMeestRecentPartnerschap();
 		if (partnerschap != null)
 		{
 
@@ -1071,7 +1068,7 @@ public class GbaServiceImpl implements GbaService
 
 		if (geboorteDatum != null)
 		{
-			boolean isGeboortedatumGewijzigd = changeProperty(persoon, "geboortedatum", geboorteDatum, verstrekking);
+			var isGeboortedatumGewijzigd = changeProperty(persoon, "geboortedatum", geboorteDatum, verstrekking);
 			persoonsGegevensGewijzigd |= isGeboortedatumGewijzigd;
 			imsGegevensGewijzigd |= isGeboortedatumGewijzigd;
 
@@ -1098,7 +1095,7 @@ public class GbaServiceImpl implements GbaService
 
 	private boolean changeProperty(Object target, String property, Object newValue, boolean blankOnNull)
 	{
-		boolean propertyChanged = false;
+		var propertyChanged = false;
 		if (newValue != null || blankOnNull)
 		{
 			try
@@ -1107,7 +1104,7 @@ public class GbaServiceImpl implements GbaService
 				{
 					newValue = null;
 				}
-				Object oldValue = PropertyUtils.getProperty(target, property);
+				var oldValue = PropertyUtils.getProperty(target, property);
 				propertyChanged = oldValue == null && newValue != null || oldValue != null && !oldValue.equals(newValue);
 
 				if (propertyChanged)
@@ -1130,7 +1127,7 @@ public class GbaServiceImpl implements GbaService
 
 	public void createFout(Client client, GbaVerwerkingsLog verwerkingsLog, String fout, GbaFoutCategorie foutcat)
 	{
-		GbaFoutRegel gbaFoutRegel = new GbaFoutRegel();
+		var gbaFoutRegel = new GbaFoutRegel();
 		if (client != null)
 		{
 			gbaFoutRegel.setClient(client.getId());
@@ -1143,7 +1140,7 @@ public class GbaServiceImpl implements GbaService
 
 	private NaamGebruik getNaamGebruikUitBericht(Vo107Bericht bericht, GbaRubriek gbaRubriek)
 	{
-		String stringValue = getStringUitBericht(bericht, gbaRubriek);
+		var stringValue = getStringUitBericht(bericht, gbaRubriek);
 
 		if (!Strings.isNullOrEmpty(stringValue))
 		{
@@ -1156,7 +1153,7 @@ public class GbaServiceImpl implements GbaService
 
 	private String getStringUitBericht(Vo107Bericht bericht, GbaRubriek gbaRubriek)
 	{
-		Record<VoxBrecordVeld> rubriek = bericht.getSingleRubriek(gbaRubriek.getNummer());
+		var rubriek = bericht.getSingleRubriek(gbaRubriek.getNummer());
 		if (rubriek == null)
 		{
 			return null;
@@ -1166,7 +1163,7 @@ public class GbaServiceImpl implements GbaService
 
 	private String getCodeUitBericht(Vo107Bericht bericht, GbaRubriek gbaRubriek)
 	{
-		Record<VoxBrecordVeld> rubriek = bericht.getSingleRubriek(gbaRubriek.getNummer());
+		var rubriek = bericht.getSingleRubriek(gbaRubriek.getNummer());
 		if (rubriek == null)
 		{
 			return null;
@@ -1176,7 +1173,7 @@ public class GbaServiceImpl implements GbaService
 
 	private Date getDateUitBericht(Vo107Bericht bericht, GbaRubriek gbaRubriek)
 	{
-		String stringValue = getStringUitBericht(bericht, gbaRubriek);
+		var stringValue = getStringUitBericht(bericht, gbaRubriek);
 		if (stringValue == null || stringValue.startsWith("0000"))
 		{
 			return null;
@@ -1186,7 +1183,7 @@ public class GbaServiceImpl implements GbaService
 
 	private DatumPrecisie getDatumPrecisieUitBericht(Vo107Bericht bericht, GbaRubriek gbaRubriek)
 	{
-		String stringValue = getStringUitBericht(bericht, gbaRubriek);
+		var stringValue = getStringUitBericht(bericht, gbaRubriek);
 
 		if (stringValue != null && stringValue.endsWith("0000"))
 		{
@@ -1202,7 +1199,7 @@ public class GbaServiceImpl implements GbaService
 
 	private Geslacht getGeslachtUitBericht(Vo107Bericht bericht, GbaRubriek gbaRubriek)
 	{
-		String stringValue = getStringUitBericht(bericht, gbaRubriek);
+		var stringValue = getStringUitBericht(bericht, gbaRubriek);
 
 		if (stringValue == null)
 		{

@@ -26,7 +26,6 @@ import lombok.AllArgsConstructor;
 import nl.rivm.screenit.clientportaal.controllers.AbstractController;
 import nl.rivm.screenit.clientportaal.model.colon.ColonFitStatusDto;
 import nl.rivm.screenit.clientportaal.services.colon.ColonFitService;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.service.ClientContactService;
 
@@ -52,7 +51,7 @@ public class ColonFitAanvragenController extends AbstractController
 	@GetMapping("status")
 	public ResponseEntity<ColonFitStatusDto> getFitStatus(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AANVRAGEN_NIEUWE_FIT))
 		{
@@ -65,7 +64,7 @@ public class ColonFitAanvragenController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> vraagFitAan(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AANVRAGEN_NIEUWE_FIT))
 		{

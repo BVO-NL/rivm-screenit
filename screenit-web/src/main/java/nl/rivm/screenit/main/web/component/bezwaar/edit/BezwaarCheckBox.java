@@ -35,7 +35,7 @@ public class BezwaarCheckBox extends GenericPanel<BezwaarViewWrapper>
 	public BezwaarCheckBox(String id, IModel<BezwaarViewWrapper> model)
 	{
 		super(id, new CompoundPropertyModel<>(model));
-		BezwaarViewWrapper wrapper = model.getObject();
+		var wrapper = model.getObject();
 
 		if (BezwaarType.GEEN_UITWISSELING_MET_DE_HUISARTS.equals(wrapper.getType()) && !Boolean.TRUE.equals(wrapper.getActief()))
 		{

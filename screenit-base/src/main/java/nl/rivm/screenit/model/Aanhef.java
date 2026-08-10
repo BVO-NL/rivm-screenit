@@ -46,7 +46,7 @@ public enum Aanhef
 
 	public static Aanhef getAanhefWithName(String name)
 	{
-		for (Aanhef hef : Aanhef.values())
+		for (var hef : Aanhef.values())
 		{
 			if (hef.getNaam().equals(name))
 			{

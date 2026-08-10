@@ -47,8 +47,8 @@ public class AfgeslotenOvereenkomstenLijstPanel extends Panel
 			@Override
 			protected void populateItem(ListItem<AfgeslotenOrganisatieOvereenkomst> item)
 			{
-				AfgeslotenOrganisatieOvereenkomst overeenkomst = (AfgeslotenOrganisatieOvereenkomst) item.getDefaultModelObject();
-				StringBuilder sb = new StringBuilder();
+				var overeenkomst = (AfgeslotenOrganisatieOvereenkomst) item.getDefaultModelObject();
+				var sb = new StringBuilder();
 				sb.append(overeenkomst.getOvereenkomst().getNaam());
 				sb.append(" (");
 				if (overeenkomst.getStartDatum() != null)

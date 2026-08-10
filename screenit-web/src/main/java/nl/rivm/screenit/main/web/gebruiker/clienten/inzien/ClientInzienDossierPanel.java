@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.inzien;
  */
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +50,6 @@ import nl.rivm.screenit.model.colon.OpenUitnodiging;
 import nl.rivm.screenit.model.colon.enums.ColonAfmeldingReden;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.OpenUitnodigingUitslag;
-import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.service.ClientDoelgroepService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -152,8 +150,8 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 
 		add(inactiefContainer);
 
-		WebMarkupContainer inactiefDatums = new WebMarkupContainer("inactiefDatums");
-		D dossier = getModelObject();
+		var inactiefDatums = new WebMarkupContainer("inactiefDatums");
+		var dossier = getModelObject();
 		inactiefContainer.add(maakInactiefDatumLabel(dossier));
 		actiefContainer.add(maakActiefDatumLabel(dossier));
 		add(getProjectBadge(bevolkingsonderzoek));
@@ -165,7 +163,7 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 
 	private Label maakInactiefDatumLabel(D dossier)
 	{
-		String label = "";
+		var label = "";
 		if (bevolkingsonderzoek == Bevolkingsonderzoek.COLON)
 		{
 			label = getVolgendeUitnodigingElement(dossier);
@@ -188,7 +186,7 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 
 	private Label maakActiefDatumLabel(D dossier)
 	{
-		String label = "";
+		var label = "";
 		if (bevolkingsonderzoek == Bevolkingsonderzoek.COLON)
 		{
 			label = getVolgendeUitnodigingElement(dossier);
@@ -198,20 +196,20 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 
 	private boolean showActief()
 	{
-		D dossier = getModelObject();
+		var dossier = getModelObject();
 		return dossierService.isDossierActief(dossier);
 	}
 
 	private WebMarkupContainer getProjectBadge(Bevolkingsonderzoek onderzoek)
 	{
-		Client client = clientModel.getObject();
-		List<ProjectClient> projectClienten = ProjectUtil.getProjectClientenForBVO(client, onderzoek, currentDateSupplier.getDate());
-		RepeatingView projectBadges = new RepeatingView("projectBadges");
-		for (ProjectClient projectClient : projectClienten)
+		var client = clientModel.getObject();
+		var projectClienten = ProjectUtil.getProjectClientenForBVO(client, onderzoek, currentDateSupplier.getDate());
+		var projectBadges = new RepeatingView("projectBadges");
+		for (var projectClient : projectClienten)
 		{
-			Boolean isActief = ProjectUtil.isClientActiefInProject(projectClient, currentDateSupplier.getDate());
-			String clientProjectLabel = ProjectUtil.getClientActiefInProjectString(projectClient, currentDateSupplier.getDate());
-			Label label = new Label(projectBadges.newChildId(), Model.of(clientProjectLabel));
+			var isActief = ProjectUtil.isClientActiefInProject(projectClient, currentDateSupplier.getDate());
+			var clientProjectLabel = ProjectUtil.getClientActiefInProjectString(projectClient, currentDateSupplier.getDate());
+			var label = new Label(projectBadges.newChildId(), Model.of(clientProjectLabel));
 			if (isActief)
 			{
 				label.add(new AttributeAppender("class", Model.of("status-actief"), " "));
@@ -236,11 +234,11 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 
 	private String getVolgendeUitnodigingElement(D dossier)
 	{
-		ColonDossier colonDossier = (ColonDossier) dossier;
+		var colonDossier = (ColonDossier) dossier;
 		if (doelgroepService.behoortTotDoelgroep(dossier.getClient(), bevolkingsonderzoek) && colonDossier.getVolgendeUitnodiging() != null)
 		{
-			LocalDate indicatieveUitnodigingdDatum = colonDossierBaseService.getDatumVolgendeUitnodiging(colonDossier);
-			String datumString = indicatieveUitnodigingdDatum == null ? "Nooit meer uitnodigen" : indicatieveUitnodigingdDatum.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+			var indicatieveUitnodigingdDatum = colonDossierBaseService.getDatumVolgendeUitnodiging(colonDossier);
+			var datumString = indicatieveUitnodigingdDatum == null ? "Nooit meer uitnodigen" : indicatieveUitnodigingdDatum.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 			return "Indicatie volgende uitnodigingsdatum: " + datumString + " ("
 				+ getString(EnumStringUtil.getPropertyString(colonDossier.getVolgendeUitnodiging().getInterval().getType())) + ")";
 		}
@@ -268,7 +266,7 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 			break;
 		}
 
-		for (DossierGebeurtenis dossierGebeurtenis : dossierGebeurtenissen)
+		for (var dossierGebeurtenis : dossierGebeurtenissen)
 		{
 			if (DossierGebeurtenisType.AFMELDING.equals(dossierGebeurtenis.getDossierGebeurtenisType()))
 			{
@@ -286,18 +284,18 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 
 	private ListView<? extends DossierGebeurtenis> getListView(List<DossierGebeurtenis> dossierGebeurtenissen2)
 	{
-		ListView<DossierGebeurtenis> dossierGebeurtenissen = new ListView<DossierGebeurtenis>("dossierGebeurtenissen", new DetachableListModel(dossierGebeurtenissen2))
+		var dossierGebeurtenissen = new ListView<DossierGebeurtenis>("dossierGebeurtenissen", new DetachableListModel(dossierGebeurtenissen2))
 		{
 
 			@Override
 			protected void populateItem(ListItem<DossierGebeurtenis> item)
 			{
-				DossierGebeurtenis dossierGebeurtenis = item.getModelObject();
+				var dossierGebeurtenis = item.getModelObject();
 
-				WebMarkupContainer dossierGebeurtenisContainer = new WebMarkupContainer("dossierGebeurtenisContainer");
+				var dossierGebeurtenisContainer = new WebMarkupContainer("dossierGebeurtenisContainer");
 
 				String omschrijving = null;
-				boolean clickable = false;
+				var clickable = false;
 				switch (dossierGebeurtenis.getDossierGebeurtenisType())
 				{
 				case AFMELDING:
@@ -347,10 +345,10 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 			protected void onEvent(AjaxRequestTarget target)
 			{
 
-				AfmeldenDossierGebeurtenis<A> afmeldenDossierGebeurtenis = (AfmeldenDossierGebeurtenis<A>) dossierGebeurtenis;
+				var afmeldenDossierGebeurtenis = (AfmeldenDossierGebeurtenis<A>) dossierGebeurtenis;
 				if (DossierGebeurtenisType.AFMELDING.equals(dossierGebeurtenis.getDossierGebeurtenisType()))
 				{
-					A afmelding = afmeldenDossierGebeurtenis.getAfmelding();
+					var afmelding = afmeldenDossierGebeurtenis.getAfmelding();
 					if (AanvraagBriefStatus.VERWERKT.equals(afmelding.getAfmeldingStatus()))
 					{
 						dialog.openWith(target, new AfmeldformulierInzienPopupPanel<>(IDialog.CONTENT_ID, afmeldenDossierGebeurtenis.getAfmeldingModel())
@@ -403,10 +401,10 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 
 	private String openUitnodigingOmschrijving(OpenUitnodiging openUitnodiging)
 	{
-		StringBuilder omschrijving = new StringBuilder();
+		var omschrijving = new StringBuilder();
 		omschrijving.append(getString("openuitnodiging.tekst"));
 
-		OpenUitnodigingUitslag reactie = openUitnodiging.getUitslag();
+		var reactie = openUitnodiging.getUitslag();
 		if (OpenUitnodigingUitslag.CLIENT_ONDER_CONTROLE.equals(reactie) || OpenUitnodigingUitslag.CLIENT_OVER_10_JAAR_UITNODIGINGEN.equals(reactie))
 		{
 			omschrijving.append(" (");
@@ -424,7 +422,7 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 
 	public String afmeldingOmschrijving(A afmelding)
 	{
-		StringBuilder omschrijving = new StringBuilder();
+		var omschrijving = new StringBuilder();
 		if (Bevolkingsonderzoek.COLON.equals(afmelding.getBevolkingsonderzoek())
 			&& ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) Hibernate.unproxy(afmelding)).getReden()))
 		{
@@ -465,7 +463,7 @@ public class ClientInzienDossierPanel<D extends Dossier<?, ?>, A extends Afmeldi
 
 	private String heraanmeldingOmschrijving(A afmelding)
 	{
-		StringBuilder omschrijving = new StringBuilder();
+		var omschrijving = new StringBuilder();
 		if (Bevolkingsonderzoek.COLON.equals(afmelding.getBevolkingsonderzoek())
 			&& ColonAfmeldingReden.ONTERECHT.equals(((ColonAfmelding) Hibernate.unproxy(afmelding)).getReden()))
 		{

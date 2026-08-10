@@ -40,7 +40,7 @@ public class PageExpiredPage extends BasePage
 	{
 		add(new WebMarkupContainer("opnieuwInloggen").add(new AttributeAppender("href", applicationUrl)));
 
-		String uitwisselportaalUrl = applicationUrl;
+		var uitwisselportaalUrl = applicationUrl;
 		if (!uitwisselportaalUrl.endsWith("/"))
 		{
 			uitwisselportaalUrl += "/";

@@ -51,7 +51,7 @@ public abstract class AjaxLinkTableCellPanel<T> extends GenericPanel<T>
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		final AjaxLink<T> ajaxLink = new AjaxLink<T>("link")
+		final var ajaxLink = new AjaxLink<T>("link")
 		{
 			private static final long serialVersionUID = 1L;
 

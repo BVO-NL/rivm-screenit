@@ -105,19 +105,19 @@ public class BaseTestTimelineServiceImpl implements BaseTestTimelineService
 		{
 			if (object != null)
 			{
-				for (Field dateField : getAllDateFieldsFrom(object))
+				for (var dateField : getAllDateFieldsFrom(object))
 				{
-					SimpleDateFormat format = new SimpleDateFormat(Constants.DEFAULT_DATE_FORMAT);
-					Object oudeDatum = PropertyUtils.getProperty(object, dateField.getName());
+					var format = new SimpleDateFormat(Constants.DEFAULT_DATE_FORMAT);
+					var oudeDatum = PropertyUtils.getProperty(object, dateField.getName());
 					if (dateField.getType() == Date.class)
 					{
-						DateConverter dateConverter = new DateConverter();
+						var dateConverter = new DateConverter();
 						dateConverter.setPattern(Constants.DEFAULT_DATE_FORMAT);
 						ConvertUtils.register(dateConverter, Date.class);
 
 						if (oudeDatum != null)
 						{
-							Date nieuweDatum = DateUtil.minDagen((Date) oudeDatum, aantalDagen);
+							var nieuweDatum = DateUtil.minDagen((Date) oudeDatum, aantalDagen);
 							BeanUtils.setProperty(object, dateField.getName(), nieuweDatum);
 							hibernateService.saveOrUpdate(object);
 							LOG.debug("--- " + object.getClass().getName() + "." + dateField.getName() + " van datum " + format.format((Date) oudeDatum) + ", naar datum "
@@ -128,7 +128,7 @@ public class BaseTestTimelineServiceImpl implements BaseTestTimelineService
 					{
 						if (oudeDatum != null)
 						{
-							LocalDate nieuweDatum = ((LocalDate) oudeDatum).minusDays(aantalDagen);
+							var nieuweDatum = ((LocalDate) oudeDatum).minusDays(aantalDagen);
 							BeanUtils.setProperty(object, dateField.getName(), nieuweDatum);
 							hibernateService.saveOrUpdate(object);
 							LOG.debug(
@@ -140,7 +140,7 @@ public class BaseTestTimelineServiceImpl implements BaseTestTimelineService
 					{
 						if (oudeDatum != null)
 						{
-							LocalDateTime nieuweDatum = ((LocalDateTime) oudeDatum).minusDays(aantalDagen);
+							var nieuweDatum = ((LocalDateTime) oudeDatum).minusDays(aantalDagen);
 							BeanUtils.setProperty(object, dateField.getName(), nieuweDatum);
 							hibernateService.saveOrUpdate(object);
 							LOG.debug(
@@ -159,11 +159,11 @@ public class BaseTestTimelineServiceImpl implements BaseTestTimelineService
 
 	private List<Field> getAllDateFieldsFrom(Object object)
 	{
-		Class<?> clazz = Hibernate.unproxy(object).getClass();
+		var clazz = Hibernate.unproxy(object).getClass();
 		List<Field> dateFields = new ArrayList<Field>();
-		for (Class<?> c = clazz; c != null; c = c.getSuperclass())
+		for (var c = clazz; c != null; c = c.getSuperclass())
 		{
-			for (Field field : c.getDeclaredFields())
+			for (var field : c.getDeclaredFields())
 			{
 				if (Date.class == field.getType() || LocalDate.class == field.getType() || LocalDateTime.class == field.getType())
 				{

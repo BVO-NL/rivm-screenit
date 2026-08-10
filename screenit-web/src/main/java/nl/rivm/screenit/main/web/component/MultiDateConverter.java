@@ -49,7 +49,7 @@ public class MultiDateConverter implements IConverter<Date>
 
 	public MultiDateConverter()
 	{
-		for (String s : FORMATS)
+		for (var s : FORMATS)
 		{
 			patterns.add(new ThreadLocalDateFormat(s));
 		}

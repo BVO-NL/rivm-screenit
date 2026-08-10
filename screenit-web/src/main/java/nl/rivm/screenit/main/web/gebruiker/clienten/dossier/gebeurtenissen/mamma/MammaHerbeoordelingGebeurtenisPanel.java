@@ -46,10 +46,10 @@ public class MammaHerbeoordelingGebeurtenisPanel extends AbstractGebeurtenisDeta
 	{
 		super(id, model);
 
-		MammaBeoordelingGebeurtenis gebeurtenis = (MammaBeoordelingGebeurtenis) model.getObject();
-		boolean redenIngevoerd = gebeurtenis.getMammaBeoordeling().getRedenAnnuleren() != null;
+		var gebeurtenis = (MammaBeoordelingGebeurtenis) model.getObject();
+		var redenIngevoerd = gebeurtenis.getMammaBeoordeling().getRedenAnnuleren() != null;
 
-		WebMarkupContainer container = new WebMarkupContainer("container", model);
+		var container = new WebMarkupContainer("container", model);
 		container.setVisible(redenIngevoerd);
 		add(container);
 		container.add(new Label("mammaBeoordeling.redenAnnuleren"));

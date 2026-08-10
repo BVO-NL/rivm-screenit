@@ -61,7 +61,7 @@ public class MammaOnderzoekMiniWerklijstDataProvider<T extends HibernateObject> 
 	public Iterator<? extends T> iterator(long first, long count)
 	{
 		List<T> beoordelingen = new ArrayList<>();
-		for (Long id : getSublist())
+		for (var id : getSublist())
 		{
 			beoordelingen.add(hibernateService.get(clazz, id));
 		}
@@ -87,12 +87,12 @@ public class MammaOnderzoekMiniWerklijstDataProvider<T extends HibernateObject> 
 
 	private List<Long> getSublist()
 	{
-		int huidigeBeoordelingIndex = beoordelingenIds.indexOf(huidigeBeoordelingId);
+		var huidigeBeoordelingIndex = beoordelingenIds.indexOf(huidigeBeoordelingId);
 
-		int eerste = Math.max(huidigeBeoordelingIndex - 2, 0);
-		int laatste = Math.min(huidigeBeoordelingIndex + 3, beoordelingenIds.size());
+		var eerste = Math.max(huidigeBeoordelingIndex - 2, 0);
+		var laatste = Math.min(huidigeBeoordelingIndex + 3, beoordelingenIds.size());
 
-		List<Long> sublist = beoordelingenIds.subList(eerste, laatste);
+		var sublist = beoordelingenIds.subList(eerste, laatste);
 
 		openVerslag = sublist.indexOf(huidigeBeoordelingId);
 

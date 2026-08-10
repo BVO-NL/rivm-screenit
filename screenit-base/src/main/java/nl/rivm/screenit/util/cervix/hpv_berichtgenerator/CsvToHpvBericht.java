@@ -57,15 +57,15 @@ public class CsvToHpvBericht
 		CervixHpvBerichtGeneratorWrapper wrapper = null;
 		List<CervixHpvBerichtGeneratorWrapper> wrappers = new ArrayList<>();
 		List<Message> hpvBerichten = new ArrayList<>();
-		try (CSVReader csvReader = new CSVReader(new FileReader(file), seperator))
+		try (var csvReader = new CSVReader(new FileReader(file), seperator))
 		{
-			for (String[] line : csvReader.readAll())
+			for (var line : csvReader.readAll())
 			{
 				if ("messageId".equals(line[0]))
 				{
 					continue; 
 				}
-				String messageId = line[0];
+				var messageId = line[0];
 				if (wrapper == null || !messageId.equals(huidigeMessageId))
 				{
 					wrapper = new CervixHpvBerichtGeneratorWrapper();
@@ -77,10 +77,10 @@ public class CsvToHpvBericht
 					wrappers.add(wrapper);
 				}
 
-				CervixHpvBerichtGeneratorMonsterWrapper monsterWrapper = maakMonsterWrapper(line);
+				var monsterWrapper = maakMonsterWrapper(line);
 				wrapper.getMonsterWrappers().add(monsterWrapper);
 			}
-			for (CervixHpvBerichtGeneratorWrapper hpvWrapper : wrappers)
+			for (var hpvWrapper : wrappers)
 			{
 				hpvBerichten.add(CervixHpvBerichtGenerator.geefHL7Bericht(hpvWrapper));
 			}
@@ -106,9 +106,9 @@ public class CsvToHpvBericht
 
 	private static CervixHpvBerichtGeneratorMonsterWrapper maakMonsterWrapper(String[] line) throws ParseException
 	{
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		var formatter = new SimpleDateFormat("dd-MM-yyyy");
 
-		CervixHpvBerichtGeneratorMonsterWrapper monsterWrapper = new CervixHpvBerichtGeneratorMonsterWrapper();
+		var monsterWrapper = new CervixHpvBerichtGeneratorMonsterWrapper();
 		monsterWrapper.setBarcode(line[4]);
 		monsterWrapper.setOrdercode(CervixHpvOrderCode.fromBerichtWaarde(line[5]));
 		monsterWrapper.setAnalysecode1(CervixHpvResultCode.fromBerichtWaarde(line[6]));

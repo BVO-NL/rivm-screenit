@@ -47,7 +47,6 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.wicketstuff.shiro.ShiroConstraint;
@@ -67,17 +66,17 @@ public class AanvullendeClGegevensPage extends OrganisatieBeheer
 
 	public AanvullendeClGegevensPage()
 	{
-		Organisatie organisatie = getCurrentSelectedOrganisatie();
+		var organisatie = getCurrentSelectedOrganisatie();
 
-		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_COLOSCOPIELOCATIE_ORG_BEHEER);
-		final boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
+		var actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_COLOSCOPIELOCATIE_ORG_BEHEER);
+		final var inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(organisatie)));
 
-		final IModel<ColoscopieLocatie> model = ModelUtil.cModel((ColoscopieLocatie) organisatie);
+		final var model = ModelUtil.cModel((ColoscopieLocatie) organisatie);
 		setDefaultModel(model);
 
-		Form<Void> form = new Form<>("form");
+		var form = new Form<Void>("form");
 		add(form);
 
 		form.add(new KoppelAanRegioOrganisatiePanel<ColoscopieLocatie>("regio", model).setEnabled(!inzien));
@@ -108,7 +107,7 @@ public class AanvullendeClGegevensPage extends OrganisatieBeheer
 
 		});
 
-		AjaxLink<Medewerker> annuleren = new AjaxLink<Medewerker>("annuleren")
+		var annuleren = new AjaxLink<Medewerker>("annuleren")
 		{
 
 			private static final long serialVersionUID = 1L;

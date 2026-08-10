@@ -22,9 +22,7 @@ package nl.rivm.screenit.batch.jobs.colon.selectie;
  */
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +35,6 @@ import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.ProjectParameterKey;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.colon.ClientCategorieEntry;
-import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
@@ -51,7 +48,6 @@ import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.SelectieType;
 import nl.rivm.screenit.model.logging.LogEvent;
-import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.model.project.ProjectInactiefReden;
 import nl.rivm.screenit.model.project.ProjectStatus;
@@ -123,7 +119,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 
 			var categorie = categorieEntry.getCategorie();
 
-			boolean magUitnodigingMetFitMaken = ColonScreeningRondeUtil.magUitnodigingMetFitMaken(client.getColonDossier(), aantalRondesUitnodigingsbriefZonderFit)
+			var magUitnodigingMetFitMaken = ColonScreeningRondeUtil.magUitnodigingMetFitMaken(client.getColonDossier(), aantalRondesUitnodigingsbriefZonderFit)
 				|| categorie != ColonUitnodigingscategorie.U1 && categorie != ColonUitnodigingscategorie.U2;
 
 			var ronde = maakNieuweOrGeefLaatsteRonde(client, categorie, categorieEntry.getGepusht());
@@ -156,7 +152,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 			categorie = ColonUitnodigingscategorie.U2_4;
 		}
 		ColonSelectieRapportageEntry entry = null;
-		for (ColonSelectieRapportageEntry entry2 : selectieRapportage.getEntries())
+		for (var entry2 : selectieRapportage.getEntries())
 		{
 			if (entry2.getUitnodigingscategorie().equals(categorie) && entry2.getSelectieType() == SelectieType.UITNODIGING_GEMAAKT)
 			{
@@ -191,10 +187,10 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 
 	private ColonScreeningRonde maakNieuweOrGeefLaatsteRonde(Client client, ColonUitnodigingscategorie categorie, Boolean gepushed)
 	{
-		ProjectClient pClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate());
+		var pClient = ProjectUtil.getHuidigeProjectClient(client, currentDateSupplier.getDate());
 
 		ColonScreeningRonde laatsteScreeningRonde;
-		ColonDossier dossier = client.getColonDossier();
+		var dossier = client.getColonDossier();
 		if (categorie == ColonUitnodigingscategorie.U1 || categorie == ColonUitnodigingscategorie.U2)
 		{
 
@@ -231,7 +227,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 
 			if (pClient != null && pClient.getProject() != null)
 			{
-				ProjectStatus status = ProjectUtil.getStatus(pClient.getProject(), currentDateSupplier.getDate());
+				var status = ProjectUtil.getStatus(pClient.getProject(), currentDateSupplier.getDate());
 				if (ProjectStatus.NOG_TE_STARTEN.equals(status)
 					&& pClient.getProject().getExcludeerOpenRonde().contains(Bevolkingsonderzoek.COLON))
 				{
@@ -258,11 +254,11 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 
 		if (categorie.equals(ColonUitnodigingscategorie.U1))
 		{
-			ColonVooraankondiging vooraankondiging = new ColonVooraankondiging();
+			var vooraankondiging = new ColonVooraankondiging();
 			vooraankondiging.setClient(client);
 			vooraankondiging.setCreatieDatum(currentDateSupplier.getDate());
 
-			ColonBrief brief = briefService.maakBvoBrief(laatsteScreeningRonde, BriefType.COLON_VOORAANKONDIGING);
+			var brief = briefService.maakBvoBrief(laatsteScreeningRonde, BriefType.COLON_VOORAANKONDIGING);
 			vooraankondiging.setBrief(brief);
 
 			dossier.setVooraankondiging(vooraankondiging);
@@ -310,7 +306,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 	private void maakNieuweUitnodiging(ColonScreeningRonde laatsteScreeningRonde, ColonUitnodigingscategorie categorie)
 	{
 		int vooraankondigingsPeriode = simplePreferenceService.getInteger(PreferenceKey.VOORAANKONDIGINSPERIODE.name());
-		ColonUitnodiging nieuweUitnodiging = new ColonUitnodiging();
+		var nieuweUitnodiging = new ColonUitnodiging();
 		nieuweUitnodiging.setUitnodigingsId(uitnodigingsDao.getNextUitnodigingsId());
 		nieuweUitnodiging.setUitnodigingscategorie(categorie);
 		nieuweUitnodiging.setCreatieDatum(currentDateSupplier.getDate());
@@ -318,7 +314,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 
 		if (categorie == ColonUitnodigingscategorie.U1 || categorie == ColonUitnodigingscategorie.U2)
 		{
-			Date datumHuidigeUitnodiging = DateUtil.toUtilDate(currentDateSupplier.getLocalDate().plusDays(vooraankondigingsPeriode));
+			var datumHuidigeUitnodiging = DateUtil.toUtilDate(currentDateSupplier.getLocalDate().plusDays(vooraankondigingsPeriode));
 			nieuweUitnodiging.setUitnodigingsDatum(datumHuidigeUitnodiging);
 		}
 		else
@@ -336,7 +332,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 
 	private ColonOnderzoeksVariant onderzoeksVariantVoorNieuweUitnodiging(ColonScreeningRonde laatsteScreeningRonde)
 	{
-		ProjectClient projectClient = ProjectUtil.getHuidigeProjectClient(laatsteScreeningRonde.getDossier().getClient(), currentDateSupplier.getDate());
+		var projectClient = ProjectUtil.getHuidigeProjectClient(laatsteScreeningRonde.getDossier().getClient(), currentDateSupplier.getDate());
 		if (ProjectUtil.hasParameterSet(projectClient, ProjectParameterKey.COLON_ONDERZOEKSVARIANT))
 		{
 			return ColonOnderzoeksVariant.valueOf(ProjectUtil.getParameter(projectClient.getProject(), ProjectParameterKey.COLON_ONDERZOEKSVARIANT));
@@ -349,14 +345,14 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 		int waarschuwingAantalIfobts = simplePreferenceService.getInteger(PreferenceKey.COLON_AANTAL_FITS_WAARSCHUWING.name());
 		int maximaalAantalIfobts = simplePreferenceService.getInteger(PreferenceKey.COLON_MAX_AANTAL_FITS.name());
 
-		Client client = laatsteScreeningRonde.getDossier().getClient();
-		List<ColonUitnodiging> uitnodigingen = laatsteScreeningRonde.getUitnodigingen();
-		int totaalAantalVerstuurdeUitnodigingen = uitnodigingen.size();
+		var client = laatsteScreeningRonde.getDossier().getClient();
+		var uitnodigingen = laatsteScreeningRonde.getUitnodigingen();
+		var totaalAantalVerstuurdeUitnodigingen = uitnodigingen.size();
 
 		List<Organisatie> dashboardOrganisaties = List.of(client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie());
 		if (totaalAantalVerstuurdeUitnodigingen >= waarschuwingAantalIfobts && totaalAantalVerstuurdeUitnodigingen < maximaalAantalIfobts)
 		{
-			LogEvent logEvent = new LogEvent();
+			var logEvent = new LogEvent();
 			logEvent.setMelding("Totaal aantal uitnodigingen aangemaakt voor deze client: " + totaalAantalVerstuurdeUitnodigingen + " (ingestelde waarschuwingslimiet: "
 				+ waarschuwingAantalIfobts + ")");
 			logEvent.setLevel(Level.WARNING);
@@ -367,7 +363,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 		}
 		else if (totaalAantalVerstuurdeUitnodigingen >= maximaalAantalIfobts)
 		{
-			LogEvent logEvent = new LogEvent();
+			var logEvent = new LogEvent();
 			logEvent.setMelding(
 				"Totaal aantal uitnodigingen aangemaakt voor deze client: " + totaalAantalVerstuurdeUitnodigingen + " (ingestelde maximale limiet: " + maximaalAantalIfobts + ")");
 			logEvent.setLevel(Level.ERROR);
@@ -379,7 +375,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 
 	private void updateLimietIfobts(String constant)
 	{
-		int aantalClienten = getExecutionContext().getInt(constant);
+		var aantalClienten = getExecutionContext().getInt(constant);
 		aantalClienten++;
 		getExecutionContext().putInt(constant, aantalClienten);
 	}
@@ -388,7 +384,7 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 	{
 		ColonSelectieRapportageProjectGroepEntry projectGroepEntry = null;
 
-		for (ColonSelectieRapportageProjectGroepEntry entry2 : selectieRapportage.getProjectGroepen())
+		for (var entry2 : selectieRapportage.getProjectGroepen())
 		{
 			if (entry2.getProjectGroep().getId().equals(projectGroepId) && entry2.getSelectieType() == SelectieType.UITNODIGING_GEMAAKT)
 			{
@@ -412,38 +408,38 @@ public class ClientSelectieItemWriter implements ItemWriter<ClientCategorieEntry
 		}
 		else 
 		{
-			ProjectGroep projectGroep = hibernateService.get(ProjectGroep.class, projectGroepId);
+			var projectGroep = hibernateService.get(ProjectGroep.class, projectGroepId);
 
-			Integer minimaleLeeftijd = simplePreferenceService.getInteger(PreferenceKey.MINIMALE_LEEFTIJD_COLON.name());
+			var minimaleLeeftijd = simplePreferenceService.getInteger(PreferenceKey.MINIMALE_LEEFTIJD_COLON.name());
 			if (minimaleLeeftijd == null)
 			{
 				throw new IllegalStateException("Minimale leeftijd colonscreening op de parameterisatie pagina is niet gezet.");
 			}
 
-			Integer maximaleLeeftijd = simplePreferenceService.getInteger(PreferenceKey.MAXIMALE_LEEFTIJD_COLON.name());
+			var maximaleLeeftijd = simplePreferenceService.getInteger(PreferenceKey.MAXIMALE_LEEFTIJD_COLON.name());
 			if (maximaleLeeftijd == null)
 			{
 				throw new IllegalStateException("Maximale leeftijd colonscreening op de parameterisatie pagina is niet gezet");
 			}
-			Integer wachttijdVerzendenPakket = simplePreferenceService.getInteger(PreferenceKey.WACHTTIJD_VERZENDEN_PAKKET_TWEE_OP_EEN_ADRES.name());
+			var wachttijdVerzendenPakket = simplePreferenceService.getInteger(PreferenceKey.WACHTTIJD_VERZENDEN_PAKKET_TWEE_OP_EEN_ADRES.name());
 			if (wachttijdVerzendenPakket == null)
 			{
 				throw new IllegalStateException("Wachttijd verzenden pakket bij 2 op 1 adres op de parameterisatie pagina is niet gezet");
 			}
 
-			Set<Integer> alleGeboortejarenVanActiveCohorten = uitnodigingService.getAlleGeboortejarenTotMetHuidigJaar();
+			var alleGeboortejarenVanActiveCohorten = uitnodigingService.getAlleGeboortejarenTotMetHuidigJaar();
 
 			var aantalNogTeGaan = clientRepository.count(getSpecificationU1(minimaleLeeftijd, maximaleLeeftijd, currentDateSupplier.getLocalDate(), null,
 				new ArrayList<>(alleGeboortejarenVanActiveCohorten), projectGroep.getId(), null, currentDateSupplier.getLocalDate()));
 
-			int aantalWerkDagen = 0;
-			Date uitnodigenVoorDKvoor = projectGroep.getUitnodigenVoorDKvoor();
+			var aantalWerkDagen = 0;
+			var uitnodigenVoorDKvoor = projectGroep.getUitnodigenVoorDKvoor();
 			if (uitnodigenVoorDKvoor != null)
 			{
 				aantalWerkDagen = DateUtil.getDaysBetweenIgnoreWeekends(currentDateSupplier.getDateMidnight(), uitnodigenVoorDKvoor, false) - 1;
 			}
 
-			ColonSelectieRapportageProjectGroepEntry entry = new ColonSelectieRapportageProjectGroepEntry();
+			var entry = new ColonSelectieRapportageProjectGroepEntry();
 			entry.setRapportage(selectieRapportage);
 			entry.setClientenNogTeGaan(aantalNogTeGaan - 1); 
 			entry.setAantal(1L);

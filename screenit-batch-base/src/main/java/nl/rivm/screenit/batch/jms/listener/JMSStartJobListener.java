@@ -220,11 +220,11 @@ public class JMSStartJobListener implements SessionAwareMessageListener<ActiveMQ
 
 		for (var entry : jobParametersBuilder.toJobParameters().getParameters().entrySet())
 		{
-			var key = entry.getKey();
-			var value = entry.getValue();
-			if (JMS_MESSAGE_ID.equals(key) || Arrays.stream(JobStartParameter.values()).anyMatch(p -> p.name().equals(key)))
+			var name = entry.getKey();
+			var jobParameter = entry.getValue();
+			if (JMS_MESSAGE_ID.equals(name) || Arrays.stream(JobStartParameter.values()).anyMatch(p -> p.name().equals(name)))
 			{
-				jobParamsToSave.put(key, (Serializable) value.getValue());
+				jobParamsToSave.put(name, (Serializable) jobParameter.getValue());
 			}
 		}
 		return jobParamsToSave;
@@ -366,7 +366,7 @@ public class JMSStartJobListener implements SessionAwareMessageListener<ActiveMQ
 		{
 			try
 			{
-				AtomicReference<String> emailadressen = new AtomicReference<>();
+				var emailadressen = new AtomicReference<String>();
 				databaseRunner.runInSessionOnly(() ->
 					emailadressen.set(simplePreferenceService.getString(PreferenceKey.DASHBOARDEMAIL.name()))
 				);

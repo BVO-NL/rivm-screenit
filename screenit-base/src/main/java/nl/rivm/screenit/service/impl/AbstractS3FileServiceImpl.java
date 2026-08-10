@@ -130,7 +130,7 @@ public abstract class AbstractS3FileServiceImpl implements FileService, Initiali
 		{
 			var file = File.createTempFile(FilenameUtils.getBaseName(fullFilePath), "." + FilenameUtils.getExtension(fullFilePath));
 			LOG.debug("Tijdelijk bestand {} aangemaakt van S3 bestand {}", file.getPath(), fullFilePath);
-			try (InputStream documentStream = loadAsStream(fullFilePath))
+			try (var documentStream = loadAsStream(fullFilePath))
 			{
 				Files.write(file.toPath(), IOUtils.toByteArray(documentStream), StandardOpenOption.WRITE);
 			}

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Temporal;
 
 import lombok.AccessLevel;
@@ -71,7 +72,7 @@ public final class EntityAuditUtil
 			clazz = Hibernate.getClass(entity);
 			id = entity.getId();
 		}
-		catch (ObjectNotFoundException e)
+		catch (ObjectNotFoundException | EntityNotFoundException e)
 		{
 
 			clazz = (entity instanceof HibernateProxy proxy)
@@ -87,7 +88,7 @@ public final class EntityAuditUtil
 
 	public static <H extends HibernateObject> H getPreviousVersionOfEntity(H entity, EntityManager entityManager)
 	{
-		List<Object[]> results = EntityAuditUtil.getEntityHistory(entity, entityManager, null, false, 2);
+		var results = EntityAuditUtil.getEntityHistory(entity, entityManager, null, false, 2);
 		if (results.size() > 1)
 		{
 			return EntityAuditUtil.getRevisionEntity(results.get(1));
@@ -97,7 +98,7 @@ public final class EntityAuditUtil
 
 	public static <H extends HibernateObject> H getLastVersionOfEntity(H entity, EntityManager entityManager)
 	{
-		List<Object[]> results = getEntityHistory(entity, entityManager, null, false, 1);
+		var results = getEntityHistory(entity, entityManager, null, false, 1);
 		if (!results.isEmpty())
 		{
 			return EntityAuditUtil.getRevisionEntity(results.get(0));
@@ -168,18 +169,18 @@ public final class EntityAuditUtil
 
 	private static <T extends HibernateObject> String diffEntities(T oldEntity, T newEntity, String... specifiekFieldNames)
 	{
-		String diff = "";
+		var diff = "";
 		newEntity = (T) Hibernate.unproxy(newEntity);
-		SkipFieldsForDiff skipFieldsForDiff = newEntity.getClass().getAnnotation(SkipFieldsForDiff.class);
-		for (Field field : ReflectionUtils.getAllFields(newEntity.getClass()))
+		var skipFieldsForDiff = newEntity.getClass().getAnnotation(SkipFieldsForDiff.class);
+		for (var field : ReflectionUtils.getAllFields(newEntity.getClass()))
 		{
-			String fieldName = field.getName();
-			SkipFieldForDiff skipField = field.getAnnotation(SkipFieldForDiff.class);
+			var fieldName = field.getName();
+			var skipField = field.getAnnotation(SkipFieldForDiff.class);
 			if ((specifiekFieldNames.length == 0 || Arrays.asList(specifiekFieldNames).contains(fieldName)) && !fieldName.equals("id") && !fieldName.equals("serialVersionUID")
 				&& !fieldName.startsWith("$j") && !fieldName.equals("PROPERTY_ID") && skipField == null
 				&& (skipFieldsForDiff == null || !Arrays.asList(skipFieldsForDiff.value()).contains(fieldName)))
 			{
-				DiffSpecs diffSpec = field.getAnnotation(DiffSpecs.class);
+				var diffSpec = field.getAnnotation(DiffSpecs.class);
 				String displayName;
 
 				displayName = diffSpec != null && StringUtils.isNotBlank(diffSpec.displayName()) ? diffSpec.displayName() : fieldName;
@@ -222,7 +223,7 @@ public final class EntityAuditUtil
 				}
 				else if (Date.class.isAssignableFrom(field.getType()))
 				{
-					String dateTimeFormat = getDateTimeFormat(field, (Date) oldValue, (Date) newValue);
+					var dateTimeFormat = getDateTimeFormat(field, (Date) oldValue, (Date) newValue);
 					oldValue = formatValue((Date) oldValue, dateTimeFormat);
 					newValue = formatValue((Date) newValue, dateTimeFormat);
 					if (!Objects.equals(newValue, oldValue))
@@ -266,7 +267,7 @@ public final class EntityAuditUtil
 
 	private static String formatValue(Date value, String dateTimeFormat)
 	{
-		String returnValue = "";
+		var returnValue = "";
 		if (value == null)
 		{
 			returnValue = "(geen waarde)";
@@ -281,7 +282,7 @@ public final class EntityAuditUtil
 	private static String getDateTimeFormat(Field field, Date oldValue, Date newValue)
 	{
 		String format = null;
-		Temporal temporal = field.getAnnotation(Temporal.class);
+		var temporal = field.getAnnotation(Temporal.class);
 		if (temporal != null && temporal.value() != null)
 		{
 			switch (temporal.value())
@@ -378,7 +379,7 @@ public final class EntityAuditUtil
 
 	private static String getListValue(List list, String displayProperty)
 	{
-		String value = "";
+		var value = "";
 		if (CollectionUtils.isEmpty(list))
 		{
 			value = "(geen waarden)";
@@ -386,8 +387,8 @@ public final class EntityAuditUtil
 		else
 		{
 			value = "[";
-			boolean first = true;
-			for (Object element : list)
+			var first = true;
+			for (var element : list)
 			{
 				if (first)
 				{

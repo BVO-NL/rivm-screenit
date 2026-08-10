@@ -85,9 +85,9 @@ public class ParameterisatiePropertyModel<T extends Parameterisatie> extends Cha
 		@SuppressWarnings("unchecked")
 		public C getObject()
 		{
-			PreferenceKey preferenceKey = getPreferenceKeyFromExpression();
+			var preferenceKey = getPreferenceKeyFromExpression();
 
-			final Parameterisatie target = (Parameterisatie) getInnermostModelOrObject();
+			final var target = (Parameterisatie) getInnermostModelOrObject();
 			if (target != null)
 			{
 				return (C) target.getParameters().get(preferenceKey);
@@ -98,19 +98,19 @@ public class ParameterisatiePropertyModel<T extends Parameterisatie> extends Cha
 
 		private PreferenceKey getPreferenceKeyFromExpression()
 		{
-			final String expression = getPropertyExpression();
+			final var expression = getPropertyExpression();
 			if (expression.startsWith("."))
 			{
 				throw new IllegalArgumentException("Property expressions cannot start with a '.' character");
 			}
-			PreferenceKey cachedKey = paramMapping.get(expression);
+			var cachedKey = paramMapping.get(expression);
 			if (cachedKey != null)
 			{
 				return cachedKey;
 			}
-			for (PreferenceKey prefKey : PreferenceKey.values())
+			for (var prefKey : PreferenceKey.values())
 			{
-				String prefProperty = WordUtils.capitalizeFully(prefKey.name(), new char[] { '_' });
+				var prefProperty = WordUtils.capitalizeFully(prefKey.name(), new char[] { '_' });
 				prefProperty = StringUtils.uncapitalize(prefProperty.replaceAll("_", ""));
 				if (expression.equals(prefProperty))
 				{
@@ -124,8 +124,8 @@ public class ParameterisatiePropertyModel<T extends Parameterisatie> extends Cha
 		@Override
 		public void setObject(C object)
 		{
-			final PreferenceKey preferenceKey = getPreferenceKeyFromExpression();
-			final Parameterisatie target = (Parameterisatie) getInnermostModelOrObject();
+			final var preferenceKey = getPreferenceKeyFromExpression();
+			final var target = (Parameterisatie) getInnermostModelOrObject();
 			if (target != null)
 			{
 				target.getParameters().put(preferenceKey, object);
@@ -136,7 +136,7 @@ public class ParameterisatiePropertyModel<T extends Parameterisatie> extends Cha
 		@SuppressWarnings("unchecked")
 		public Class<C> getObjectClass()
 		{
-			final PreferenceKey preferenceKey = getPreferenceKeyFromExpression();
+			final var preferenceKey = getPreferenceKeyFromExpression();
 			if (preferenceKey != null)
 			{
 				return (Class<C>) preferenceKey.getType();

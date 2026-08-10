@@ -27,12 +27,13 @@ import java.util.List;
 import nl.rivm.screenit.model.colon.dto.VrijSlot;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
-import org.optaplanner.core.api.domain.solution.PlanningScore;
-import org.optaplanner.core.api.domain.solution.PlanningSolution;
-import org.optaplanner.core.api.domain.solution.ProblemFactCollectionProperty;
-import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
-import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
+
+import ai.timefold.solver.core.api.domain.solution.PlanningEntityCollectionProperty;
+import ai.timefold.solver.core.api.domain.solution.PlanningScore;
+import ai.timefold.solver.core.api.domain.solution.PlanningSolution;
+import ai.timefold.solver.core.api.domain.solution.ProblemFactCollectionProperty;
+import ai.timefold.solver.core.api.domain.valuerange.ValueRangeProvider;
+import ai.timefold.solver.core.api.score.HardSoftScore;
 
 @PlanningSolution
 public class IntakeSolution
@@ -90,15 +91,15 @@ public class IntakeSolution
 		}
 		else
 		{
-			IntakeSolution other = (IntakeSolution) o;
+			var other = (IntakeSolution) o;
 			if (clientAfspraken.size() != other.clientAfspraken.size())
 			{
 				return false;
 			}
 			for (Iterator<ClientAfspraak> it = clientAfspraken.iterator(), otherIt = other.clientAfspraken.iterator(); it.hasNext(); )
 			{
-				ClientAfspraak clientAfspraak = it.next();
-				ClientAfspraak otherClientAfspraak = otherIt.next();
+				var clientAfspraak = it.next();
+				var otherClientAfspraak = otherIt.next();
 
 				if (!clientAfspraak.solutionEquals(otherClientAfspraak))
 				{
@@ -112,8 +113,8 @@ public class IntakeSolution
 	@Override
 	public int hashCode()
 	{
-		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
-		for (ClientAfspraak clientAfspraak : clientAfspraken)
+		var hashCodeBuilder = new HashCodeBuilder();
+		for (var clientAfspraak : clientAfspraken)
 		{
 
 			hashCodeBuilder.append(clientAfspraak.solutionHashCode());

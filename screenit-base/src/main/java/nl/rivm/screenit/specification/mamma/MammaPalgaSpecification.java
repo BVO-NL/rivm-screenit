@@ -136,9 +136,9 @@ public class MammaPalgaSpecification
 
 	private static String getWildcardAchternaam(String achternaam)
 	{
-		StringBuilder wildcardAchternaam = new StringBuilder();
-		char[] chars = achternaam.toCharArray();
-		for (int i = 0; i < chars.length; i++)
+		var wildcardAchternaam = new StringBuilder();
+		var chars = achternaam.toCharArray();
+		for (var i = 0; i < chars.length; i++)
 		{
 			if (!isGenormaliseerdKarakter(chars[i], i != chars.length - 1 ? chars[i + 1] : ' '))
 			{

@@ -78,7 +78,7 @@ public class CervixUitstelJobListener extends BaseLogListener
 	protected LogEvent eindLogging(JobExecution jobExecution)
 	{
 		var context = jobExecution.getExecutionContext();
-		long aantal = context.getLong(CervixUitstelConstants.UITSTEL_AANTAL_KEY, 0);
+		var aantal = context.getLong(CervixUitstelConstants.UITSTEL_AANTAL_KEY, 0);
 
 		var rapportage = new CervixUitstelRapportage();
 		rapportage.setDatumVerwerking(dateSupplier.getDate());

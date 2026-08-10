@@ -80,20 +80,20 @@ public class AanvullendePaLabGegevensPage extends OrganisatieBeheer
 
 	public AanvullendePaLabGegevensPage()
 	{
-		Organisatie organisatie = getCurrentSelectedOrganisatie();
-		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_PA_LABORATORIA_BEHEER);
-		final boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
+		var organisatie = getCurrentSelectedOrganisatie();
+		var actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_PA_LABORATORIA_BEHEER);
+		final var inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(organisatie)));
 
-		final IModel<PaLaboratorium> model = ModelUtil.cModel((PaLaboratorium) organisatie);
+		final var model = ModelUtil.cModel((PaLaboratorium) organisatie);
 		setDefaultModel(model);
 
-		Form<Void> form = new Form<>("form");
+		var form = new Form<Void>("form");
 		add(form);
 
-		SimpleListHibernateModel<ColoscopieLocatie> choices = new SimpleListHibernateModel<>(organisatieService.getActieveOrganisaties(ColoscopieLocatie.class));
-		final PingPongInput<ColoscopieLocatie> coloscopielocaties = new PingPongInput<ColoscopieLocatie>("coloscopielocaties",
+		var choices = new SimpleListHibernateModel<ColoscopieLocatie>(organisatieService.getActieveOrganisaties(ColoscopieLocatie.class));
+		final var coloscopielocaties = new PingPongInput<ColoscopieLocatie>("coloscopielocaties",
 			new PropertyModel<List<ColoscopieLocatie>>(model, "coloscopielocaties"), choices, new ChoiceRenderer<ColoscopieLocatie>("naam", "id")
 		{
 
@@ -102,7 +102,7 @@ public class AanvullendePaLabGegevensPage extends OrganisatieBeheer
 			@Override
 			public Object getDisplayValue(ColoscopieLocatie object)
 			{
-				Object returnValue = super.getDisplayValue(object);
+				var returnValue = super.getDisplayValue(object);
 				if (object.getParent() != null)
 				{
 					returnValue = returnValue.toString() + " (" + object.getParent().getNaam() + ")";
@@ -146,7 +146,7 @@ public class AanvullendePaLabGegevensPage extends OrganisatieBeheer
 
 		});
 
-		AjaxLink<Medewerker> annuleren = new AjaxLink<Medewerker>("annuleren")
+		var annuleren = new AjaxLink<Medewerker>("annuleren")
 		{
 
 			private static final long serialVersionUID = 1L;

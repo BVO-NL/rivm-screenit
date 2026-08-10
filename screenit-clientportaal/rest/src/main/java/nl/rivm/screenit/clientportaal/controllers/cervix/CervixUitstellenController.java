@@ -28,7 +28,6 @@ import nl.rivm.screenit.clientportaal.exception.NotValidException;
 import nl.rivm.screenit.clientportaal.model.cervix.CervixUitstelDto;
 import nl.rivm.screenit.clientportaal.model.cervix.CervixUitstellenStatusDto;
 import nl.rivm.screenit.clientportaal.services.cervix.CervixUitstellenService;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.service.ClientContactService;
 
@@ -55,7 +54,7 @@ public class CervixUitstellenController extends AbstractController
 	@GetMapping("huidig")
 	public ResponseEntity<CervixUitstelDto> getHuidigeCervixUitstel(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.CERVIX_UITSTEL))
 		{
@@ -67,7 +66,7 @@ public class CervixUitstellenController extends AbstractController
 	@GetMapping("status")
 	public ResponseEntity<CervixUitstellenStatusDto> getCervixUitstelStatus(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.CERVIX_UITSTEL))
 		{
@@ -80,7 +79,7 @@ public class CervixUitstellenController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<CervixUitstelDto> vraagUitstelAan(@RequestBody CervixUitstelDto uitstellenDto, Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.CERVIX_UITSTEL))
 		{

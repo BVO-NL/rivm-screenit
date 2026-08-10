@@ -53,7 +53,7 @@ public class CxfConfig
 		var loggingInInterceptor = new ScreenITLoggingInInterceptor(screenITLoggingSaver());
 		var loggingOutInterceptor = new ScreenITLoggingOutInterceptor(screenITLoggingSaver());
 
-		Bus defaultBus = (Bus) applicationContext.getBean(Bus.DEFAULT_BUS_ID);
+		var defaultBus = (Bus) applicationContext.getBean(Bus.DEFAULT_BUS_ID);
 		defaultBus.getInInterceptors().add(loggingInInterceptor);
 		defaultBus.getOutInterceptors().add(loggingOutInterceptor);
 		defaultBus.getInFaultInterceptors().add(loggingInInterceptor);

@@ -32,10 +32,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.exception.ZipException;
 
 import nl.rivm.screenit.Constants;
+import nl.rivm.screenit.dto.mamma.MammaPalgaCsvExportClientProjectie;
 import nl.rivm.screenit.dto.mamma.MammaPalgaCsvImportDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.UploadDocument_;
 import nl.rivm.screenit.model.batch.popupconfig.MammaPalgaExportConfig;
@@ -73,15 +76,16 @@ import nl.rivm.screenit.specification.mamma.MammaPalgaSpecification;
 import nl.rivm.screenit.util.BezwaarUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ZipUtil;
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.ScrollableResults;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.UploadDocumentSpecification.heeftContentType;
 import static nl.rivm.screenit.specification.algemeen.UploadDocumentSpecification.heeftContentTypeIn;
 import static nl.rivm.screenit.specification.algemeen.UploadDocumentSpecification.heeftNaamDieEindigtOp;
@@ -95,6 +99,8 @@ import static nl.rivm.screenit.specification.mamma.MammaPalgaSpecification.voldo
 @RequiredArgsConstructor
 public class MammaPalgaServiceImpl implements MammaPalgaService
 {
+	private static final int PALGA_CSV_EXPORT_FETCH_SIZE = 5000;
+
 	private final String locatieFilestore;
 
 	private final LogService logService;
@@ -116,14 +122,37 @@ public class MammaPalgaServiceImpl implements MammaPalgaService
 	private final ClientRepository clientRepository;
 
 	@Override
-	public List<Long> getClientenVoorPalga(MammaPalgaExportConfig exportConfig)
+	public long getAantalClientenVoorPalgaExport(MammaPalgaExportConfig exportConfig)
+	{
+		return dossierRepository.countDistinct(maakPalgaExportSpecification(exportConfig));
+	}
+
+	@Override
+	public ScrollableResults<MammaPalgaCsvExportClientProjectie> getClientProjectieVoorPalgaExportScrollable(MammaPalgaExportConfig exportConfig)
+	{
+		return dossierRepository.findWith(maakPalgaExportSpecification(exportConfig), MammaPalgaCsvExportClientProjectie.class,
+			q -> q.projections((cb, r) ->
+				{
+					var persoon = join(join(r, MammaDossier_.client), Client_.persoon);
+					return List.of(
+						r.get(MammaDossier_.id),
+						persoon.get(Persoon_.voornaam),
+						persoon.get(Persoon_.achternaam),
+						persoon.get(Persoon_.geboortedatum),
+						persoon.get(Persoon_.geslacht),
+						persoon.get(Persoon_.bsn));
+				})
+				.distinct()
+				.setScrollFetchSize(PALGA_CSV_EXPORT_FETCH_SIZE)
+				.scroll(-1));
+	}
+
+	private Specification<MammaDossier> maakPalgaExportSpecification(MammaPalgaExportConfig exportConfig)
 	{
 		var vandaag = currentDateSupplier.getLocalDate();
-		return dossierRepository.findWith(
-			heeftGeenClientGbaStatusAfgevoerdOfBezwaar().and(heeftGeenActieveBezwaarVoorPalga()).and(voldoetAanPalgaExportConfig(exportConfig, vandaag)),
-			Long.class,
-			q -> q.projection((cb, r) -> r.get(MammaDossier_.client).get(AbstractHibernateObject_.id))
-				.distinct().all());
+		return heeftGeenClientGbaStatusAfgevoerdOfBezwaar()
+			.and(heeftGeenActieveBezwaarVoorPalga())
+			.and(voldoetAanPalgaExportConfig(exportConfig, vandaag));
 	}
 
 	@Override
@@ -258,7 +287,7 @@ public class MammaPalgaServiceImpl implements MammaPalgaService
 	{
 		LOG.debug("Begonnen met aanmaken mappings object.");
 		var mapping = new MammaPalgaCsvImportMapping();
-		int column = 0;
+		var column = 0;
 		for (var headerText : row)
 		{
 			if (StringUtils.isBlank(headerText))
@@ -390,7 +419,7 @@ public class MammaPalgaServiceImpl implements MammaPalgaService
 		{
 			return "pseudoId";
 		}
-		Persoon persoon = dossier.getClient().getPersoon();
+		var persoon = dossier.getClient().getPersoon();
 		if (dto.getGeboortejaar() != DateUtil.toLocalDate(persoon.getGeboortedatum()).getYear())
 		{
 			return "geboortejaar";

@@ -54,7 +54,7 @@ public class BaseClientContactServiceImpl implements BaseClientContactService
 		var verwijderdeContacten = new ArrayList<ClientContact>();
 		for (var contact : contacten)
 		{
-			boolean clientContactMagWeg = true;
+			var clientContactMagWeg = true;
 			for (var actie : contact.getActies())
 			{
 				if (onderzoeken.equals(actie.getType().getBevolkingsonderzoeken()))

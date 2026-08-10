@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.project;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.component.ComponentHelper;
@@ -69,8 +68,8 @@ public class ProjectStatusPage extends ProjectBasePage
 	public ProjectStatusPage(IModel<Project> model)
 	{
 		super(new CompoundPropertyModel<>(model));
-		Project project = model.getObject();
-		List<Bevolkingsonderzoek> bevolkingsonderzoeken = model.getObject().getBevolkingsonderzoeken();
+		var project = model.getObject();
+		var bevolkingsonderzoeken = model.getObject().getBevolkingsonderzoeken();
 
 		add(ComponentHelper.newLabel("id"));
 		add(ComponentHelper.newLabel("projectNaam", new PropertyModel<Project>(model, "naam")));
@@ -107,10 +106,10 @@ public class ProjectStatusPage extends ProjectBasePage
 			public void onConfigure()
 			{
 				super.onConfigure();
-				Project project = getProjectModel().getObject();
-				Date eindDatum = project.getEindDatum();
-				Date nu = currentDateSupplier.getDate();
-				boolean level = getToegangsLevel(Recht.MEDEWERKER_PROJECT_OVERZICHT, Actie.AANPASSEN) != null;
+				var project = getProjectModel().getObject();
+				var eindDatum = project.getEindDatum();
+				var nu = currentDateSupplier.getDate();
+				var level = getToegangsLevel(Recht.MEDEWERKER_PROJECT_OVERZICHT, Actie.AANPASSEN) != null;
 				setVisible(!eindDatum.before(nu) && level);
 			}
 
@@ -121,24 +120,24 @@ public class ProjectStatusPage extends ProjectBasePage
 
 	private void toonProjectParameters(Project project)
 	{
-		boolean parameterLijstIsLeeg = project.getParameters().isEmpty();
+		var parameterLijstIsLeeg = project.getParameters().isEmpty();
 
-		WebMarkupContainer parametersTitel = new WebMarkupContainer("parametersTitel");
+		var parametersTitel = new WebMarkupContainer("parametersTitel");
 		parametersTitel.setVisible(project.getType().equals(ProjectType.PROJECT));
 		add(parametersTitel);
 		List<ProjectParameter> parameters = new ArrayList<>(project.getParameters());
 		parameters.sort(Comparator.comparing(ProjectParameter::getKey));
 
-		ListView<ProjectParameter> parameterList = new ListView<ProjectParameter>("parameters", ModelUtil.listRModel(parameters))
+		var parameterList = new ListView<ProjectParameter>("parameters", ModelUtil.listRModel(parameters))
 		{
 			@Override
 			protected void populateItem(ListItem<ProjectParameter> item)
 			{
-				ProjectParameter parameter = item.getModelObject();
+				var parameter = item.getModelObject();
 				item.setDefaultModel(new CompoundPropertyModel<>(item.getModel()));
 				item.add(new EnumLabel<ProjectParameterKey>("key"));
-				Label valueLabel = new Label("value");
-				EnumLabel<ColonOnderzoeksVariant> onderzoeksvariantLabel = maakOnderzoeksvariantLabel(item.getModel());
+				var valueLabel = new Label("value");
+				var onderzoeksvariantLabel = maakOnderzoeksvariantLabel(item.getModel());
 
 				if (!parameter.getKey().getValueType().equals(ColonOnderzoeksVariant.class))
 				{
@@ -151,7 +150,7 @@ public class ProjectStatusPage extends ProjectBasePage
 				item.add(valueLabel);
 				item.add(onderzoeksvariantLabel);
 
-				Label eenheidLabel = new Label("unit", getString(EnumStringUtil.getPropertyString(parameter.getKey()) + ".unit"));
+				var eenheidLabel = new Label("unit", getString(EnumStringUtil.getPropertyString(parameter.getKey()) + ".unit"));
 				eenheidLabel.setVisible(parameter.getValue() != null);
 				item.add(eenheidLabel);
 			}
@@ -159,7 +158,7 @@ public class ProjectStatusPage extends ProjectBasePage
 		parameterList.setVisible(!parameterLijstIsLeeg && project.getType().equals(ProjectType.PROJECT));
 		add(parameterList);
 
-		WebMarkupContainer geenParametersLabel = new WebMarkupContainer("geenParameters");
+		var geenParametersLabel = new WebMarkupContainer("geenParameters");
 		geenParametersLabel.setVisible(parameterLijstIsLeeg && project.getType().equals(ProjectType.PROJECT));
 		add(geenParametersLabel);
 	}
@@ -167,22 +166,22 @@ public class ProjectStatusPage extends ProjectBasePage
 	private EnumLabel<ColonOnderzoeksVariant> maakOnderzoeksvariantLabel(IModel<ProjectParameter> parameterModel)
 	{
 
-		EnumLabel<ColonOnderzoeksVariant> onderzoeksvariantLabel = new EnumLabel<>("enumValue");
+		var onderzoeksvariantLabel = new EnumLabel<ColonOnderzoeksVariant>("enumValue");
 
 		onderzoeksvariantLabel.setModel(new IModel<ColonOnderzoeksVariant>()
 		{
 			@Override
 			public ColonOnderzoeksVariant getObject()
 			{
-				ProjectParameter parameter = parameterModel.getObject();
-				String value = parameter.getValue();
+				var parameter = parameterModel.getObject();
+				var value = parameter.getValue();
 				return StringUtils.isNotBlank(value) ? ColonOnderzoeksVariant.valueOf(value) : null;
 			}
 
 			@Override
 			public void setObject(ColonOnderzoeksVariant object)
 			{
-				ProjectParameter parameter = parameterModel.getObject();
+				var parameter = parameterModel.getObject();
 				parameter.setValue(object.name());
 			}
 		});

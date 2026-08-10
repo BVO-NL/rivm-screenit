@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.batch;
  */
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.Constants;
@@ -62,12 +61,12 @@ public class AddTriggerPanel extends Panel
 	{
 		super(id);
 
-		Form<Trigger> form = new Form<>("form", new CompoundPropertyModel<>(new Model<>(new Trigger())));
+		var form = new Form<Trigger>("form", new CompoundPropertyModel<>(new Model<>(new Trigger())));
 		add(form);
 
 		List<JobType> jobtypes = new ArrayList<>();
 
-		for (JobType jt : JobType.values())
+		for (var jt : JobType.values())
 		{
 			if (!jt.hasJobFlag(JobFlag.BLOCK_CRON_TRIGGER))
 			{
@@ -83,7 +82,7 @@ public class AddTriggerPanel extends Panel
 			@Override
 			public Object getDisplayValue(JobType jobType)
 			{
-				Object displayValue = super.getDisplayValue(jobType);
+				var displayValue = super.getDisplayValue(jobType);
 
 				displayValue = displayValue.toString() + " (" + Bevolkingsonderzoek.getAfkortingen(jobType.getBevolkingsOnderzoeken()) + ")";
 
@@ -114,7 +113,7 @@ public class AddTriggerPanel extends Panel
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Date firstScheduldedDate = batchService.addTrigger((Trigger) form.getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+				var firstScheduldedDate = batchService.addTrigger((Trigger) form.getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				if (firstScheduldedDate == null)
 				{
 					error("Toevoegen van trigger mislukt");

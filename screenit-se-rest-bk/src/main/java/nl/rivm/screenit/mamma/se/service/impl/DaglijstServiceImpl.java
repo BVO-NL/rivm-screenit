@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.mamma.se.dao.ClientIdentificatie;
 import nl.rivm.screenit.mamma.se.dao.MammaAfsprakenDao;
 import nl.rivm.screenit.mamma.se.dto.AfspraakSeDto;
 import nl.rivm.screenit.mamma.se.dto.ClientSeDto;
@@ -247,7 +246,7 @@ public class DaglijstServiceImpl implements DaglijstService
 			var laatsteIdentificaties = afsprakenDao.readLaatsteIdentificatieVanClienten(clientIds);
 			for (var afspraakDto : afspraakDtos)
 			{
-				ClientIdentificatie laatsteIdentificatie = laatsteIdentificaties.get(afspraakDto.getClient().getId());
+				var laatsteIdentificatie = laatsteIdentificaties.get(afspraakDto.getClient().getId());
 				if (laatsteIdentificatie != null)
 				{
 					afspraakDto.setIdentificatiesoort(laatsteIdentificatie.getSoort());

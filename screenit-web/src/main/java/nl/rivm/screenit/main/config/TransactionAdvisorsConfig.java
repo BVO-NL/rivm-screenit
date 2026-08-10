@@ -42,7 +42,7 @@ public class TransactionAdvisorsConfig
 	@Bean
 	public TransactionAttributeSourceAdvisor transactionAttributeSourceAdvisor(TransactionInterceptor transactionInterceptor)
 	{
-		TransactionAttributeSourceAdvisor bean = new TransactionAttributeSourceAdvisor();
+		var bean = new TransactionAttributeSourceAdvisor();
 		bean.setTransactionInterceptor(transactionInterceptor);
 		return bean;
 	}
@@ -50,7 +50,7 @@ public class TransactionAdvisorsConfig
 	@Bean
 	public TransactionInterceptor transactionInterceptor(JpaTransactionManager transactionManager)
 	{
-		TransactionInterceptor bean = new TransactionInterceptor();
+		var bean = new TransactionInterceptor();
 		bean.setTransactionManager(transactionManager);
 		bean.setTransactionAttributeSource(new AnnotationTransactionAttributeSource());
 		return bean;

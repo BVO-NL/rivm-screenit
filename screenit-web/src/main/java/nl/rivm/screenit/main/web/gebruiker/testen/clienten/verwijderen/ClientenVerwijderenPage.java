@@ -58,7 +58,7 @@ public class ClientenVerwijderenPage extends TestenBasePage
 	public ClientenVerwijderenPage()
 	{
 
-		ScreenitForm<Object> form = new ScreenitForm<>("form");
+		var form = new ScreenitForm<Object>("form");
 		add(form);
 
 		form.add(new TextArea<>("bsns", bsns));
@@ -77,7 +77,7 @@ public class ClientenVerwijderenPage extends TestenBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				String message = clientenVerwijderenTestService.clientenVerwijderen(bsns.getObject());
+				var message = clientenVerwijderenTestService.clientenVerwijderen(bsns.getObject());
 				if (message.contains("Succesvol"))
 				{
 					info(message);

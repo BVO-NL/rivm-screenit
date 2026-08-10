@@ -21,24 +21,20 @@ package nl.rivm.screenit.wsb.interceptors;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Map;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.binding.soap.interceptor.EndpointSelectionInterceptor;
 import org.apache.cxf.common.util.UrlUtils;
-import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.frontend.WSDLGetInterceptor;
 import org.apache.cxf.frontend.WSDLGetUtils;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
-import org.apache.cxf.service.model.EndpointInfo;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 public class LocationUriInterceptor extends AbstractPhaseInterceptor<Message>
 {
@@ -58,24 +54,24 @@ public class LocationUriInterceptor extends AbstractPhaseInterceptor<Message>
 	@Override
 	public void handleMessage(Message message) throws Fault
 	{
-		String method = (String) message.get(Message.HTTP_REQUEST_METHOD);
-		String query = (String) message.get(Message.QUERY_STRING);
+		var method = (String) message.get(Message.HTTP_REQUEST_METHOD);
+		var query = (String) message.get(Message.QUERY_STRING);
 
 		if (!"GET".equals(method) || StringUtils.isEmpty(query))
 		{
 			return;
 		}
-		Map<String, String> map = UrlUtils.parseQueryString(query);
+		var map = UrlUtils.parseQueryString(query);
 		if (map.containsKey("wsdl") || map.containsKey("xsd"))
 		{
-			String baseUri = "<Unkown>";
+			var baseUri = "<Unkown>";
 			try
 			{
-				HttpServletRequest request = (HttpServletRequest) message.get(AbstractHTTPDestination.HTTP_REQUEST);
-				String host = request.getHeader("X-Forwarded-Host");
+				var request = (HttpServletRequest) message.get(AbstractHTTPDestination.HTTP_REQUEST);
+				var host = request.getHeader("X-Forwarded-Host");
 				if (StringUtils.isNotBlank(host) && !"unknown".equalsIgnoreCase(host))
 				{
-					String[] splittedHost = host.split(",");
+					var splittedHost = host.split(",");
 					host = splittedHost[0].trim();
 				}
 				else
@@ -83,11 +79,11 @@ public class LocationUriInterceptor extends AbstractPhaseInterceptor<Message>
 					host = request.getHeader("Host");
 					if (StringUtils.isNotBlank(host) && !"unknown".equalsIgnoreCase(host))
 					{
-						String[] splittedHost = host.split(",");
+						var splittedHost = host.split(",");
 						host = splittedHost[0].trim();
 					}
 				}
-				String proto = request.getHeader("X-Forwarded-Proto");
+				var proto = request.getHeader("X-Forwarded-Proto");
 				if (StringUtils.isBlank(proto) || "unknown".equalsIgnoreCase(proto))
 				{
 					proto = "http";
@@ -99,11 +95,11 @@ public class LocationUriInterceptor extends AbstractPhaseInterceptor<Message>
 				LOG.error("request niet succesvol gestuurd?", e.getMessage());
 			}
 
-			Endpoint endpoint = message.getExchange().getEndpoint();
+			var endpoint = message.getExchange().getEndpoint();
 
 			synchronized (endpoint)
 			{
-				EndpointInfo endpointInfo = endpoint.getEndpointInfo();
+				var endpointInfo = endpoint.getEndpointInfo();
 				LOG.info("Publishing endpoint URL is set to " + baseUri);
 				endpointInfo.setProperty(WSDLGetUtils.PUBLISHED_ENDPOINT_URL, baseUri);
 			}

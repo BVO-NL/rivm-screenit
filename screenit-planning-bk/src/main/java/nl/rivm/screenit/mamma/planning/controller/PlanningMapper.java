@@ -36,11 +36,9 @@ import nl.rivm.screenit.mamma.planning.index.PlanningStandplaatsIndex;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlokkade;
 import nl.rivm.screenit.mamma.planning.model.PlanningEntiteit;
-import nl.rivm.screenit.mamma.planning.model.PlanningMelding;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsOrganisatie;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsRonde;
 import nl.rivm.screenit.util.DateUtil;
 
 public class PlanningMapper
@@ -49,7 +47,7 @@ public class PlanningMapper
 
 	public static PlanningBlokkade from(PlanningBlokkadeDto blokkadeDto)
 	{
-		PlanningBlokkade blokkade = new PlanningBlokkade(
+		var blokkade = new PlanningBlokkade(
 			blokkadeDto.id,
 			blokkadeDto.blokkadeType,
 			null,
@@ -76,7 +74,7 @@ public class PlanningMapper
 
 	public static PlanningCapaciteitBlokDto from(PlanningBlok blok)
 	{
-		PlanningCapaciteitBlokDto dto = new PlanningCapaciteitBlokDto();
+		var dto = new PlanningCapaciteitBlokDto();
 		dto.screeningsEenheidId = blok.getScreeningsEenheid().getId();
 		dto.aantalOnderzoeken = blok.getAantalOnderzoeken();
 		dto.blokType = blok.getCapaciteitBlokType();
@@ -94,9 +92,9 @@ public class PlanningMapper
 
 	public static PlanningStandplaatsPeriodeDto from(PlanningStandplaatsPeriode standplaatsPeriode)
 	{
-		PlanningStandplaatsRonde standplaatsRonde = standplaatsPeriode.getStandplaatsRonde();
+		var standplaatsRonde = standplaatsPeriode.getStandplaatsRonde();
 
-		PlanningStandplaatsPeriodeDto standplaatsPeriodeDto = new PlanningStandplaatsPeriodeDto();
+		var standplaatsPeriodeDto = new PlanningStandplaatsPeriodeDto();
 		standplaatsPeriodeDto.afspraakDrempel = standplaatsRonde.getAfspraakDrempel();
 		standplaatsPeriodeDto.screeningsEenheidVolgNr = standplaatsPeriode.getScreeningsEenheidVolgNr();
 		standplaatsPeriodeDto.standplaatsId = standplaatsRonde.getStandplaats().getId();
@@ -119,10 +117,10 @@ public class PlanningMapper
 			.map(PlanningScreeningsOrganisatie::getId)
 			.toList();
 
-		PlanningMeldingenDto meldingenDto = new PlanningMeldingenDto();
-		for (PlanningMelding melding : standplaatsRonde.getMeldingList())
+		var meldingenDto = new PlanningMeldingenDto();
+		for (var melding : standplaatsRonde.getMeldingList())
 		{
-			PlanningMeldingenDto.PlanningMeldingDto meldingDto = new PlanningMeldingenDto.PlanningMeldingDto();
+			var meldingDto = new PlanningMeldingenDto.PlanningMeldingDto();
 			meldingDto.tekst = melding.getTekst();
 			meldingDto.niveau = melding.getNiveau();
 			meldingenDto.niveau = standplaatsRonde.getNiveau();
@@ -135,7 +133,7 @@ public class PlanningMapper
 
 	public static PlanningScreeningsEenheidMetaDataDto from(PlanningScreeningsEenheid screeningsEenheid)
 	{
-		PlanningScreeningsEenheidMetaDataDto metaDataDto = new PlanningScreeningsEenheidMetaDataDto();
+		var metaDataDto = new PlanningScreeningsEenheidMetaDataDto();
 		metaDataDto.niveau = screeningsEenheid.getNiveau();
 		metaDataDto.initieelIntervalMaanden = intervalToMonth(screeningsEenheid.getInitieelInterval());
 		metaDataDto.intervalMaanden = intervalToMonth(screeningsEenheid.getInterval());

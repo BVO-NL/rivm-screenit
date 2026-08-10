@@ -34,7 +34,7 @@ public class SemverUtil
 		var minVersionParts = minVersion.split("\\.");
 
 		var maxLength = Math.max(versionParts.length, minVersionParts.length);
-		for (int i = 0; i < maxLength; i++)
+		for (var i = 0; i < maxLength; i++)
 		{
 			var versionPart = i < versionParts.length ? parseVersieOnderdeel(versionParts[i]) : 0;
 			var minVersionPart = i < minVersionParts.length ? parseVersieOnderdeel(minVersionParts[i]) : 0;

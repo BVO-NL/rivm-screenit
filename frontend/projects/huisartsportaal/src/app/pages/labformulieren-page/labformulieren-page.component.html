@@ -1,0 +1,93 @@
+<!--
+  ========================LICENSE_START=================================
+  huisartsportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<ds-card cardTitle="Papieren labformulieren aanvragen niet meer mogelijk" [config]="cardConfig">
+  <p>Het is niet meer mogelijk om via dit portaal papieren laboratoriumformulieren te bestellen.
+    Wij verzoeken u om het labformulier digitaal in te vullen via ZorgDomein of VIPLive. Voor meer info kijk op
+    <a
+      href="https://www.bevolkingsonderzoeknederland.nl/professionals/bevolkingsonderzoek-baarmoederhalskanker/digitaal-labformulier/"
+      rel="noreferrer" target="_blank">onze website</a>.
+  </p>
+  <p>Of neem telefonisch contact op met onze informatielijn: zij kunnen u verder helpen.</p>
+
+  <table class="mt-1">
+    <tr>
+      <td>Noord</td>
+      <td><a href="tel:0505208888">050 – 520 88 88</a></td>
+    </tr>
+    <tr>
+      <td>Oost</td>
+      <td><a href="tel:0881186330">088 – 118 63 30</a></td>
+    </tr>
+    <tr>
+      <td>Zuid</td>
+      <td><a href="tel:0880001322">088 – 000 13 22</a></td>
+    </tr>
+    <tr>
+      <td>Midden West</td>
+      <td><a href="tel:0882669020">088 – 266 90 20</a></td>
+    </tr>
+    <tr>
+      <td>Zuid West</td>
+      <td><a href="tel:0882482000 ">088 – 248 20 00</a></td>
+    </tr>
+  </table>
+
+  <h3 class="my-2">Historisch overzicht</h3>
+
+  <table [dataSource]="dataSource()" ds-table matSort class="w-100">
+    <ng-container dsColumnDef="aanvraagDatum">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="aanvraagDatum">Aangevraagd op</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.aanvraagDatum  | date: 'dd-MM-yyyy HH:mm' }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="aantal">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="aantal">Aantal</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.aantal }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="status">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="status">Status</th>
+      <td *dsCellDef="let row" ds-cell>{{ getAanvraagStatusText(row.status) }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="statusDatum">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="statusDatum">Statusdatum</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.statusDatum  | date: 'dd-MM-yyyy HH:mm' }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="aangevraagdDoor">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="aangevraagdDoor">Aangevraagd door</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.aangevraagdDoor }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="locatie">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="locatie">Locatie</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.locatie.naam }}</td>
+    </ng-container>
+
+    <tr *dsRowDef="let row; columns: displayedColumns" ds-row></tr>
+    <tr *dsHeaderRowDef="displayedColumns" ds-header-row></tr>
+  </table>
+  <ds-paginator [totalNumberOfItems]="paginering().totaal"
+                [pageSize]="paginering().paginaGrootte"
+                [pageSizeOptions]="[10, 20, 50]"
+                (pageChanged)="handlePageChange($event)"/>
+</ds-card>

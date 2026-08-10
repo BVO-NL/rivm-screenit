@@ -44,7 +44,7 @@ public class GunstigeUitslagBriefWriter extends BaseWriter<Client>
 	@Override
 	protected void write(Client client) throws Exception
 	{
-		boolean gemaakt = screeningsrondeService.maakGunstigeUitslagBriefVoorLaatsteRonde(client);
+		var gemaakt = screeningsrondeService.maakGunstigeUitslagBriefVoorLaatsteRonde(client);
 		if (gemaakt)
 		{
 			dossierBaseService.setDatumVolgendeUitnodiging(client.getColonDossier(), ColonUitnodigingsintervalType.GUNSTIGE_UITSLAG);
@@ -54,7 +54,7 @@ public class GunstigeUitslagBriefWriter extends BaseWriter<Client>
 
 	private void updateExecutionPlusOne()
 	{
-		int geselecteerd = getExecutionContext().getInt(GunstigeUitslagConstants.GESELECTEERD);
+		var geselecteerd = getExecutionContext().getInt(GunstigeUitslagConstants.GESELECTEERD);
 		getExecutionContext().put(GunstigeUitslagConstants.GESELECTEERD, geselecteerd + 1);
 	}
 }

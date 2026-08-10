@@ -22,7 +22,6 @@ package nl.rivm.screenit.service.impl;
  */
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +61,7 @@ public class WoonplaatsServiceImpl implements WoonplaatsService
 	{
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("code", plaatscode);
-		List<Woonplaats> results = hibernateService.getByParameters(Woonplaats.class, parameters);
+		var results = hibernateService.getByParameters(Woonplaats.class, parameters);
 
 		if (plaatsnaam.contains("\""))
 		{
@@ -83,13 +82,13 @@ public class WoonplaatsServiceImpl implements WoonplaatsService
 		woonplaats.setNaam(plaatsnaam);
 
 		parameters.put("code", StringUtils.leftPad(gemcode.trim(), 4, '0'));
-		List<Gemeente> gemeentes = hibernateService.getByParameters(Gemeente.class, parameters);
+		var gemeentes = hibernateService.getByParameters(Gemeente.class, parameters);
 		if (gemeentes != null && gemeentes.size() == 1)
 		{
 			woonplaats.setGemeente(gemeentes.get(0));
 			hibernateService.saveOrUpdate(woonplaats);
 
-			WoonplaatsDto dto = new WoonplaatsDto();
+			var dto = new WoonplaatsDto();
 			dto.setScreenitId(woonplaats.getId());
 			dto.setNaam(plaatsnaam);
 			dto.setCode(plaatscode);

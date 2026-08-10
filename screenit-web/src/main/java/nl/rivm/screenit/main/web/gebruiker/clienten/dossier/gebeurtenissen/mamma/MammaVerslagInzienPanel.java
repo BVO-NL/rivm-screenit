@@ -21,12 +21,9 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.mamm
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
-
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.PdfViewer;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.AbstractGebeurtenisDetailPanel;
-import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.service.UploadDocumentService;
 
@@ -42,9 +39,9 @@ public class MammaVerslagInzienPanel extends AbstractGebeurtenisDetailPanel
 	public MammaVerslagInzienPanel(String id, IModel<ScreeningRondeGebeurtenis> model)
 	{
 		super(id, model);
-		UploadDocument file = ((MammaScreeningRonde) getModelObject().getScreeningRondeGebeurtenissen().getScreeningRonde()).getLaatsteUitnodiging().getLaatsteAfspraak()
+		var file = ((MammaScreeningRonde) getModelObject().getScreeningRondeGebeurtenissen().getScreeningRonde()).getLaatsteUitnodiging().getLaatsteAfspraak()
 			.getOnderzoek().getLaatsteBeoordeling().getVerslagPdf();
-		File verslag = uploadDocumentService.load(file);
+		var verslag = uploadDocumentService.load(file);
 		add(new PdfViewer("verslag", verslag, false));
 	}
 }

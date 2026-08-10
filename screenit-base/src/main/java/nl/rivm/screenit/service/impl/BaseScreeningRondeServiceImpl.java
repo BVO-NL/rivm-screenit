@@ -21,7 +21,6 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 import nl.rivm.screenit.model.ScreeningRonde;
@@ -52,7 +51,7 @@ public class BaseScreeningRondeServiceImpl implements BaseScreeningRondeService
 		if (ronde != null && ScreeningRondeStatus.AFGEROND.equals(ronde.getStatus()))
 		{
 			ronde.setStatus(ScreeningRondeStatus.LOPEND);
-			LocalDateTime nu = currentDateSupplier.getLocalDateTime();
+			var nu = currentDateSupplier.getLocalDateTime();
 			ronde.setStatusDatum(DateUtil.toUtilDate(nu.plus(200, ChronoUnit.MILLIS)));
 			ronde.setAangemeld(true);
 			ronde.setAfgerondReden(null);

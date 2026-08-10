@@ -28,10 +28,8 @@ import java.util.stream.Collectors;
 import nl.rivm.screenit.mamma.se.dto.onderzoek.VorigOnderzoekDto;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaLezing;
-import nl.rivm.screenit.model.mamma.MammaMammografie;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingOpschortenReden;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
@@ -58,12 +56,12 @@ public class VorigOnderzoekDtoMapper
 	public VorigOnderzoekDto createVorigOnderzoekDto(MammaScreeningRonde ronde, MammaBaseBeoordelingService beoordelingService, MammaBaseOnderzoekService mammaBaseOnderzoekService,
 		String seVersie)
 	{
-		VorigOnderzoekDto vorigOnderzoekDto = new VorigOnderzoekDto();
+		var vorigOnderzoekDto = new VorigOnderzoekDto();
 
-		MammaOnderzoek onderzoek = ronde.getLaatsteOnderzoek();
+		var onderzoek = ronde.getLaatsteOnderzoek();
 		if (onderzoek != null && onderzoek.isDoorgevoerd())
 		{
-			MammaMammografie mammografie = onderzoek.getMammografie();
+			var mammografie = onderzoek.getMammografie();
 			vorigOnderzoekDto.setUitnodigingsNr(ronde.getUitnodigingsNr());
 			vorigOnderzoekDto.setEersteBeeindigdeAfspraakOp(eersteBeeindigdeAfspraakOp(ronde));
 			vorigOnderzoekDto.setOnderzoekDatum(DateUtil.toLocalDateTime(onderzoek.getCreatieDatum()));
@@ -132,13 +130,13 @@ public class VorigOnderzoekDtoMapper
 	private LocalDateTime eersteBeeindigdeAfspraakOp(MammaScreeningRonde ronde)
 	{
 		LocalDateTime result = null;
-		for (MammaUitnodiging uitnodiging : ronde.getUitnodigingen())
+		for (var uitnodiging : ronde.getUitnodigingen())
 		{
-			for (MammaAfspraak afspraak : uitnodiging.getAfspraken())
+			for (var afspraak : uitnodiging.getAfspraken())
 			{
 				if (afspraak.getStatus() == MammaAfspraakStatus.BEEINDIGD)
 				{
-					LocalDateTime afspraakVanaf = DateUtil.toLocalDateTime(afspraak.getVanaf());
+					var afspraakVanaf = DateUtil.toLocalDateTime(afspraak.getVanaf());
 					if (result == null || afspraakVanaf.isBefore(result))
 					{
 						result = afspraakVanaf;

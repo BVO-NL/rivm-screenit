@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.intake;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,13 +36,9 @@ import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
 import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
-import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie;
-import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieOnHoldReden;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
@@ -146,8 +141,8 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 	{
 		super(id, model);
 
-		ColonIntakeAfspraak afspraak = ModelUtil.nullSafeGet(model);
-		ColonConclusie conclusie = afspraak.getConclusie();
+		var afspraak = ModelUtil.nullSafeGet(model);
+		var conclusie = afspraak.getConclusie();
 		mdlVerslagVerwerkt = ColonScreeningRondeUtil.heeftAfgerondeVerslag(afspraak.getScreeningRonde(), VerslagType.MDL);
 		vervolgonderzoekDto = new ColonVervolgonderzoekKeuzesDto();
 
@@ -183,7 +178,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 		}
 		Form<ColonIntakeAfspraak> form = new ConclusieForm("form", model);
 		add(form);
-		Client client = model.getObject().getScreeningRonde().getDossier().getClient();
+		var client = model.getObject().getScreeningRonde().getDossier().getClient();
 		add(new Label("popupTitel", getPopupTitel()));
 		add(new Label("client.persoon.bsn"));
 		add(new Label("client.persoon.geboortedatum", DateUtil.getGeboortedatum(client)));
@@ -262,7 +257,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 
 		private void addClientEnDigitaleIntake(WebMarkupContainer container, ColonIntakeAfspraak intakeAfspraak)
 		{
-			Client client = intakeAfspraak.getScreeningRonde().getDossier().getClient();
+			var client = intakeAfspraak.getScreeningRonde().getDossier().getClient();
 			container.add(new Label("conclusie.organisatieMedewerker.medewerker.naamVolledig"));
 			container.add(createDigitaleIntakeLabel(intakeAfspraak));
 			var paspoortComponent = maakPaspoortComponent(client, intakeAfspraak.getIntakeafspraakType() == DIGITAAL);
@@ -278,11 +273,11 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 		{
 			List<Integer> choices = new ArrayList<>();
 			choices.add(null);
-			for (int i = 1; i <= 5; i++)
+			for (var i = 1; i <= 5; i++)
 			{
 				choices.add(i);
 			}
-			AjaxButtonGroup<Integer> asaScoreChoice = new AjaxButtonGroup<>("conclusie.asaScore", new ListModel<>(choices), new IntegerChoiceRenderer());
+			var asaScoreChoice = new AjaxButtonGroup<Integer>("conclusie.asaScore", new ListModel<>(choices), new IntegerChoiceRenderer());
 			asaScoreChoice.setEnabled(!mdlVerslagVerwerkt);
 			container.add(asaScoreChoice);
 
@@ -299,10 +294,10 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 				{
 					if (!ColonConclusieVastleggenPanel.this.hasErrorMessage())
 					{
-						ColonIntakeAfspraak afspraak = ConclusieForm.this.getModelObject();
-						ColonConclusie conclusie = afspraak.getConclusie();
+						var afspraak = ConclusieForm.this.getModelObject();
+						var conclusie = afspraak.getConclusie();
 
-						OrganisatieMedewerker ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
+						var ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 						conclusie.setOrganisatieMedewerker(ingelogdeOrganisatieMedewerker);
 						dossierService.conclusieOpslaan(afspraak, vervolgonderzoekDto, ingelogdeOrganisatieMedewerker, origConclusie);
 
@@ -333,9 +328,9 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 				@Override
 				protected IModel<String> getHeaderStringModel()
 				{
-					ColonIntakeAfspraak afspraak = ConclusieForm.this.getModelObject();
+					var afspraak = ConclusieForm.this.getModelObject();
 
-					String resourceKey = "";
+					var resourceKey = "";
 					ColonUitnodigingsintervalType interval = null;
 					if (Boolean.FALSE.equals(vervolgonderzoekDto.redenGeenVervolgOnderzoek))
 					{
@@ -352,12 +347,12 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 						interval = ColonGeenOnderzoekReden.getTerugNaarScreeningReden(vervolgonderzoekDto.aantalJarenTerugNaarScreening).getUitnodigingsintervalType();
 						resourceKey = "ColonGeenOnderzoekReden.TERUG_NAAR_SCREENING_x_JAAR.gevolg";
 					}
-					StringResourceModel resourceModel = new StringResourceModel(resourceKey, ColonConclusieVastleggenPanel.this);
-					LocalDate theoretischeDatumVolgendeUitnodiging = dossierBaseService.getTheoretischeDatumVolgendeUitnodiging(afspraak.getScreeningRonde().getDossier(),
+					var resourceModel = new StringResourceModel(resourceKey, ColonConclusieVastleggenPanel.this);
+					var theoretischeDatumVolgendeUitnodiging = dossierBaseService.getTheoretischeDatumVolgendeUitnodiging(afspraak.getScreeningRonde().getDossier(),
 						interval);
 					if (theoretischeDatumVolgendeUitnodiging != null)
 					{
-						int jaar = theoretischeDatumVolgendeUitnodiging.getYear();
+						var jaar = theoretischeDatumVolgendeUitnodiging.getYear();
 						resourceModel.setParameters("" + jaar);
 					}
 					return resourceModel;
@@ -392,7 +387,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 				@Override
 				public void onClick(AjaxRequestTarget target)
 				{
-					ColonIntakeAfspraak afspraak = ConclusieForm.this.getModelObject();
+					var afspraak = ConclusieForm.this.getModelObject();
 
 					dossierService.conclusieVerwijderen(afspraak, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), origConclusie);
 
@@ -474,17 +469,17 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 
 		private Date getDatumEersteOngunstigeUitslagInRonde(ColonIntakeAfspraak intakeAfspraak)
 		{
-			ColonFitRegistratie eersteGunstigeTest = ColonScreeningRondeUtil.getEersteOngunstigeFitRegistratie(intakeAfspraak.getScreeningRonde());
+			var eersteGunstigeTest = ColonScreeningRondeUtil.getEersteOngunstigeFitRegistratie(intakeAfspraak.getScreeningRonde());
 			return eersteGunstigeTest != null ? eersteGunstigeTest.getVerwerkingsDatum() : null;
 		}
 
 		private void initKeuzes()
 		{
-			ColonIntakeAfspraak afspraak = getModelObject();
-			ColonConclusie conclusie = afspraak.getConclusie();
+			var afspraak = getModelObject();
+			var conclusie = afspraak.getConclusie();
 			if (conclusie != null && conclusie.getType() != null)
 			{
-				ColonConclusieType type = conclusie.getType();
+				var type = conclusie.getType();
 				vervolgonderzoekDto.conclusie = type;
 				if (optiesIntakeConclusieNee.contains(type))
 				{
@@ -525,10 +520,10 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 		private Date getOngunstigeUitslagBriefDatum(ColonIntakeAfspraak afspraak)
 		{
 			Date briefAfgedrukt = null;
-			ColonScreeningRonde ronde = afspraak.getScreeningRonde();
+			var ronde = afspraak.getScreeningRonde();
 			if (ronde != null)
 			{
-				for (ColonBrief brief : ronde.getBrieven())
+				for (var brief : ronde.getBrieven())
 				{
 					var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(brief);
 					if (brief.getIntakeAfspraak() != null && afspraak.getId().equals(brief.getIntakeAfspraak().getId())
@@ -569,9 +564,9 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 
 		private void addOrUpdateContainer(AjaxRequestTarget target, ColonConclusieType type)
 		{
-			String containerId = "container";
+			var containerId = "container";
 			Component newContainer = new WebMarkupContainer(containerId);
-			boolean opslaanEnabled = true;
+			var opslaanEnabled = true;
 			if (type != null)
 			{
 				switch (type)
@@ -659,7 +654,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 			var afspraak = ColonConclusieVastleggenPanel.this.getModelObject();
 			if (ColonConclusieType.DOORVERWIJZEN_NAAR_ANDER_CENTRUM.equals(origConclusie))
 			{
-				Boolean doorverwijzingBevestigd = afspraak.getConclusie().getDoorverwijzingBevestigd();
+				var doorverwijzingBevestigd = afspraak.getConclusie().getDoorverwijzingBevestigd();
 				if (Boolean.TRUE.equals(doorverwijzingBevestigd))
 				{
 					if (afspraak.getNieuweAfspraak() != null)
@@ -725,7 +720,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 				protected void onSelectionChanged(Boolean antwoord, AjaxRequestTarget target, String markupId)
 				{
 					resetNietGeselecteerdeGegevens();
-					boolean eindIsBereikt = maakVervolgPanel(antwoord);
+					var eindIsBereikt = maakVervolgPanel(antwoord);
 
 					target.add(VraagFragment.this);
 					opslaan.setEnabled(eindIsBereikt);
@@ -739,7 +734,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 		private boolean maakVervolgPanel(Boolean antwoord)
 		{
 			Component newVervolgPannel = null;
-			String id = "vervolg";
+			var id = "vervolg";
 			if (Boolean.TRUE.equals(antwoord))
 			{
 				newVervolgPannel = onJa(id);
@@ -779,7 +774,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 			IModel<Integer> antwoordModel = new PropertyModel<>(vervolgonderzoekDto, "aantalJarenTerugNaarScreening");
 			setOutputMarkupId(true);
 			List<Integer> choices = new ArrayList<>();
-			for (int i = 2; i <= 10; i++)
+			for (var i = 2; i <= 10; i++)
 			{
 				choices.add(i);
 			}
@@ -844,7 +839,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 		{
 			super.onInitialize();
 
-			ColonIntakeAfspraak afspraak = getModelObject();
+			var afspraak = getModelObject();
 			if (Boolean.TRUE.equals(afspraak.getConclusie().getDoorverwijzingBevestigd()))
 			{
 				add(new Label("begeleidendTekst", getString("verwijzingCompleet")));
@@ -861,7 +856,7 @@ public abstract class ColonConclusieVastleggenPanel extends GenericPanel<ColonIn
 
 	private void resetNietGeselecteerdeGegevens()
 	{
-		ColonConclusie conclusie = getModelObject().getConclusie();
+		var conclusie = getModelObject().getConclusie();
 		if (Boolean.TRUE.equals(vervolgonderzoekDto.intakeConclusie))
 		{
 			vervolgonderzoekDto.verwijzing = null;

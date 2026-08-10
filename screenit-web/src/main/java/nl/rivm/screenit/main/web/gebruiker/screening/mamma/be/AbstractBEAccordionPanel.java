@@ -111,7 +111,7 @@ public abstract class AbstractBEAccordionPanel<T> extends GenericPanel<T>
 
 		collapseLink.add(new Label("collapseName", title));
 
-		final WebMarkupContainer namePostfix = new WebMarkupContainer("namePostfix");
+		final var namePostfix = new WebMarkupContainer("namePostfix");
 		if (this.namePostfixCssClass != null)
 		{
 			namePostfix.add(new AttributeModifier("class", this.namePostfixCssClass));

@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.component.validator;
  */
 
 import java.io.Serializable;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -41,10 +40,10 @@ public class FormuliernummerValidator implements IValidator<String>
 	@Override
 	public void validate(IValidatable<String> validatable)
 	{
-		String value = validatable.getValue();
+		var value = validatable.getValue();
 		if (StringUtils.isNotBlank(value))
 		{
-			String formuliernummer = StringUtils.trim(value);
+			var formuliernummer = StringUtils.trim(value);
 			formuliernummer = StringUtils.remove(formuliernummer, " ");
 
 			if (StringUtils.length(formuliernummer) != 12 
@@ -68,7 +67,7 @@ public class FormuliernummerValidator implements IValidator<String>
 
 	public static boolean isValidNLPostcode(String postcode)
 	{
-		Matcher matcher = POSTCODE_NL.matcher(postcode);
+		var matcher = POSTCODE_NL.matcher(postcode);
 		return matcher.matches();
 	}
 }

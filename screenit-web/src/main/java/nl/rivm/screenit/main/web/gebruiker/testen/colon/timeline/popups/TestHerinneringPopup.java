@@ -36,6 +36,7 @@ import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+
 public class TestHerinneringPopup extends AbstractTestBasePopupPanel
 {
 	private static final long serialVersionUID = 1L;
@@ -67,8 +68,8 @@ public class TestHerinneringPopup extends AbstractTestBasePopupPanel
 	@Override
 	protected void opslaan()
 	{
-		TestTimeLineDossierTijdstip tijdStip = dossierTijdStipModel.getObject();
-		for (Client client : getModelObject())
+		var tijdStip = dossierTijdStipModel.getObject();
+		for (var client : getModelObject())
 		{
 			colonTestTimeLineService.fitHerinneringVersturen(client, tijdStip);
 		}

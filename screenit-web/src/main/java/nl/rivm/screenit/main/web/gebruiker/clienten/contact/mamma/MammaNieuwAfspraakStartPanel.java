@@ -24,9 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact.mamma;
 import java.util.Date;
 
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.mamma.MammaAfspraak;
-import nl.rivm.screenit.model.mamma.MammaDossier;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
 import nl.rivm.screenit.model.mamma.MammaUitstel;
@@ -59,12 +56,12 @@ public abstract class MammaNieuwAfspraakStartPanel extends GenericPanel<MammaUit
 	{
 		super.onInitialize();
 
-		MammaDossier dossier = clientModel.getObject().getMammaDossier();
-		MammaScreeningRonde laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
-		MammaAfspraak laatsteAfspraak = laatsteScreeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak();
-		MammaUitstel laatsteUitstel = laatsteScreeningRonde.getLaatsteUitstel();
+		var dossier = clientModel.getObject().getMammaDossier();
+		var laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
+		var laatsteAfspraak = laatsteScreeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak();
+		var laatsteUitstel = laatsteScreeningRonde.getLaatsteUitstel();
 
-		boolean heeftUitstel = (laatsteAfspraak == null || MammaAfspraakStatus.UITGESTELD == laatsteAfspraak.getStatus()) && laatsteUitstel != null
+		var heeftUitstel = (laatsteAfspraak == null || MammaAfspraakStatus.UITGESTELD == laatsteAfspraak.getStatus()) && laatsteUitstel != null
 			&& laatsteUitstel.getGeannuleerdOp() == null && laatsteUitstel.getUitnodiging() == null;
 
 		add(new Label("rondeForcerenMelding", getString("uitlegRondeForceren")).setVisible(rondeForcerenMeldingTonen()));
@@ -74,7 +71,7 @@ public abstract class MammaNieuwAfspraakStartPanel extends GenericPanel<MammaUit
 
 		if (heeftUitstel)
 		{
-			MammaStandplaats standplaats = laatsteUitstel.getStandplaats();
+			var standplaats = laatsteUitstel.getStandplaats();
 			add(new StandplaatsFragment("standplaats", laatsteUitstel.getStreefDatum(), standplaats));
 		}
 		else
@@ -127,10 +124,10 @@ public abstract class MammaNieuwAfspraakStartPanel extends GenericPanel<MammaUit
 			MammaStandplaatsLocatie locatie = null;
 
 			add(new Label("standplaats.naam", standplaats.getNaam()));
-			MammaStandplaatsLocatie tijdelijkeLocatie = standplaats.getTijdelijkeLocatie();
+			var tijdelijkeLocatie = standplaats.getTijdelijkeLocatie();
 			if (tijdelijkeLocatie.getStartDatum() != null)
 			{
-				Date eindDatum = tijdelijkeLocatie.getEindDatum();
+				var eindDatum = tijdelijkeLocatie.getEindDatum();
 				eindDatum.setHours(23);
 				eindDatum.setMinutes(59);
 				if (tijdelijkeLocatie.getStartDatum().compareTo(vanaf) * vanaf.compareTo(eindDatum) > 0)
@@ -143,9 +140,9 @@ public abstract class MammaNieuwAfspraakStartPanel extends GenericPanel<MammaUit
 				locatie = standplaats.getLocatie();
 			}
 
-			IModel<MammaStandplaatsLocatie> locatieModel = ModelUtil.csModel(locatie);
+			var locatieModel = ModelUtil.csModel(locatie);
 
-			WebMarkupContainer locatieContainer = new WebMarkupContainer("locatieContainer", locatieModel);
+			var locatieContainer = new WebMarkupContainer("locatieContainer", locatieModel);
 			add(locatieContainer);
 			locatieContainer.add(new Label("straat"));
 			locatieContainer.add(new Label("huisnummer"));
@@ -153,7 +150,7 @@ public abstract class MammaNieuwAfspraakStartPanel extends GenericPanel<MammaUit
 			locatieContainer.add(new Label("plaats"));
 			locatieContainer.add(new Label("locatieBeschrijving"));
 
-			WebMarkupContainer tijdelijkContainer = new WebMarkupContainer("tijdelijkContainer");
+			var tijdelijkContainer = new WebMarkupContainer("tijdelijkContainer");
 			locatieContainer.add(tijdelijkContainer);
 			tijdelijkContainer.setVisible(locatie.getTijdelijk());
 			tijdelijkContainer.add(DateLabel.forDatePattern("startDatum", "dd-MM-yyyy"));

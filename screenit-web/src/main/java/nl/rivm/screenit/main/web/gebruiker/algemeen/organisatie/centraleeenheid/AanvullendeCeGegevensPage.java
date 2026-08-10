@@ -72,18 +72,18 @@ public class AanvullendeCeGegevensPage extends OrganisatieBeheer
 
 	public AanvullendeCeGegevensPage()
 	{
-		CentraleEenheid organisatie = (CentraleEenheid) Hibernate.unproxy(getCurrentSelectedOrganisatie());
+		var organisatie = (CentraleEenheid) Hibernate.unproxy(getCurrentSelectedOrganisatie());
 
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(organisatie)));
 
-		final IModel<CentraleEenheid> model = ModelUtil.cModel(organisatie);
+		final var model = ModelUtil.cModel(organisatie);
 		setDefaultModel(model);
 
 		Form<Void> form = new ScreenitForm<>("form");
 		add(form);
 
-		boolean inzien = isAlleenInzien(organisatie);
-		boolean magRegioWijzigen = !inzien && organisatie.getRegio() == null;
+		var inzien = isAlleenInzien(organisatie);
+		var magRegioWijzigen = !inzien && organisatie.getRegio() == null;
 
 		form.add(new KoppelAanRegioOrganisatiePanel<>("regio", model).setEnabled(magRegioWijzigen));
 		form.add(new GekoppeldeBeEnSePanel("beEnSeOverzicht", model));
@@ -94,14 +94,14 @@ public class AanvullendeCeGegevensPage extends OrganisatieBeheer
 
 	private boolean isAlleenInzien(Organisatie organisatie)
 	{
-		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie,
+		var actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie,
 			Recht.MEDEWERKER_CENTRALE_EENHEID_ORG_BEHEER);
 		return !isMinimumActie(actie, Actie.AANPASSEN);
 	}
 
 	private void addAnnulerenButton(Form<Void> form, boolean inzien)
 	{
-		AjaxLink<Void> annuleren = new AjaxLink<Void>("annuleren")
+		var annuleren = new AjaxLink<Void>("annuleren")
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -117,7 +117,7 @@ public class AanvullendeCeGegevensPage extends OrganisatieBeheer
 
 	private void addOpslaanButton(Form<Void> form, IModel<CentraleEenheid> model, boolean inzien)
 	{
-		AjaxSubmitLink opslaan = new AjaxSubmitLink("submit")
+		var opslaan = new AjaxSubmitLink("submit")
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -125,7 +125,7 @@ public class AanvullendeCeGegevensPage extends OrganisatieBeheer
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				BasePage.markeerFormulierenOpgeslagen(target);
-				CentraleEenheid centraleEenheid = model.getObject();
+				var centraleEenheid = model.getObject();
 				organisatieService.saveOrUpdate(centraleEenheid);
 				logAction(centraleEenheid);
 				this.info("Gegevens zijn succesvol opgeslagen");
@@ -138,7 +138,7 @@ public class AanvullendeCeGegevensPage extends OrganisatieBeheer
 
 	private void logAction(CentraleEenheid centraleEenheid)
 	{
-		String regio = centraleEenheid.getRegio() != null ? centraleEenheid.getRegio().getNaam() : "";
+		var regio = centraleEenheid.getRegio() != null ? centraleEenheid.getRegio().getNaam() : "";
 		logService.logGebeurtenis(LogGebeurtenis.ORGANISATIE_WIJZIG, ScreenitSession.get().getIngelogdAccount(),
 			"Organisatie: " + centraleEenheid.getNaam() + " ;Regio = " + regio);
 	}

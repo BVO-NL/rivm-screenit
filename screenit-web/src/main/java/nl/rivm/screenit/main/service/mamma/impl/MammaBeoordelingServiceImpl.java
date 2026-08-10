@@ -74,6 +74,7 @@ import nl.rivm.screenit.service.BerichtToBatchService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.DistributedLockService;
 import nl.rivm.screenit.service.HibernateService;
+import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingReserveringService;
@@ -163,6 +164,9 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 
 	@Autowired
 	private MammaBeoordelingRepository beoordelingRepository;
+
+	@Autowired
+	private ICurrentDateSupplier currentDateSupplier;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -564,6 +568,7 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 				file = briefService.maakPdfVanBrief(brief, context);
 			}
 			briefService.setBriefGegenereerd(brief);
+			brief.setVerstuurdVoorAfdrukkenOp(currentDateSupplier.getLocalDateTime());
 			hibernateService.saveOrUpdate(brief);
 		}
 		catch (Exception e)

@@ -65,7 +65,7 @@ public abstract class MammaBaseAfbeeldingPanel<T> extends GenericPanel<T>
 
 	private void addContainerWithImage(WebMarkupContainer imagesContainer, MammaAfbeeldingZijdeDoorsnede zijdeDoorsnede)
 	{
-		WebMarkupContainer imageContainer = new WebMarkupContainer(zijdeDoorsnede.getSvgFileName() + "Container");
+		var imageContainer = new WebMarkupContainer(zijdeDoorsnede.getSvgFileName() + "Container");
 		imagesContainer.add(imageContainer);
 
 		addImage(imageContainer, zijdeDoorsnede);

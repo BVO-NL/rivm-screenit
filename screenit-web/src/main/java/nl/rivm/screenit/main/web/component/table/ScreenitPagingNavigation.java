@@ -116,9 +116,9 @@ public class ScreenitPagingNavigation<T> extends AbstractToolbar
 			protected void populateItem(final LoopItem loopItem)
 			{
 
-				final long pageIndex = getStartIndex() + loopItem.getIndex();
+				final var pageIndex = getStartIndex() + loopItem.getIndex();
 
-				WebMarkupContainer container = new WebMarkupContainer("container");
+				var container = new WebMarkupContainer("container");
 				container.add(new AttributeAppender("class", new IModel<String>()
 				{
 					private static final long serialVersionUID = 1L;
@@ -138,7 +138,7 @@ public class ScreenitPagingNavigation<T> extends AbstractToolbar
 				container.add(link);
 				loopItem.add(container);
 
-				String label = "";
+				var label = "";
 				if (labelProvider != null)
 				{
 					label = labelProvider.getPageLabel(pageIndex);

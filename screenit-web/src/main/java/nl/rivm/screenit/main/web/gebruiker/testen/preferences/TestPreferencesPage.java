@@ -146,7 +146,7 @@ public class TestPreferencesPage extends TestenBasePage
 	@NotNull
 	private void maakSmsVerzendenRadioChoiceKnop()
 	{
-		SmsVerzenden smsVerzendenPreference = preferenceService.getEnum(PreferenceKey.SMS_VERZENDEN.name(), SmsVerzenden.class);
+		var smsVerzendenPreference = preferenceService.getEnum(PreferenceKey.SMS_VERZENDEN.name(), SmsVerzenden.class);
 		smsVerzendenModel = new Model<>(smsVerzendenPreference);
 
 		var smsVerzendenOpties = Arrays.asList(SmsVerzenden.ALTERNATIEF_MOBIELNUMMER, SmsVerzenden.UIT);
@@ -200,7 +200,7 @@ public class TestPreferencesPage extends TestenBasePage
 
 	private void alternatiefMailAdres(Form<Void> form)
 	{
-		MailVerzenden mailVerzendenPreference = preferenceService.getEnum(PreferenceKey.MAIL_VERZENDEN.name(), MailVerzenden.class);
+		var mailVerzendenPreference = preferenceService.getEnum(PreferenceKey.MAIL_VERZENDEN.name(), MailVerzenden.class);
 		mailVerzendenModel = new Model<>(mailVerzendenPreference);
 		alternatiefAdresModel = new Model<>(preferenceService.getString(PreferenceKey.ALTERNATIEF_ADRES.toString()));
 
@@ -235,7 +235,7 @@ public class TestPreferencesPage extends TestenBasePage
 		alternatiefAdresContainer.setVisible(true);
 		alternatiefAdresContainer.setOutputMarkupPlaceholderTag(true);
 
-		final TextField<String> alternatiefAdres = new TextField<>("alternatiefAdres", alternatiefAdresModel);
+		final var alternatiefAdres = new TextField<String>("alternatiefAdres", alternatiefAdresModel);
 		alternatiefAdres.setRequired(true);
 		alternatiefAdresContainer.setOutputMarkupPlaceholderTag(true);
 		alternatiefAdresContainer.add(alternatiefAdres);

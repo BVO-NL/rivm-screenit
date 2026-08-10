@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.component.table;
  */
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -74,9 +73,9 @@ public class UploadDocumentDownloadBehavior extends AjaxDownload
 
 				try
 				{
-					File file = uploadDocumentService.load(uploadDocumentModel.getObject());
+					var file = uploadDocumentService.load(uploadDocumentModel.getObject());
 
-					try (FileInputStream fis = new FileInputStream(file))
+					try (var fis = new FileInputStream(file))
 					{
 						IOUtils.copy(fis, output);
 					}

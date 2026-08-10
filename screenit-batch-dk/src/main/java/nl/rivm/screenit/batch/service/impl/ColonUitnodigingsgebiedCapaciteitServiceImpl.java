@@ -29,7 +29,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -118,20 +117,20 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 		LOG.info("Bepaal uitnodigingscapaciteit op basis van de capaciteit van de intakelocaties voor alle uitnodigingsgebieden in de week van {} tot/met {}",
 			weekStart.format(DateUtil.LOCAL_DATE_FORMAT), weekEnd.format(DateUtil.LOCAL_DATE_FORMAT));
 
-		for (ColonIntakelocatie intakelocatie : organisatieService.getActieveIntakelocaties())
+		for (var intakelocatie : organisatieService.getActieveIntakelocaties())
 		{
-			BigDecimal intakecapaciteitPerDag = bepaalIntakeCapaciteitPerDag(weekStart, weekEnd, intakelocatie);
+			var intakecapaciteitPerDag = bepaalIntakeCapaciteitPerDag(weekStart, weekEnd, intakelocatie);
 
 			LOG.info("Intakecapaciteit per dag in {}: {}", intakelocatie.getNaam(), BigDecimalUtil.decimalToString(intakecapaciteitPerDag));
 
-			for (ColoscopieCentrumColonCapaciteitVerdeling capaciteitVerdeling : intakelocatie.getCapaciteitVerdeling())
+			for (var capaciteitVerdeling : intakelocatie.getCapaciteitVerdeling())
 			{
-				UitnodigingsGebied uitnodigingsGebied = capaciteitVerdeling.getUitnodigingsGebied();
+				var uitnodigingsGebied = capaciteitVerdeling.getUitnodigingsGebied();
 				if (uitnodigingsGebied.getGemeente() != null)
 				{
-					BigDecimal gebiedsFactor = getGebiedsFactor(gebiedsFactorCache, uitnodigingsGebied);
+					var gebiedsFactor = getGebiedsFactor(gebiedsFactorCache, uitnodigingsGebied);
 
-					BigDecimal uitnodigingsCapVanILVoorGebied = bepaalEnLogUitnodigingsCapVanILVoorGebied(intakecapaciteitPerDag, gebiedsFactor, capaciteitVerdeling, intakelocatie,
+					var uitnodigingsCapVanILVoorGebied = bepaalEnLogUitnodigingsCapVanILVoorGebied(intakecapaciteitPerDag, gebiedsFactor, capaciteitVerdeling, intakelocatie,
 						uitnodigingsGebied);
 
 					voegUitnodigingscapaciteitILToeAanContext(uitnodigingsGebiedenMetCapaciteit, uitnodigingsGebied, uitnodigingsCapVanILVoorGebied, capaciteitVerdeling);
@@ -173,12 +172,12 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 	private BigDecimal bepaalEnLogUitnodigingsCapVanILVoorGebied(BigDecimal intakecapaciteitPerDag, BigDecimal gebiedsFactor,
 		ColoscopieCentrumColonCapaciteitVerdeling capaciteitVerdeling, ColonIntakelocatie intakelocatie, UitnodigingsGebied uitnodigingsGebied)
 	{
-		BigDecimal uitnodigingsCapaciteit = intakecapaciteitPerDag.multiply(gebiedsFactor);
+		var uitnodigingsCapaciteit = intakecapaciteitPerDag.multiply(gebiedsFactor);
 
-		BigDecimal capVoorGebiedFactor = BigDecimal.valueOf(capaciteitVerdeling.getPercentageCapaciteit()).divide(BigDecimal.valueOf(10000), 4,
+		var capVoorGebiedFactor = BigDecimal.valueOf(capaciteitVerdeling.getPercentageCapaciteit()).divide(BigDecimal.valueOf(10000), 4,
 			RoundingMode.HALF_UP);
 
-		BigDecimal uitnodigingsCapVanILVoorGebied = uitnodigingsCapaciteit.multiply(capVoorGebiedFactor);
+		var uitnodigingsCapVanILVoorGebied = uitnodigingsCapaciteit.multiply(capVoorGebiedFactor);
 
 		LOG.info("Deel uitnodigingscapaciteit van intakelocatie " + intakelocatie.getNaam() + " naar uitnodigingsgebied " + uitnodigingsGebied.getNaam() + ": "
 			+ BigDecimalUtil.decimalToString(capVoorGebiedFactor.multiply(BigDecimal.valueOf(100))) + "% van "
@@ -191,18 +190,18 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 		UitnodigingsGebied uitnodigingsGebied,
 		BigDecimal uitnodigingsCapVanILVoorGebied, ColoscopieCentrumColonCapaciteitVerdeling capaciteitVerdeling)
 	{
-		Long ilId = capaciteitVerdeling.getIntakelocatie().getId();
-		Long uitnodigingsGebiedId = uitnodigingsGebied.getId();
+		var ilId = capaciteitVerdeling.getIntakelocatie().getId();
+		var uitnodigingsGebiedId = uitnodigingsGebied.getId();
 
 		if (!uitnodigingsGebiedenMetCapaciteit.containsKey(uitnodigingsGebiedId))
 		{
-			ColonUitnodigingsgebiedSelectieContext gebiedMetCapaciteit = new ColonUitnodigingsgebiedSelectieContext(uitnodigingsCapVanILVoorGebied, ilId,
+			var gebiedMetCapaciteit = new ColonUitnodigingsgebiedSelectieContext(uitnodigingsCapVanILVoorGebied, ilId,
 				uitnodigingsGebiedId, uitnodigingsGebied.getNaam());
 			uitnodigingsGebiedenMetCapaciteit.put(uitnodigingsGebiedId, gebiedMetCapaciteit);
 		}
 		else
 		{
-			ColonUitnodigingsgebiedSelectieContext gebiedMetCapaciteit = uitnodigingsGebiedenMetCapaciteit.get(uitnodigingsGebiedId);
+			var gebiedMetCapaciteit = uitnodigingsGebiedenMetCapaciteit.get(uitnodigingsGebiedId);
 			gebiedMetCapaciteit.addUitnodigingscapaciteit(uitnodigingsCapVanILVoorGebied, ilId, true);
 		}
 	}
@@ -222,10 +221,10 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 		Map<Long, ColonUitnodigingsgebiedSelectieContext> uitnodigingsGebiedenMetCapaciteit)
 	{
 		List<Long> uitnodigingsGebiedZonderRegio = new ArrayList<>();
-		for (ColonUitnodigingsgebiedSelectieContext uitnodigingsgebiedSelectieContext : uitnodigingsGebiedenMetCapaciteit.values())
+		for (var uitnodigingsgebiedSelectieContext : uitnodigingsGebiedenMetCapaciteit.values())
 		{
-			UitnodigingsGebied uitnodigingsGebied = hibernateService.load(UitnodigingsGebied.class, uitnodigingsgebiedSelectieContext.getUitnodigingsgebiedId());
-			Gemeente gemeente = uitnodigingsGebied.getGemeente();
+			var uitnodigingsGebied = hibernateService.load(UitnodigingsGebied.class, uitnodigingsgebiedSelectieContext.getUitnodigingsgebiedId());
+			var gemeente = uitnodigingsGebied.getGemeente();
 			if (gemeente.getScreeningOrganisatie() != null)
 			{
 				uitnodigingscapaciteitVaststellenEnLoggen(uitnodigingsgebiedSelectieContext, uitnodigingsGebied, aanpassenCapaciteitBijHerstart);
@@ -242,7 +241,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 	private void uitnodigingscapaciteitVaststellenEnLoggen(ColonUitnodigingsgebiedSelectieContext uitnodigingsgebiedSelectieContext, UitnodigingsGebied uitnodigingsGebied,
 		boolean aanpassenCapaciteitBijHerstart)
 	{
-		BigDecimal capaciteitOver = uitnodigingsgebiedSelectieContext.getUitnodigingscapaciteitOver();
+		var capaciteitOver = uitnodigingsgebiedSelectieContext.getUitnodigingscapaciteitOver();
 
 		uitnodigingsgebiedSelectieContext.roundUitnodigingscapaciteitOver();
 
@@ -254,7 +253,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 
 		if (LOG.isDebugEnabled())
 		{
-			String meldingCapaciteitAanpassing = aanpassenCapaciteitBijHerstart ? " Capaciteit verlaagd met " + capaciteitAangepastMet : "";
+			var meldingCapaciteitAanpassing = aanpassenCapaciteitBijHerstart ? " Capaciteit verlaagd met " + capaciteitAangepastMet : "";
 
 			LOG.debug("Uitnodigingsgebied " + uitnodigingsGebied.getNaam() + " uitnodigingscapaciteit: "
 				+ BigDecimalUtil.decimalToString(uitnodigingsgebiedSelectieContext.getUitnodigingscapaciteitOver()) + "("
@@ -264,7 +263,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 
 	private long capaciteitAanpassenBijHerstart(ColonUitnodigingsgebiedSelectieContext uitnodigingsgebiedSelectieContext, UitnodigingsGebied uitnodigingsGebied)
 	{
-		long reedsUitgenodigdeClienten = uitnodigingsGebiedService.countClientenInUitnodigingsgebiedMetUitnodigingOpDatum(uitnodigingsGebied,
+		var reedsUitgenodigdeClienten = uitnodigingsGebiedService.countClientenInUitnodigingsgebiedMetUitnodigingOpDatum(uitnodigingsGebied,
 			currentDateSupplier.getLocalDate());
 		uitnodigingsgebiedSelectieContext.substractUitnodigingscapaciteit(BigDecimal.valueOf(reedsUitgenodigdeClienten));
 		return reedsUitgenodigdeClienten;
@@ -274,7 +273,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 		ColonUitnodigingsgebiedSelectieContext uitnodigingsgebiedSelectieContext, UitnodigingsGebied uitnodigingsGebied, Gemeente gemeente)
 	{
 		uitnodigingsGebiedZonderRegio.add(uitnodigingsgebiedSelectieContext.getUitnodigingsgebiedId());
-		Map<Long, String> map = (Map<Long, String>) executionContext.get(SelectieConstants.GEMEENTE_ZONDER_SCREENING_ORGANISATIES);
+		var map = (Map<Long, String>) executionContext.get(SelectieConstants.GEMEENTE_ZONDER_SCREENING_ORGANISATIES);
 		if (!executionContext.containsKey(SelectieConstants.GEMEENTE_ZONDER_SCREENING_ORGANISATIES))
 		{
 			map = new HashMap<>();
@@ -289,7 +288,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 	private void verwijderGebiedenZonderRegio(Map<Long, ColonUitnodigingsgebiedSelectieContext> uitnodigingsGebiedenMetCapaciteit, List<Long> uitnodigingsGebiedZonderRegio)
 	{
 
-		for (Long gebiedToRemove : uitnodigingsGebiedZonderRegio)
+		for (var gebiedToRemove : uitnodigingsGebiedZonderRegio)
 		{
 			uitnodigingsGebiedenMetCapaciteit.remove(gebiedToRemove);
 		}
@@ -300,9 +299,9 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 	{
 		LOG.info("Zoek (nieuwe) leeglopende gebieden. En herverdelen indien nodig...");
 		List<ColonUitnodigingsgebiedSelectieContext> leeglopendeGebieden = new ArrayList<>();
-		for (ColonUitnodigingsgebiedSelectieContext gebiedContext : uitnodigingsgebieden)
+		for (var gebiedContext : uitnodigingsgebieden)
 		{
-			UitnodigingsGebied uitnodigingsgebied = hibernateService.load(UitnodigingsGebied.class, gebiedContext.getUitnodigingsgebiedId());
+			var uitnodigingsgebied = hibernateService.load(UitnodigingsGebied.class, gebiedContext.getUitnodigingsgebiedId());
 
 			if (!gebiedContext.isLeeglopendGebied() && gebiedContext.isGenoegUitnodigingscapaciteitOver())
 			{
@@ -322,33 +321,33 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 		Set<ColonUitnodigingsgebiedSelectieContext> aangepasteGebieden = new HashSet<>();
 
 		Map<Long, ColonUitnodigingsgebiedSelectieContext> alleGebiedenMap = new HashMap<>();
-		for (ColonUitnodigingsgebiedSelectieContext gebied : uitnodigingsgebieden)
+		for (var gebied : uitnodigingsgebieden)
 		{
 			alleGebiedenMap.put(gebied.getUitnodigingsgebiedId(), gebied);
 		}
 
-		for (ColonUitnodigingsgebiedSelectieContext leeglopendGebied : leeglopendeGebieden)
+		for (var leeglopendGebied : leeglopendeGebieden)
 		{
-			UitnodigingsGebied leeglopendUitnodigingsgebied = hibernateService.load(UitnodigingsGebied.class, leeglopendGebied.getUitnodigingsgebiedId());
+			var leeglopendUitnodigingsgebied = hibernateService.load(UitnodigingsGebied.class, leeglopendGebied.getUitnodigingsgebiedId());
 
-			for (ColoscopieCentrumColonCapaciteitVerdeling capVerdeling : leeglopendUitnodigingsgebied.getVerdeling())
+			for (var capVerdeling : leeglopendUitnodigingsgebied.getVerdeling())
 			{
-				ColonIntakelocatie intakelocatie = capVerdeling.getIntakelocatie();
+				var intakelocatie = capVerdeling.getIntakelocatie();
 				if (Boolean.TRUE.equals(intakelocatie.getActief()))
 				{
-					List<ColoscopieCentrumColonCapaciteitVerdeling> capaciteitVerdelingIL = intakelocatie.getCapaciteitVerdeling();
+					var capaciteitVerdelingIL = intakelocatie.getCapaciteitVerdeling();
 					List<ColoscopieCentrumColonCapaciteitVerdeling> targetGebieden = new ArrayList<>();
 
-					for (ColoscopieCentrumColonCapaciteitVerdeling capVerdelingIL : capaciteitVerdelingIL)
+					for (var capVerdelingIL : capaciteitVerdelingIL)
 					{
-						ColonUitnodigingsgebiedSelectieContext gebied = alleGebiedenMap.get(capVerdelingIL.getUitnodigingsGebied().getId());
+						var gebied = alleGebiedenMap.get(capVerdelingIL.getUitnodigingsGebied().getId());
 						if (gebied != null && !gebied.isLeeglopendGebied())
 						{
 							targetGebieden.add(capVerdelingIL);
 						}
 					}
 
-					BigDecimal uitnodigingscapaciteitOverIL = leeglopendGebied.getUitnodigingscapaciteitOverVoorIntakelocatie(intakelocatie.getId());
+					var uitnodigingscapaciteitOverIL = leeglopendGebied.getUitnodigingscapaciteitOverVoorIntakelocatie(intakelocatie.getId());
 					if (targetGebieden.isEmpty())
 					{
 						if (uitnodigingscapaciteitOverIL.compareTo(BigDecimal.ZERO) != 0)
@@ -365,18 +364,18 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 					{
 
 						Integer totaalPercentages = 0;
-						for (ColoscopieCentrumColonCapaciteitVerdeling targetVerdeling : targetGebieden)
+						for (var targetVerdeling : targetGebieden)
 						{
 							totaalPercentages += targetVerdeling.getPercentageCapaciteit();
 						}
 						if (totaalPercentages > 0)
 						{
 
-							for (ColoscopieCentrumColonCapaciteitVerdeling targetVerdeling : targetGebieden)
+							for (var targetVerdeling : targetGebieden)
 							{
-								ColonUitnodigingsgebiedSelectieContext targetGebied = alleGebiedenMap.get(targetVerdeling.getUitnodigingsGebied().getId());
+								var targetGebied = alleGebiedenMap.get(targetVerdeling.getUitnodigingsGebied().getId());
 
-								BigDecimal capaciteitOmToeTeVoegen = uitnodigingscapaciteitOverIL.multiply(new BigDecimal(targetVerdeling.getPercentageCapaciteit()))
+								var capaciteitOmToeTeVoegen = uitnodigingscapaciteitOverIL.multiply(new BigDecimal(targetVerdeling.getPercentageCapaciteit()))
 									.divide(new BigDecimal(totaalPercentages), 10, RoundingMode.HALF_UP);
 								LOG.info("Er gaat " + BigDecimalUtil.decimalToString(capaciteitOmToeTeVoegen) + " aan uitnodigingscapaciteit van "
 									+ leeglopendUitnodigingsgebied.getNaam() + " naar gebied " + targetVerdeling.getUitnodigingsGebied().getNaam() + " voor IL "
@@ -388,7 +387,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 						else
 						{
 							List<String> gebieden = new ArrayList<>();
-							for (ColoscopieCentrumColonCapaciteitVerdeling targetVerdeling : targetGebieden)
+							for (var targetVerdeling : targetGebieden)
 							{
 								gebieden.add(targetVerdeling.getUitnodigingsGebied().getNaam());
 							}
@@ -413,10 +412,10 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 		List<ColonUitnodigingsgebiedSelectieContext> aangepasteUitnodigingsgebieden = new ArrayList<>(aangepasteGebieden);
 		Collections.sort(aangepasteUitnodigingsgebieden);
 
-		for (ColonUitnodigingsgebiedSelectieContext uitnodigingsgebiedSelectieContext : aangepasteUitnodigingsgebieden)
+		for (var uitnodigingsgebiedSelectieContext : aangepasteUitnodigingsgebieden)
 		{
-			UitnodigingsGebied uitnodigingsgebied = hibernateService.load(UitnodigingsGebied.class, uitnodigingsgebiedSelectieContext.getUitnodigingsgebiedId());
-			BigDecimal uitnodigingscapaciteitOver = uitnodigingsgebiedSelectieContext.getUitnodigingscapaciteitOver();
+			var uitnodigingsgebied = hibernateService.load(UitnodigingsGebied.class, uitnodigingsgebiedSelectieContext.getUitnodigingsgebiedId());
+			var uitnodigingscapaciteitOver = uitnodigingsgebiedSelectieContext.getUitnodigingscapaciteitOver();
 
 			uitnodigingsgebiedSelectieContext.roundUitnodigingscapaciteitOver();
 
@@ -433,9 +432,9 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 	@Override
 	public int bepaalProjectGroepPopulatie(long uitnodigingsGebiedId, ColonUitnodigingscategorie categorie, long projectGroupId, Integer minimaleLeeftijd, Integer maximaleLeeftijd)
 	{
-		int maxAantalClienten = 0;
-		UitnodigingsGebied uitnodigingsGebied = hibernateService.load(UitnodigingsGebied.class, uitnodigingsGebiedId);
-		ProjectGroep projectGroep = hibernateService.load(ProjectGroep.class, projectGroupId);
+		var maxAantalClienten = 0;
+		var uitnodigingsGebied = hibernateService.load(UitnodigingsGebied.class, uitnodigingsGebiedId);
+		var projectGroep = hibernateService.load(ProjectGroep.class, projectGroupId);
 		if (LOG.isDebugEnabled())
 		{
 			LOG.debug("Bepaal projectgroep populatie: Uitnodigingsgebied {}/categorie {}/project {}/groep {}", uitnodigingsGebied.getNaam(), categorie,
@@ -456,9 +455,9 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 
 		var aantalClientenInProjectGroep = clientRepository.count(specification);
 
-		Date uitnodigenVoorDKvoor = projectGroep.getUitnodigenVoorDKvoor();
+		var uitnodigenVoorDKvoor = projectGroep.getUitnodigenVoorDKvoor();
 
-		int aantalWerkdagen = DateUtil.getDaysBetweenIgnoreWeekends(currentDateSupplier.getDateMidnight(), uitnodigenVoorDKvoor, false);
+		var aantalWerkdagen = DateUtil.getDaysBetweenIgnoreWeekends(currentDateSupplier.getDateMidnight(), uitnodigenVoorDKvoor, false);
 		if (LOG.isDebugEnabled())
 		{
 			LOG.debug("Aantal clienten in uitnodigingsgebied " + uitnodigingsGebied.getNaam() + "/project " + projectGroep.getProject().getNaam()
@@ -470,7 +469,7 @@ public class ColonUitnodigingsgebiedCapaciteitServiceImpl implements ColonUitnod
 			{
 				aantalWerkdagen = 1;
 			}
-			BigDecimal maxUitnodigingenPerDag = new BigDecimal(aantalClientenInProjectGroep).divide(new BigDecimal(aantalWerkdagen), RoundingMode.UP);
+			var maxUitnodigingenPerDag = new BigDecimal(aantalClientenInProjectGroep).divide(new BigDecimal(aantalWerkdagen), RoundingMode.UP);
 
 			if (maxUitnodigingenPerDag.compareTo(BigDecimal.ZERO) > 0)
 			{

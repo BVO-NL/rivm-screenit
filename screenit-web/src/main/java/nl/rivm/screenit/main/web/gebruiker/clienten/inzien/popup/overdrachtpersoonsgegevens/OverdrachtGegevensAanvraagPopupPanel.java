@@ -125,7 +125,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 
 	private void addVerstuurdeBrieven()
 	{
-		List<AlgemeneBrief> verstuurdeBrieven = getVerstuurdeBrieven();
+		var verstuurdeBrieven = getVerstuurdeBrieven();
 		form.add(new ListView<>("brievenLijst", BriefOmschrijvingUtil.getBrievenOmschrijvingen(verstuurdeBrieven))
 		{
 			@Override
@@ -138,8 +138,11 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 
 	private List<AlgemeneBrief> getVerstuurdeBrieven()
 	{
-		ArrayList<AlgemeneBrief> brieven = new ArrayList<>();
-		brieven.add(getModelObject().getVerstuurdeAanvraagbrief());
+		var brieven = new ArrayList<AlgemeneBrief>();
+		if (getModelObject().getVerstuurdeAanvraagbrief() != null)
+		{
+			brieven.add(getModelObject().getVerstuurdeAanvraagbrief());
+		}
 		if (getModelObject().getGeenHandtekeningBrief() != null)
 		{
 			brieven.add(getModelObject().getGeenHandtekeningBrief());
@@ -217,7 +220,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				OverdrachtPersoonsgegevens overdrachtPersoonsgegevens = OverdrachtGegevensAanvraagPopupPanel.this.getModelObject();
+				var overdrachtPersoonsgegevens = OverdrachtGegevensAanvraagPopupPanel.this.getModelObject();
 				overdrachtPersoonsgegevensService.afronden(overdrachtPersoonsgegevens);
 				info(getString("info.afgerond"));
 				close(target);
@@ -237,7 +240,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 	{
 		if (briefOntvangen())
 		{
-			IModel<UploadDocument> upload = ModelUtil.sModel(getModelObject().getOntvangenAanvraagbrief());
+			var upload = ModelUtil.sModel(getModelObject().getOntvangenAanvraagbrief());
 			form.add(new DownloadLink("downloadFormulier", new LoadableDetachableModel<>()
 			{
 				@Override
@@ -249,7 +252,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 		}
 		else
 		{
-			EmptyPanel downloadFormulier = new EmptyPanel("downloadFormulier");
+			var downloadFormulier = new EmptyPanel("downloadFormulier");
 			downloadFormulier.setVisible(false);
 			form.add(downloadFormulier);
 		}
@@ -262,7 +265,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				OverdrachtPersoonsgegevens overdracht = OverdrachtGegevensAanvraagPopupPanel.this.getModelObject();
+				var overdracht = OverdrachtGegevensAanvraagPopupPanel.this.getModelObject();
 				overdrachtPersoonsgegevensService.verstuurGeenHandtekeningBrief(overdracht, ScreenitSession.get().getIngelogdAccount());
 				info(getString("info.geenhandtekening.overdrachtgegevens"));
 				close(target);
@@ -331,7 +334,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 
 	private boolean keuzeGeselecteerd()
 	{
-		OverdrachtPersoonsgegevens overdracht = getModelObject();
+		var overdracht = getModelObject();
 		return Boolean.TRUE.equals(overdracht.getBkGegevens()) || Boolean.TRUE.equals(overdracht.getBkBeelden())
 			|| Boolean.TRUE.equals(overdracht.getBmhkGegevens()) || Boolean.TRUE.equals(overdracht.getDkGegevens());
 	}
@@ -342,7 +345,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 		{
 			if (uploadContainer.isVisible())
 			{
-				UploadDocument uploadDocument = maakUploadDocument();
+				var uploadDocument = maakUploadDocument();
 				overdrachtPersoonsgegevensService.slaOntvangenFormulierOp(getModelObject(), uploadDocument, ScreenitSession.get().getIngelogdAccount());
 			}
 			else
@@ -360,8 +363,8 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 
 	private UploadDocument maakUploadDocument() throws Exception
 	{
-		FileUpload upload = files.getObject().get(0);
-		UploadDocument document = new UploadDocument();
+		var upload = files.getObject().get(0);
+		var document = new UploadDocument();
 		document.setActief(Boolean.TRUE);
 		document.setContentType(upload.getContentType());
 		document.setFile(upload.writeToTempFile());
@@ -378,7 +381,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 
 	private void addDowndloadDataKnop()
 	{
-		final AjaxDownload download = new AjaxDownload()
+		final var download = new AjaxDownload()
 		{
 			@Override
 			protected IResourceStream getResourceStream()
@@ -394,7 +397,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 
 			private IResourceStream createResourceStream()
 			{
-				AbstractResourceStreamWriter rstream = new AbstractResourceStreamWriter()
+				var rstream = new AbstractResourceStreamWriter()
 				{
 
 					@Override

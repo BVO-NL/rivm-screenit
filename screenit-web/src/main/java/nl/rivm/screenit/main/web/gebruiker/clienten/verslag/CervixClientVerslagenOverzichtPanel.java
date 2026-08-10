@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.verslag;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.cervix.CervixCytologieVerslag;
@@ -60,8 +58,8 @@ public class CervixClientVerslagenOverzichtPanel extends ClientVerslagenOverzich
 	@Override
 	protected boolean magOverzichtZien()
 	{
-		List<Bevolkingsonderzoek> bevolkingsonderzoeken = ScreenitSession.get().getOnderzoeken();
-		IModel<Client> clientModel = getModel();
+		var bevolkingsonderzoeken = ScreenitSession.get().getOnderzoeken();
+		var clientModel = getModel();
 		return bevolkingsonderzoeken.contains(Bevolkingsonderzoek.CERVIX)
 			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CERVIX_CYTOLOGIE_VERSLAG, Actie.INZIEN, clientModel.getObject());
 	}

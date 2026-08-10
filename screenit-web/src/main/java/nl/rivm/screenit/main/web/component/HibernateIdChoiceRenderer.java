@@ -25,9 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
-
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
+
 import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;

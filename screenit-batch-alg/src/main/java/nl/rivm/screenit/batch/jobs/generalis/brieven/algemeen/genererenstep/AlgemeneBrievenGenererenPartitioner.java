@@ -40,7 +40,7 @@ public class AlgemeneBrievenGenererenPartitioner extends AbstractBrievenGenerere
 	{
 		for (var briefType : getBriefTypes())
 		{
-			ExecutionContext executionContext = new ExecutionContext();
+			var executionContext = new ExecutionContext();
 			executionContext.put(KEY_BRIEFTYPE, briefType.name());
 			partities.put(briefType.name(), executionContext);
 		}

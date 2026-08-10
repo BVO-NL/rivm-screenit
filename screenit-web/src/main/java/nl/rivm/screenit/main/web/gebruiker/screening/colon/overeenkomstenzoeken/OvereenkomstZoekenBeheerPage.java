@@ -40,7 +40,6 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
-import nl.rivm.screenit.model.overeenkomsten.AfgeslotenOrganisatieOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.Overeenkomst;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.OrganisatieZoekService;
@@ -102,9 +101,9 @@ public class OvereenkomstZoekenBeheerPage extends ColonScreeningBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<Organisatie>> cellItem, String componentId, IModel<Organisatie> rowModel)
 			{
-				List<Organisatie> lijst = organisatieZoekService.screeningsorganisatiesWaarOrganisatieOndervalt(rowModel.getObject());
-				StringBuilder sb = new StringBuilder();
-				for (Organisatie organisatie : lijst)
+				var lijst = organisatieZoekService.screeningsorganisatiesWaarOrganisatieOndervalt(rowModel.getObject());
+				var sb = new StringBuilder();
+				for (var organisatie : lijst)
 				{
 					sb.append(organisatie.getNaam());
 					sb.append(", ");
@@ -117,7 +116,7 @@ public class OvereenkomstZoekenBeheerPage extends ColonScreeningBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<Organisatie>> item, String componentId, IModel<Organisatie> rowModel)
 			{
-				IModel<?> data = getDataModel(rowModel);
+				var data = getDataModel(rowModel);
 				if (data != null && data.getObject() != null)
 				{
 					item.add(new Label(componentId, "URA-nummer: " + data.getObject()));
@@ -133,7 +132,7 @@ public class OvereenkomstZoekenBeheerPage extends ColonScreeningBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<Organisatie>> cellItem, String componentId, IModel<Organisatie> rowModel)
 			{
-				List<AfgeslotenOrganisatieOvereenkomst> overeenkomsten = overeenkomstService.getAfgeslotenOvereenkomstenVanOrganisatie(filter.getObject(), rowModel.getObject());
+				var overeenkomsten = overeenkomstService.getAfgeslotenOvereenkomstenVanOrganisatie(filter.getObject(), rowModel.getObject());
 				if (CollectionUtils.isNotEmpty(overeenkomsten))
 				{
 					cellItem.add(new AfgeslotenOvereenkomstenLijstPanel(componentId, ModelUtil.listRModel(overeenkomsten)));
@@ -145,12 +144,12 @@ public class OvereenkomstZoekenBeheerPage extends ColonScreeningBasePage
 			}
 		});
 
-		ScreenitDataTable<Organisatie, String> organisatiesDataTable = new ScreenitDataTable<>("organisatiesDataTable", columns,
+		var organisatiesDataTable = new ScreenitDataTable<Organisatie, String>("organisatiesDataTable", columns,
 			new OvereenkomstZoekenDataProvider(filter, Organisatie_.NAAM), 10, new Model<>("organisaties"));
 		resultcontainer.add(organisatiesDataTable);
 		add(resultcontainer);
 
-		ScreenitForm<OvereenkomstZoekFilter> overeenkomstForm = new ScreenitForm<>("zoekForm", filter);
+		var overeenkomstForm = new ScreenitForm<OvereenkomstZoekFilter>("zoekForm", filter);
 		ComponentHelper.addTextField(overeenkomstForm, "organisatieNaam", false, 255, String.class, false);
 		ComponentHelper.addTextField(overeenkomstForm, "organisatiePlaats", false, 255, String.class, false);
 		ComponentHelper.addTextField(overeenkomstForm, "organisatieUra", false, 255, String.class, false);
@@ -182,7 +181,7 @@ public class OvereenkomstZoekenBeheerPage extends ColonScreeningBasePage
 					}
 				}
 			}).setNullValid(true));
-		IndicatingAjaxSubmitLink zoekKnop = new IndicatingAjaxSubmitLink("zoeken", overeenkomstForm)
+		var zoekKnop = new IndicatingAjaxSubmitLink("zoeken", overeenkomstForm)
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)

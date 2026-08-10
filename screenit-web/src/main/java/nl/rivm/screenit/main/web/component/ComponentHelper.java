@@ -415,8 +415,8 @@ public final class ComponentHelper
 
 	public static void assertTag(Component component, ComponentTag tag, Set<String> tagNames)
 	{
-		boolean found = false;
-		for (String tagName : tagNames)
+		var found = false;
+		for (var tagName : tagNames)
 		{
 			if (tag.getName().equalsIgnoreCase(tagName))
 			{

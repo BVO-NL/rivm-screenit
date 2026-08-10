@@ -39,7 +39,7 @@ public class TestCervixUistelZwangerschapAction extends TestCervixVervolgKeuzeAc
 	@Override
 	public void execute()
 	{
-		for (Client client : clienten)
+		for (var client : clienten)
 		{
 			cervixBaseTestTimelineService.uitstelVoorZwangerschap(client.getCervixDossier().getLaatsteScreeningRonde());
 		}

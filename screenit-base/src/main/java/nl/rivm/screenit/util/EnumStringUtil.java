@@ -53,7 +53,7 @@ public final class EnumStringUtil
 	public static <T extends Enum<T> & BvoHouder> String maakStringMetBvoEnEnumPropertyString(T enumMetBvo,
 		UnaryOperator<String> getString)
 	{
-		String bvoNamen = Bevolkingsonderzoek.getAfkortingen(enumMetBvo.getBevolkingsonderzoeken());
+		var bvoNamen = Bevolkingsonderzoek.getAfkortingen(enumMetBvo.getBevolkingsonderzoeken());
 		return "%s - %s".formatted(bvoNamen, getString.apply(EnumStringUtil.getPropertyString(enumMetBvo)));
 	}
 }

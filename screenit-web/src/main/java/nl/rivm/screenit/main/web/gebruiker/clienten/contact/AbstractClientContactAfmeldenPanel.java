@@ -86,7 +86,7 @@ public abstract class AbstractClientContactAfmeldenPanel<A extends Afmelding, E 
 		container = new WebMarkupContainer("container", afmeldingModel);
 		add(container);
 
-		List<AfmeldingType> availableAfmeldopties = getAvailableAfmeldopties(clientModel);
+		var availableAfmeldopties = getAvailableAfmeldopties(clientModel);
 		DropDownChoice<AfmeldingType> type = new ScreenitDropdown<>("type", availableAfmeldopties, new EnumChoiceRenderer<>(this));
 		type.setRequired(true);
 		type.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -97,7 +97,7 @@ public abstract class AbstractClientContactAfmeldenPanel<A extends Afmelding, E 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				A afmelding = AbstractClientContactAfmeldenPanel.this.afmeldingModel.getObject();
+				var afmelding = AbstractClientContactAfmeldenPanel.this.afmeldingModel.getObject();
 
 				afmelding.setManier(null);
 				manierContainer.setVisible(AfmeldingType.DEFINITIEF.equals(afmelding.getType()) || AfmeldingType.TIJDELIJK.equals(afmelding.getType()));
@@ -122,7 +122,7 @@ public abstract class AbstractClientContactAfmeldenPanel<A extends Afmelding, E 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				A afmelding = AbstractClientContactAfmeldenPanel.this.afmeldingModel.getObject();
+				var afmelding = AbstractClientContactAfmeldenPanel.this.afmeldingModel.getObject();
 				bestandSelecterenContainer.setVisible(ClientContactManier.DIRECT.equals(afmelding.getManier()));
 				target.add(bestandSelecterenContainer);
 
@@ -136,7 +136,7 @@ public abstract class AbstractClientContactAfmeldenPanel<A extends Afmelding, E 
 		manierContainer.add(manier);
 		container.add(manierContainer);
 
-		FileUploadField uploadField = new FileUploadField("bestandSelecteren", files);
+		var uploadField = new FileUploadField("bestandSelecteren", files);
 		uploadField.add(new FileValidator(FileType.PDF));
 		uploadField.setRequired(true);
 
@@ -155,12 +155,12 @@ public abstract class AbstractClientContactAfmeldenPanel<A extends Afmelding, E 
 
 	private WebMarkupContainer getRedenenContainer()
 	{
-		RadioChoice<E> reden = new RadioChoice<>("reden", getRedenenModel(), new EnumChoiceRenderer<>(this));
+		var reden = new RadioChoice<E>("reden", getRedenenModel(), new EnumChoiceRenderer<>(this));
 		reden.setPrefix("<label class=\"radio\">");
 		reden.setSuffix("</label>");
 		reden.setRequired(true);
 
-		WebMarkupContainer redenContainer = new WebMarkupContainer("redenContainer");
+		var redenContainer = new WebMarkupContainer("redenContainer");
 		redenContainer.setVisible(false);
 		redenContainer.setOutputMarkupPlaceholderTag(true);
 		redenContainer.add(reden);
@@ -174,7 +174,7 @@ public abstract class AbstractClientContactAfmeldenPanel<A extends Afmelding, E 
 	public Map<ExtraOpslaanKey, Object> getOpslaanObjecten()
 	{
 		var extraOpslaanObjecten = new EnumMap<>(ExtraOpslaanKey.class);
-		A afmelding = afmeldingModel.getObject();
+		var afmelding = afmeldingModel.getObject();
 
 		if (AfmeldingType.EENMALIG.equals(afmelding.getType()))
 		{
@@ -184,7 +184,7 @@ public abstract class AbstractClientContactAfmeldenPanel<A extends Afmelding, E 
 			&& !AfmeldingType.EENMALIG.equals(afmelding.getType()))
 		{
 			afmelding.setAfmeldingStatus(AanvraagBriefStatus.BRIEF);
-			UploadDocument document = afmeldHandtekeningUploadDocumentModel.getObject();
+			var document = afmeldHandtekeningUploadDocumentModel.getObject();
 			afmelding.setHandtekeningDocumentAfmelding(document);
 			extraOpslaanObjecten.put(ExtraOpslaanKey.AFMELDING_BEVESTIGING_DOCUMENT, document);
 		}
@@ -201,10 +201,10 @@ public abstract class AbstractClientContactAfmeldenPanel<A extends Afmelding, E 
 		{
 			if (files.getObject() != null)
 			{
-				FileUpload upload = files.getObject().get(0);
+				var upload = files.getObject().get(0);
 				File definitieFile;
 				definitieFile = upload.writeToTempFile();
-				UploadDocument document = new UploadDocument();
+				var document = new UploadDocument();
 				document.setActief(Boolean.TRUE);
 				document.setContentType(upload.getContentType());
 				document.setFile(definitieFile);

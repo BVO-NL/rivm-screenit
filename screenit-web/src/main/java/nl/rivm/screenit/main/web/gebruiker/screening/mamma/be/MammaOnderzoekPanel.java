@@ -21,11 +21,8 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.service.mamma.MammaBaseOnderzoekService;
-import nl.rivm.screenit.util.KeyValue;
 
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -51,11 +48,11 @@ public class MammaOnderzoekPanel extends AbstractBEAccordionPanel<MammaOnderzoek
 	{
 		super.onInitialize();
 		panelContainer.add(new AttributeAppender("class", Model.of("onderzoek-accordion"), " "));
-		List<KeyValue> rows = baseOnderzoekService.vorigeRondeTeksten(getModelObject(), false);
-		RepeatingView tableView = new RepeatingView("rows");
-		for (KeyValue row : rows)
+		var rows = baseOnderzoekService.vorigeRondeTeksten(getModelObject(), false);
+		var tableView = new RepeatingView("rows");
+		for (var row : rows)
 		{
-			final WebMarkupContainer webMarkupContainer = new WebMarkupContainer(tableView.newChildId());
+			final var webMarkupContainer = new WebMarkupContainer(tableView.newChildId());
 			webMarkupContainer.add(new Label("key", row.getKey()));
 			webMarkupContainer.add(new Label("value", row.getValue()));
 			tableView.add(webMarkupContainer);

@@ -34,7 +34,6 @@ import nl.rivm.screenit.mamma.se.proxy.util.DateUtil;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.DatePrecision;
 import org.dcm4che3.data.PersonName;
-import org.dcm4che3.data.Sequence;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.data.VR;
 
@@ -71,7 +70,7 @@ class MammograafWorklistItemBuilder
 
 	private Attributes createKwaliteitsopnameMammograafWorklistItem(KwaliteitsopnameScreenITWerklijstItem seItem)
 	{
-		Attributes worklistItem = createWorklistItem();
+		var worklistItem = createWorklistItem();
 
 		var risCode = seItem.getOnderzoekscode();
 		addScheduledProcedureStep(worklistItem, seItem, DateUtil.toUtilDate(seItem.getStartMoment()), "Kwaliteitsopname", risCode);
@@ -79,7 +78,7 @@ class MammograafWorklistItemBuilder
 		worklistItem.setString(Tag.AccessionNumber, VR.SH, seItem.getAccessionNumber());
 		worklistItem.setString(Tag.ReferringPhysicianName, VR.PN, seItem.getMedewerkercode());
 
-		PersonName name = new PersonName();
+		var name = new PersonName();
 		name.set(PersonName.Component.GivenName, "DUMMY");
 		name.set(PersonName.Component.MiddleName, "");
 		name.set(PersonName.Component.FamilyName, seItem.getSeCode());
@@ -89,11 +88,11 @@ class MammograafWorklistItemBuilder
 		worklistItem.setDate(Tag.PatientBirthDate, VR.DA, DateUtil.toUtilDate(LocalDate.of(2018, 1, 1)));
 		worklistItem.setString(Tag.PatientSex, VR.CS, "O");
 
-		String aeTitle = seItem.getAeTitle();
-		String seCode = seItem.getSeCode();
-		String seNummer = Integer.valueOf(seCode.substring(3)).toString();
-		String mammograafnummer1digit = aeTitle.substring(aeTitle.length() - 1);
-		final String timestamp = seItem.getStartMoment().format(UUID_KWALITEITSOPNAME_LOCAL_DATE_TIME_FORMAT);
+		var aeTitle = seItem.getAeTitle();
+		var seCode = seItem.getSeCode();
+		var seNummer = Integer.valueOf(seCode.substring(3)).toString();
+		var mammograafnummer1digit = aeTitle.substring(aeTitle.length() - 1);
+		final var timestamp = seItem.getStartMoment().format(UUID_KWALITEITSOPNAME_LOCAL_DATE_TIME_FORMAT);
 		worklistItem.setString(Tag.StudyInstanceUID, VR.UI, SCREENIT_BK_MAMMOGRAAF_UID + "1." + seNummer + "." + mammograafnummer1digit + "." + timestamp);
 
 		worklistItem.setString(Tag.StudyID, VR.SH, seItem.getAccessionNumber());
@@ -105,7 +104,7 @@ class MammograafWorklistItemBuilder
 
 	private Attributes createWorklistItem()
 	{
-		Attributes worklistItem = new Attributes();
+		var worklistItem = new Attributes();
 
 		worklistItem.setSpecificCharacterSet("ISO_IR 100");
 
@@ -119,9 +118,9 @@ class MammograafWorklistItemBuilder
 
 	private Attributes createClientMammograafWorklistItem(ClientScreenITWerklijstItem clientScreenITWerklijstItem)
 	{
-		String uitnodigingsNr = String.valueOf(clientScreenITWerklijstItem.getUitnodigingsNr()); 
+		var uitnodigingsNr = String.valueOf(clientScreenITWerklijstItem.getUitnodigingsNr()); 
 
-		Attributes worklistItem = createWorklistItem();
+		var worklistItem = createWorklistItem();
 		var risCode = clientScreenITWerklijstItem.getOnderzoekscode();
 		addScheduledProcedureStep(worklistItem, clientScreenITWerklijstItem, DateUtil.toUtilDate(clientScreenITWerklijstItem.getStartDatumTijd()), "Mammography", risCode);
 		worklistItem.setString(Tag.ReferringPhysicianName, VR.PN, clientScreenITWerklijstItem.getMedewerkercode());
@@ -139,9 +138,9 @@ class MammograafWorklistItemBuilder
 	private void addScheduledProcedureStep(Attributes parent, ScreenITWerklijstItem werklijstItemData, Date date, String scheduledProcedureStepDescription,
 		String scheduledProtocolCodeSequence)
 	{
-		Sequence sequence = parent.newSequence(Tag.ScheduledProcedureStepSequence, 9);
-		String aeTitle = werklijstItemData.getAeTitle(); 
-		Attributes attributes = new Attributes();
+		var sequence = parent.newSequence(Tag.ScheduledProcedureStepSequence, 9);
+		var aeTitle = werklijstItemData.getAeTitle(); 
+		var attributes = new Attributes();
 		attributes.setString(Tag.ScheduledStationAETitle, VR.AE, aeTitle);
 		attributes.setDate(Tag.ScheduledProcedureStepStartDateAndTime, new DatePrecision(Calendar.SECOND), date);
 		attributes.setString(Tag.Modality, VR.CS, "MG");
@@ -156,8 +155,8 @@ class MammograafWorklistItemBuilder
 
 	private void addReasonForRequestedProcedureCode(Attributes parent)
 	{
-		Sequence sequence = parent.newSequence(Tag.ReasonForRequestedProcedureCodeSequence, 3);
-		Attributes attributes = new Attributes();
+		var sequence = parent.newSequence(Tag.ReasonForRequestedProcedureCodeSequence, 3);
+		var attributes = new Attributes();
 		attributes.setNull(Tag.CodeValue, VR.SH);
 		attributes.setNull(Tag.CodingSchemeDesignator, VR.SH);
 		attributes.setNull(Tag.CodeMeaning, VR.LO);
@@ -166,8 +165,8 @@ class MammograafWorklistItemBuilder
 
 	private void addSequenceWithCodeValue(int tag, Attributes parent, String codeValue)
 	{
-		Sequence sequence = parent.newSequence(tag, 3);
-		Attributes attributes = new Attributes();
+		var sequence = parent.newSequence(tag, 3);
+		var attributes = new Attributes();
 		attributes.setString(Tag.CodeValue, VR.SH, codeValue);
 		attributes.setNull(Tag.CodingSchemeDesignator, VR.SH);
 		attributes.setNull(Tag.CodeMeaning, VR.LO);

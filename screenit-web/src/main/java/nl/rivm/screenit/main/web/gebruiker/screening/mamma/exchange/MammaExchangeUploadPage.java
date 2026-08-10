@@ -107,8 +107,8 @@ public class MammaExchangeUploadPage extends MammaScreeningBasePage
 		columns.add(new EnumPropertyColumn<>(Model.of("Status"), MammaUploadBeeldenVerzoek_.STATUS, "status"));
 		columns.add(new PropertyColumn<>(Model.of("Melding"), "laatsteUploadPoging.statusMelding"));
 
-		MammaExchangeUploadVerzoekDataProvider dataProvider = new MammaExchangeUploadVerzoekDataProvider(ModelUtil.sModel(ScreenitSession.get().getOrganisatie()));
-		ScreenitDataTable<MammaUploadBeeldenVerzoek, String> openstaandeUploadVerzoekenTabel = new ScreenitDataTable<MammaUploadBeeldenVerzoek, String>(
+		var dataProvider = new MammaExchangeUploadVerzoekDataProvider(ModelUtil.sModel(ScreenitSession.get().getOrganisatie()));
+		var openstaandeUploadVerzoekenTabel = new ScreenitDataTable<MammaUploadBeeldenVerzoek, String>(
 			"openstaandeUploadVerzoekenTabel", columns, dataProvider, 10, Model.of("verzoek(en)"))
 		{
 			@Override

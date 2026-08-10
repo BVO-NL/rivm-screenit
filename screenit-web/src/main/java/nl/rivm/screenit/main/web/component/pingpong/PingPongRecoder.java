@@ -33,7 +33,6 @@ import java.util.Map;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.form.HiddenField;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.Strings;
 
@@ -72,17 +71,17 @@ public class PingPongRecoder<T> extends HiddenField<Object>
 	private void initIds()
 	{
 
-		IChoiceRenderer<T> renderer = pingPongInput.getChoiceRenderer();
-		StringBuilder modelStringBuffer = new StringBuilder();
-		Collection<T> modelCollection = pingPongInput.getModelCollection();
+		var renderer = pingPongInput.getChoiceRenderer();
+		var modelStringBuffer = new StringBuilder();
+		var modelCollection = pingPongInput.getModelCollection();
 		if (modelCollection == null)
 		{
 			throw new WicketRuntimeException(
 				"Expected getPalette().getModelCollection() to return a non-null value." + " Please make sure you have model object assigned to the palette");
 		}
-		Iterator<T> selection = modelCollection.iterator();
+		var selection = modelCollection.iterator();
 
-		int i = 0;
+		var i = 0;
 		while (selection.hasNext())
 		{
 			modelStringBuffer.append(renderer.getIdValue(selection.next(), i++));
@@ -92,7 +91,7 @@ public class PingPongRecoder<T> extends HiddenField<Object>
 			}
 		}
 
-		String modelString = modelStringBuffer.toString();
+		var modelString = modelStringBuffer.toString();
 		setDefaultModel(new Model<String>(modelString));
 		updateIds(modelString);
 	}
@@ -114,21 +113,21 @@ public class PingPongRecoder<T> extends HiddenField<Object>
 			return Collections.emptyList();
 		}
 
-		final IChoiceRenderer<T> renderer = pingPongInput.getChoiceRenderer();
+		final var renderer = pingPongInput.getChoiceRenderer();
 		final List<T> selected = new ArrayList<T>(getSelectedIds().size());
 		final Collection<? extends T> choices = pingPongInput.getChoices().getObject();
 		final Map<T, String> idForChoice = new HashMap<T, String>(choices.size());
 
-		for (final T choice : choices)
+		for (final var choice : choices)
 		{
 			idForChoice.put(choice, renderer.getIdValue(choice, 0));
 		}
 
-		for (final String id : getSelectedIds())
+		for (final var id : getSelectedIds())
 		{
-			for (final T choice : choices)
+			for (final var choice : choices)
 			{
-				final String idValue = idForChoice.get(choice);
+				final var idValue = idForChoice.get(choice);
 				if (id.equals(idValue)) 
 				{
 					selected.add(choice);
@@ -153,12 +152,12 @@ public class PingPongRecoder<T> extends HiddenField<Object>
 			return Collections.<T> emptyList();
 		}
 
-		final IChoiceRenderer<T> renderer = pingPongInput.getChoiceRenderer();
+		final var renderer = pingPongInput.getChoiceRenderer();
 		final List<T> unselected = new ArrayList<T>(Math.max(1, choices.size() - getSelectedIds().size()));
 
-		for (final T choice : choices)
+		for (final var choice : choices)
 		{
-			final String choiceId = renderer.getIdValue(choice, 0);
+			final var choiceId = renderer.getIdValue(choice, 0);
 
 			if (!getSelectedIds().contains(choiceId))
 			{
@@ -194,7 +193,7 @@ public class PingPongRecoder<T> extends HiddenField<Object>
 
 		if (!Strings.isEmpty(value))
 		{
-			for (final String id : Strings.split(value, ','))
+			for (final var id : Strings.split(value, ','))
 			{
 				getSelectedIds().add(id);
 			}

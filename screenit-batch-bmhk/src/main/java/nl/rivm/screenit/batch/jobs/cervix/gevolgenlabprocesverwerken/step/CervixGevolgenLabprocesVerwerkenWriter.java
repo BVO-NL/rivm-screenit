@@ -47,8 +47,8 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.HuisartsBerichtType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.BaseAfmeldService;
+import nl.rivm.screenit.service.BaseBezwaarService;
 import nl.rivm.screenit.service.BaseBriefService;
-import nl.rivm.screenit.service.BezwaarService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
@@ -95,7 +95,7 @@ public class CervixGevolgenLabprocesVerwerkenWriter extends BaseWriter<CervixMon
 
 	private final CervixMailService mailService;
 
-	private final BezwaarService bezwaarService;
+	private final BaseBezwaarService bezwaarService;
 
 	@Override
 	protected void write(CervixMonster monster) throws Exception
@@ -392,7 +392,7 @@ public class CervixGevolgenLabprocesVerwerkenWriter extends BaseWriter<CervixMon
 	{
 		if (vervolg.getInVervolgonderzoekDatum() != null)
 		{
-			CervixScreeningRonde ontvangstRonde = monster.getOntvangstScreeningRonde();
+			var ontvangstRonde = monster.getOntvangstScreeningRonde();
 			ontvangstRonde.setInVervolgonderzoekDatum(vervolg.getInVervolgonderzoekDatum());
 
 			hibernateService.saveOrUpdate(ontvangstRonde);

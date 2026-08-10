@@ -38,7 +38,7 @@ public class BetalingFilterDto
 
 	private Date betalingsdatumVanaf;
 
-	private Date betalingsdatumTotenMet;
+	private Date betalingsdatumTotEnMet;
 
 	private boolean alleenZonderBetalingskenmerk;
 

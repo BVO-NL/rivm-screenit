@@ -99,10 +99,10 @@ public abstract class AfgeslotenOvereenkomstPanel extends Panel
 	private void constructPanel(Actie actie, SortableDataProvider<AbstractAfgeslotenOvereenkomst, String> dataprovider,
 		final IModel<Boolean> actiefModel)
 	{
-		final BootstrapDialog confirmDialog = new BootstrapDialog("confirmDialog");
+		final var confirmDialog = new BootstrapDialog("confirmDialog");
 		add(confirmDialog);
 
-		final boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
+		final var inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 		add(editOvereenkomstDialog);
 

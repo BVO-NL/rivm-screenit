@@ -88,7 +88,7 @@ public class LocatieServiceImpl implements LocatieService
 
 	private void removeEmptyFromDto(List<LocatieDto> locatieDtos)
 	{
-		for (LocatieDto dto : locatieDtos)
+		for (var dto : locatieDtos)
 		{
 			if (LocatieDto.EMPTY_VALUE.equalsIgnoreCase(dto.getIban()))
 			{
@@ -109,7 +109,7 @@ public class LocatieServiceImpl implements LocatieService
 	@Transactional
 	public Locatie updateAndGetLocatie(Huisarts huisarts, LocatieDto locatieDto)
 	{
-		Locatie locatie = getLocatie(locatieDto);
+		var locatie = getLocatie(locatieDto);
 		if (locatie == null)
 		{
 			locatie = new Locatie();
@@ -189,7 +189,7 @@ public class LocatieServiceImpl implements LocatieService
 	@Override
 	public LocatieDto getLocatieDto(Locatie locatie)
 	{
-		LocatieDto dto = new LocatieDto();
+		var dto = new LocatieDto();
 		modelMapper.map(locatie, dto);
 		return dto;
 	}
@@ -197,10 +197,10 @@ public class LocatieServiceImpl implements LocatieService
 	@Override
 	public LocatieResultDto getLocatieResultDto(Huisarts huisarts, LocatieSearchDto locatieSearchDto)
 	{
-		LocatieResultDto resultDto = new LocatieResultDto();
-		List<Locatie> locaties = locatieCriteriaRepository.getLocaties(huisarts, locatieSearchDto);
+		var resultDto = new LocatieResultDto();
+		var locaties = locatieCriteriaRepository.getLocaties(huisarts, locatieSearchDto);
 		resultDto.setAantalLocaties(locatieCriteriaRepository.countLocaties(huisarts, locatieSearchDto));
-		for (Locatie locatie : locaties)
+		for (var locatie : locaties)
 		{
 			resultDto.getLocaties().add(getLocatieDto(locatie));
 		}
@@ -210,8 +210,8 @@ public class LocatieServiceImpl implements LocatieService
 	@Override
 	public boolean isLocatieIdVanHuisarts(Huisarts huisarts, long locatieId)
 	{
-		boolean isLocatieIdVanHuisarts = false;
-		for (Locatie locatie : huisarts.getLocaties())
+		var isLocatieIdVanHuisarts = false;
+		for (var locatie : huisarts.getLocaties())
 		{
 			if (locatieId == locatie.getHuisartsportaalId())
 			{
@@ -224,7 +224,7 @@ public class LocatieServiceImpl implements LocatieService
 	@Override
 	public void herzendVerificatieMail(Huisarts huisarts, VerificatieLocatieDto locatieDto)
 	{
-		Locatie locatie = locatieRepository.findByHuisartsportaalId(Long.valueOf(locatieDto.getHuisartsportaalId()));
+		var locatie = locatieRepository.findByHuisartsportaalId(Long.valueOf(locatieDto.getHuisartsportaalId()));
 
 		if (locatie.getVerificatieCode().length() > 4)
 		{
@@ -237,7 +237,7 @@ public class LocatieServiceImpl implements LocatieService
 	@Override
 	public void nietVerstuurdeLabformulierenVerwijderen(LocatieDto locatieDto)
 	{
-		Locatie locatie = getLocatie(locatieDto);
+		var locatie = getLocatie(locatieDto);
 		if (locatie != null && locatie.getStatus().equals(CervixLocatieStatus.INACTIEF))
 		{
 			labformulierService.verwijderNogNietVerstuurdeLabformulierenVanLocatie(locatie);

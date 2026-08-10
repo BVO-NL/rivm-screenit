@@ -133,9 +133,9 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 
 	private void addOrReplaceMainForm(AjaxRequestTarget target)
 	{
-		WebMarkupContainer nieuwMainContainer = new WebMarkupContainer("mainContainer");
+		var nieuwMainContainer = new WebMarkupContainer("mainContainer");
 		nieuwMainContainer.setOutputMarkupId(true);
-		ScreenitForm<MammaStandplaats> mainForm = new ScreenitForm<>("mainForm", (IModel<MammaStandplaats>) getDefaultModel());
+		var mainForm = new ScreenitForm<MammaStandplaats>("mainForm", (IModel<MammaStandplaats>) getDefaultModel());
 		mainForm.setOutputMarkupId(true);
 		nieuwMainContainer.add(mainForm);
 		ComponentHelper.addTextField(mainForm, "naam", true, 255, String.class, !magAanpassen || !ingelogdNamensRegio)
@@ -169,7 +169,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaStandplaats standplaats = mainForm.getModelObject();
+				var standplaats = mainForm.getModelObject();
 
 				if (!standplaats.getRegio().equals(initieleScreeningOrganisatieModel.getObject()) && standplaatsService.countActieveStandplaatsPeriodes(standplaats) > 0)
 				{
@@ -177,7 +177,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 					return;
 				}
 
-				boolean changed = standplaatsService.saveOrUpdateStandplaats(standplaats, getIngelogdeOrganisatieMedewerker());
+				var changed = standplaatsService.saveOrUpdateStandplaats(standplaats, getIngelogdeOrganisatieMedewerker());
 				if (changed)
 				{
 					if (!persistentContainer.isVisible())
@@ -203,9 +203,9 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaStandplaats standplaats = getStandplaats();
+				var standplaats = getStandplaats();
 
-				boolean activeren = Boolean.FALSE.equals(standplaats.getActief());
+				var activeren = Boolean.FALSE.equals(standplaats.getActief());
 				if (activeren)
 				{
 					if (standplaats.getLocatie().getPostcodeCoordinaten() == null || standplaats.getLocatie().getHuisnummer() == null)
@@ -233,7 +233,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 
 		};
 
-		MammaStandplaats standplaats = getStandplaats();
+		var standplaats = getStandplaats();
 
 		if (Boolean.FALSE.equals(standplaats.getActief()))
 		{
@@ -242,8 +242,8 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 		else if (standplaats.getId() != null)
 		{
 			inActiveren.add(new Label("inActiverenTitle", "Inactiveren"));
-			String inactiverenProperty = standplaatsService.magStandplaatsInactiveren(standplaats);
-			boolean heeftTehuizen = !standplaats.getTehuizen().isEmpty();
+			var inactiverenProperty = standplaatsService.magStandplaatsInactiveren(standplaats);
+			var heeftTehuizen = !standplaats.getTehuizen().isEmpty();
 
 			if (heeftTehuizen)
 			{
@@ -255,7 +255,7 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 				inActiveren.add(new AttributeAppender("title", Model.of(getString(inactiverenProperty))));
 			}
 		}
-		boolean magInActiveren = standplaats.getId() != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.VERWIJDEREN)
+		var magInActiveren = standplaats.getId() != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.VERWIJDEREN)
 			&& ingelogdNamensRegio;
 		inActiveren.setVisible(magInActiveren);
 
@@ -281,8 +281,8 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaPostcodeReeks postcodeReeks = new MammaPostcodeReeks();
-				IModel<MammaPostcodeReeks> model = ModelUtil.cModel(postcodeReeks);
+				var postcodeReeks = new MammaPostcodeReeks();
+				var model = ModelUtil.cModel(postcodeReeks);
 				model.getObject().setStandplaats(getStandplaats());
 				setResponsePage(new MammaPostcodeReeksEditPage(model)
 				{
@@ -299,8 +299,8 @@ public class MammaStandplaatsEditPage extends MammaPlanningBasePage
 		toevoegen.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.TOEVOEGEN) && ingelogdNamensRegio);
 		persistentContainer.add(toevoegen);
 
-		MammaPostcodeReeks zoekObject = new MammaPostcodeReeks();
-		IModel<MammaPostcodeReeks> criteriaModel = ModelUtil.cModel(zoekObject);
+		var zoekObject = new MammaPostcodeReeks();
+		var criteriaModel = ModelUtil.cModel(zoekObject);
 		zoekObject = criteriaModel.getObject();
 
 		zoekObject.setStandplaats(getStandplaats());

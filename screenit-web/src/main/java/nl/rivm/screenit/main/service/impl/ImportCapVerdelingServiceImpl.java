@@ -53,7 +53,6 @@ import nl.rivm.screenit.util.BigDecimalUtil;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -116,10 +115,10 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 					var ilCapaciteitsVerdeling = ilEntry.getValue();
 					for (var capaciteitPerGebied : ilCapaciteitsVerdeling)
 					{
-						String[] splitted = capaciteitPerGebied.split(",");
-						String gemeenteCode = StringUtils.leftPad(splitted[0], 4, '0');
-						Integer adherentie = Integer.valueOf(splitted[1]);
-						Integer capaciteit = Integer.valueOf(splitted[2]);
+						var splitted = capaciteitPerGebied.split(",");
+						var gemeenteCode = StringUtils.leftPad(splitted[0], 4, '0');
+						var adherentie = Integer.valueOf(splitted[1]);
+						var capaciteit = Integer.valueOf(splitted[2]);
 						if (subMelding.length() > 0)
 						{
 							subMelding += " + ";
@@ -155,7 +154,7 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 					LOG.error("CapVerdeling stap 2: intakelocatie niet aanwezig " + ilEntry);
 				}
 			}
-			String adherentieMelding = uitnodigingsgebiedService.valideerAdherentieVanGewijzigdeGebieden(gewijzigdeGebieden);
+			var adherentieMelding = uitnodigingsgebiedService.valideerAdherentieVanGewijzigdeGebieden(gewijzigdeGebieden);
 			melding = "Aantal aangepaste intakelocaties: " + totaleCapaciteitVerdeling.size() + "<br>" + melding +
 				"Aantal aangepaste uitnodigingsgebieden: " + gewijzigdeGebieden.size() + adherentieMelding;
 		}
@@ -172,7 +171,7 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 				melding = melding.substring(0, melding.length() - 2);
 			}
 			melding = melding.replaceAll("\n", "<br>");
-			LogEvent logEvent = new LogEvent(melding);
+			var logEvent = new LogEvent(melding);
 			logEvent.setLevel(level);
 			logService.logGebeurtenis(LogGebeurtenis.IMPORT_CAP_VERDELING_VERWERKT, logEvent, ingelogdeOrganisatieMedewerker, Bevolkingsonderzoek.COLON);
 		}
@@ -202,7 +201,7 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 	private int leesHeader(Row row, int rowIdx, Map<Integer, Long> colToId, Map<Long, List<String>> totaleCapVerdeling, Map<Long, String> ilidToNaam)
 	{
 		var colIdx = START_IL_ID_COL;
-		Sheet sheet = row.getSheet();
+		var sheet = row.getSheet();
 		while (row.getLastCellNum() >= colIdx)
 		{
 			var ilId = getNummericCellValue(row, colIdx).longValue();
@@ -261,7 +260,7 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 	private static void resetCapaciteitVerdeling(ColonIntakelocatie intakelocatie)
 	{
 		LOG.info("CapVerdeling stap 2.1: Hele capaciteitsverdeling van IL op 0% zetten");
-		for (ColoscopieCentrumColonCapaciteitVerdeling verdeling : intakelocatie.getCapaciteitVerdeling())
+		for (var verdeling : intakelocatie.getCapaciteitVerdeling())
 		{
 			verdeling.setPercentageCapaciteit(0);
 		}
@@ -270,7 +269,7 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 	private void werkUitnodigingsgebiedenBij(ColonIntakelocatie intakelocatie, String gemeenteCode, Integer adherentie, Integer capaciteit,
 		Set<UitnodigingsGebied> gewijzigdeGebieden)
 	{
-		boolean foundGemeente = werkBestaandeUitnodigingsgebiedenBij(intakelocatie, gemeenteCode, adherentie, capaciteit, gewijzigdeGebieden);
+		var foundGemeente = werkBestaandeUitnodigingsgebiedenBij(intakelocatie, gemeenteCode, adherentie, capaciteit, gewijzigdeGebieden);
 		if (!foundGemeente)
 		{
 			LOG.info("CapVerdeling stap 2.2.2: nieuwe koppeling naar uitnodigingsgebied/gemeente " + gemeenteCode);
@@ -293,12 +292,12 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 	private boolean werkBestaandeUitnodigingsgebiedenBij(ColonIntakelocatie intakelocatie, String gemeenteCode, Integer adherentie, Integer capaciteit,
 		Set<UitnodigingsGebied> gewijzigdeGebieden)
 	{
-		boolean foundGemeente = false;
+		var foundGemeente = false;
 		LOG.info("CapVerdeling stap 2.2.1: bestaande verdeling updaten bij uitnodigingsgebied/gemeente " + gemeenteCode + " naar a" + adherentie / 100.0 + "% c"
 			+ capaciteit / 100.0 + "%");
-		for (ColoscopieCentrumColonCapaciteitVerdeling verdeling : intakelocatie.getCapaciteitVerdeling())
+		for (var verdeling : intakelocatie.getCapaciteitVerdeling())
 		{
-			UitnodigingsGebied uitnodigingsGebied = verdeling.getUitnodigingsGebied();
+			var uitnodigingsGebied = verdeling.getUitnodigingsGebied();
 			if (uitnodigingsGebied.getGemeente().getCode().equals(gemeenteCode))
 			{
 				if (StringUtils.isBlank(uitnodigingsGebied.getGemeenteDeel()) && uitnodigingsGebied.getPostcodeGebied() == null
@@ -362,7 +361,7 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 	{
 		LOG.info("CapVerdeling stap 2.3: gemeentes/uitnodigingsgebieden die geen percentage hebben verwijderen (indien van toepassing)");
 		List<ColoscopieCentrumColonCapaciteitVerdeling> verdelingToDelete = new ArrayList<>();
-		for (ColoscopieCentrumColonCapaciteitVerdeling verdeling : intakelocatie.getCapaciteitVerdeling())
+		for (var verdeling : intakelocatie.getCapaciteitVerdeling())
 		{
 			if (Integer.valueOf(0).equals(verdeling.getPercentageCapaciteit()))
 			{
@@ -371,9 +370,9 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 					+ " en IL " + intakelocatie.getNaam() + " wordt verwijderd.");
 			}
 		}
-		for (ColoscopieCentrumColonCapaciteitVerdeling verdeling : verdelingToDelete)
+		for (var verdeling : verdelingToDelete)
 		{
-			UitnodigingsGebied uitnodigingsGebied = verdeling.getUitnodigingsGebied();
+			var uitnodigingsGebied = verdeling.getUitnodigingsGebied();
 			uitnodigingsGebied.getVerdeling().remove(verdeling);
 			hibernateService.saveOrUpdate(uitnodigingsGebied);
 			intakelocatie.getCapaciteitVerdeling().remove(verdeling);
@@ -393,7 +392,7 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 		String cellValue = null;
 		if (row.getLastCellNum() > index && row.getFirstCellNum() <= index)
 		{
-			Cell cell = row.getCell(index);
+			var cell = row.getCell(index);
 			if (cell != null)
 			{
 				if (cell.getCellType() == CellType.NUMERIC)

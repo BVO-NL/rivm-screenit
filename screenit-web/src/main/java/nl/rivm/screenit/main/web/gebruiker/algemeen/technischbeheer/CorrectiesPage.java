@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.technischbeheer;
  */
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.main.service.BatchService;
@@ -88,7 +87,7 @@ public class CorrectiesPage extends TechnischBeheerPage
 			}
 		});
 
-		ScreenitForm<Object> form = new ScreenitForm<>("form");
+		var form = new ScreenitForm<Object>("form");
 		add(form);
 
 		form.add(new TextArea<>("berichtIds", berichtIds));
@@ -114,7 +113,7 @@ public class CorrectiesPage extends TechnischBeheerPage
 
 	private void berichtenOpieuwVerwerken(Bevolkingsonderzoek bvo)
 	{
-		List<Long> ids = Arrays.stream(berichtIds.getObject().split(",")).map(Long::valueOf).collect(Collectors.toList());
+		var ids = Arrays.stream(berichtIds.getObject().split(",")).map(Long::valueOf).collect(Collectors.toList());
 		verslagService.berichtenOpnieuwVerwerken(ids, bvo);
 		info(ids.size() + " berichten worden opgepakt door batch " + bvo.getAfkorting());
 	}

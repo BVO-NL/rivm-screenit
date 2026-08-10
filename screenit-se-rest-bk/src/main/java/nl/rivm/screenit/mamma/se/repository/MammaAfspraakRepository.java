@@ -38,36 +38,37 @@ import jakarta.persistence.Tuple;
 
 public interface MammaAfspraakRepository extends BaseJpaRepository<MammaAfspraak>
 {
-	@Query("select "
-		+ "coalesce(sum(case when (a.status = 'GEPLAND') then 1 else 0 end), 0) as aantalVerwacht, "
-		+ "coalesce(sum(case when (a.status = 'BEEINDIGD' and o.status = 'AFGEROND') then 1 else 0 end), 0) as aantalAfgerond, "
-		+ "coalesce(sum(case when (a.status = 'BEEINDIGD' and o.status = 'ONDERBROKEN') then 1 else 0 end), 0) as aantalOnderbroken, "
-		+ "coalesce(sum(case when (a.status = 'BEEINDIGD' and o.status = 'ONVOLLEDIG') then 1 else 0 end), 0) as aantalOnvolledig "
-		+ "from MammaAfspraak a "
-		+ "left join a.onderzoek o "
-		+ "join a.uitnodiging u "
-		+ "join a.standplaatsPeriode sp "
-		+ "join sp.screeningsEenheid se "
-		+ "join u.screeningRonde sr "
-		+ "where "
-		+ "se.code = :seCode  "
-		+ "and u.laatsteAfspraak = a "
-		+ "and a.vanaf between :beginMoment and :eindMoment "
-		+ "and a.status in :afspraakStatussen "
-		+ "and sr.status = nl.rivm.screenit.model.ScreeningRondeStatus.LOPEND"
-	)
+	@Query("""
+		select
+		coalesce(sum(case when (a.status = 'GEPLAND') then 1 else 0 end), 0) as aantalVerwacht,
+		coalesce(sum(case when (a.status = 'BEEINDIGD' and o.status = 'AFGEROND') then 1 else 0 end), 0) as aantalAfgerond,
+		coalesce(sum(case when (a.status = 'BEEINDIGD' and o.status = 'ONDERBROKEN') then 1 else 0 end), 0) as aantalOnderbroken,
+		coalesce(sum(case when (a.status = 'BEEINDIGD' and o.status = 'ONVOLLEDIG') then 1 else 0 end), 0) as aantalOnvolledig
+		from MammaAfspraak a
+		left join MammaOnderzoek o on o = a.onderzoek
+		join MammaUitnodiging u on u = a.uitnodiging
+		join MammaStandplaatsPeriode sp on sp = a.standplaatsPeriode
+		join MammaScreeningsEenheid se on se = sp.screeningsEenheid
+		join MammaScreeningRonde sr on sr = u.screeningRonde
+		where
+		se.code = :seCode
+		and u.laatsteAfspraak = a
+		and a.vanaf between :beginMoment and :eindMoment
+		and a.status in :afspraakStatussen
+		and sr.status = nl.rivm.screenit.model.ScreeningRondeStatus.LOPEND""")
 	DagStatistiekAfspraakStatussen getAantalAfsprakenPerStatus(@Param("seCode") String seCode, @Param("beginMoment") Date beginMoment, @Param("eindMoment") Date eindMoment,
 		@Param("afspraakStatussen") MammaAfspraakStatus[] afspraakStatussen);
 
-	@Query("select afspraak.ingeschrevenDoor.id as id, count(afspraak) as count " +
-		"from MammaAfspraak afspraak " +
-		"join afspraak.standplaatsPeriode standplaatsPeriode " +
-		"join standplaatsPeriode.screeningsEenheid screeningsEenheid " +
-		"where screeningsEenheid.code = :seCode " +
-		"and afspraak.vanaf >= :beginDatum " +
-		"and afspraak.vanaf <= :eindDatum " +
-		"and afspraak.ingeschrevenDoor is not null " +
-		"group by afspraak.ingeschrevenDoor.id")
+	@Query("""
+		select om.id as id, count(afspraak) as count
+		from MammaAfspraak afspraak
+		join MammaStandplaatsPeriode standplaatsPeriode on standplaatsPeriode = afspraak.standplaatsPeriode
+		join MammaScreeningsEenheid screeningsEenheid on screeningsEenheid = standplaatsPeriode.screeningsEenheid
+		join OrganisatieMedewerker om on om = afspraak.ingeschrevenDoor
+		where screeningsEenheid.code = :seCode
+		and afspraak.vanaf >= :beginDatum
+		and afspraak.vanaf <= :eindDatum
+		group by om.id""")
 	Stream<Tuple> findInschrijvingenVanSeInRange(Date beginDatum,
 		Date eindDatum,
 		String seCode);

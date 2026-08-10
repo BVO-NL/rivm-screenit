@@ -61,7 +61,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -89,11 +88,9 @@ import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
-import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.string.StringValue;
 import org.wicketstuff.wiquery.core.javascript.JsStatement;
 
 import static nl.rivm.screenit.main.web.gebruiker.screening.mamma.afspraken.MammaAfsprakenBlokPanel.AFSPRAAK_VERZETTEN_KOMT_VANUIT_AFSPRAKENKALENDER;
@@ -187,7 +184,7 @@ public abstract class MedewerkerBasePage extends BasePage
 			}
 		});
 
-		TransparentWebMarkupContainer pageLargecontainer = new TransparentWebMarkupContainer("pageLarge");
+		var pageLargecontainer = new TransparentWebMarkupContainer("pageLarge");
 		if (getPageLarge())
 		{
 			pageLargecontainer.add(new AttributeAppender("class", Model.of("page-large"), " "));
@@ -210,8 +207,8 @@ public abstract class MedewerkerBasePage extends BasePage
 			}
 		});
 
-		WebMarkupContainer naarMedewerkerGegevens = new WebMarkupContainer("naarMedewerkerGegevens");
-		OrganisatieMedewerker ingelogdeOrganisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		var naarMedewerkerGegevens = new WebMarkupContainer("naarMedewerkerGegevens");
+		var ingelogdeOrganisatieMedewerker = getIngelogdeOrganisatieMedewerker();
 		if (ingelogdeOrganisatieMedewerker != null)
 		{
 			if (autorisatieService.getActieVoorMedewerker(ingelogdeOrganisatieMedewerker, null, Recht.MEDEWERKER_BEHEER) != null)
@@ -271,7 +268,7 @@ public abstract class MedewerkerBasePage extends BasePage
 		};
 		add(logoutBehavior);
 
-		String extaTimeoutInfo = getExtraTimeoutInfo();
+		var extaTimeoutInfo = getExtraTimeoutInfo();
 		add(new Label("extraTimeoutInfo", extaTimeoutInfo).setVisible(StringUtils.isNotBlank(extaTimeoutInfo)));
 
 		if (isHeeftImsKoppelingRecht())
@@ -311,7 +308,7 @@ public abstract class MedewerkerBasePage extends BasePage
 		{
 			beoordelingReserveringService.reserveringenVrijgeven(getIngelogdeOrganisatieMedewerker());
 		}
-		Class<? extends Page> homePage = Application.get().getHomePage();
+		var homePage = Application.get().getHomePage();
 		ScreenitSession.get().logout();
 		setResponsePage(homePage);
 	}
@@ -348,11 +345,11 @@ public abstract class MedewerkerBasePage extends BasePage
 		response.render(JavaScriptHeaderItem.forReference(TimeoutResponseJsResourceReference.get()));
 		response.render(JavaScriptHeaderItem.forReference(TimeoutJsResourceReference.get()));
 
-		int timeoutMillis = ((ServletWebRequest) RequestCycle.get().getRequest()).getContainerRequest().getSession().getMaxInactiveInterval() * 1000;
+		var timeoutMillis = ((ServletWebRequest) RequestCycle.get().getRequest()).getContainerRequest().getSession().getMaxInactiveInterval() * 1000;
 
-		int meldingTimeoutMillis = timeoutMillis - (5 * 60 + 10) * 1000;
+		var meldingTimeoutMillis = timeoutMillis - (5 * 60 + 10) * 1000;
 
-		JsStatement jsStatement = new JsStatement();
+		var jsStatement = new JsStatement();
 		jsStatement.append("screenit.initClientResponse();");
 		jsStatement.append("screenit.meldingTimeout=" + meldingTimeoutMillis + ";");
 		jsStatement.append("screenit.keepAliveCallback=" + keepAliveBehavior.getCallbackFunction() + ";");
@@ -365,7 +362,7 @@ public abstract class MedewerkerBasePage extends BasePage
 
 	private String createImsLogonCommand()
 	{
-		String imsLogonMessage = imsService.createLogonMessage(getIngelogdeOrganisatieMedewerker().getMedewerker(),
+		var imsLogonMessage = imsService.createLogonMessage(getIngelogdeOrganisatieMedewerker().getMedewerker(),
 			ScreenitSession.get().getMammaHuidigeIDS7Role());
 		return createUserSessionToImsBridgeSendCommand(MammaImsUserSessionType.LogOn, imsLogonMessage);
 	}
@@ -382,7 +379,7 @@ public abstract class MedewerkerBasePage extends BasePage
 
 	private String createImsLogoffCommand()
 	{
-		String imsLogoffMessage = imsService.createLogoffMessage(getIngelogdeOrganisatieMedewerker().getMedewerker(),
+		var imsLogoffMessage = imsService.createLogoffMessage(getIngelogdeOrganisatieMedewerker().getMedewerker(),
 			ScreenitSession.get().getMammaHuidigeIDS7Role());
 		return createUserSessionToImsBridgeSendCommand(MammaImsUserSessionType.LogOff, imsLogoffMessage) + "window.imsLogOffSent = true;";
 	}
@@ -396,11 +393,11 @@ public abstract class MedewerkerBasePage extends BasePage
 
 	private void addBvoFilter()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("bvoFilterContainer");
+		var container = new WebMarkupContainer("bvoFilterContainer");
 		add(container);
 
-		OrganisatieMedewerker organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
-		List<Bevolkingsonderzoek> onderzoeken = Bevolkingsonderzoek.sort(autorisatieService.getBevolkingsonderzoeken(organisatieMedewerker));
+		var organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		var onderzoeken = Bevolkingsonderzoek.sort(autorisatieService.getBevolkingsonderzoeken(organisatieMedewerker));
 		if (onderzoeken.size() < 2)
 		{
 			container.setVisible(false);
@@ -415,8 +412,8 @@ public abstract class MedewerkerBasePage extends BasePage
 			return;
 		}
 		container.setVisible(true);
-		Form<OrganisatieMedewerker> bvoForm = new Form<>("bvoForm", ModelUtil.cModel(organisatieMedewerker));
-		CheckBoxMultipleChoice<Bevolkingsonderzoek> keuzemaken = new CheckBoxMultipleChoice<>("bevolkingsonderzoeken", onderzoeken,
+		var bvoForm = new Form<OrganisatieMedewerker>("bvoForm", ModelUtil.cModel(organisatieMedewerker));
+		var keuzemaken = new CheckBoxMultipleChoice<Bevolkingsonderzoek>("bevolkingsonderzoeken", onderzoeken,
 			new ChoiceRenderer<Bevolkingsonderzoek>()
 			{
 				@Override
@@ -430,7 +427,7 @@ public abstract class MedewerkerBasePage extends BasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				OrganisatieMedewerker organisatieMedewerker = (OrganisatieMedewerker) getForm().getDefaultModelObject();
+				var organisatieMedewerker = (OrganisatieMedewerker) getForm().getDefaultModelObject();
 				hibernateService.saveOrUpdate(organisatieMedewerker);
 				realm.clearCachedAuthorizationInfo(organisatieMedewerker);
 				setResponsePage(ScreenitSession.get().getPageForOrganisatieMedewerker(organisatieMedewerker));
@@ -443,23 +440,23 @@ public abstract class MedewerkerBasePage extends BasePage
 
 	private void addMenu()
 	{
-		ListView<MedewerkerMenuItem> hoofdmenu = new ListView<MedewerkerMenuItem>("hoofdMenu", getHoofdMenuItems())
+		var hoofdmenu = new ListView<MedewerkerMenuItem>("hoofdMenu", getHoofdMenuItems())
 		{
 			@Override
 			protected void populateItem(ListItem<MedewerkerMenuItem> item)
 			{
-				WebMarkupContainer container = new WebMarkupContainer("container");
+				var container = new WebMarkupContainer("container");
 				Panel contextMenu;
 				WebMarkupContainer link;
-				WebMarkupContainer caret = new WebMarkupContainer("caret");
+				var caret = new WebMarkupContainer("caret");
 
-				WebMarkupContainer status = new WebMarkupContainer("statusDashboard");
+				var status = new WebMarkupContainer("statusDashboard");
 				status.setVisible(false);
 				if (DashboardPage.class.equals(item.getModelObject().getTargetPageClass()))
 				{
-					BvoZoekCriteria dZC = new BvoZoekCriteria();
+					var dZC = new BvoZoekCriteria();
 					dZC.setBevolkingsonderzoeken(ScreenitSession.get().getOnderzoeken());
-					final Level level = dashboardService.getHoogsteLevelDashboardItems(ScreenitSession.get().getOrganisatie(), ScreenitSession.get().getOnderzoeken());
+					final var level = dashboardService.getHoogsteLevelDashboardItems(ScreenitSession.get().getOrganisatie(), ScreenitSession.get().getOnderzoeken());
 					status = new WebMarkupContainer("statusDashboard")
 					{
 						@Override
@@ -480,7 +477,7 @@ public abstract class MedewerkerBasePage extends BasePage
 					status.setVisible(!Level.INFO.equals(level));
 				}
 
-				final MedewerkerMenuItem medewerkerMenuItem = item.getModelObject();
+				final var medewerkerMenuItem = item.getModelObject();
 				if (medewerkerMenuItem.equals(getActieveMenuItem().getMenuItem()))
 				{
 					container.add(new AttributeAppender("class", new Model<>("active"), " "));
@@ -529,11 +526,11 @@ public abstract class MedewerkerBasePage extends BasePage
 	{
 		List<MedewerkerMenuItem> result = new ArrayList<>();
 
-		for (MedewerkerHoofdMenuItem hoofdMenuItem : MedewerkerHoofdMenuItem.values())
+		for (var hoofdMenuItem : MedewerkerHoofdMenuItem.values())
 		{
-			MedewerkerMenuItem menuItem = hoofdMenuItem.getMenuItem();
+			var menuItem = hoofdMenuItem.getMenuItem();
 
-			Class<? extends MedewerkerBasePage> targetPage = MedewerkerMenuItem.getTargetPageClass(menuItem);
+			var targetPage = MedewerkerMenuItem.getTargetPageClass(menuItem);
 			if (targetPage != null && Session.get().getAuthorizationStrategy().isInstantiationAuthorized(targetPage))
 			{
 				result.add(menuItem);
@@ -553,12 +550,12 @@ public abstract class MedewerkerBasePage extends BasePage
 	public List<MedewerkerMenuItem> getAllowedContextMenuItems()
 	{
 		List<MedewerkerMenuItem> menuItems = new ArrayList<>();
-		List<MedewerkerMenuItem> contextMenuItems = getContextMenuItems();
+		var contextMenuItems = getContextMenuItems();
 		if (CollectionUtils.isNotEmpty(contextMenuItems))
 		{
-			for (MedewerkerMenuItem contextMenuItem : contextMenuItems)
+			for (var contextMenuItem : contextMenuItems)
 			{
-				Class<? extends MedewerkerBasePage> targetPageClass = contextMenuItem.getTargetPageClass();
+				var targetPageClass = contextMenuItem.getTargetPageClass();
 				if (targetPageClass != null && Session.get().getAuthorizationStrategy().isInstantiationAuthorized(targetPageClass))
 				{
 					menuItems.add(contextMenuItem);
@@ -622,7 +619,7 @@ public abstract class MedewerkerBasePage extends BasePage
 				stopPollers(attributes);
 				if (heeftImsKoppelingRecht)
 				{
-					MedewerkerBasePage basePage = MedewerkerBasePage.this;
+					var basePage = MedewerkerBasePage.this;
 					if (isMammaBeoordelaar() && (!(basePage instanceof AbstractMammaBePage) || (!((AbstractMammaBePage) basePage).heeftOnderzoekenInWerklijst())
 						&& !((AbstractMammaBePage) basePage).heeftVerslagenTeBevestigen()))
 					{
@@ -649,7 +646,7 @@ public abstract class MedewerkerBasePage extends BasePage
 
 	protected void logoutFromIms(AjaxRequestAttributes attributes)
 	{
-		AjaxCallListener myAjaxCallListener = new AjaxCallListener();
+		var myAjaxCallListener = new AjaxCallListener();
 		myAjaxCallListener.onBeforeSend(createImsLogoffCommand());
 		attributes.getAjaxCallListeners().add(myAjaxCallListener);
 	}
@@ -672,10 +669,10 @@ public abstract class MedewerkerBasePage extends BasePage
 			@Override
 			protected void respond(AjaxRequestTarget target)
 			{
-				IRequestParameters requestParameters = getComponent().getRequest().getRequestParameters();
-				String errorMessage = requestParameters.getParameterValue(MAMMA_IMS_ERROR_CALLBACK_PARAM_MESSAGE).toString();
-				StringValue onderzoekIdStringValue = requestParameters.getParameterValue(MAMMA_IMS_ERROR_CALLBACK_PARAM_ONDERZOEK);
-				Long onderzoekId = onderzoekIdStringValue.isEmpty() ? null : Long.parseLong(onderzoekIdStringValue.toString());
+				var requestParameters = getComponent().getRequest().getRequestParameters();
+				var errorMessage = requestParameters.getParameterValue(MAMMA_IMS_ERROR_CALLBACK_PARAM_MESSAGE).toString();
+				var onderzoekIdStringValue = requestParameters.getParameterValue(MAMMA_IMS_ERROR_CALLBACK_PARAM_ONDERZOEK);
+				var onderzoekId = onderzoekIdStringValue.isEmpty() ? null : Long.parseLong(onderzoekIdStringValue.toString());
 				handleImsError(target, errorMessage, onderzoekId);
 			}
 		};

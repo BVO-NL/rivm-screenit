@@ -115,7 +115,7 @@ public class ColonParameterisatiePage extends ParameterisatieBasePage
 
 			cohorten = new ListModel<>(nieuweCohortenModel.getObject().getCohorten());
 
-			PropertyListView<UitnodigingCohortGeboortejarenDto> uitnodigingCohorten = new PropertyListView<UitnodigingCohortGeboortejarenDto>("cohorten", cohorten)
+			var uitnodigingCohorten = new PropertyListView<UitnodigingCohortGeboortejarenDto>("cohorten", cohorten)
 			{
 				private static final long serialVersionUID = 1L;
 

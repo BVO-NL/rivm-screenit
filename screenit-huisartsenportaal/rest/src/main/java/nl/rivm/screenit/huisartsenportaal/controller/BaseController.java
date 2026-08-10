@@ -25,7 +25,6 @@ import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.repository.HuisartsRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class BaseController
@@ -35,12 +34,12 @@ public class BaseController
 
 	protected Huisarts getIngelogdeHuisarts()
 	{
-		SecurityContext context = SecurityContextHolder.getContext();
+		var context = SecurityContextHolder.getContext();
 
 		if (context != null && context.getAuthentication() != null)
 		{
 
-			Huisarts huisarts = (Huisarts) context.getAuthentication().getPrincipal();
+			var huisarts = (Huisarts) context.getAuthentication().getPrincipal();
 			return huisartsRepository.findByHuisartsportaalId(huisarts.getHuisartsportaalId());
 		}
 		return null;

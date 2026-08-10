@@ -348,7 +348,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 			var volgendeNacht = startDateTime.plusDays(1).toLocalDate().atStartOfDay();
 			if (volgendeNacht.isBefore(endDateTime))
 			{
-				int overgeblevenMinutenVanDeDag = (int) ChronoUnit.MINUTES.between(startDateTime, volgendeNacht);
+				var overgeblevenMinutenVanDeDag = (int) ChronoUnit.MINUTES.between(startDateTime, volgendeNacht);
 				var duurAfspraakInMinuten = getDuurAfspraakInMinuten(intakelocatie);
 				throw new ValidatieException("error.te.veel.blokken", overgeblevenMinutenVanDeDag / duurAfspraakInMinuten);
 			}
@@ -419,7 +419,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 	@Override
 	public Integer getCurrentAantalAfspraakslots(ColonIntakelocatie intakeLocatie, Range<LocalDateTime> periode)
 	{
-		int currentAantalSlots = 0;
+		var currentAantalSlots = 0;
 		for (var kamer : intakeLocatie.getKamers())
 		{
 			if (!Boolean.FALSE.equals(kamer.getActief()))
@@ -671,7 +671,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 		{
 			var startDatumTijd = afspraakslot.getVanaf();
 
-			for (int i = 0; i < aantalBlokken; i++)
+			for (var i = 0; i < aantalBlokken; i++)
 			{
 				var splittedAfspraakslot = afspraakslot.transientClone();
 				splittedAfspraakslot.setVanaf(startDatumTijd);

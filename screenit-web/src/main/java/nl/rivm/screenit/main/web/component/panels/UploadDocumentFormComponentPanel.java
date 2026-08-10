@@ -57,19 +57,19 @@ public class UploadDocumentFormComponentPanel extends GenericPanel<UploadDocumen
 	{
 		super(id, new CompoundPropertyModel<>(model));
 
-		Label naamLabel = new Label("naam")
+		var naamLabel = new Label("naam")
 		{
 			@Override
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				UploadDocument document = UploadDocumentFormComponentPanel.this.getModelObject();
+				var document = UploadDocumentFormComponentPanel.this.getModelObject();
 				setVisible(document != null && !Boolean.FALSE.equals(document.getActief()));
 			}
 		};
 		naamLabel.setOutputMarkupId(true);
 		add(naamLabel);
-		FileUploadField field = new FileUploadField("fileUpload", files);
+		var field = new FileUploadField("fileUpload", files);
 		add(field);
 
 		if (validator != null)
@@ -92,7 +92,7 @@ public class UploadDocumentFormComponentPanel extends GenericPanel<UploadDocumen
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				UploadDocument document = UploadDocumentFormComponentPanel.this.getModelObject();
+				var document = UploadDocumentFormComponentPanel.this.getModelObject();
 				setVisible(document != null && !Boolean.FALSE.equals(document.getActief()));
 			}
 

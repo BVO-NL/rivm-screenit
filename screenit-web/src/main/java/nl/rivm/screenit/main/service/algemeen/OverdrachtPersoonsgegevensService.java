@@ -32,7 +32,7 @@ import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
 public interface OverdrachtPersoonsgegevensService
 {
 
-	boolean heeftVerzoekZonderGegenereerdeBrief(Client client);
+	boolean heeftOpenstaandVerzoek(Client client);
 
 	void slaOntvangenFormulierOp(OverdrachtPersoonsgegevens overdracht, UploadDocument uploadDocument, Account account) throws IOException;
 

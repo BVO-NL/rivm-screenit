@@ -32,7 +32,7 @@ public abstract class BaseIdScrollableResultReader extends BaseTypedScrollableRe
 		var scrollableResults = resultSet.get();
 		while (scrollableResults.next())
 		{
-			Long id = getScrollableResult(scrollableResults);
+			var id = getScrollableResult(scrollableResults);
 
 			if (!processedIds.contains(id))
 			{

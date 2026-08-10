@@ -86,7 +86,7 @@ public class CleanUpServiceImpl implements CleanUpService
 	{
 		synchronized (cleanupLock)
 		{
-			LocalDate vandaag = DateUtil.getCurrentDateTime().toLocalDate();
+			var vandaag = DateUtil.getCurrentDateTime().toLocalDate();
 			if (laatsteUpdateDag == null || vandaag.isAfter(laatsteUpdateDag))
 			{
 				laatsteUpdateDag = vandaag;
@@ -125,10 +125,10 @@ public class CleanUpServiceImpl implements CleanUpService
 
 	private void verversGeenScreeningPlanningBlokken(CacheProxyActie cacheProxyActie)
 	{
-		LocalDate vandaag = DateUtil.getCurrentDateTime().toLocalDate();
+		var vandaag = DateUtil.getCurrentDateTime().toLocalDate();
 
-		Integer daglijstOphalenVoorDagen = configuratieService.getConfiguratieIntegerValue(SeConfiguratieKey.SE_DAGLIJST_OPHALEN_VOOR_DAGEN);
-		for (int i = 0; i <= daglijstOphalenVoorDagen; i++)
+		var daglijstOphalenVoorDagen = configuratieService.getConfiguratieIntegerValue(SeConfiguratieKey.SE_DAGLIJST_OPHALEN_VOOR_DAGEN);
+		for (var i = 0; i <= daglijstOphalenVoorDagen; i++)
 		{
 			achtergrondRequestService.queueVerversGeenScreeningBlokken(vandaag.plusDays(i), cacheProxyActie);
 		}

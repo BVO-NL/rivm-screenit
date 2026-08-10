@@ -62,7 +62,7 @@ public class ClientTooltipPanel extends GenericPanel<ClientTooltip>
 		}
 
 		setModel(ModelUtil.cRModel(tooltip));
-		Label tekst = new Label("tekst");
+		var tekst = new Label("tekst");
 		tekst.setOutputMarkupPlaceholderTag(true);
 		ilink = new WebMarkupContainer("ilink");
 		ilink.add(new AttributeAppender("title", Model.of(tooltip.getTitel()), " "));

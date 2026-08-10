@@ -55,7 +55,7 @@ public class MedewerkerLoginMethodPage extends LoginBasePage
 
 	public MedewerkerLoginMethodPage(boolean redirect)
 	{
-		BookmarkablePageLink<Object> usernamePassword = new BookmarkablePageLink<>("usernamePassword", MedewerkerLoginPage.class);
+		var usernamePassword = new BookmarkablePageLink<Object>("usernamePassword", MedewerkerLoginPage.class);
 		if (ApplicationEnvironment.PROD.getEnvNaam().equalsIgnoreCase(applicationEnvironment) ||
 			ApplicationEnvironment.PAT.getEnvNaam().equalsIgnoreCase(applicationEnvironment) ||
 			ApplicationEnvironment.OPL.getEnvNaam().equalsIgnoreCase(applicationEnvironment))
@@ -66,7 +66,7 @@ public class MedewerkerLoginMethodPage extends LoginBasePage
 		add(new BookmarkablePageLink<>("yubikeyLogin", YubipasLoginPage.class));
 		add(new BookmarkablePageLink<>("uzipasLogin", LoginUzipasZorgIdPage.class, new PageParameters().add(PAGE_PARAMETER_UITWISSELPORTAAL, Boolean.FALSE)));
 
-		String loginMethode = new CookieUtils().load(Constants.COOKIE_KEY_LOGIN_METHOD);
+		var loginMethode = new CookieUtils().load(Constants.COOKIE_KEY_LOGIN_METHOD);
 		if (StringUtils.isNotBlank(loginMethode) && redirect)
 		{
 			switch (InlogMethode.valueOf(loginMethode))

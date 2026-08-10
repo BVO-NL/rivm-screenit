@@ -37,10 +37,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaHistorischeLe
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaMBBBeoordelingPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaOnderzoekPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaVisueleInspectiePanel;
-import nl.rivm.screenit.model.mamma.MammaAnnotatieAfbeelding;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
-import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag;
-import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.service.LogService;
@@ -101,7 +98,7 @@ public abstract class MammaKwaliteitscontroleHuidigeRondePanel extends AbstractM
 
 	private void createVisueleInspectiePanel(WebMarkupContainer panelContainer)
 	{
-		MammaVisueleInspectiePanel visueleInspectiePanel = new MammaVisueleInspectiePanel("visueleInspectiePanel", new PropertyModel<>(getModel(), "onderzoek"),
+		var visueleInspectiePanel = new MammaVisueleInspectiePanel("visueleInspectiePanel", new PropertyModel<>(getModel(), "onderzoek"),
 			getVisueleInspectiePanelSize());
 		panelContainer.add(visueleInspectiePanel);
 	}
@@ -114,26 +111,26 @@ public abstract class MammaKwaliteitscontroleHuidigeRondePanel extends AbstractM
 	private void createMBBerPanel(WebMarkupContainer panelContainer)
 	{
 		IModel<MammaOnderzoek> onderzoekModel = new CompoundPropertyModel<>(new PropertyModel<>(getModel(), "onderzoek"));
-		MammaMBBBeoordelingPanel mbberBevindingenPanel = new MammaMBBBeoordelingPanel("mbberBevindingenPanel", onderzoekModel, true);
+		var mbberBevindingenPanel = new MammaMBBBeoordelingPanel("mbberBevindingenPanel", onderzoekModel, true);
 		panelContainer.add(mbberBevindingenPanel);
 	}
 
 	private void createLezingenPanel(WebMarkupContainer panelContainer)
 	{
-		MammaHistorischeLezingenPanel result = new MammaHistorischeLezingenPanel("lezingenPanel", getModel());
+		var result = new MammaHistorischeLezingenPanel("lezingenPanel", getModel());
 		panelContainer.add(result);
 	}
 
 	public void blokeerButtons(AjaxRequestTarget target)
 	{
-		List<Component> visibleButtons = buttons.stream().filter(b -> b.isVisible()).collect(Collectors.toList());
+		var visibleButtons = buttons.stream().filter(b -> b.isVisible()).collect(Collectors.toList());
 		visibleButtons.forEach(b -> b.setEnabled(false));
 		target.add(visibleButtons.toArray(new Component[] {}));
 	}
 
 	private int getVisueleInspectiePanelSize()
 	{
-		MammaAnnotatieAfbeelding visueleInspectieAfbeelding = getModelObject().getOnderzoek().getMammografie().getVisueleInspectieAfbeelding();
+		var visueleInspectieAfbeelding = getModelObject().getOnderzoek().getMammografie().getVisueleInspectieAfbeelding();
 		return visueleInspectieAfbeelding == null || visueleInspectieAfbeelding.getIconen().isEmpty() ? 4 : 8;
 	}
 
@@ -152,7 +149,7 @@ public abstract class MammaKwaliteitscontroleHuidigeRondePanel extends AbstractM
 
 	private void createFollowUpPathologiePanel(WebMarkupContainer panelContainer)
 	{
-		List<MammaFollowUpVerslag> followUpVerslagen = followUpService
+		var followUpVerslagen = followUpService
 			.getAfgerondeFollowUpPathologieVerslagen(getModelObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde());
 
 		if (!followUpVerslagen.isEmpty())
@@ -167,7 +164,7 @@ public abstract class MammaKwaliteitscontroleHuidigeRondePanel extends AbstractM
 
 	private void createFollowUpRadiologiePanel(WebMarkupContainer panelContainer)
 	{
-		List<MammaFollowUpRadiologieVerslag> followUpVerslagen = followUpService
+		var followUpVerslagen = followUpService
 			.getIngevoerdeFollowUpRadiologieVerslagen(getModelObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde());
 
 		if (!followUpVerslagen.isEmpty())

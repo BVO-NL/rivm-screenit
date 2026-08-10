@@ -45,8 +45,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaFotobespreking;
 import nl.rivm.screenit.model.mamma.MammaFotobespreking_;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid_;
-import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
@@ -100,7 +98,7 @@ public class MammaFotobesprekingOverzichtPage extends MammaFotobesprekingBasePag
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				IModel<MammaFotobespreking> model = ModelUtil.cModel(new MammaFotobespreking());
+				var model = ModelUtil.cModel(new MammaFotobespreking());
 				model.getObject().setAangemaaktDoor(getIngelogdeOrganisatieMedewerker());
 				model.getObject().setAangemaaktOp(dateSupplier.getDate());
 				openEditPopupPanel(target, model);
@@ -169,7 +167,7 @@ public class MammaFotobesprekingOverzichtPage extends MammaFotobesprekingBasePag
 		{
 			columns.add(getFotobesprekingVerwijderenColumn());
 		}
-		MammaFotobesprekingProvider dataProvider = new MammaFotobesprekingProvider(zoekModel);
+		var dataProvider = new MammaFotobesprekingProvider(zoekModel);
 		overzicht = new ScreenitDataTable<MammaFotobespreking, String>("werklijst", columns, dataProvider,
 			Model.of("fotobespreking(en)"))
 		{
@@ -202,7 +200,7 @@ public class MammaFotobesprekingOverzichtPage extends MammaFotobesprekingBasePag
 					@Override
 					protected void onClick(AjaxRequestTarget target)
 					{
-						MammaFotobespreking fotobespreking = getModelObject();
+						var fotobespreking = getModelObject();
 						dialog.openWith(target, new MammaFotobesprekingVerwijderenPopupPanel(BootstrapDialog.CONTENT_ID, ModelUtil.csModel(fotobespreking))
 						{
 							@Override

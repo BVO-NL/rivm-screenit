@@ -30,7 +30,6 @@ import lombok.NoArgsConstructor;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.ScreeningRonde_;
-import nl.rivm.screenit.specification.DateSpecification;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
 

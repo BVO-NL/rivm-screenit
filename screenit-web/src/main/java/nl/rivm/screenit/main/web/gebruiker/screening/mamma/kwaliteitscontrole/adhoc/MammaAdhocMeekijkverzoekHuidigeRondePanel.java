@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.a
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,8 +62,8 @@ public class MammaAdhocMeekijkverzoekHuidigeRondePanel extends AbstractBEAccordi
 		super(id, model, 12);
 		this.adhocMeekijkverzoekOnderzoekModel = adhocMeekijkverzoekOnderzoekModel;
 		setIngeklapt(false);
-		MammaOnderzoek onderzoek = getModelObject();
-		LocalDate localDate = DateUtil.toLocalDate(onderzoek.getCreatieDatum());
+		var onderzoek = getModelObject();
+		var localDate = DateUtil.toLocalDate(onderzoek.getCreatieDatum());
 
 		setTitle(Model.of("" + localDate.getYear()));
 	}
@@ -84,13 +83,13 @@ public class MammaAdhocMeekijkverzoekHuidigeRondePanel extends AbstractBEAccordi
 
 	private void addButton(WebMarkupContainer panelContainer, List<Component> buttons, String id, MammaVisitatieOnderzoekStatus status, boolean btnVisible)
 	{
-		IndicatingAjaxLink<Void> button = new IndicatingAjaxLink<Void>(id)
+		var button = new IndicatingAjaxLink<Void>(id)
 		{
 			@Override
 			protected void updateAjaxAttributes(AjaxRequestAttributes attributes)
 			{
 				super.updateAjaxAttributes(attributes);
-				AjaxCallListener myAjaxCallListener = new AjaxCallListener();
+				var myAjaxCallListener = new AjaxCallListener();
 				myAjaxCallListener.onBefore("logOnAfrondenClick();");
 				attributes.getAjaxCallListeners().add(myAjaxCallListener);
 			}

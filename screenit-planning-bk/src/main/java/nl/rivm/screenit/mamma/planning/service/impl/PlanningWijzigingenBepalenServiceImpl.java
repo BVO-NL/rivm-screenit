@@ -22,16 +22,10 @@ package nl.rivm.screenit.mamma.planning.service.impl;
  */
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.util.NavigableSet;
 
 import nl.rivm.screenit.mamma.planning.model.PlanningDag;
-import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
-import nl.rivm.screenit.mamma.planning.model.PlanningWeek;
 import nl.rivm.screenit.mamma.planning.service.PlanningWijzigingenBepalenService;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingen;
-import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingenRoute;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -44,9 +38,9 @@ public class PlanningWijzigingenBepalenServiceImpl implements PlanningWijziginge
 	@Override
 	public void bepaalWijzigingen(PlanningDag dag)
 	{
-		PlanningScreeningsEenheid screeningsEenheid = dag.getScreeningsEenheid();
-		PlanningStandplaatsPeriode standplaatsPeriode = dag.getStandplaatsPeriode();
-		PlanningWijzigingenRoute wijzigingenRoute = PlanningWijzigingen.getWijzigingenRoute(screeningsEenheid);
+		var screeningsEenheid = dag.getScreeningsEenheid();
+		var standplaatsPeriode = dag.getStandplaatsPeriode();
+		var wijzigingenRoute = PlanningWijzigingen.getWijzigingenRoute(screeningsEenheid);
 		wijzigingenRoute.getDagSet().add(dag);
 		wijzigingenRoute.getWeekSet().add(dag.getWeek());
 		if (standplaatsPeriode != null)
@@ -56,17 +50,17 @@ public class PlanningWijzigingenBepalenServiceImpl implements PlanningWijziginge
 		else
 		{
 
-			NavigableSet<PlanningStandplaatsPeriode> standplaatsPeriodeNavigableSet = screeningsEenheid.getStandplaatsPeriodeNavigableSet();
+			var standplaatsPeriodeNavigableSet = screeningsEenheid.getStandplaatsPeriodeNavigableSet();
 			if (!standplaatsPeriodeNavigableSet.isEmpty() && standplaatsPeriodeNavigableSet.last().getTotEnMet().isBefore(dag.getDatum()))
 			{
 				wijzigingenRoute.setVanafStandplaatsPeriode(standplaatsPeriodeNavigableSet.first());
 			}
 		}
 
-		PlanningWeek herhalingsWeek = screeningsEenheid.getHerhalingsWeek();
+		var herhalingsWeek = screeningsEenheid.getHerhalingsWeek();
 		if (herhalingsWeek != null)
 		{
-			LocalDate nieuweHerhalingsWeek = dag.getDatum().plusWeeks(1).with(DayOfWeek.MONDAY);
+			var nieuweHerhalingsWeek = dag.getDatum().plusWeeks(1).with(DayOfWeek.MONDAY);
 			if (herhalingsWeek.getDatum().isBefore(nieuweHerhalingsWeek))
 			{
 				screeningsEenheid.setHerhalingsWeek(screeningsEenheid.getWeek(nieuweHerhalingsWeek));

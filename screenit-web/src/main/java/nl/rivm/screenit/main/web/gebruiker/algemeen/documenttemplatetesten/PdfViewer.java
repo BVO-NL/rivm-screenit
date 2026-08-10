@@ -79,14 +79,14 @@ public class PdfViewer extends PdfObjectContainer implements IRequestListener
 			protected ResourceResponse newResourceResponse(Attributes attributes)
 			{
 
-				ResourceResponse response = new ResourceResponse();
+				var response = new ResourceResponse();
 				response.setFileName("test_document_templates.pdf");
 				response.setWriteCallback(new WriteCallback()
 				{
 					@Override
 					public void writeData(Attributes attributes)
 					{
-						try (FileInputStream pdfStream = new FileInputStream(tempFile))
+						try (var pdfStream = new FileInputStream(tempFile))
 						{
 							writeStream(attributes, pdfStream);
 						}
@@ -109,7 +109,7 @@ public class PdfViewer extends PdfObjectContainer implements IRequestListener
 			}
 
 		};
-		IResource.Attributes a = new IResource.Attributes(RequestCycle.get().getRequest(), RequestCycle.get().getResponse(), null);
+		var a = new IResource.Attributes(RequestCycle.get().getRequest(), RequestCycle.get().getResponse(), null);
 		resource.respond(a);
 	}
 

@@ -22,7 +22,6 @@ package nl.rivm.screenit.mamma.se.service.impl;
  */
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.mamma.se.dto.actions.AfrondenDto;
@@ -35,7 +34,6 @@ import nl.rivm.screenit.mamma.se.service.dtomapper.AfbeeldingDtoMapper;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAnnotatieAfbeelding;
-import nl.rivm.screenit.model.mamma.MammaAnnotatieIcoon;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaSignaleren;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
@@ -77,10 +75,10 @@ public class OnderzoekAfrondenServiceImpl implements OnderzoekAfrondenService
 	@Override
 	public void beeindigen(AfrondenDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd)
 	{
-		final MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
+		final var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
 		beeindigAfspraak(afspraak);
-		SignalerenSeDto signalerenSeDto = action.getSignaleren();
-		MammaOnderzoek onderzoek = afspraak.getOnderzoek();
+		var signalerenSeDto = action.getSignaleren();
+		var onderzoek = afspraak.getOnderzoek();
 		beeindigOnderzoek(onderzoek, organisatieMedewerker, signalerenSeDto, transactieDatumTijd);
 		hl7BerichtenToBatchService.queueMammaHL7v24BerichtUitgaand(afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient(), MammaHL7v24ORMBerichtStatus.COMPLETED);
 		baseKansberekeningService.kansberekeningHerzien(afspraak.getUitnodiging().getScreeningRonde().getDossier(), transactieDatumTijd.toLocalDate());
@@ -100,15 +98,15 @@ public class OnderzoekAfrondenServiceImpl implements OnderzoekAfrondenService
 	@Override
 	public void onderzoekAfronden(OnderzoekAfrondenDto action, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd)
 	{
-		final MammaAfspraak afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
-		MammaOnderzoek onderzoek = afspraak.getOnderzoek();
+		final var afspraak = afspraakService.getOfMaakLaatsteAfspraakVanVandaag(action.getAfspraakId(), organisatieMedewerker);
+		var onderzoek = afspraak.getOnderzoek();
 		onderzoek.setAfgerondOp(DateUtil.toUtilDate(transactieDatumTijd));
 	}
 
 	@Override
 	public void maakSignalering(OrganisatieMedewerker organisatieMedewerker, MammaOnderzoek onderzoek, SignalerenSeDto signaleringDto, LocalDateTime transactieDatumTijd)
 	{
-		MammaSignaleren signalering = onderzoek.getSignaleren();
+		var signalering = onderzoek.getSignaleren();
 		if (onderzoek.getSignaleren() == null)
 		{
 			signalering = new MammaSignaleren();
@@ -147,8 +145,8 @@ public class OnderzoekAfrondenServiceImpl implements OnderzoekAfrondenService
 	{
 		if (doorsnede != null && doorsnede.getIconen() != null && !doorsnede.getIconen().isEmpty())
 		{
-			List<MammaAnnotatieIcoon> doorsnedeIconen = doorsnede.getIconen().stream().map(new AfbeeldingDtoMapper()::icoonDtoToAnnotatieIcoon).collect(Collectors.toList());
-			MammaAnnotatieAfbeelding afbeelding = huidigeAfbeelding != null ? huidigeAfbeelding : new MammaAnnotatieAfbeelding();
+			var doorsnedeIconen = doorsnede.getIconen().stream().map(new AfbeeldingDtoMapper()::icoonDtoToAnnotatieIcoon).collect(Collectors.toList());
+			var afbeelding = huidigeAfbeelding != null ? huidigeAfbeelding : new MammaAnnotatieAfbeelding();
 			baseAnnotatieAfbeeldingService.updateIconenInAfbeelding(doorsnedeIconen, afbeelding);
 			return afbeelding;
 		}

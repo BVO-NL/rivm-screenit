@@ -78,7 +78,7 @@ public class ColonFitAnalyseResultaatSetVerwerkingListener extends BaseLogListen
 	@Override
 	protected LogEvent getEindLogEvent()
 	{
-		String key = ColonFitAnalyseResultaatSetVerwerkingConstants.RAPPORTAGEKEYVERWERKING;
+		var key = ColonFitAnalyseResultaatSetVerwerkingConstants.RAPPORTAGEKEYVERWERKING;
 		var executionContext = getJobExecution().getExecutionContext();
 		if (executionContext.containsKey(key))
 		{

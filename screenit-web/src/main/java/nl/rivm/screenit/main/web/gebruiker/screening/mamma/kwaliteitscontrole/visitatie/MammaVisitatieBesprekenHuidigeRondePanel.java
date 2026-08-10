@@ -68,13 +68,13 @@ public class MammaVisitatieBesprekenHuidigeRondePanel extends MammaKwaliteitscon
 
 	private void addButton(WebMarkupContainer panelContainer, List<Component> buttons, String id, MammaVisitatieOnderzoekStatus status, boolean btnVisible)
 	{
-		IndicatingAjaxLink<Void> button = new IndicatingAjaxLink<Void>(id)
+		var button = new IndicatingAjaxLink<Void>(id)
 		{
 			@Override
 			protected void updateAjaxAttributes(AjaxRequestAttributes attributes)
 			{
 				super.updateAjaxAttributes(attributes);
-				AjaxCallListener myAjaxCallListener = new AjaxCallListener();
+				var myAjaxCallListener = new AjaxCallListener();
 				myAjaxCallListener.onBefore("logOnAfrondenClick();");
 				attributes.getAjaxCallListeners().add(myAjaxCallListener);
 			}
@@ -87,7 +87,7 @@ public class MammaVisitatieBesprekenHuidigeRondePanel extends MammaKwaliteitscon
 
 		};
 
-		MammaVisitatieOnderzoek visitatieOnderzoek = visitatieOnderzoekModel.getObject();
+		var visitatieOnderzoek = visitatieOnderzoekModel.getObject();
 		button.setVisible(visitatieOnderzoek.getVisitatie().getAfgerondOp() == null && btnVisible);
 		button.setOutputMarkupId(true);
 		panelContainer.add(button);

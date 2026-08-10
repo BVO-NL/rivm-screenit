@@ -27,6 +27,9 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Properties;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+
 import nl.rivm.screenit.batch.config.MailServerConfig;
 import nl.rivm.screenit.service.TechnischeBerichtenLoggingSaverService;
 
@@ -35,9 +38,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessagePreparator;
-
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 
 public class LoggingJavaMailSender implements JavaMailSender
 {
@@ -142,13 +142,13 @@ public class LoggingJavaMailSender implements JavaMailSender
 
 	private void logMessage(MimeMessage mimeMessage)
 	{
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		var output = new ByteArrayOutputStream();
 
 		String message;
 		try
 		{
 			mimeMessage.writeTo(output);
-			String encoding = mimeMessage.getEncoding();
+			var encoding = mimeMessage.getEncoding();
 
 			if (encoding != null)
 			{

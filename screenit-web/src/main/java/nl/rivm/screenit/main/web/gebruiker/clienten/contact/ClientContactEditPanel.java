@@ -22,12 +22,12 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.ClientContact;
 import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
+import nl.rivm.screenit.service.ClientContactService;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
@@ -54,7 +54,7 @@ public abstract class ClientContactEditPanel extends GenericPanel<ClientContact>
 	{
 		super(id, contactModel);
 
-		Form<ClientContact> form = new Form<>("contactForm");
+		var form = new Form<ClientContact>("contactForm");
 		add(form);
 		form.add(new TextArea<String>("opmerking").add(StringValidator.maximumLength(2048)));
 		form.add(new IndicatingAjaxButton("opslaan")
@@ -71,7 +71,7 @@ public abstract class ClientContactEditPanel extends GenericPanel<ClientContact>
 			}
 		});
 
-		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_CONTACT, Actie.VERWIJDEREN, getModelObject().getClient())
+		var magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_CONTACT, Actie.VERWIJDEREN, getModelObject().getClient())
 			&& getModelObject().getActies().size() == 1 && getModelObject().getActies().get(0).getType() == ClientContactActieType.GEEN;
 		form.add(new IndicatingAjaxButton("verwijderen")
 		{

@@ -31,8 +31,6 @@ import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.CervixBarcodeAfdrukkenBasePage;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.cervix.CervixLabformulier;
-import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixHpvBeoordelingWaarde;
 import nl.rivm.screenit.model.cervix.enums.CervixLabformulierStatus;
@@ -92,7 +90,7 @@ public abstract class CervixUitnodigingUitstrijkjePanel extends CervixUitnodigin
 	@Override
 	protected void inboeken()
 	{
-		CervixUitstrijkje uitstrijkje = getModelObject();
+		var uitstrijkje = getModelObject();
 		uitstrijkje.setUitstrijkjeStatus(CervixUitstrijkjeStatus.ONTVANGEN);
 		saveMonster(null);
 	}
@@ -101,28 +99,28 @@ public abstract class CervixUitnodigingUitstrijkjePanel extends CervixUitnodigin
 	protected void addMonsterTypeSpecifics(ScreenitForm<CervixUitstrijkje> form, WebMarkupContainer labformulierLaboratoriumContainer, BMHKLaboratorium laboratorium,
 		boolean ingeboektInAnderLaboratorium)
 	{
-		CervixUitstrijkje uitstrijkje = getModelObject();
-		CervixUitstrijkjeStatus uitstrijkjeStatus = uitstrijkje.getUitstrijkjeStatus();
+		var uitstrijkje = getModelObject();
+		var uitstrijkjeStatus = uitstrijkje.getUitstrijkjeStatus();
 
 		form.add(new Label("verzenddatum", verzenddatumUitnodiging == null ? "" : verzenddatumUitnodiging));
 		form.add(DateLabel.forDatePattern("labformulier.datumUitstrijkje", Constants.DEFAULT_DATE_FORMAT));
 
-		List<CervixUitstrijkjeStatus> mogelijkeUitstrijkjeStatussen = getMogelijkeUitstrijkjeStatussen(uitstrijkjeStatus);
+		var mogelijkeUitstrijkjeStatussen = getMogelijkeUitstrijkjeStatussen(uitstrijkjeStatus);
 		uitstrijkjeStatusDropdown = new ScreenitDropdown<>("monsterStatus", new PropertyModel<>(getModel(), "uitstrijkjeStatus"), mogelijkeUitstrijkjeStatussen,
 			new EnumChoiceRenderer<>());
 		form.add(uitstrijkjeStatusDropdown);
 
-		boolean enabled = ontvangstMonster()
+		var enabled = ontvangstMonster()
 			&& !ingeboektInAnderLaboratorium && (uitstrijkjeStatus.equals(CervixUitstrijkjeStatus.NIET_ONTVANGEN)
 			|| uitstrijkjeStatus.equals(CervixUitstrijkjeStatus.ONTVANGEN) || uitstrijkjeStatus.equals(CervixUitstrijkjeStatus.NIET_ANALYSEERBAAR))
 			&& verzenddatumUitnodiging != null && uitstrijkje.getBrief() == null;
 		uitstrijkjeStatusDropdown.setEnabled(enabled);
 		nietAnalyseerbaarReden.setEnabled(enabled);
 		monsterSignaleringen.setEnabled(enabled);
-		CervixLabformulier labformulier = uitstrijkje.getLabformulier();
+		var labformulier = uitstrijkje.getLabformulier();
 		if (labformulier != null && labformulier.getDigitaal())
 		{
-			for (CervixMonsterSignalering signalering : monsterSignaleringen.getChoices())
+			for (var signalering : monsterSignaleringen.getChoices())
 			{
 				if (signalering.equals(CervixMonsterSignalering.GEEN_AANVRAAG_FORMULIER_WEL_MONSTER)
 					|| signalering.equals(CervixMonsterSignalering.KOPIE_AANVRAAGFORMULIER_GEBRUIKT))
@@ -136,7 +134,7 @@ public abstract class CervixUitnodigingUitstrijkjePanel extends CervixUitnodigin
 		form.add(new EnumLabel<CervixLabformulierStatus>("labformulier.status"));
 		form.add(new BooleanLabel("labformulier.digitaal"));
 
-		boolean labformulierInAnderLaboratorium = false;
+		var labformulierInAnderLaboratorium = false;
 		if (labformulier != null)
 		{
 			labformulierInAnderLaboratorium = !laboratorium.equals(labformulier.getLaboratorium());
@@ -163,7 +161,7 @@ public abstract class CervixUitnodigingUitstrijkjePanel extends CervixUitnodigin
 		if (getModelObject().getCytologieOrder() == null)
 		{
 
-			CervixScreeningRonde ontvangstRonde = getModelObject().getOntvangstScreeningRonde();
+			var ontvangstRonde = getModelObject().getOntvangstScreeningRonde();
 			if (ontvangstRonde != null
 				&& (ontvangstRonde.getMonsterHpvUitslag() == null
 				|| ontvangstRonde.getMonsterHpvUitslag().getLaatsteHpvBeoordeling().getHpvUitslag().equals(CervixHpvBeoordelingWaarde.POSITIEF)
@@ -189,10 +187,10 @@ public abstract class CervixUitnodigingUitstrijkjePanel extends CervixUitnodigin
 	@Override
 	protected void saveMonster(AjaxRequestTarget target)
 	{
-		boolean success = true;
+		var success = true;
 
-		CervixUitstrijkje uitstrijkje = getModelObject();
-		CervixUitstrijkjeStatus status = uitstrijkje.getUitstrijkjeStatus();
+		var uitstrijkje = getModelObject();
+		var status = uitstrijkje.getUitstrijkjeStatus();
 
 		monsterSignaleringenContainer.setVisible(status != CervixUitstrijkjeStatus.NIET_ONTVANGEN);
 
@@ -220,7 +218,7 @@ public abstract class CervixUitnodigingUitstrijkjePanel extends CervixUitnodigin
 		{
 			target.add(nietAnalyseerbaarReden);
 		}
-		String logMessage = getString("titel") + " - " + getStatus();
+		var logMessage = getString("titel") + " - " + getStatus();
 		if (uitstrijkje.getUitstrijkjeStatus() == CervixUitstrijkjeStatus.NIET_ANALYSEERBAAR)
 		{
 			logMessage = logMessage + " (reden: " + uitstrijkje.getNietAnalyseerbaarReden().getNaam() + ")";

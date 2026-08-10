@@ -67,9 +67,9 @@ public class VertrouwdVerbondenVo107Provider implements IVo107Provider
 
 				files.sort(Comparator.comparing(LsEntry::getFilename));
 
-				for (LsEntry file : files)
+				for (var file : files)
 				{
-					SFTPVo107File vo107File = new SFTPVo107File(file.getFilename(), gbaVerwerkingsLog);
+					var vo107File = new SFTPVo107File(file.getFilename(), gbaVerwerkingsLog);
 					vo107Files.add(vo107File);
 				}
 			}
@@ -106,7 +106,7 @@ public class VertrouwdVerbondenVo107Provider implements IVo107Provider
 				{
 					getChannelSftp().cd(gbaConfig.gbaDownloadFolder());
 
-					try (var fileInputStream = getChannelSftp().get(filename); FileOutputStream fileOutputStream = new FileOutputStream(targetFile))
+					try (var fileInputStream = getChannelSftp().get(filename); var fileOutputStream = new FileOutputStream(targetFile))
 					{
 						IOUtils.copyLarge(fileInputStream, fileOutputStream);
 					}

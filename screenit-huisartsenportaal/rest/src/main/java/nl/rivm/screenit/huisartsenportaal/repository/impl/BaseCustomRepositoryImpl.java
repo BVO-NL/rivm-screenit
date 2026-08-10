@@ -23,14 +23,13 @@ package nl.rivm.screenit.huisartsenportaal.repository.impl;
 
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
 
 @Transactional(propagation = Propagation.SUPPORTS)
 public abstract class BaseCustomRepositoryImpl<T>
@@ -56,7 +55,7 @@ public abstract class BaseCustomRepositoryImpl<T>
 
 	protected List<T> getResultList(CriteriaQuery<T> crit, int first, int max)
 	{
-		TypedQuery<T> typedQuery = entityManager.createQuery(crit);
+		var typedQuery = entityManager.createQuery(crit);
 		typedQuery.setFirstResult(first);
 		typedQuery.setMaxResults(max);
 		return typedQuery.getResultList();

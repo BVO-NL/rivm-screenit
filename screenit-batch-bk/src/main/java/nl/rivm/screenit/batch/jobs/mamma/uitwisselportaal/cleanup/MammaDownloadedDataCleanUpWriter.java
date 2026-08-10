@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.jobs.mamma.uitwisselportaal.cleanup;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,7 +52,7 @@ public class MammaDownloadedDataCleanUpWriter extends BaseWriter<MammaDownloadOn
 
 		if (zipBestand != null)
 		{
-			File file = uploadDocumentService.load(zipBestand);
+			var file = uploadDocumentService.load(zipBestand);
 			FileUtils.deleteQuietly(file);
 		}
 

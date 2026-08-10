@@ -81,7 +81,7 @@ public class IntakelocatieGebiedenBeheer extends OrganisatieBeheer
 			}
 
 		});
-		ScreenitDataTable<ColoscopieCentrumColonCapaciteitVerdeling, String> gebieden = new ScreenitDataTable<ColoscopieCentrumColonCapaciteitVerdeling, String>("gebieden",
+		var gebieden = new ScreenitDataTable<ColoscopieCentrumColonCapaciteitVerdeling, String>("gebieden",
 			columns, new ColoscopieCentrumColonCapaciteitVerdelingDataProvider(), 10, new Model<>("gebieden"))
 		{
 

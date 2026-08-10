@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.service.cervix.impl;
  */
 
 import java.io.File;
-import java.io.InputStream;
 
 import nl.rivm.screenit.main.service.cervix.CervixBarcodeAfdrukService;
 import nl.rivm.screenit.model.MailMergeContext;
@@ -35,8 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
-
-import com.aspose.words.Document;
 
 @Service
 public class CervixBarcodeAfdrukServiceImpl implements CervixBarcodeAfdrukService
@@ -53,15 +50,15 @@ public class CervixBarcodeAfdrukServiceImpl implements CervixBarcodeAfdrukServic
 	@Override
 	public File saveBarcodeDocument(CervixUitnodiging uitnodiging)
 	{
-		MailMergeContext context = new MailMergeContext();
+		var context = new MailMergeContext();
 		context.setCervixUitnodiging(uitnodiging);
 		context.setClient(uitnodiging.getScreeningRonde().getDossier().getClient());
 
 		File file = null;
-		try (InputStream inputStream = getClass().getResourceAsStream("/CervixUitnodigingsSticker.doc"))
+		try (var inputStream = getClass().getResourceAsStream("/CervixUitnodigingsSticker.doc"))
 		{
-			byte[] templateBytes = FileCopyUtils.copyToByteArray(inputStream);
-			Document document = asposeService.processDocument(templateBytes, context);
+			var templateBytes = FileCopyUtils.copyToByteArray(inputStream);
+			var document = asposeService.processDocument(templateBytes, context);
 			file = briefService.genereerPdf(document, "MonsterId", true);
 		}
 		catch (Exception e)

@@ -21,7 +21,6 @@ package nl.rivm.screenit.repository.mamma;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.mamma.MammaBrief;
 import nl.rivm.screenit.model.mamma.MammaMergedBrieven;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 

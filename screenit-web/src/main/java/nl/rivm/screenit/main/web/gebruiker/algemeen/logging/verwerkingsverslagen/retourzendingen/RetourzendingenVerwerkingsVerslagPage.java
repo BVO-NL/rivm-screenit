@@ -27,17 +27,17 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.LoggingInzienPage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.retourzending.RetourzendingenVerwerkingsVerslagPanel;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
+import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.logging.RetourzendingLogEvent;
-import nl.rivm.screenit.model.UploadDocument;
 import nl.topicuszorg.documentupload.wicket.UploadDocumentLink;
 
-import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(
@@ -56,7 +56,7 @@ public class RetourzendingenVerwerkingsVerslagPage extends AlgemeenPage
 		setDefaultModel(model);
 		add(DateLabel.forDatePattern("logRegel.gebeurtenisDatum", "dd-MM-yyyy HH:mm:ss"));
 
-		WebMarkupContainer sanddBestandContainer = new WebMarkupContainer("sanddBestandContainer");
+		var sanddBestandContainer = new WebMarkupContainer("sanddBestandContainer");
 		sanddBestandContainer.setVisible(model.getObject().getSanddBestand() != null);
 		sanddBestandContainer.add(new UploadDocumentLink("sanddBestand", new PropertyModel<UploadDocument>(model, "sanddBestand"), false));
 		add(sanddBestandContainer);

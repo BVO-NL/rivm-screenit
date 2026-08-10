@@ -33,7 +33,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.control
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.cervix.CervixHuisartsBericht;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
-import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixHuisartsBerichtStatus;
 import nl.rivm.screenit.model.cervix.enums.CervixUitstrijkjeStatus;
 import nl.rivm.screenit.model.enums.Actie;
@@ -43,7 +42,6 @@ import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.cervix.CervixEdiService;
 import nl.rivm.screenit.service.cervix.CervixVerrichtingFactory;
-import nl.rivm.screenit.service.cervix.enums.CervixEdiVerstuurStatus;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -126,11 +124,11 @@ public class CervixHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetail
 
 	private PanelState getInitialPanelState()
 	{
-		CervixHuisartsBericht huisartsBericht = getHuisartsBericht();
-		CervixUitstrijkje uitstrijkje = huisartsBericht.getUitstrijkje(); 
-		boolean magHuisartsKoppelen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_HUISARTS_KOPPELEN, Actie.AANPASSEN, huisartsBericht.getClient())
+		var huisartsBericht = getHuisartsBericht();
+		var uitstrijkje = huisartsBericht.getUitstrijkje(); 
+		var magHuisartsKoppelen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_HUISARTS_KOPPELEN, Actie.AANPASSEN, huisartsBericht.getClient())
 			&& uitstrijkje != null && uitstrijkje.getUitstrijkjeStatus() != CervixUitstrijkjeStatus.NIET_ONTVANGEN;
-		boolean isHuisartsOnbekend = huisartsBericht.getStatus() == CervixHuisartsBerichtStatus.HUISARTS_ONBEKEND;
+		var isHuisartsOnbekend = huisartsBericht.getStatus() == CervixHuisartsBerichtStatus.HUISARTS_ONBEKEND;
 		return huisartsBericht.getHuisartsLocatie() == null && isHuisartsOnbekend && magHuisartsKoppelen ? PanelState.KoppelHuisarts : PanelState.Normaal;
 	}
 
@@ -158,7 +156,7 @@ public class CervixHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetail
 
 	private CervixHuisartsLocatiePanel maakInzienHuisartsLocatiePanel(IModel<CervixHuisartsLocatie> huisartsLocatie, boolean magAanpassen)
 	{
-		CervixHuisartsLocatiePanel result = new CervixHuisartsLocatiePanel("huisartsLocatieContainer", huisartsLocatie, magAanpassen)
+		var result = new CervixHuisartsLocatiePanel("huisartsLocatieContainer", huisartsLocatie, magAanpassen)
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -175,14 +173,14 @@ public class CervixHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetail
 
 	private CervixZoekHuisartsLocatiePanel maakZoekHuisartsLocatiePanel()
 	{
-		CervixZoekHuisartsLocatiePanel result = new CervixZoekHuisartsLocatiePanel("huisartsLocatieContainer")
+		var result = new CervixZoekHuisartsLocatiePanel("huisartsLocatieContainer")
 		{
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void setHuisartsLocatie(AjaxRequestTarget target, CervixHuisartsLocatie huisartsLocatie)
 			{
-				CervixHuisartsBericht huisartsBericht = getHuisartsBericht();
+				var huisartsBericht = getHuisartsBericht();
 				if (panelState == PanelState.ExtraHuisarts && huisartsLocatie.equals(huisartsBericht.getHuisartsLocatie()))
 				{
 					ScreenitSession.get().error(getString("huisartsbericht.extralocatie.zelfde.als.origineel"));
@@ -206,12 +204,12 @@ public class CervixHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetail
 
 	private void refreshLocatiePanel(AjaxRequestTarget target)
 	{
-		Label newZorgmailLabel = maakZorgmailLabel();
+		var newZorgmailLabel = maakZorgmailLabel();
 		zorgmailLabel.replaceWith(newZorgmailLabel);
 		zorgmailLabel = newZorgmailLabel;
 		target.add(zorgmailLabel);
 
-		WebMarkupContainer newHuisartsContainer = maakHuisartsLocatieContainer();
+		var newHuisartsContainer = maakHuisartsLocatieContainer();
 		huisartsLocatiePanel.replaceWith(newHuisartsContainer);
 		huisartsLocatiePanel = newHuisartsContainer;
 		target.add(huisartsLocatiePanel);
@@ -220,7 +218,7 @@ public class CervixHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetail
 
 	private Label maakZorgmailLabel()
 	{
-		String labelId = "huisartsBericht.huisartsLocatie.zorgmailklantnummer";
+		var labelId = "huisartsBericht.huisartsLocatie.zorgmailklantnummer";
 		Label result;
 		if (panelState == PanelState.Normaal)
 		{
@@ -293,7 +291,7 @@ public class CervixHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetail
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				CervixHuisartsBericht huisartsBericht = getHuisartsBericht();
+				var huisartsBericht = getHuisartsBericht();
 				if (panelState == PanelState.KoppelHuisarts && huisartsBericht.getStatus() == CervixHuisartsBerichtStatus.HUISARTS_ONBEKEND)
 				{
 					koppelHuisartsEtc(huisartsBericht);
@@ -385,7 +383,7 @@ public class CervixHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetail
 			@Override
 			protected IModel<String> getContentStringModel()
 			{
-				String formatted = String.format(super.getContentStringModel().getObject(), getSelectedHuisartsLocatie().getNaam(),
+				var formatted = String.format(super.getContentStringModel().getObject(), getSelectedHuisartsLocatie().getNaam(),
 					getHuisartsBericht().getHuisartsLocatie().getNaam());
 				return Model.of(formatted);
 			}
@@ -412,7 +410,7 @@ public class CervixHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetail
 
 	private void verstuurHuisartsBerichtNaarExtraLocatie(CervixHuisartsBericht huisartsBericht, CervixHuisartsLocatie locatie)
 	{
-		CervixEdiVerstuurStatus status = ediService.verstuurMedVryNaarExtraHuisartsLocatie(huisartsBericht, locatie, ScreenitSession.get().getIngelogdAccount());
+		var status = ediService.verstuurMedVryNaarExtraHuisartsLocatie(huisartsBericht, locatie, ScreenitSession.get().getIngelogdAccount());
 
 		switch (status)
 		{

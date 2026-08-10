@@ -39,7 +39,6 @@ import nl.rivm.screenit.model.colon.ClientCategorieEntry;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.colon.ColonBaseFitService;
-import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -104,8 +103,8 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 
 			if (cursor.next())
 			{
-				Object[] data = cursor.get();
-				Client client = (Client) data[0];
+				var data = cursor.get();
+				var client = (Client) data[0];
 
 				var persoon = client.getPersoon();
 				var adres = persoon.getGbaAdres();
@@ -117,7 +116,7 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 						Map<Long, String> map = new HashMap<>();
 						context.put(SelectieConstants.GEMEENTE_ZONDER_SCREENING_ORGANISATIES, map);
 					}
-					Map<Long, String> map = (Map<Long, String>) context.get(SelectieConstants.GEMEENTE_ZONDER_SCREENING_ORGANISATIES);
+					var map = (Map<Long, String>) context.get(SelectieConstants.GEMEENTE_ZONDER_SCREENING_ORGANISATIES);
 					map.put(gemeente.getId(), gemeente.getNaam());
 					context.put(SelectieConstants.GEMEENTE_ZONDER_SCREENING_ORGANISATIES, map);
 					LOG.warn("Gemeente {} ({}) niet is gekoppeld aan een screeningsorganisatie. Daardoor kon er geen uitnodiging worden verstuurd naar Geen uitnodiging verstuurd "
@@ -195,7 +194,7 @@ public class ClientSelectieItemCursor implements ClientSelectieItemIterator
 	private void setCursor()
 	{
 		cursorClosed = false;
-		ExtendedSpecification<Client> specification = switch (uitnodigingscategorie)
+		var specification = switch (uitnodigingscategorie)
 		{
 			case U3 -> ColonUitnodigingBaseSpecification.getSpecificationU3(vandaag);
 			case U4 -> ColonUitnodigingBaseSpecification.getSpecificationU4(vandaag);

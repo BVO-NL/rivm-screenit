@@ -51,14 +51,14 @@ public class CustomTomcatErrorValve extends ErrorReportValve
 	@Override
 	protected void report(Request request, Response response, Throwable throwable)
 	{
-		int statusCode = response.getStatus();
+		var statusCode = response.getStatus();
 		if (statusCode >= 400 && response.getContentWritten() <= 0L && response.setErrorReported())
 		{
-			AtomicBoolean result = new AtomicBoolean(false);
+			var result = new AtomicBoolean(false);
 			response.getCoyoteResponse().action(ActionCode.IS_IO_ALLOWED, result);
 			if (result.get())
 			{
-				String message = Escape.htmlElementContent(response.getMessage());
+				var message = Escape.htmlElementContent(response.getMessage());
 				String reason;
 				if (message == null)
 				{
@@ -79,7 +79,7 @@ public class CustomTomcatErrorValve extends ErrorReportValve
 
 				reason = null;
 				String description = null;
-				StringManager smClient = StringManager.getManager("org.apache.catalina.valves", request.getLocales());
+				var smClient = StringManager.getManager("org.apache.catalina.valves", request.getLocales());
 				response.setLocale(smClient.getLocale());
 
 				try
@@ -103,7 +103,7 @@ public class CustomTomcatErrorValve extends ErrorReportValve
 					description = smClient.getString("errorReportValve.noDescription");
 				}
 
-				StringBuilder sb = new StringBuilder();
+				var sb = new StringBuilder();
 				sb.append("<!doctype html><html lang=\"");
 				sb.append(smClient.getLocale().getLanguage()).append("\">");
 				sb.append("<head>");
@@ -144,15 +144,15 @@ public class CustomTomcatErrorValve extends ErrorReportValve
 					sb.append("</p>");
 					if (throwable != null)
 					{
-						String stackTrace = this.getPartialServletStackTrace(throwable);
+						var stackTrace = this.getPartialServletStackTrace(throwable);
 						sb.append("<p><b>");
 						sb.append(smClient.getString("errorReportValve.exception"));
 						sb.append("</b></p><pre>");
 						sb.append(Escape.htmlElementContent(stackTrace));
 						sb.append("</pre>");
-						int loops = 0;
+						var loops = 0;
 
-						for (Throwable rootCause = throwable.getCause(); rootCause != null && loops < 10; ++loops)
+						for (var rootCause = throwable.getCause(); rootCause != null && loops < 10; ++loops)
 						{
 							stackTrace = this.getPartialServletStackTrace(rootCause);
 							sb.append("<p><b>");

@@ -53,11 +53,11 @@ public class ScreenITWachtwoordValidator extends WachtwoordValidator
 	{
 		super.validate(validatable);
 
-		Medewerker medewerker = ModelUtil.nullSafeGet(medewerkerIModel);
+		var medewerker = ModelUtil.nullSafeGet(medewerkerIModel);
 		if (medewerker != null && wachtwoordService.isEerderGebruiktWachtwoord(medewerker, validatable.getValue(),
 			wachtwoordService.getVorigeWachtwoorden(medewerker, LocalDate.now().minusYears(2))))
 		{
-			ValidationError error = new ValidationError();
+			var error = new ValidationError();
 			error.addKey("password_used_in_past");
 			validatable.error(error);
 		}

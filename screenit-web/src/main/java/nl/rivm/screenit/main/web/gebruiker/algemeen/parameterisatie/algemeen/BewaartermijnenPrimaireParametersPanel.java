@@ -43,7 +43,7 @@ public class BewaartermijnenPrimaireParametersPanel extends BasePrimaireParamete
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
 		form.add(new TextField<>("ilmBewaartermijn", Integer.class).add(RangeValidator.minimum(5475)).setRequired(true));
 		form.add(new TextField<>("ilmBewaartermijnNietMedisch", Integer.class).add(RangeValidator.minimum(1825)).setRequired(true));
 		form.add(new TextField<>("ilmSignaleertermijnBeeldenStatus", Integer.class).add(RangeValidator.minimum(1)).setRequired(true));

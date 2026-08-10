@@ -21,7 +21,6 @@ package nl.rivm.screenit.hl7v3.cda.helper;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,10 +38,6 @@ import nl.rivm.screenit.hl7v3.cda.EN;
 import nl.rivm.screenit.hl7v3.cda.II;
 import nl.rivm.screenit.hl7v3.cda.POCDMT000040AssignedAuthor;
 import nl.rivm.screenit.hl7v3.cda.POCDMT000040AssignedEntity;
-import nl.rivm.screenit.hl7v3.cda.POCDMT000040DocumentationOf;
-import nl.rivm.screenit.hl7v3.cda.POCDMT000040Organization;
-import nl.rivm.screenit.hl7v3.cda.POCDMT000040Performer1;
-import nl.rivm.screenit.hl7v3.cda.POCDMT000040ServiceEvent;
 import nl.rivm.screenit.hl7v3.cda.ST;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -61,7 +56,7 @@ public class CDAHelper
 
 		if (ids != null)
 		{
-			for (II id : ids)
+			for (var id : ids)
 			{
 				if (id.getRoot() != null && id.getRoot().equals(oidRoot))
 				{
@@ -75,7 +70,7 @@ public class CDAHelper
 
 	public static String getRootExtension(II id)
 	{
-		String rootExtension = id.getRoot().trim();
+		var rootExtension = id.getRoot().trim();
 		if (id.getExtension() != null && !id.getExtension().trim().equals(""))
 		{
 			rootExtension += "." + id.getExtension().trim();
@@ -85,11 +80,11 @@ public class CDAHelper
 
 	public static boolean hasRootOidId(String oidRoot, List<? extends II> ids)
 	{
-		boolean result = false;
+		var result = false;
 
 		if (ids != null)
 		{
-			for (II id : ids)
+			for (var id : ids)
 			{
 				if (id.getRoot() != null && id.getRoot().equals(oidRoot))
 				{
@@ -106,9 +101,9 @@ public class CDAHelper
 		String name = null;
 		if (list != null)
 		{
-			for (EN item : list)
+			for (var item : list)
 			{
-				String namePart = getNamePart(item, declaredClazz);
+				var namePart = getNamePart(item, declaredClazz);
 				if (namePart != null && namePart.trim().length() > 0)
 				{
 					name = namePart.trim();
@@ -128,19 +123,19 @@ public class CDAHelper
 
 	public static <T extends ST> String getNamePart(EN item, Class<T> declaredClazz)
 	{
-		List<Serializable> content = item.getContent();
+		var content = item.getContent();
 
 		String result = null;
-		for (Serializable contentItem : content)
+		for (var contentItem : content)
 		{
 			if (contentItem instanceof JAXBElement)
 			{
 				@SuppressWarnings("unchecked")
-				JAXBElement<T> jaxbElement = (JAXBElement<T>) contentItem;
+				var jaxbElement = (JAXBElement<T>) contentItem;
 				if (jaxbElement.getDeclaredType().equals(declaredClazz))
 				{
-					T namePartItem = jaxbElement.getValue();
-					List<Serializable> namePartItemContent = namePartItem.getContent();
+					var namePartItem = jaxbElement.getValue();
+					var namePartItemContent = namePartItem.getContent();
 					if (namePartItemContent != null && !namePartItemContent.isEmpty())
 					{
 						if (result != null)
@@ -185,14 +180,14 @@ public class CDAHelper
 
 	public static POCDMT000040AssignedEntity getAssigendEntity(ClinicalDocument cda)
 	{
-		List<POCDMT000040DocumentationOf> documentationOves = cda.getDocumentationOves();
+		var documentationOves = cda.getDocumentationOves();
 		POCDMT000040AssignedEntity assignedAuthor = null;
 		if (documentationOves != null && !documentationOves.isEmpty())
 		{
-			POCDMT000040ServiceEvent serviceEvent = documentationOves.get(0).getServiceEvent();
+			var serviceEvent = documentationOves.get(0).getServiceEvent();
 			if (serviceEvent != null)
 			{
-				List<POCDMT000040Performer1> performers = serviceEvent.getPerformers();
+				var performers = serviceEvent.getPerformers();
 				if (performers != null && !performers.isEmpty())
 				{
 					assignedAuthor = performers.get(0).getAssignedEntity();
@@ -241,15 +236,15 @@ public class CDAHelper
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static <T> void getValueFromChild(Object bean, List<String> pathElements, List<T> values)
 	{
-		String element = pathElements.get(0);
+		var element = pathElements.get(0);
 		try
 		{
 
 			if (element.contains("["))
 			{
-				String oid = element.substring(element.indexOf('[') + 1, element.indexOf(']'));
+				var oid = element.substring(element.indexOf('[') + 1, element.indexOf(']'));
 				element = element.substring(0, element.indexOf('['));
-				for (String splittedOid : oid.split("\\|"))
+				for (var splittedOid : oid.split("\\|"))
 				{
 					getValuesFromProperty(bean, new ArrayList<>(pathElements), values, element, splittedOid);
 				}
@@ -268,7 +263,7 @@ public class CDAHelper
 	private static <T> void getValuesFromProperty(Object bean, List<String> pathElements, List<T> values, String element, String oid)
 		throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
 	{
-		Object simpleProperty = PropertyUtils.getSimpleProperty(bean, element);
+		var simpleProperty = PropertyUtils.getSimpleProperty(bean, element);
 		if (simpleProperty != null)
 		{
 			if (pathElements.size() == 1)
@@ -288,7 +283,7 @@ public class CDAHelper
 
 				if (simpleProperty instanceof List list)
 				{
-					for (Object simplePropertyElement : list)
+					for (var simplePropertyElement : list)
 					{
 						if (hasTemplateId(simplePropertyElement, oid))
 						{
@@ -308,12 +303,12 @@ public class CDAHelper
 	@SuppressWarnings("unchecked")
 	private static <T> boolean hasTemplateId(T simpleProperty, String oid)
 	{
-		boolean hasTemplateId = true;
+		var hasTemplateId = true;
 		if (oid != null && !oid.trim().isEmpty())
 		{
 			try
 			{
-				Object list = PropertyUtils.getProperty(simpleProperty, "templateIds");
+				var list = PropertyUtils.getProperty(simpleProperty, "templateIds");
 				if (list instanceof List templateIds)
 				{
 					hasTemplateId = false;
@@ -337,7 +332,7 @@ public class CDAHelper
 		Date returnValue = null;
 		if (dateValue != null && dateValue.trim().length() > 0)
 		{
-			String dateFormat = "";
+			var dateFormat = "";
 			if (dateValue.length() >= 8)
 			{
 				dateFormat = "yyyyMMdd";
@@ -358,7 +353,7 @@ public class CDAHelper
 			{
 				dateFormat += "SSS";
 			}
-			SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+			var formatter = new SimpleDateFormat(dateFormat);
 			returnValue = formatter.parse(dateValue);
 		}
 		return returnValue;
@@ -366,9 +361,9 @@ public class CDAHelper
 
 	public static String getUitvoerendeOrganisatieInformatie(ClinicalDocument cdaDocument)
 	{
-		POCDMT000040AssignedEntity assignedAuthor = getAssigendEntity(cdaDocument);
+		var assignedAuthor = getAssigendEntity(cdaDocument);
 
-		String uitvoerendeOrganisatie = "";
+		var uitvoerendeOrganisatie = "";
 		if (assignedAuthor != null)
 		{
 			uitvoerendeOrganisatie = " (uitvoerder '" + getFirstValueNotNull(assignedAuthor, CommonCdaConstants.ORGANIZATION_NAME_SUBPATH) + "'; "
@@ -379,19 +374,19 @@ public class CDAHelper
 
 	public static String getUitvoerendeOrganisatieIds(POCDMT000040AssignedEntity assignedAuthor)
 	{
-		StringBuilder organisationId = new StringBuilder();
+		var organisationId = new StringBuilder();
 
 		if (assignedAuthor != null)
 		{
-			POCDMT000040Organization representedOrganization = assignedAuthor.getRepresentedOrganization();
+			var representedOrganization = assignedAuthor.getRepresentedOrganization();
 			if (representedOrganization != null && representedOrganization.getIds() != null)
 			{
-				for (II ii : representedOrganization.getIds())
+				for (var ii : representedOrganization.getIds())
 				{
 					if (ii.getRoot() != null)
 					{
-						String root = ii.getRoot();
-						String extension = ii.getExtension();
+						var root = ii.getRoot();
+						var extension = ii.getExtension();
 						if (CommonCdaConstants.URA.equals(root))
 						{
 							if (extension != null && extension.trim().length() > 0)
@@ -433,7 +428,7 @@ public class CDAHelper
 
 	public static String getUzinummer(ClinicalDocument cda)
 	{
-		POCDMT000040AssignedEntity assignedAuthor = CDAHelper.getAssigendEntity(cda);
+		var assignedAuthor = CDAHelper.getAssigendEntity(cda);
 		String uzinummer = null;
 		if (assignedAuthor != null)
 		{

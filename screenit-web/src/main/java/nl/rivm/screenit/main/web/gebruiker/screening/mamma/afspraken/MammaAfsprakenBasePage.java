@@ -26,10 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 
 public abstract class MammaAfsprakenBasePage extends MammaScreeningBasePage
 {
@@ -43,7 +42,7 @@ public abstract class MammaAfsprakenBasePage extends MammaScreeningBasePage
 	public MammaAfsprakenBasePage()
 	{
 		super();
-		ScreeningOrganisatie sessionSO = ScreenitSession.get().getScreeningOrganisatie();
+		var sessionSO = ScreenitSession.get().getScreeningOrganisatie();
 		ingelogdNamensRegio = sessionSO != null;
 	}
 

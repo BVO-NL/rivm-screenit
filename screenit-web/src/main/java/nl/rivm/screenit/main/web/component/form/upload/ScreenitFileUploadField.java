@@ -75,8 +75,8 @@ public class ScreenitFileUploadField extends FileUploadField
 		if (this.maxFileSize != null)
 		{
 			response.render(JavaScriptHeaderItem.forReference(JS));
-			StringBuilder builder = new StringBuilder(128);
-			Formatter formatter = new Formatter(builder);
+			var builder = new StringBuilder(128);
+			var formatter = new Formatter(builder);
 			formatter.format("new ScreenIT.FileUploadField('%s', '%s');", getMarkupId(), this.maxFileSize.bytes());
 			response.render(OnDomReadyHeaderItem.forScript(builder.toString()));
 		}

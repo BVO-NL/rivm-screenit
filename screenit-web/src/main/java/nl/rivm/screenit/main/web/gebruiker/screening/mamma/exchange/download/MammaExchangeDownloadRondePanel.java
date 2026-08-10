@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.exchange.download;
  */
 
 import nl.rivm.screenit.Constants;
-import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.service.RondeNummerService;
@@ -47,14 +46,14 @@ public class MammaExchangeDownloadRondePanel extends GenericPanel<MammaScreening
 	{
 		super(id, model);
 		add(new Label("rondeNr", Model.of(rondeNummerService.geefRondeNummer(getModelObject()))));
-		MammaOnderzoek onderzoek = getModelObject().getLaatsteOnderzoek();
+		var onderzoek = getModelObject().getLaatsteOnderzoek();
 
-		String formattedRondeDatum = Constants.getDateTimeFormat().format(onderzoek.getCreatieDatum());
-		Label verslagDatumLabel = new Label("onderzoeksdatum", Model.of(formattedRondeDatum));
+		var formattedRondeDatum = Constants.getDateTimeFormat().format(onderzoek.getCreatieDatum());
+		var verslagDatumLabel = new Label("onderzoeksdatum", Model.of(formattedRondeDatum));
 		add(verslagDatumLabel);
 
-		BeoordelingsEenheid beoordelingsEenheid = onderzoek.getScreeningsEenheid().getBeoordelingsEenheid();
-		Label organisatieLabel = new Label("organisatie", Model.of(beoordelingsEenheid.getParent().getRegio().getNaam()));
+		var beoordelingsEenheid = onderzoek.getScreeningsEenheid().getBeoordelingsEenheid();
+		var organisatieLabel = new Label("organisatie", Model.of(beoordelingsEenheid.getParent().getRegio().getNaam()));
 		add(organisatieLabel);
 
 		add(new EnumLabel<>("onderzoekType", onderzoek.getOnderzoekType()));
@@ -64,8 +63,8 @@ public class MammaExchangeDownloadRondePanel extends GenericPanel<MammaScreening
 
 	protected void addCheckbox(HibernateCheckBoxListContainer<MammaOnderzoek> selectedOnderzoeken)
 	{
-		MammaOnderzoek onderzoek = getModelObject().getLaatsteOnderzoek();
-		CheckBox select = new CheckBox("select", new PropertyModel<>(selectedOnderzoeken.getValueMap(), onderzoek.getId().toString()));
+		var onderzoek = getModelObject().getLaatsteOnderzoek();
+		var select = new CheckBox("select", new PropertyModel<>(selectedOnderzoeken.getValueMap(), onderzoek.getId().toString()));
 		add(select);
 		selectedOnderzoeken.addObject(onderzoek);
 	}

@@ -96,7 +96,7 @@ public class MammaLaesiesAfbeeldingPanel extends MammaBaseAfbeeldingPanel<List<L
 	@Override
 	protected void addImage(WebMarkupContainer imageContainer, MammaAfbeeldingZijdeDoorsnede doorsnede)
 	{
-		SvgImage img = new SvgImage(doorsnede.getSvgFileName())
+		var img = new SvgImage(doorsnede.getSvgFileName())
 		{
 			@Override
 			protected InputStream getSvgImageData(IResource.Attributes attributes)
@@ -137,7 +137,7 @@ public class MammaLaesiesAfbeeldingPanel extends MammaBaseAfbeeldingPanel<List<L
 			@Override
 			protected void respond(AjaxRequestTarget target)
 			{
-				String json = getComponent().getRequest().getRequestParameters().getParameterValue(JSON_PARAM).toString();
+				var json = getComponent().getRequest().getRequestParameters().getParameterValue(JSON_PARAM).toString();
 				MammaLaesiesAfbeeldingPanel.this.setModelObject(laesieDtoMapper.laesieJsonToLaesieDto(json));
 
 				if (onAfbeeldingGewijzigd != null)
@@ -161,7 +161,7 @@ public class MammaLaesiesAfbeeldingPanel extends MammaBaseAfbeeldingPanel<List<L
 
 	private String getToonLaesiesFunctie()
 	{
-		String laesiesJson = laesieDtoMapper.laesiesDtosToJson(getModelObject());
+		var laesiesJson = laesieDtoMapper.laesiesDtosToJson(getModelObject());
 		return "toonLaesies('" + laesiesJson + "'" + "," + alleenInzien + ",'" + lezingId + "'," +
 			updateLaesiesBehavior.getCallbackFunction(CallbackParameter.explicit(JSON_PARAM)) + ");";
 	}

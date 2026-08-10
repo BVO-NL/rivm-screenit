@@ -24,6 +24,8 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
@@ -50,8 +52,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("huisarts")
@@ -147,7 +147,7 @@ public class HuisartsController extends BaseController
 			throw new ValidatieException(result.getAllErrors());
 		}
 
-		Huisarts huisarts = getIngelogdeHuisarts();
+		var huisarts = getIngelogdeHuisarts();
 		authenticationService.updateWachtwoord(huisarts, wachtwoordDto.getNieuweWachtwoord());
 
 		return ResponseEntity.status(HttpStatus.OK).build();

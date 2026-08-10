@@ -114,7 +114,7 @@ public class ZasUitnodigingenVersturenListener extends BaseLogListener
 			event.getRapportage().add(entry);
 		}
 
-		List<ProjectCounterHolder> projectCounterHolders = (List<ProjectCounterHolder>) context.get(ZasUitnodigingenVersturenConstants.PROJECTENCOUNTERS);
+		var projectCounterHolders = (List<ProjectCounterHolder>) context.get(ZasUitnodigingenVersturenConstants.PROJECTENCOUNTERS);
 		for (var projectCounterHolder : projectCounterHolders)
 		{
 			var projectGroep = hibernateService.get(ProjectGroep.class, projectCounterHolder.getProjectGroepId());

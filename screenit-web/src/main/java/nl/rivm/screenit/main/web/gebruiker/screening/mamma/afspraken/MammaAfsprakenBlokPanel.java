@@ -144,7 +144,7 @@ public class MammaAfsprakenBlokPanel extends GenericPanel<List<MammaAfspraakOfMi
 					public void onClick(AjaxRequestTarget target)
 					{
 						var afspraak = (MammaAfspraak) Hibernate.unproxy(ModelProxyHelper.deproxy(item.getModelObject().getAfspraak()));
-						List<Object> extraParameters = getExtraParameters(afspraak);
+						var extraParameters = getExtraParameters(afspraak);
 
 						ScreenitSession.get().setZoekObject(AFSPRAAK_VERZETTEN_DATUM, Model.of(currentDay));
 						ScreenitSession.get().setZoekObject(AFSPRAAK_VERZETTEN_SCREENINGSEENHEID, ModelUtil.sModel(afspraak.getStandplaatsPeriode().getScreeningsEenheid()));

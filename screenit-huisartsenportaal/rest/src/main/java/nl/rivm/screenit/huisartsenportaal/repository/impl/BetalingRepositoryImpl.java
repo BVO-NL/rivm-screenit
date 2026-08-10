@@ -25,17 +25,18 @@ import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import nl.rivm.screenit.huisartsenportaal.dto.BetalingFilterDto;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
 import nl.rivm.screenit.huisartsenportaal.dto.BetalingZoekObjectDto;
-import nl.rivm.screenit.huisartsenportaal.dto.TableResultOptionsDto;
 import nl.rivm.screenit.huisartsenportaal.model.Betaling;
 import nl.rivm.screenit.huisartsenportaal.model.Betaling_;
 import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
-import nl.rivm.screenit.huisartsenportaal.model.Locatie;
 import nl.rivm.screenit.huisartsenportaal.model.Locatie_;
-import nl.rivm.screenit.huisartsenportaal.model.Verrichting;
 import nl.rivm.screenit.huisartsenportaal.model.Verrichting_;
 import nl.rivm.screenit.huisartsenportaal.repository.BetalingCriteriaRepository;
 import nl.rivm.screenit.huisartsenportaal.util.DateUtil;
@@ -45,14 +46,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-
 @Transactional
 @Repository
 public class BetalingRepositoryImpl extends BaseCustomRepositoryImpl<Betaling> implements BetalingCriteriaRepository
@@ -61,21 +54,21 @@ public class BetalingRepositoryImpl extends BaseCustomRepositoryImpl<Betaling> i
 	@Override
 	public List<Betaling> getBetalingen(Huisarts huisarts, BetalingZoekObjectDto betalingZoekObjectDto)
 	{
-		TableResultOptionsDto resultOptions = betalingZoekObjectDto.getResultOptions();
-		CriteriaBuilder cb = getCriteriaBuilder();
-		CriteriaQuery<Betaling> query = cb.createQuery(Betaling.class);
-		Root<Betaling> betalingRoot = query.from(Betaling.class);
-		Join<Betaling, Verrichting> verrichtingJoin = betalingRoot.join(Betaling_.verrichting, JoinType.LEFT);
-		Join<Verrichting, Locatie> locatieJoin = verrichtingJoin.join(Verrichting_.huisartsLocatie, JoinType.LEFT);
+		var resultOptions = betalingZoekObjectDto.getResultOptions();
+		var cb = getCriteriaBuilder();
+		var query = cb.createQuery(Betaling.class);
+		var betalingRoot = query.from(Betaling.class);
+		var verrichtingJoin = betalingRoot.join(Betaling_.verrichting, JoinType.LEFT);
+		var locatieJoin = verrichtingJoin.join(Verrichting_.huisartsLocatie, JoinType.LEFT);
 		query.select(betalingRoot);
 
 		whereBetalingen(query, betalingRoot, huisarts, betalingZoekObjectDto);
 
 		if (resultOptions.getSortOptions() != null && !resultOptions.getSortOptions().isEmpty())
 		{
-			Map.Entry<String, String> entry = resultOptions.getSortOptions().entrySet().iterator().next();
+			var entry = resultOptions.getSortOptions().entrySet().iterator().next();
 			From orderByObject = betalingRoot;
-			String filter = StringUtils.remove(entry.getKey(), '.'); 
+			var filter = StringUtils.remove(entry.getKey(), '.'); 
 			if (StringUtils.startsWith(filter, "huisartsLocatie"))
 			{
 				filter = filter.replace("huisartsLocatie", "");
@@ -109,10 +102,10 @@ public class BetalingRepositoryImpl extends BaseCustomRepositoryImpl<Betaling> i
 	@Override
 	public BigDecimal getBetalingenTotaalBedrag(Huisarts huisarts, BetalingZoekObjectDto betalingZoekObjectDto)
 	{
-		CriteriaBuilder cb = getCriteriaBuilder();
-		CriteriaQuery<BigDecimal> query = cb.createQuery(BigDecimal.class);
+		var cb = getCriteriaBuilder();
+		var query = cb.createQuery(BigDecimal.class);
 
-		Root<Betaling> betalingRoot = query.from(Betaling.class);
+		var betalingRoot = query.from(Betaling.class);
 		query.select(cb.sum(betalingRoot.get(Betaling_.bedrag)));
 		whereBetalingen(query, betalingRoot, huisarts, betalingZoekObjectDto);
 
@@ -122,10 +115,10 @@ public class BetalingRepositoryImpl extends BaseCustomRepositoryImpl<Betaling> i
 	@Override
 	public long countBetalingen(Huisarts huisarts, BetalingZoekObjectDto betalingZoekObjectDto)
 	{
-		CriteriaBuilder cb = getCriteriaBuilder();
-		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+		var cb = getCriteriaBuilder();
+		var query = cb.createQuery(Long.class);
 
-		Root<Betaling> betalingRoot = query.from(Betaling.class);
+		var betalingRoot = query.from(Betaling.class);
 		query.select(cb.count(betalingRoot));
 		whereBetalingen(query, betalingRoot, huisarts, betalingZoekObjectDto);
 
@@ -134,17 +127,17 @@ public class BetalingRepositoryImpl extends BaseCustomRepositoryImpl<Betaling> i
 
 	private CriteriaQuery<?> whereBetalingen(CriteriaQuery<?> query, Root<Betaling> betalingRoot, Huisarts huisarts, BetalingZoekObjectDto zoekObject)
 	{
-		CriteriaBuilder cb = getCriteriaBuilder();
+		var cb = getCriteriaBuilder();
 		List<Predicate> condities = new ArrayList<>();
-		Join<Betaling, Verrichting> verrichtingJoin = betalingRoot.join(Betaling_.verrichting);
+		var verrichtingJoin = betalingRoot.join(Betaling_.verrichting);
 		condities.add(cb.equal(verrichtingJoin.get(Verrichting_.huisarts), huisarts));
 
-		BetalingFilterDto filterDto = zoekObject.getBetalingenZoekObject();
+		var filterDto = zoekObject.getBetalingenZoekObject();
 		if (filterDto != null)
 		{
 			if (filterDto.getLocatie() != null)
 			{
-				Join<Verrichting, Locatie> locatiesJoin = verrichtingJoin.join(Verrichting_.huisartsLocatie);
+				var locatiesJoin = verrichtingJoin.join(Verrichting_.huisartsLocatie);
 				condities.add(cb.equal(locatiesJoin.get(Locatie_.huisartsportaalId), filterDto.getLocatie().getHuisartsportaalId()));
 			}
 			if (StringUtils.isNotEmpty(filterDto.getClientNaam()))
@@ -155,10 +148,10 @@ public class BetalingRepositoryImpl extends BaseCustomRepositoryImpl<Betaling> i
 			{
 				condities.add(cb.greaterThanOrEqualTo(betalingRoot.get(Betaling_.betalingsdatum), filterDto.getBetalingsdatumVanaf()));
 			}
-			if (filterDto.getBetalingsdatumTotenMet() != null)
+			if (filterDto.getBetalingsdatumTotEnMet() != null)
 			{
 				condities.add(
-					cb.lessThanOrEqualTo(betalingRoot.get(Betaling_.betalingsdatum), DateUtil.plusTijdseenheid(filterDto.getBetalingsdatumTotenMet(), 1, ChronoUnit.DAYS)));
+					cb.lessThanOrEqualTo(betalingRoot.get(Betaling_.betalingsdatum), DateUtil.plusTijdseenheid(filterDto.getBetalingsdatumTotEnMet(), 1, ChronoUnit.DAYS)));
 			}
 			if (StringUtils.isNotEmpty(filterDto.getBetalingskenmerk()))
 			{

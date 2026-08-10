@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
@@ -147,10 +146,10 @@ public class CervixVerrichtingFactoryImpl implements CervixVerrichtingFactory
 	private CervixVerrichting maakVerrichting(CervixMonster monster, CervixTariefType tariefType, Date verrichtingsDatum, CervixHuisartsLocatie huisartsLocatie,
 		BMHKLaboratorium laboratorium)
 	{
-		Client client = monster.getOntvangstScreeningRonde().getDossier().getClient();
+		var client = monster.getOntvangstScreeningRonde().getDossier().getClient();
 
 		ScreeningOrganisatie so = null;
-		Gemeente gemeente = client.getPersoon().getGbaAdres().getGbaGemeente();
+		var gemeente = client.getPersoon().getGbaAdres().getGbaGemeente();
 		if (gemeente == null)
 		{
 			throw new IllegalStateException("De gemeente is onbekend voor cliënt met id " + client.getId());

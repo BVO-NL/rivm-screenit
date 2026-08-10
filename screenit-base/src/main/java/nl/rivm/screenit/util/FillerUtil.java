@@ -75,14 +75,14 @@ public class FillerUtil
 
 	public static UploadDocument getUploadDocumentEnSlaOp(long id, String naam, String contentType, File file, FileStoreLocation fileStoreLocation, boolean verwijderFile)
 	{
-		UploadDocument uploadDocument = new UploadDocument();
+		var uploadDocument = new UploadDocument();
 		uploadDocument.setNaam(naam);
 		uploadDocument.setActief(true);
 		uploadDocument.setContentType(contentType);
 		uploadDocument.setFile(file);
 		try
 		{
-			UploadDocumentService uploadDocumentService = ApplicationContextProvider.getApplicationContext().getBean(UploadDocumentService.class);
+			var uploadDocumentService = ApplicationContextProvider.getApplicationContext().getBean(UploadDocumentService.class);
 			uploadDocumentService.saveOrUpdate(uploadDocument, fileStoreLocation, id, verwijderFile);
 		}
 		catch (IOException e)
@@ -96,7 +96,7 @@ public class FillerUtil
 	{
 		Assert.isTrue(recht.getActie() == null || recht.getActie().length == 0 || Arrays.asList(recht.getActie()).contains(actie), "Acties");
 		Assert.isTrue(recht.getLevel() == null || Arrays.asList(recht.getLevel()).contains(level), "Level");
-		Permissie permissie = new Permissie();
+		var permissie = new Permissie();
 		permissie.setActie(actie);
 		permissie.setRecht(recht);
 		permissie.setToegangLevel(level);
@@ -107,9 +107,9 @@ public class FillerUtil
 
 	private static ProjectGroep createGroep(Project project, HibernateService hibernateService)
 	{
-		String projectNaam = project.getNaam();
+		var projectNaam = project.getNaam();
 
-		ProjectGroep groep = new ProjectGroep();
+		var groep = new ProjectGroep();
 		groep.setPopulatie(10);
 		groep.setNaam(projectNaam + " - Groep 1");
 		groep.setActief(Boolean.TRUE);
@@ -125,19 +125,19 @@ public class FillerUtil
 
 	public static void fillProjectWithPopulatie(Project project, int populatie, File file, Iterator<Client> clientenIterator, HibernateService hibernateService)
 	{
-		ProjectGroep groep = createGroep(project, hibernateService);
-		ProjectBestand bestand = maakProjectBestand(project, file, ProjectBestandType.POPULATIE);
+		var groep = createGroep(project, hibernateService);
+		var bestand = maakProjectBestand(project, file, ProjectBestandType.POPULATIE);
 		hibernateService.saveOrUpdate(bestand);
 		bestand.setGroep(groep);
 		groep.getProjectBestanden().add(bestand);
 
 		groep.setPopulatie(populatie);
 
-		for (int i = 0; i < populatie; i++)
+		for (var i = 0; i < populatie; i++)
 		{
-			Client client = clientenIterator.next();
+			var client = clientenIterator.next();
 
-			ProjectClient pClient = new ProjectClient();
+			var pClient = new ProjectClient();
 			pClient.setClient(client);
 			pClient.setGroep(groep);
 			pClient.setProject(project);
@@ -155,8 +155,8 @@ public class FillerUtil
 
 	public static String stripComments(List<String> list)
 	{
-		StringBuilder buffer = new StringBuilder();
-		for (String line : list)
+		var buffer = new StringBuilder();
+		for (var line : list)
 		{
 			if (!line.startsWith("//") && !line.startsWith("--"))
 			{
@@ -168,13 +168,13 @@ public class FillerUtil
 
 	public static File createFile(String filePath, List<Client> clienten, List<String> attributen)
 	{
-		File file = new File(filePath);
+		var file = new File(filePath);
 		verwijderBestandIndienAanwezig(file);
 
-		try (CSVWriter csvOutput = new CSVWriter(new FileWriter(filePath, true), ','))
+		try (var csvOutput = new CSVWriter(new FileWriter(filePath, true), ','))
 		{
 			csvOutput.writeNext(getHeaders(attributen));
-			for (Client client : clienten)
+			for (var client : clienten)
 			{
 				csvOutput.writeNext(getAttribuutValuesForEachClient(client, attributen));
 			}
@@ -212,7 +212,7 @@ public class FillerUtil
 
 	private static String[] getAttribuutValuesForEachClient(Client client, List<String> attributen)
 	{
-		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		var format = new SimpleDateFormat("dd-MM-yyyy");
 		List<String> values = new ArrayList<>();
 		values.add(client.getPersoon().getBsn());
 		values.add(format.format(client.getPersoon().getGeboortedatum()));
@@ -222,9 +222,9 @@ public class FillerUtil
 
 	public static ProjectBestand maakProjectBestand(Project project, File file, ProjectBestandType bestandType)
 	{
-		ICurrentDateSupplier currentDateSupplier = getApplicationContext().getBean(ICurrentDateSupplier.class);
-		HibernateService hibernateService = getApplicationContext().getBean(HibernateService.class);
-		ProjectBestand bestand = new ProjectBestand();
+		var currentDateSupplier = getApplicationContext().getBean(ICurrentDateSupplier.class);
+		var hibernateService = getApplicationContext().getBean(HibernateService.class);
+		var bestand = new ProjectBestand();
 		if (file != null)
 		{
 			bestand.setUploadDocument(getUploadDocumentEnSlaOp(project.getId(), "voorbeeldBestand.csv", "", file, FileStoreLocation.PROJECT_BESTAND));

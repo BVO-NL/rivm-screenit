@@ -47,7 +47,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.IModel;
@@ -79,12 +78,12 @@ public class ProjectAttributenBestandEditPage extends ProjectBasePage
 	{
 		super(model);
 		bestandModel = ModelUtil.ccModel(new ProjectBestand());
-		ProjectBestand bestand = bestandModel.getObject();
+		var bestand = bestandModel.getObject();
 		bestand.setProject(model.getObject());
-		Form<ProjectBestand> form = new Form<>("form", bestandModel);
+		var form = new Form<ProjectBestand>("form", bestandModel);
 		add(form);
 
-		FormComponent<List<FileUpload>> bestandUpload = new FileUploadField("bestand", bestanden).add(new FileValidator(FileType.CSV));
+		var bestandUpload = new FileUploadField("bestand", bestanden).add(new FileValidator(FileType.CSV));
 		bestandUpload.setRequired(true);
 		form.add(bestandUpload);
 		form.add(new ScreenitDropdown<>("toepassenOp", new ListModel<>(getOptionsVoorToepassenOp())).setRequired(true));
@@ -96,10 +95,10 @@ public class ProjectAttributenBestandEditPage extends ProjectBasePage
 
 	private List<String> getOptionsVoorToepassenOp()
 	{
-		Project project = getProjectModel().getObject();
+		var project = getProjectModel().getObject();
 		List<String> options = new ArrayList<String>();
 		options.add("Hele project");
-		for (ProjectGroep groep : project.getGroepen())
+		for (var groep : project.getGroepen())
 		{
 			options.add(groep.getNaam());
 		}
@@ -108,7 +107,7 @@ public class ProjectAttributenBestandEditPage extends ProjectBasePage
 
 	private ProjectGroep getGroepVanToepassenOp(Project project, String waarde)
 	{
-		for (ProjectGroep groep : project.getGroepen())
+		for (var groep : project.getGroepen())
 		{
 			if (groep.getNaam().equals(waarde))
 			{
@@ -127,8 +126,8 @@ public class ProjectAttributenBestandEditPage extends ProjectBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				ProjectBestand bestand = form.getModelObject();
-				Project project = getProjectModel().getObject();
+				var bestand = form.getModelObject();
+				var project = getProjectModel().getObject();
 				if (!bestand.isAttributen())
 				{
 					error("'Attributen' is verplicht.");
@@ -138,7 +137,7 @@ public class ProjectAttributenBestandEditPage extends ProjectBasePage
 				{
 					try
 					{
-						FileUpload attributenBestand = bestanden.getObject().get(0);
+						var attributenBestand = bestanden.getObject().get(0);
 						projectService.queueProjectBestandVoorAttributen(project, getGroepVanToepassenOp(getProjectModel().getObject(), bestand.getToepassenOp()), bestand,
 							attributenBestand.getContentType(),
 							attributenBestand.getClientFileName(),
@@ -172,7 +171,7 @@ public class ProjectAttributenBestandEditPage extends ProjectBasePage
 
 	private WebMarkupContainer getPassPoortContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("projectPasspoortContainer");
+		var container = new WebMarkupContainer("projectPasspoortContainer");
 		container.setOutputMarkupId(true);
 
 		container.add(new ProjectPaspoortPanel("projectPasspoort", getProjectModel()));

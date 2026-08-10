@@ -48,7 +48,7 @@ public class ClientColumn<T extends HibernateObject> extends PropertyColumn<T, S
 	@Override
 	public String getCssClass()
 	{
-		String cssClass = super.getCssClass();
+		var cssClass = super.getCssClass();
 		if (StringUtils.isNotBlank(cssClass))
 		{
 			cssClass += " span4";
@@ -64,7 +64,7 @@ public class ClientColumn<T extends HibernateObject> extends PropertyColumn<T, S
 	@Override
 	public IModel<Object> getDataModel(IModel<T> rowModel)
 	{
-		Client client = (Client) super.getDataModel(rowModel).getObject();
+		var client = (Client) super.getDataModel(rowModel).getObject();
 		return new Model(NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client));
 	}
 }

@@ -62,13 +62,13 @@ public class ClientSelectieMetCapaciteitItemCursor implements ClientSelectieItem
 
 	private void startSelectieThreads(Collection<ColonUitnodigingsgebiedSelectieContext> uitnodigingsgebieden)
 	{
-		int aantalBeschikbareCores = Runtime.getRuntime().availableProcessors();
-		int aantalThreadsVoorGenereren = Math.min(Math.min(aantalBeschikbareCores * BatchConstants.AANTAL_THREADS_PER_CORE, BatchConstants.MAXIMUM_AANTAL_THREADS),
+		var aantalBeschikbareCores = Runtime.getRuntime().availableProcessors();
+		var aantalThreadsVoorGenereren = Math.min(Math.min(aantalBeschikbareCores * BatchConstants.AANTAL_THREADS_PER_CORE, BatchConstants.MAXIMUM_AANTAL_THREADS),
 			uitnodigingsgebieden.size());
 		LOG.info("Gebruik " + aantalThreadsVoorGenereren + " threads voor het selecteren van clienten.");
 		forkJoinPool = new ForkJoinPool(aantalThreadsVoorGenereren);
 		LOG.info("Start selecteren van clienten voor " + uitnodigingsgebieden.size() + " uitnodigingsgebieden.");
-		for (ColonUitnodigingsgebiedSelectieContext uitnodigingsgebied : uitnodigingsgebieden)
+		for (var uitnodigingsgebied : uitnodigingsgebieden)
 		{
 			forkJoinPool.submit(() -> selectieContext.databaseRunner.runInNewTransaction(() -> selecteerClientenVoorUitnodigingsgebied(uitnodigingsgebied)));
 		}
@@ -77,7 +77,7 @@ public class ClientSelectieMetCapaciteitItemCursor implements ClientSelectieItem
 
 	private void selecteerClientenVoorUitnodigingsgebied(ColonUitnodigingsgebiedSelectieContext uitnodigingsgebied)
 	{
-		String uitnodigingsgebiedNaam = uitnodigingsgebied.getUitnodigingsgebiedNaam();
+		var uitnodigingsgebiedNaam = uitnodigingsgebied.getUitnodigingsgebiedNaam();
 		LOG.info("Selectie voor uitnodigingsgebied '{}' (id: '{}') is gestart.", uitnodigingsgebiedNaam, uitnodigingsgebied.getUitnodigingsgebiedId());
 		ClientSelectieMetCapaciteitPerGebiedItemCursor cursor = null;
 		try
@@ -124,7 +124,7 @@ public class ClientSelectieMetCapaciteitItemCursor implements ClientSelectieItem
 		{
 			return false;
 		}
-		boolean hasNext = heeftEenThreadEenEntry();
+		var hasNext = heeftEenThreadEenEntry();
 		if (!hasNext && !cursorClosed)
 		{
 			Collection<ColonUitnodigingsgebiedSelectieContext> aangepasteUitnodigingsgebieden = selectieContext.uitnodigingsGebiedCapaciteitService
@@ -145,7 +145,7 @@ public class ClientSelectieMetCapaciteitItemCursor implements ClientSelectieItem
 
 	private boolean heeftEenThreadEenEntry()
 	{
-		boolean hasNext = !concurrentEntries.isEmpty();
+		var hasNext = !concurrentEntries.isEmpty();
 		while (!hasNext && !forkJoinPool.isTerminated() && !cursorClosed)
 		{
 			try
@@ -158,7 +158,7 @@ public class ClientSelectieMetCapaciteitItemCursor implements ClientSelectieItem
 						latch = new CountDownLatch(1);
 					}
 				}
-				boolean await = latch.await(100, TimeUnit.MILLISECONDS);
+				var await = latch.await(100, TimeUnit.MILLISECONDS);
 				LOG.trace("Latch " + (latch != null ? latch + " " + await : " gone"));
 			}
 			catch (InterruptedException e)

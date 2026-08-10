@@ -44,7 +44,7 @@ public class WoonplaatsController
 	@GetMapping("/{waarde}")
 	public ResponseEntity<List<WoonplaatsDto>> getHuisarts(@PathVariable String waarde)
 	{
-		List<WoonplaatsDto> dtos = woonplaatsService.getWoonplaatsen(waarde);
+		var dtos = woonplaatsService.getWoonplaatsen(waarde);
 		return ResponseEntity.ok(dtos);
 	}
 }

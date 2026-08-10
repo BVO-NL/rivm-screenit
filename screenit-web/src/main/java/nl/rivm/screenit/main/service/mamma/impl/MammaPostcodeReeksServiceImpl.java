@@ -30,7 +30,6 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaPostcodeReeks;
-import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.repository.mamma.MammaPostcodeReeksRepository;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.LogService;
@@ -63,10 +62,10 @@ public class MammaPostcodeReeksServiceImpl implements MammaPostcodeReeksService
 	@Override
 	public boolean saveOrUpdatePostcodeReeks(MammaPostcodeReeks postcodeReeks, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		String melding = "";
-		String diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(postcodeReeks, hibernateService.getHibernateSession());
+		var melding = "";
+		var diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(postcodeReeks, hibernateService.getHibernateSession());
 
-		boolean isNieuw = postcodeReeks.getId() == null;
+		var isNieuw = postcodeReeks.getId() == null;
 		if (isNieuw)
 		{
 			melding += "Postcodereeks voor '" + postcodeReeks.getStandplaats().getNaam() + "' aangemaakt.";
@@ -78,7 +77,7 @@ public class MammaPostcodeReeksServiceImpl implements MammaPostcodeReeksService
 
 		if (StringUtils.isNotEmpty(melding))
 		{
-			MammaStandplaats standplaats = postcodeReeks.getStandplaats();
+			var standplaats = postcodeReeks.getStandplaats();
 			standplaats.getPostcodeReeksen().add(postcodeReeks);
 			logService.logGebeurtenis(LogGebeurtenis.MAMMA_POSTCODE_REEKS, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.MAMMA);
 			hibernateService.saveOrUpdateAll(postcodeReeks, standplaats);
@@ -106,9 +105,9 @@ public class MammaPostcodeReeksServiceImpl implements MammaPostcodeReeksService
 	@Override
 	public void deletePostcodeReeks(MammaPostcodeReeks postcodeReeks, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		String melding = "Postcodereeks voor '" + postcodeReeks.getStandplaats().getNaam() + "' verwijderd.";
+		var melding = "Postcodereeks voor '" + postcodeReeks.getStandplaats().getNaam() + "' verwijderd.";
 
-		MammaStandplaats standplaats = postcodeReeks.getStandplaats();
+		var standplaats = postcodeReeks.getStandplaats();
 		standplaats.getPostcodeReeksen().remove(postcodeReeks);
 		logService.logGebeurtenis(LogGebeurtenis.MAMMA_POSTCODE_REEKS, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.MAMMA);
 		baseConceptPlanningsApplicatie.deletePostcodeReeks(postcodeReeks);

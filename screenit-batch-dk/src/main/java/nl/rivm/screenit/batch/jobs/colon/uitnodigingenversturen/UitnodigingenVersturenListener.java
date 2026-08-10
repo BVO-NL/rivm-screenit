@@ -110,7 +110,7 @@ public class UitnodigingenVersturenListener extends BaseLogListener
 		{
 			var aantal = context.getLong(categorie.name());
 
-			ColonSelectieRapportageEntry entry = new ColonSelectieRapportageEntry();
+			var entry = new ColonSelectieRapportageEntry();
 			entry.setSelectieType(SelectieType.UITNODIGING_VERSTUURD);
 			entry.setAantal(aantal);
 			entry.setRapportage(rapportage);

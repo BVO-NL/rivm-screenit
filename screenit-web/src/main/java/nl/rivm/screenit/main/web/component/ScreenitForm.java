@@ -113,7 +113,7 @@ public class ScreenitForm<T> extends ComponentValidatingForm<T>
 	@Override
 	protected void onError()
 	{
-		final AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
+		final var target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
 		if (target != null)
 		{
 
@@ -123,8 +123,8 @@ public class ScreenitForm<T> extends ComponentValidatingForm<T>
 				@Override
 				public void component(FormComponent<?> formComponent, IVisit<Void> formVisitor)
 				{
-					Component errorComponent = getErrorComponent(formComponent);
-					IModel<String> errorClass = getErrorClass();
+					var errorComponent = getErrorComponent(formComponent);
+					var errorClass = getErrorClass();
 					if (!formComponent.isValid())
 					{
 						if (errorComponent.getOutputMarkupId())
@@ -181,7 +181,7 @@ public class ScreenitForm<T> extends ComponentValidatingForm<T>
 
 				if (!formComponent.getBehaviors().isEmpty())
 				{
-					for (Behavior behavior : formComponent.getBehaviors())
+					for (var behavior : formComponent.getBehaviors())
 					{
 						if (behavior instanceof RequiredBorder)
 						{
@@ -217,10 +217,10 @@ public class ScreenitForm<T> extends ComponentValidatingForm<T>
 	{
 		super.onSubmit();
 
-		final AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
+		final var target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
 		if (target != null)
 		{
-			for (FormComponent<?> formComponent : invalidFormComponents)
+			for (var formComponent : invalidFormComponents)
 			{
 				destroyWiqueryPlugin(target, formComponent);
 
@@ -276,13 +276,13 @@ public class ScreenitForm<T> extends ComponentValidatingForm<T>
 			{
 				if (message.getLevel() == FeedbackMessage.ERROR)
 				{
-					FormComponent<?> comp = (FormComponent<?>) message.getReporter();
+					var comp = (FormComponent<?>) message.getReporter();
 					if (message.getMessage() instanceof ValidationErrorFeedback)
 					{
-						ValidationErrorFeedback errorFeedback = (ValidationErrorFeedback) message.getMessage();
+						var errorFeedback = (ValidationErrorFeedback) message.getMessage();
 						if (errorFeedback.getError() instanceof ValidationError)
 						{
-							ValidationError validationError = (ValidationError) errorFeedback.getError();
+							var validationError = (ValidationError) errorFeedback.getError();
 							if (comp.isRequired() && validationError.getKeys().contains("Required"))
 							{
 								return true;
@@ -309,7 +309,7 @@ public class ScreenitForm<T> extends ComponentValidatingForm<T>
 
 	protected Behavior getComponentBorder(Component component)
 	{
-		RequiredBorder border = new RequiredBorder();
+		var border = new RequiredBorder();
 		if (component instanceof RequiredSubmitComponent)
 		{
 			border.setUseRestriction(false);

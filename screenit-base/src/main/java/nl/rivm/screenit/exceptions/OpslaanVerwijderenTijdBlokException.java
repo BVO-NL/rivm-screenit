@@ -39,9 +39,9 @@ public abstract class OpslaanVerwijderenTijdBlokException extends Exception
 
 	public String getAdditionalMessageInfo()
 	{
-		int i = 0;
+		var i = 0;
 		var message = new StringBuilder();
-		List<?> items = getItems();
+		var items = getItems();
 		for (var item : items)
 		{
 			String startTijd;
@@ -68,7 +68,7 @@ public abstract class OpslaanVerwijderenTijdBlokException extends Exception
 			}
 			else
 			{
-				Object[] afspraakslotTijden = (Object[]) item;
+				var afspraakslotTijden = (Object[]) item;
 
 				var startDateTimeBestaand = DateUtil.startMinuut((Date) afspraakslotTijden[0]);
 				startTijd = DateUtil.formatShortDateTime(startDateTimeBestaand);

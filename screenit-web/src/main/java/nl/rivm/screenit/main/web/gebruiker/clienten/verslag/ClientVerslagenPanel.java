@@ -58,10 +58,10 @@ public class ClientVerslagenPanel extends GenericPanel<Client>
 
 		add(new ClientPaspoortPanel("passpoort", model));
 
-		Client client = model.getObject();
-		boolean magMdlVerslagToevoegen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.TOEVOEGEN, client);
-		boolean magPaVerslagToevoegen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN, Actie.TOEVOEGEN, client);
-		boolean magFollowUpPaVerslagToevoegen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_MAMMA_FOLLOW_UP_VERSLAG, Actie.TOEVOEGEN, client)
+		var client = model.getObject();
+		var magMdlVerslagToevoegen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.TOEVOEGEN, client);
+		var magPaVerslagToevoegen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN, Actie.TOEVOEGEN, client);
+		var magFollowUpPaVerslagToevoegen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_MAMMA_FOLLOW_UP_VERSLAG, Actie.TOEVOEGEN, client)
 			&& basePaVerslagService.verwachtGegevensVoor(model.getObject().getPersoon().getBsn());
 
 		if (getLaatsteScreeningronde(VerslagType.MDL) == null)
@@ -69,7 +69,7 @@ public class ClientVerslagenPanel extends GenericPanel<Client>
 			magMdlVerslagToevoegen = magPaVerslagToevoegen = false;
 		}
 
-		boolean magToevoegen = magMdlVerslagToevoegen || magPaVerslagToevoegen || magFollowUpPaVerslagToevoegen;
+		var magToevoegen = magMdlVerslagToevoegen || magPaVerslagToevoegen || magFollowUpPaVerslagToevoegen;
 		bezwaarOpIntake = baseAfspraakService.heeftClientIntakeAfspraakMetConclusieBezwaar(client.getPersoon().getBsn());
 
 		var aanmakenAlert = new WebMarkupContainer("aanmakenAlert");
@@ -77,11 +77,11 @@ public class ClientVerslagenPanel extends GenericPanel<Client>
 		aanmakenAlert.setVisible(magToevoegen);
 		add(aanmakenAlert);
 
-		ColonClientVerslagenOverzichtPanel colonVerslagen = new ColonClientVerslagenOverzichtPanel("colonVerslagen", model);
+		var colonVerslagen = new ColonClientVerslagenOverzichtPanel("colonVerslagen", model);
 		add(colonVerslagen);
-		CervixClientVerslagenOverzichtPanel cervixVerslagen = new CervixClientVerslagenOverzichtPanel("cervixVerslagen", model);
+		var cervixVerslagen = new CervixClientVerslagenOverzichtPanel("cervixVerslagen", model);
 		add(cervixVerslagen);
-		MammaClientVerslagenOverzichtPanel mammaVerslagen = new MammaClientVerslagenOverzichtPanel("mammaVerslagen", model);
+		var mammaVerslagen = new MammaClientVerslagenOverzichtPanel("mammaVerslagen", model);
 		add(mammaVerslagen);
 
 	}

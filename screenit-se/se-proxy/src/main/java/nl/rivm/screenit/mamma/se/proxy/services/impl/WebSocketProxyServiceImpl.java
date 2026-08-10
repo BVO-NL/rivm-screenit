@@ -70,11 +70,11 @@ public class WebSocketProxyServiceImpl implements WebSocketProxyService
 	{
 		if (environmentInfoService.isTestEnvironment())
 		{
-			String offset = DateUtil.getOffset().toString();
+			var offset = DateUtil.getOffset().toString();
 			LOG.info("{}: Broadcast tijdupdate naar werkstations voor offset: {} (nieuwe tijd: {})", logPrefix, offset, DateUtil.getCurrentDateTime());
 			broadcast(WebsocketBerichtType.TIJD_UPDATE.name() + "###" + offset);
 
-			HttpHeaders headers = new HttpHeaders();
+			var headers = new HttpHeaders();
 			headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
 			var auth = "beheer:mammograafStub!";
 			var encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());

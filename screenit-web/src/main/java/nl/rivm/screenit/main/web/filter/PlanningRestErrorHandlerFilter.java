@@ -23,6 +23,14 @@ package nl.rivm.screenit.main.web.filter;
 
 import java.io.IOException;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+
 import nl.rivm.screenit.main.web.ScreenitApplication;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPlanningNietOperationeelPage;
@@ -31,15 +39,6 @@ import nl.rivm.screenit.util.rest.ScreenitRestErrorHandler;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
 import org.springframework.http.HttpStatus;
-
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 public class PlanningRestErrorHandlerFilter implements Filter
 {
@@ -53,10 +52,10 @@ public class PlanningRestErrorHandlerFilter implements Filter
 	{
 		if (request instanceof HttpServletRequest httpRequest)
 		{
-			HttpSession httpSession = httpRequest.getSession(true);
+			var httpSession = httpRequest.getSession(true);
 
-			String attributeName = ScreenitApplication.getSessionAttributePrefix() + Session.SESSION_ATTRIBUTE_NAME;
-			final ScreenitSession session = (ScreenitSession) httpSession.getAttribute(attributeName);
+			var attributeName = ScreenitApplication.getSessionAttributePrefix() + Session.SESSION_ATTRIBUTE_NAME;
+			final var session = (ScreenitSession) httpSession.getAttribute(attributeName);
 
 			if (session != null && session.isInPlanningmodule())
 			{

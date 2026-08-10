@@ -56,7 +56,7 @@ public class CervixClientContactHeraanmeldenPanel extends AbstractClientContactH
 	@Override
 	public List<String> getOpslaanMeldingen()
 	{
-		List<String> opslaanMeldingen = super.getOpslaanMeldingen();
+		var opslaanMeldingen = super.getOpslaanMeldingen();
 		var laatsteScreeningRonde = getClient().getCervixDossier().getLaatsteScreeningRonde();
 		if (laatsteScreeningRonde == null || !screeningrondeService.clientHeeftAanOnderzoekMeegedaanInRonde(
 			laatsteScreeningRonde))

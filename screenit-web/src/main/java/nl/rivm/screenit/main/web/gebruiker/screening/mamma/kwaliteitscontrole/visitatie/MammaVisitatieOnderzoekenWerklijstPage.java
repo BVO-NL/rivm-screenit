@@ -47,7 +47,6 @@ import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Medewerker_;
 import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.OrganisatieType;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
@@ -147,7 +146,7 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 		var persoonProperty = propertyChain(onderzoekProperty, MammaOnderzoek_.AFSPRAAK, MammaAfspraak_.UITNODIGING, MammaUitnodiging_.SCREENING_RONDE,
 			MammaScreeningRonde_.DOSSIER, MammaDossier_.CLIENT, Client_.PERSOON);
 
-		MammaVisitatieOnderzoekenDataProvider onderzoekDataProvider = new MammaVisitatieOnderzoekenDataProvider(propertyChain(onderzoekProperty, MammaOnderzoek_.CREATIE_DATUM),
+		var onderzoekDataProvider = new MammaVisitatieOnderzoekenDataProvider(propertyChain(onderzoekProperty, MammaOnderzoek_.CREATIE_DATUM),
 			zoekObjectModel);
 
 		add(new Label("naam", getVisitatie().getOmschrijving()));
@@ -306,7 +305,7 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 					@Override
 					protected void onClick(AjaxRequestTarget target)
 					{
-						MammaVisitatieOnderzoek visitatieOnderzoek = rowModel.getObject();
+						var visitatieOnderzoek = rowModel.getObject();
 						if (getVisitatie().getStatus() != MammaVisitatieStatus.UITGEVOERD)
 						{
 							if (MammaVisitatieOnderzoekStatus.NIET_GEZIEN.equals(visitatieOnderzoek.getStatus()))
@@ -324,14 +323,14 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 							}
 							else
 							{
-								Persoon persoon = visitatieOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
+								var persoon = visitatieOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
 									.getPersoon();
 								warn(String.format(getString("error.verwijderen"), persoon.getBsn(), DateUtil.getGeboortedatum(persoon), getString("error.verwijderen.besproken")));
 							}
 						}
 						else
 						{
-							Persoon persoon = visitatieOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
+							var persoon = visitatieOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
 								.getPersoon();
 							warn(String.format(getString("error.verwijderen"), persoon.getBsn(), DateUtil.getGeboortedatum(persoon), getString("error.visitatie.afgerond")));
 						}
@@ -384,7 +383,7 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 
 	private void addVisitatieAfrondenButton()
 	{
-		boolean kanVisitatieAfronden = visitatieService.kanVisitatieAfronden(getVisitatie());
+		var kanVisitatieAfronden = visitatieService.kanVisitatieAfronden(getVisitatie());
 
 		add(new IndicatingAjaxLink<Void>("visitatieAfronden")
 		{
@@ -410,8 +409,8 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 			onderzoekenIdMapping.put(onderzoek.getBeoordeling().getId(), onderzoek.getId());
 		}
 
-		MammaVisitatieOnderzoek visitatieOnderzoek = model.getObject();
-		MammaVisitatie visitatie = visitatieOnderzoek.getVisitatie();
+		var visitatieOnderzoek = model.getObject();
+		var visitatie = visitatieOnderzoek.getVisitatie();
 		if (visitatie.getGestartOp() == null)
 		{
 			kwaliteitscontroleService.startKwaliteitscontrole(visitatie);
@@ -422,7 +421,7 @@ public abstract class MammaVisitatieOnderzoekenWerklijstPage extends MammaVisita
 	@Override
 	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<MedewerkerMenuItem> contextMenuItems = super.getContextMenuItems();
+		var contextMenuItems = super.getContextMenuItems();
 		contextMenuItems.addAll(MammaVisitatieOnderdeelWrapper.getContextMenuItems(
 			ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE_INSTELTECHNIEK, Actie.INZIEN),
 			ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VISITATIE, Actie.INZIEN)));

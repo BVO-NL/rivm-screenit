@@ -42,7 +42,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,9 +79,9 @@ public abstract class BaseLogListener implements JobExecutionListener
 
 	protected void saveStartLogGebeurtenis()
 	{
-		LogGebeurtenis startLogGebeurtenis = getStartLogGebeurtenis();
-		Bevolkingsonderzoek bevolkingsonderzoek = getBevolkingsonderzoek();
-		LogEvent startLogEvent = getStartLogEvent();
+		var startLogGebeurtenis = getStartLogGebeurtenis();
+		var bevolkingsonderzoek = getBevolkingsonderzoek();
+		var startLogEvent = getStartLogEvent();
 		logService.logGebeurtenis(startLogGebeurtenis, startLogEvent, bevolkingsonderzoek);
 	}
 
@@ -98,14 +97,14 @@ public abstract class BaseLogListener implements JobExecutionListener
 			this.jobExecution = jobExecution;
 		}
 		beforeEindeLogging(jobExecution);
-		LogEvent logEvent = eindLogging(jobExecution);
+		var logEvent = eindLogging(jobExecution);
 		saveEindLogGebeurtenis(logEvent);
 	}
 
 	protected void saveEindLogGebeurtenis(LogEvent logEvent)
 	{
-		Bevolkingsonderzoek bevolkingsonderzoek = getBevolkingsonderzoek();
-		LogGebeurtenis eindLogGebeurtenis = getEindLogGebeurtenis();
+		var bevolkingsonderzoek = getBevolkingsonderzoek();
+		var eindLogGebeurtenis = getEindLogGebeurtenis();
 
 		logService.logGebeurtenis(eindLogGebeurtenis, logEvent, bevolkingsonderzoek);
 	}
@@ -127,8 +126,8 @@ public abstract class BaseLogListener implements JobExecutionListener
 
 	protected LogEvent eindLogging(JobExecution jobExecution)
 	{
-		LogEvent logEvent = getEindLogEvent();
-		Level level = getLevel(jobExecution);
+		var logEvent = getEindLogEvent();
+		var level = getLevel(jobExecution);
 		addMelding(logEvent, getMelding(jobExecution));
 		if (jobHasExitCode(ExitStatus.FAILED) || Level.ERROR.equals(level))
 		{
@@ -151,7 +150,7 @@ public abstract class BaseLogListener implements JobExecutionListener
 
 	protected static void addMelding(LogEvent logEvent, String melding)
 	{
-		String huidigeMelding = logEvent.getMelding();
+		var huidigeMelding = logEvent.getMelding();
 		if (StringUtils.isBlank(huidigeMelding))
 		{
 			huidigeMelding = melding;
@@ -173,7 +172,7 @@ public abstract class BaseLogListener implements JobExecutionListener
 	protected String getStackTrace(Throwable aThrowable)
 	{
 		final Writer result = new StringWriter();
-		final PrintWriter printWriter = new PrintWriter(result);
+		final var printWriter = new PrintWriter(result);
 		aThrowable.printStackTrace(printWriter);
 		if (result.toString().length() > 4000)
 		{
@@ -184,8 +183,8 @@ public abstract class BaseLogListener implements JobExecutionListener
 
 	protected Level getLevel(JobExecution execution)
 	{
-		Level level = Level.INFO;
-		ExecutionContext context = execution.getExecutionContext();
+		var level = Level.INFO;
+		var context = execution.getExecutionContext();
 		if (context.containsKey(BatchConstants.LEVEL))
 		{
 			level = (Level) context.get(BatchConstants.LEVEL);
@@ -195,8 +194,8 @@ public abstract class BaseLogListener implements JobExecutionListener
 
 	protected String getMelding(JobExecution execution)
 	{
-		String melding = "";
-		ExecutionContext context = execution.getExecutionContext();
+		var melding = "";
+		var context = execution.getExecutionContext();
 		if (context.containsKey(BatchConstants.MELDING))
 		{
 			melding = context.getString(BatchConstants.MELDING);
@@ -216,15 +215,15 @@ public abstract class BaseLogListener implements JobExecutionListener
 
 	protected <E extends Enum> void aantallenContextVerwerken(String enumKey, AantalVerwerker<E> aantalVerwerker)
 	{
-		ExecutionContext context = getJobExecution().getExecutionContext();
+		var context = getJobExecution().getExecutionContext();
 
-		E[] enumConstants = ((Class<E>) ((ParameterizedType) aantalVerwerker.getClass().getGenericSuperclass()).getActualTypeArguments()[0]).getEnumConstants();
-		for (E enumConstant : enumConstants)
+		var enumConstants = ((Class<E>) ((ParameterizedType) aantalVerwerker.getClass().getGenericSuperclass()).getActualTypeArguments()[0]).getEnumConstants();
+		for (var enumConstant : enumConstants)
 		{
-			String key = BaseWriter.getEnumKey(enumKey, enumConstant);
+			var key = BaseWriter.getEnumKey(enumKey, enumConstant);
 			if (context.containsKey(key))
 			{
-				long aantal = context.getLong(key);
+				var aantal = context.getLong(key);
 				aantalVerwerker.verwerk(enumConstant, aantal);
 			}
 		}

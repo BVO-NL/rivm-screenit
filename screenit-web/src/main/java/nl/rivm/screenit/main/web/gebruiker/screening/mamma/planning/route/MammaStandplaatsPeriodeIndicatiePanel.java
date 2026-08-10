@@ -36,9 +36,9 @@ public abstract class MammaStandplaatsPeriodeIndicatiePanel extends GenericPanel
 	public MammaStandplaatsPeriodeIndicatiePanel(String id, IModel<PlanningStandplaatsPeriodeDto> model)
 	{
 		super(id, model);
-		PlanningStandplaatsPeriodeDto standplaatsPeriodeDto = getModelObject();
+		var standplaatsPeriodeDto = getModelObject();
 
-		WebMarkupContainer meldingen = new WebMarkupContainer("meldingen");
+		var meldingen = new WebMarkupContainer("meldingen");
 		addMeldingTooltip(meldingen, getModel());
 
 		meldingen.add(new AttributeAppender("class", " " + standplaatsPeriodeDto.meldingenDto.niveau.getCssClass()));

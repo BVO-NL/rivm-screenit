@@ -86,8 +86,8 @@ public class ClientSelectieMetCapaciteitPerGebiedItemCursor implements Iterator<
 		{
 			return false;
 		}
-		boolean hasNext = true;
-		boolean heeftGebiedGeenCapaciteitOver = !heeftGebiedCapaciteitOver();
+		var hasNext = true;
+		var heeftGebiedGeenCapaciteitOver = !heeftGebiedCapaciteitOver();
 		while (heeftGebiedGeenCapaciteitOver || isMaxAantalClientenVoorHuidigeTaakBereikt() || !cursor.next())
 		{
 			logClientenGeselecteerd();
@@ -96,7 +96,7 @@ public class ClientSelectieMetCapaciteitPerGebiedItemCursor implements Iterator<
 				hasNext = false;
 				break;
 			}
-			boolean gebiedKlaar = heeftGebiedGeenCapaciteitOver || !volgendeTaak();
+			var gebiedKlaar = heeftGebiedGeenCapaciteitOver || !volgendeTaak();
 			if (gebiedKlaar)
 			{
 				hasNext = false;

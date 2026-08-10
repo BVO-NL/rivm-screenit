@@ -79,7 +79,7 @@ public class BagAdresSpecification
 		uitnodigingsGebieden.remove(uitnodigingsgebied);
 
 		ExtendedSpecification<BagAdres> excludes = (r, q, cb) -> cb.conjunction();
-		for (UitnodigingsGebied uitnodigingsGebiedToExclude : uitnodigingsGebieden)
+		for (var uitnodigingsGebiedToExclude : uitnodigingsGebieden)
 		{
 			excludes = excludes.and(valtBinnenSpecifiekGebied(uitnodigingsGebiedToExclude, true));
 		}

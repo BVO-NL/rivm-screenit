@@ -31,7 +31,6 @@ import java.util.Map;
 import nl.rivm.screenit.dao.colon.RoosterDao;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.IGeografischeCoordinaten;
-import nl.rivm.screenit.model.colon.ColonAfspraakslotListViewWrapper;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.RoosterListViewFilter;
 import nl.rivm.screenit.model.colon.dto.VrijSlot;
@@ -43,7 +42,6 @@ import nl.rivm.screenit.service.CoordinatenService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.colon.PlanningService;
 import nl.rivm.screenit.service.colon.VrijSlotFactory;
-import nl.rivm.screenit.service.impl.PersoonCoordinaten;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.BigDecimalUtil;
 import nl.rivm.screenit.util.DateUtil;
@@ -79,14 +77,14 @@ public class PlanningServiceImpl<T extends VrijSlot> implements PlanningService<
 	{
 		List<T> returnValues = new ArrayList<T>();
 
-		RoosterListViewFilter filter = new RoosterListViewFilter();
+		var filter = new RoosterListViewFilter();
 		filter.setStartDatum(DateUtil.toUtilDate(startDatum));
 		filter.setEindDatum(DateUtil.toUtilDate(eindDatum));
 		filter.setStatus(ColonAfspraakslotStatus.VRIJ_TE_VERPLAATSEN);
 		filter.setRekeningHoudenMetCapaciteitMeeBepaald(false);
-		for (ColonAfspraakslotListViewWrapper afspraakslot : roosterDao.getAfspraakslots("vanaf", true, -1, -1, filter, intakelocatie))
+		for (var afspraakslot : roosterDao.getAfspraakslots("vanaf", true, -1, -1, filter, intakelocatie))
 		{
-			T slot = factory.createVrijSlot();
+			var slot = factory.createVrijSlot();
 
 			slot.setStartTijd(afspraakslot.getStartDatum());
 			slot.setEindTijd(afspraakslot.getEindDatum());
@@ -163,10 +161,10 @@ public class PlanningServiceImpl<T extends VrijSlot> implements PlanningService<
 		}
 		else
 		{
-			List<VrijSlotZonderKamer> vrijeSlotenZonderKamer = roosterDao.getVrijeSlotenZonderKamer(filter);
+			var vrijeSlotenZonderKamer = roosterDao.getVrijeSlotenZonderKamer(filter);
 			voegAfstandenToe(client, vrijeSlotenZonderKamer);
 
-			List<VrijSlotZonderKamer> vrijeSlotenBinnenAfstand = vrijeSlotenBinnenAfstand(vrijeSlotenZonderKamer, filter.getAfstand().doubleValue());
+			var vrijeSlotenBinnenAfstand = vrijeSlotenBinnenAfstand(vrijeSlotenZonderKamer, filter.getAfstand().doubleValue());
 			return Long.valueOf(vrijeSlotenBinnenAfstand.size());
 		}
 	}
@@ -174,17 +172,17 @@ public class PlanningServiceImpl<T extends VrijSlot> implements PlanningService<
 	private void voegAfstandenToe(Client client, List<VrijSlotZonderKamer> vrijeSlotenZonderKamer)
 	{
 		var persoon = client.getPersoon();
-		PersoonCoordinaten persoonCoordinaten = coordinatenService.getAdresEnTijdelijkAdresCoordinatenVanPersoon(persoon);
+		var persoonCoordinaten = coordinatenService.getAdresEnTijdelijkAdresCoordinatenVanPersoon(persoon);
 
 		Map<Long, Double> adresAfstandenMap = new HashMap<>();
 		Map<Long, Double> tijdelijkAdresAfstandenMap = new HashMap<>();
-		for (VrijSlotZonderKamer vrijSlotZonderKamer : vrijeSlotenZonderKamer)
+		for (var vrijSlotZonderKamer : vrijeSlotenZonderKamer)
 		{
 			if (AdresUtil.isTijdelijkAdres(persoon, DateUtil.toLocalDate(vrijSlotZonderKamer.getStartTijd())) && persoonCoordinaten.vanTijdelijkAdres != null)
 			{
 				if (!tijdelijkAdresAfstandenMap.containsKey(vrijSlotZonderKamer.getIntakelocatieId()))
 				{
-					ColonIntakelocatie intakeLocatie = hibernateService.load(ColonIntakelocatie.class, vrijSlotZonderKamer.getIntakelocatieId());
+					var intakeLocatie = hibernateService.load(ColonIntakelocatie.class, vrijSlotZonderKamer.getIntakelocatieId());
 					IGeografischeCoordinaten intakeLocatieCoordinaten = intakeLocatie.getPostcodeCoordinaten();
 					if (intakeLocatieCoordinaten != null)
 					{
@@ -202,7 +200,7 @@ public class PlanningServiceImpl<T extends VrijSlot> implements PlanningService<
 			{
 				if (!adresAfstandenMap.containsKey(vrijSlotZonderKamer.getIntakelocatieId()))
 				{
-					ColonIntakelocatie intakeLocatie = hibernateService.load(ColonIntakelocatie.class, vrijSlotZonderKamer.getIntakelocatieId());
+					var intakeLocatie = hibernateService.load(ColonIntakelocatie.class, vrijSlotZonderKamer.getIntakelocatieId());
 					IGeografischeCoordinaten intakeLocatieCoordinaten = intakeLocatie.getPostcodeCoordinaten();
 					if (intakeLocatieCoordinaten != null && persoonCoordinaten.vanAdres != null)
 					{
@@ -222,7 +220,7 @@ public class PlanningServiceImpl<T extends VrijSlot> implements PlanningService<
 	private List<VrijSlotZonderKamer> vrijeSlotenBinnenAfstand(List<VrijSlotZonderKamer> vrijeSlotenZonderKamer, Double afstand)
 	{
 		List<VrijSlotZonderKamer> vrijeSlotenBinnenAfstand = new ArrayList<>();
-		for (VrijSlotZonderKamer vrijSlotZonderKamer : vrijeSlotenZonderKamer)
+		for (var vrijSlotZonderKamer : vrijeSlotenZonderKamer)
 		{
 			if (vrijSlotZonderKamer.getAfstand() != null && vrijSlotZonderKamer.getAfstand() <= afstand)
 			{

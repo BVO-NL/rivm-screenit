@@ -44,8 +44,8 @@ public class CohortJaarValidator implements IValidator<List<Integer>>
 	@Override
 	public void validate(IValidatable<List<Integer>> iValidatable)
 	{
-		List<Integer> cohortJaren = iValidatable.getValue();
-		Set<Integer> vakerVoorkomendeJaren = getJarenVakerVoorkomenInCohort(cohortJaren);
+		var cohortJaren = iValidatable.getValue();
+		var vakerVoorkomendeJaren = getJarenVakerVoorkomenInCohort(cohortJaren);
 		if (!vakerVoorkomendeJaren.isEmpty())
 		{
 			iValidatable.error(new IValidationError()
@@ -56,7 +56,7 @@ public class CohortJaarValidator implements IValidator<List<Integer>>
 				@Override
 				public Serializable getErrorMessage(IErrorMessageSource messageSource)
 				{
-					String vakerJaren = StringUtils.join(vakerVoorkomendeJaren, ",");
+					var vakerJaren = StringUtils.join(vakerVoorkomendeJaren, ",");
 					return (vakerVoorkomendeJaren.size() > 1 ? "Cohort-jaren " : "Cohort-jaar ") + vakerJaren + (vakerVoorkomendeJaren.size() > 1 ? " komen" : " komt")
 						+ " vaker voor in jaar: " + jaar;
 				}

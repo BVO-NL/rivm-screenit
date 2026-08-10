@@ -24,7 +24,6 @@ package nl.rivm.screenit.batch.service.impl;
 import java.util.List;
 
 import nl.rivm.screenit.batch.service.CervixVerwijderSepaDataService;
-import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.enums.CervixTariefType;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBetaalopdracht;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel;
@@ -107,8 +106,8 @@ public class CervixVerwijderSepaDataServiceImpl implements CervixVerwijderSepaDa
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void verwijderBetaalopdracht(CervixBetaalopdracht betaalopdracht)
 	{
-		UploadDocument sepaDocument = betaalopdracht.getSepaDocument();
-		UploadDocument sepaSpecificatiePdf = betaalopdracht.getSepaSpecificatiePdf();
+		var sepaDocument = betaalopdracht.getSepaDocument();
+		var sepaSpecificatiePdf = betaalopdracht.getSepaSpecificatiePdf();
 		betaalopdracht.setSepaDocument(null);
 		betaalopdracht.setSepaSpecificatiePdf(null);
 		if (sepaDocument != null)

@@ -32,7 +32,6 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Permissie;
-import nl.rivm.screenit.model.colon.ColoscopieLocatie;
 import nl.rivm.screenit.model.colon.PaLaboratorium;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -77,8 +76,8 @@ public class AutorisatieServiceImpl implements AutorisatieService
 	@Transactional(propagation = Propagation.REQUIRED)
 	public boolean mustChangePassword(OrganisatieMedewerker organisatieMedewerker)
 	{
-		boolean mustChange = false;
-		Medewerker medewerker = organisatieMedewerker.getMedewerker();
+		var mustChange = false;
+		var medewerker = organisatieMedewerker.getMedewerker();
 		if (!InlogMethode.UZIPAS.equals(medewerker.getInlogMethode()))
 		{
 			if (medewerker.getLaatsteKeerWachtwoordGewijzigd() == null)
@@ -90,7 +89,7 @@ public class AutorisatieServiceImpl implements AutorisatieService
 			}
 			else
 			{
-				Integer aantalDagen = preferenceService.getInteger(PreferenceKey.DAGEN_WACHTWOORD_GELDIG.name());
+				var aantalDagen = preferenceService.getInteger(PreferenceKey.DAGEN_WACHTWOORD_GELDIG.name());
 				if (aantalDagen != null && aantalDagen > 0 && getVerschilInDagen(medewerker.getLaatsteKeerWachtwoordGewijzigd()) >= aantalDagen)
 				{
 
@@ -116,9 +115,9 @@ public class AutorisatieServiceImpl implements AutorisatieService
 	public Actie getActieVoorMedewerker(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, Medewerker currentSelectedMedewerker, Recht... rechten)
 	{
 
-		List<Permissie> permissies = getPermissies(ingelogdeOrganisatieMedewerker, null, rechten);
+		var permissies = getPermissies(ingelogdeOrganisatieMedewerker, null, rechten);
 
-		List<Actie> acties = bepaalActies(ingelogdeOrganisatieMedewerker, currentSelectedMedewerker, permissies);
+		var acties = bepaalActies(ingelogdeOrganisatieMedewerker, currentSelectedMedewerker, permissies);
 
 		return getHoogsteActie(acties);
 	}
@@ -127,16 +126,16 @@ public class AutorisatieServiceImpl implements AutorisatieService
 	public Actie getActieVoorOrganisatie(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, Organisatie currentSelectedOrganisatie, Recht... rechten)
 	{
 
-		List<Permissie> permissies = getPermissies(ingelogdeOrganisatieMedewerker, null, rechten);
+		var permissies = getPermissies(ingelogdeOrganisatieMedewerker, null, rechten);
 
-		List<Actie> acties = bepaalActies(ingelogdeOrganisatieMedewerker, currentSelectedOrganisatie, permissies);
+		var acties = bepaalActies(ingelogdeOrganisatieMedewerker, currentSelectedOrganisatie, permissies);
 
 		return getHoogsteActie(acties);
 	}
 
 	private List<Permissie> getPermissies(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, Actie minimumActie, Recht... rechten)
 	{
-		List<OrganisatieMedewerkerRol> rollen = ingelogdeOrganisatieMedewerker.getRollen();
+		var rollen = ingelogdeOrganisatieMedewerker.getRollen();
 		return rollen
 			.stream()
 			.filter(OrganisatieMedewerkerRol::isRolActief)
@@ -150,7 +149,7 @@ public class AutorisatieServiceImpl implements AutorisatieService
 		var add = false;
 		var permissieValid = !Boolean.FALSE.equals(permissie.getActief()) && (minimumActie == null || minimumActie.getNiveau() <= permissie.getActie().getNiveau());
 
-		for (Recht recht : rechten)
+		for (var recht : rechten)
 		{
 			if ((Boolean.TRUE.equals(testModus) || !Recht.TESTEN.equals(recht)) && permissie.getRecht().equals(recht))
 			{
@@ -165,7 +164,7 @@ public class AutorisatieServiceImpl implements AutorisatieService
 	{
 		List<Actie> acties = new ArrayList<Actie>();
 
-		for (Permissie permissie : permissies)
+		for (var permissie : permissies)
 		{
 			fillRechtTypes(ingelogdeOrganisatieMedewerker, currentSelectedMedewerker, acties, permissie);
 		}
@@ -176,7 +175,7 @@ public class AutorisatieServiceImpl implements AutorisatieService
 	{
 		List<Actie> acties = new ArrayList<Actie>();
 
-		for (Permissie permissie : permissies)
+		for (var permissie : permissies)
 		{
 			fillRechtTypes(ingelogdeOrganisatieMedewerker, currentSelectedOrganisatie, acties, permissie);
 		}
@@ -220,7 +219,7 @@ public class AutorisatieServiceImpl implements AutorisatieService
 		}
 		else
 		{
-			ToegangLevel toegangLevel = permissie.getToegangLevel();
+			var toegangLevel = permissie.getToegangLevel();
 			switch (toegangLevel)
 			{
 			case REGIO:
@@ -233,7 +232,7 @@ public class AutorisatieServiceImpl implements AutorisatieService
 					}
 					break;
 				case PA_LABORATORIUM:
-					for (ColoscopieLocatie locatie : ((PaLaboratorium) currentSelectedOrganisatie).getColoscopielocaties())
+					for (var locatie : ((PaLaboratorium) currentSelectedOrganisatie).getColoscopielocaties())
 					{
 						if (valtBinnenRegio(ingelogdeOrganisatieMedewerker, locatie))
 						{
@@ -281,10 +280,10 @@ public class AutorisatieServiceImpl implements AutorisatieService
 
 	private boolean valtBinnenRegio(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, Organisatie currentSelectedOrganisatie)
 	{
-		boolean valtBinnenRegio = false;
+		var valtBinnenRegio = false;
 
-		Organisatie parentSelected = currentSelectedOrganisatie;
-		Organisatie parentIngelogdeOrganisatie = ingelogdeOrganisatieMedewerker.getOrganisatie();
+		var parentSelected = currentSelectedOrganisatie;
+		var parentIngelogdeOrganisatie = ingelogdeOrganisatieMedewerker.getOrganisatie();
 
 		if (parentSelected != null && parentSelected.getId().equals(parentIngelogdeOrganisatie.getId()))
 		{
@@ -314,9 +313,9 @@ public class AutorisatieServiceImpl implements AutorisatieService
 
 		if (CollectionUtils.isNotEmpty(currentSelectedMedewerker.getOrganisatieMedewerkers()))
 		{
-			for (OrganisatieMedewerker organisatieMedewerker : currentSelectedMedewerker.getOrganisatieMedewerkers())
+			for (var organisatieMedewerker : currentSelectedMedewerker.getOrganisatieMedewerkers())
 			{
-				Organisatie organisatie = organisatieMedewerker.getOrganisatie();
+				var organisatie = organisatieMedewerker.getOrganisatie();
 				if (organisatie.getId().equals(organisatieMedewerker.getOrganisatie().getId()))
 				{
 					acties.add(permissie.getActie());
@@ -328,7 +327,7 @@ public class AutorisatieServiceImpl implements AutorisatieService
 	private Actie getHoogsteActie(List<Actie> acties)
 	{
 		Actie result = null;
-		for (Actie actie : acties)
+		for (var actie : acties)
 		{
 			if (result == null)
 			{
@@ -353,10 +352,10 @@ public class AutorisatieServiceImpl implements AutorisatieService
 	{
 		List<OrganisatieType> organisatieTypes = new ArrayList<>();
 
-		for (OrganisatieType organisatieType : OrganisatieType.values())
+		for (var organisatieType : OrganisatieType.values())
 		{
 
-			ToegangLevel level = getToegangLevel(organisatieMedewerker, minimumActie, checkBvo, organisatieType.getRecht());
+			var level = getToegangLevel(organisatieMedewerker, minimumActie, checkBvo, organisatieType.getRecht());
 			if (level != null)
 			{
 				organisatieTypes.add(organisatieType);
@@ -368,15 +367,15 @@ public class AutorisatieServiceImpl implements AutorisatieService
 	@Override
 	public ToegangLevel getToegangLevel(OrganisatieMedewerker organisatieMedewerker, Actie minimumActie, boolean checkBvo, Recht... rechten)
 	{
-		Constraint constraint = new Constraint();
+		var constraint = new Constraint();
 		constraint.setActie(minimumActie);
 		constraint.setBevolkingsonderzoek(organisatieMedewerker.getBevolkingsonderzoeken());
 		ToegangLevel hoogsteOveralToegangLevel = null;
-		for (Recht recht : rechten)
+		for (var recht : rechten)
 		{
 			constraint.setRecht(recht);
 
-			ToegangLevel hoogsteToegangLevel = scopeService.getHoogsteToegangLevel(organisatieMedewerker, constraint, checkBvo);
+			var hoogsteToegangLevel = scopeService.getHoogsteToegangLevel(organisatieMedewerker, constraint, checkBvo);
 			if (hoogsteOveralToegangLevel == null)
 			{
 				hoogsteOveralToegangLevel = hoogsteToegangLevel;
@@ -401,13 +400,13 @@ public class AutorisatieServiceImpl implements AutorisatieService
 	public List<Bevolkingsonderzoek> getBevolkingsonderzoeken(OrganisatieMedewerker organisatieMedewerker)
 	{
 		List<Bevolkingsonderzoek> onderzoeken = new ArrayList<Bevolkingsonderzoek>();
-		for (OrganisatieMedewerkerRol rol : organisatieMedewerker.getRollen())
+		for (var rol : organisatieMedewerker.getRollen())
 		{
 			if (!rol.isRolActief())
 			{
 				continue;
 			}
-			for (Bevolkingsonderzoek onderzoek : rol.getBevolkingsonderzoeken())
+			for (var onderzoek : rol.getBevolkingsonderzoeken())
 			{
 				if (!onderzoeken.contains(onderzoek))
 				{
@@ -422,9 +421,9 @@ public class AutorisatieServiceImpl implements AutorisatieService
 	public List<Recht> getRechtWithBevolkingsonderzoek(List<Bevolkingsonderzoek> onderzoeken)
 	{
 		List<Recht> rechten = new ArrayList<Recht>();
-		for (Recht recht : Recht.values())
+		for (var recht : Recht.values())
 		{
-			for (Bevolkingsonderzoek bevolkingsonderzoek : recht.getBevolkingsonderzoeken())
+			for (var bevolkingsonderzoek : recht.getBevolkingsonderzoeken())
 			{
 				if (onderzoeken != null && onderzoeken.contains(bevolkingsonderzoek))
 				{

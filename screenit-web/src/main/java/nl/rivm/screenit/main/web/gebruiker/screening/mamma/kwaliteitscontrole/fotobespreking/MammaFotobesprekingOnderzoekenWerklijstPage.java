@@ -45,7 +45,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MammaBeo
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.OrganisatieType;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -125,7 +124,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 	{
 		super.onInitialize();
 
-		MammaFotobesprekingOnderzoekenDataProvider onderzoekDataProvider = new MammaFotobesprekingOnderzoekenDataProvider(
+		var onderzoekDataProvider = new MammaFotobesprekingOnderzoekenDataProvider(
 			propertyChain(MammaFotobesprekingOnderzoek_.BEOORDELING, MammaBeoordeling_.ONDERZOEK, MammaOnderzoek_.CREATIE_DATUM), zoekObjectModel);
 
 		add(new Label("naam", getFotobespreking().getOmschrijving()));
@@ -179,7 +178,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 			@Override
 			public Panel getCustomPanel(String id)
 			{
-				IModel<Integer> besprokenModel = new IModel<Integer>()
+				var besprokenModel = new IModel<Integer>()
 				{
 					@Override
 					public Integer getObject()
@@ -188,7 +187,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 					}
 				};
 
-				IModel<Integer> teBesprekenModel = new IModel<Integer>()
+				var teBesprekenModel = new IModel<Integer>()
 				{
 					@Override
 					public Integer getObject()
@@ -216,7 +215,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 					@Override
 					protected void onClick(AjaxRequestTarget target)
 					{
-						MammaFotobesprekingOnderzoek fotobesprekingOnderzoek = getModelObject();
+						var fotobesprekingOnderzoek = getModelObject();
 						if (fotobesprekingOnderzoek.getFotobespreking().getAfgerondOp() == null)
 						{
 							if (MammaFotobesprekingOnderzoekStatus.NIET_BESPROKEN.equals(fotobesprekingOnderzoek.getStatus()))
@@ -235,7 +234,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 							}
 							else
 							{
-								Persoon persoon = fotobesprekingOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier()
+								var persoon = fotobesprekingOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier()
 									.getClient()
 									.getPersoon();
 								warn(String.format(getString("error.verwijderen"), persoon.getBsn(), DateUtil.getGeboortedatum(persoon), getString("error.verwijderen.besproken")));
@@ -243,7 +242,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 						}
 						else
 						{
-							Persoon persoon = fotobesprekingOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
+							var persoon = fotobesprekingOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
 								.getPersoon();
 							warn(String.format(getString("error.verwijderen"), persoon.getBsn(), DateUtil.getGeboortedatum(persoon), getString("error.fotobespreking.afgerond")));
 						}
@@ -288,7 +287,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 
 	private void addFotobesprekingAfrondenButton()
 	{
-		boolean kanFotobesprekingAfronden = fotobesprekingService.kanFotobesprekingAfronden(getFotobespreking())
+		var kanFotobesprekingAfronden = fotobesprekingService.kanFotobesprekingAfronden(getFotobespreking())
 			&& OrganisatieType.BEOORDELINGSEENHEID.equals(ScreenitSession.get().getOrganisatie().getOrganisatieType());
 
 		add(new ConfirmingIndicatingAjaxLink<Void>("besprekingAfronden", dialog, "confirm.fotobespreking.afronden")
@@ -361,7 +360,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 	{
 		Map<Long, Long> onderzoekenIdMapping = new LinkedHashMap<>();
 		var sort = Sort.by(sortProperty);
-		for (MammaFotobesprekingOnderzoek onderzoek : fotobesprekingService.zoekFotobesprekingOnderzoeken(zoekObjectModel.getObject(), -1, -1, sort))
+		for (var onderzoek : fotobesprekingService.zoekFotobesprekingOnderzoeken(zoekObjectModel.getObject(), -1, -1, sort))
 		{
 			onderzoekenIdMapping.put(onderzoek.getBeoordeling().getId(), onderzoek.getId());
 		}
@@ -376,7 +375,7 @@ public class MammaFotobesprekingOnderzoekenWerklijstPage extends MammaFotobespre
 	@Override
 	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<MedewerkerMenuItem> contextMenuItems = super.getContextMenuItems();
+		var contextMenuItems = super.getContextMenuItems();
 		contextMenuItems.add(new MedewerkerMenuItem("label.tab.mammascreening.fotobespreking.onderzoeken", false,
 			MammaFotobesprekingOnderzoekenWerklijstPage.class));
 

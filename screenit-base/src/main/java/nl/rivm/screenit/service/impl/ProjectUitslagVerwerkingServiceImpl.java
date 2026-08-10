@@ -30,7 +30,6 @@ import nl.rivm.screenit.model.colon.ColonGeinterpreteerdeUitslag;
 import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.rivm.screenit.model.project.ProjectBestand;
-import nl.rivm.screenit.model.project.ProjectBestandVerwerking;
 import nl.rivm.screenit.model.project.ProjectBestandVerwerkingEntry;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -92,8 +91,8 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 
 	private void addUitslagBestandsMelding(ProjectBestand uitslagenBestand, Integer regelnummer, String melding)
 	{
-		ProjectBestandVerwerking verwerking = uitslagenBestand.getVerwerking();
-		ProjectBestandVerwerkingEntry entry = new ProjectBestandVerwerkingEntry();
+		var verwerking = uitslagenBestand.getVerwerking();
+		var entry = new ProjectBestandVerwerkingEntry();
 
 		entry.setRegelNummer(regelnummer);
 		entry.setMelding(melding);
@@ -105,8 +104,8 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 	private void addUitslagBestandsMelding(ProjectBestand uitslagenBestand, ProjectUitslagVerwerkingContext context, String melding, boolean clientIsHeraangemeld)
 	{
 		Integer regelnummer = context.getRegelnummer();
-		String barcode = context.getBarcodeVanHuidigeRegel().trim();
-		String uitslagInCSV = context.getUitslagVanHuidigeRegel().trim();
+		var barcode = context.getBarcodeVanHuidigeRegel().trim();
+		var uitslagInCSV = context.getUitslagVanHuidigeRegel().trim();
 
 		melding = barcode + ", " + uitslagInCSV + ": " + melding;
 		if (clientIsHeraangemeld)
@@ -120,8 +119,8 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void verwerkRegel(ProjectUitslagVerwerkingContext context)
 	{
-		ProjectBestand uitslagenBestand = context.getUitslagenBestand();
-		boolean clientIsHeraangemeld = false;
+		var uitslagenBestand = context.getUitslagenBestand();
+		var clientIsHeraangemeld = false;
 
 		try
 		{
@@ -138,14 +137,14 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 			checkEnSetWaardesUitslagenbestand(context, studietest);
 			studieRegistratieService.verwerkRegistratie(studietest);
 
-			ProjectBestandVerwerking verwerking = uitslagenBestand.getVerwerking();
+			var verwerking = uitslagenBestand.getVerwerking();
 			verwerking.setRegelsVerwerkt(verwerking.getRegelsVerwerkt() + 1);
 			hibernateService.saveOrUpdate(verwerking);
 		}
 		catch (ProjectUitslagenUploadException e)
 		{
 			addUitslagBestandsMelding(uitslagenBestand, context, e.getMessage(), clientIsHeraangemeld);
-			ProjectBestandVerwerking verwerking = uitslagenBestand.getVerwerking();
+			var verwerking = uitslagenBestand.getVerwerking();
 			verwerking.setRegelsMislukt(verwerking.getRegelsMislukt() + 1);
 			hibernateService.saveOrUpdate(verwerking);
 			LOG.warn(
@@ -165,7 +164,7 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 
 	private void checkEnSetGeinterpreteerdeUitslag(ProjectUitslagVerwerkingContext context, ColonFitRegistratie studietest) throws ProjectUitslagenUploadException
 	{
-		String uitslagInCSV = context.getUitslagVanHuidigeRegel().toUpperCase().trim();
+		var uitslagInCSV = context.getUitslagVanHuidigeRegel().toUpperCase().trim();
 		ColonGeinterpreteerdeUitslag geinterpreteerdeUitslag;
 		try
 		{
@@ -180,9 +179,9 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 
 	private void checkEnSetAnalysedatum(ProjectUitslagVerwerkingContext context, ColonFitRegistratie studieRegistratie) throws ProjectUitslagenUploadException
 	{
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		var formatter = new SimpleDateFormat("dd-MM-yyyy");
 		formatter.setLenient(false);
-		String analyseDatumInCSV = context.getAnalyseDatum().trim();
+		var analyseDatumInCSV = context.getAnalyseDatum().trim();
 		Date analysedatum;
 		try
 		{
@@ -204,7 +203,7 @@ public class ProjectUitslagVerwerkingServiceImpl implements ProjectUitslagVerwer
 
 	private void checkEnSetBron(ProjectUitslagVerwerkingContext context, ColonFitRegistratie studieRegistratie) throws ProjectUitslagenUploadException
 	{
-		String bron = context.getBron().trim();
+		var bron = context.getBron().trim();
 		if (bron.length() > 255)
 		{
 			throw new ProjectUitslagenUploadException("De tekst van de bron is te lang. Gebruik maximaal 255 karakters");

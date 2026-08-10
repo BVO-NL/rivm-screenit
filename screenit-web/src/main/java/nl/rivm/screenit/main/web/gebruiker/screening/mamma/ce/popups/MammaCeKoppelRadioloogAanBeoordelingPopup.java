@@ -40,12 +40,12 @@ public abstract class MammaCeKoppelRadioloogAanBeoordelingPopup extends GenericP
 	public MammaCeKoppelRadioloogAanBeoordelingPopup(String id, IModel<MammaBeoordeling> model)
 	{
 		super(id, model);
-		CeRadioloogZoekPanel radioloogZoekPanel = new CeRadioloogZoekPanel("zoekPanel", getModel())
+		var radioloogZoekPanel = new CeRadioloogZoekPanel("zoekPanel", getModel())
 		{
 			@Override
 			public void callback(AjaxRequestTarget target, IModel<OrganisatieMedewerker> radioloog)
 			{
-				MammaBeoordeling beoordeling = MammaCeKoppelRadioloogAanBeoordelingPopup.this.getModelObject();
+				var beoordeling = MammaCeKoppelRadioloogAanBeoordelingPopup.this.getModelObject();
 				beoordelingService.wijsBeoordelingAanRadioloogToe(beoordeling, radioloog.getObject());
 				info(getString("info.radioloogGekoppeld"));
 				close(target);

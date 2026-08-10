@@ -27,7 +27,6 @@ import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.PostcodeCoordinaten;
-import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.repository.algemeen.GemeenteRepository;
 import nl.rivm.screenit.repository.algemeen.PostcodeCoordinatenRepository;
 import nl.rivm.screenit.service.CoordinatenService;
@@ -60,9 +59,9 @@ public class CoordinatenServiceImpl implements CoordinatenService
 	@Override
 	public PersoonCoordinaten getCoordinatenVanPersoon(Persoon persoon)
 	{
-		BagAdres gbaAdres = persoon.getGbaAdres();
-		TijdelijkAdres tijdelijkAdres = persoon.getTijdelijkAdres();
-		PersoonCoordinaten coordinatenResults = initEnFillAdres(gbaAdres);
+		var gbaAdres = persoon.getGbaAdres();
+		var tijdelijkAdres = persoon.getTijdelijkAdres();
+		var coordinatenResults = initEnFillAdres(gbaAdres);
 		if (AdresUtil.isTijdelijkAdres(persoon, dateSupplier.getLocalDate()))
 		{
 			coordinatenResults.vanAdres = getCoordinaten(tijdelijkAdres);
@@ -122,7 +121,7 @@ public class CoordinatenServiceImpl implements CoordinatenService
 
 	private PersoonCoordinaten initEnFillAdres(BagAdres gbaAdres)
 	{
-		PersoonCoordinaten coordinatenResults = new PersoonCoordinaten();
+		var coordinatenResults = new PersoonCoordinaten();
 		if (gbaAdres != null)
 		{
 			coordinatenResults.vanAdres = gbaAdres.getPostcodeCoordinaten();
@@ -138,9 +137,9 @@ public class CoordinatenServiceImpl implements CoordinatenService
 	@Override
 	public PersoonCoordinaten getAdresEnTijdelijkAdresCoordinatenVanPersoon(Persoon persoon)
 	{
-		BagAdres gbaAdres = persoon.getGbaAdres();
-		TijdelijkAdres tijdelijkAdres = persoon.getTijdelijkAdres();
-		PersoonCoordinaten coordinatenResults = initEnFillAdres(gbaAdres);
+		var gbaAdres = persoon.getGbaAdres();
+		var tijdelijkAdres = persoon.getTijdelijkAdres();
+		var coordinatenResults = initEnFillAdres(gbaAdres);
 		if (tijdelijkAdres != null)
 		{
 

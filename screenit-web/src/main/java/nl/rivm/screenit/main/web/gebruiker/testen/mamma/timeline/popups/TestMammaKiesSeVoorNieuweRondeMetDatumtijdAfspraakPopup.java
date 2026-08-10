@@ -53,7 +53,7 @@ public class TestMammaKiesSeVoorNieuweRondeMetDatumtijdAfspraakPopup extends Tes
 	{
 		boolean verstuurHl7Berichten = ((MammaTestTimelinePage) getPage()).getVerstuurHl7Berichten().getObject();
 
-		for (Client client : getModelObject())
+		for (var client : getModelObject())
 		{
 			if (getScreeningsEenheid() != null)
 			{
@@ -68,7 +68,7 @@ public class TestMammaKiesSeVoorNieuweRondeMetDatumtijdAfspraakPopup extends Tes
 					{
 						Map<String, Long> uitnodigingsNrParam = new HashMap<>();
 						uitnodigingsNrParam.put("uitnodigingsNr", Long.parseLong(getUitnodigingsNr()));
-						MammaScreeningRonde screeningRonde = hibernateService.getUniqueByParameters(MammaScreeningRonde.class, uitnodigingsNrParam);
+						var screeningRonde = hibernateService.getUniqueByParameters(MammaScreeningRonde.class, uitnodigingsNrParam);
 						if (screeningRonde == null)
 						{
 							mammaBaseTestTimelineService.nieuweRondeAfspraakUitnodiging(client, getScreeningsEenheid(), verstuurHl7Berichten,

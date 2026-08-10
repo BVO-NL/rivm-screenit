@@ -84,22 +84,6 @@
 
         <plugins>
             <plugin>
-                <groupId>org.openrewrite.maven</groupId>
-                <artifactId>rewrite-maven-plugin</artifactId>
-                <configuration>
-                    <activeRecipes>
-                        <recipe>nl.rivm.screenit.recipe.hamcrest2assertj</recipe>
-                    </activeRecipes>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.openrewrite.recipe</groupId>
-                        <artifactId>rewrite-testing-frameworks</artifactId>
-                    </dependency>
-                </dependencies>
-
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
                 <configuration>

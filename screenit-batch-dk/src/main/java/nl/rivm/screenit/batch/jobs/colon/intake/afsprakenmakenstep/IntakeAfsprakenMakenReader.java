@@ -103,12 +103,12 @@ public class IntakeAfsprakenMakenReader implements ItemReader<ClientAfspraak>, I
 	{
 		databaseRunner.runInSessionOnly(() ->
 		{
-			ExecutionContext innerExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-			IntakeMakenLogEvent intakeMelding = (IntakeMakenLogEvent) innerExecutionContext.get(IntakeAfsprakenMakenConstants.RAPPORTAGEKEYINTAKE);
-			int ronde = innerExecutionContext.getInt(IntakeAfsprakenMakenConstants.HUIDIGE_RONDE, 0);
-			Integer maxRonde = preferenceService.getInteger(PreferenceKey.COLON_MAX_EXTRA_POGINGEN_PLANNING_INTAKE.name());
+			var innerExecutionContext = stepExecution.getJobExecution().getExecutionContext();
+			var intakeMelding = (IntakeMakenLogEvent) innerExecutionContext.get(IntakeAfsprakenMakenConstants.RAPPORTAGEKEYINTAKE);
+			var ronde = innerExecutionContext.getInt(IntakeAfsprakenMakenConstants.HUIDIGE_RONDE, 0);
+			var maxRonde = preferenceService.getInteger(PreferenceKey.COLON_MAX_EXTRA_POGINGEN_PLANNING_INTAKE.name());
 			List<ClientAfspraak> clientAfspraken;
-			StringBuilder foutmeldingTextUitJobContext = new StringBuilder();
+			var foutmeldingTextUitJobContext = new StringBuilder();
 			if (innerExecutionContext.containsKey(IntakeAfsprakenMakenConstants.FOUT_BIJ_INTAKE_VASTLEGGEN))
 			{
 				foutmeldingTextUitJobContext.append(innerExecutionContext.get(IntakeAfsprakenMakenConstants.FOUT_BIJ_INTAKE_VASTLEGGEN));
@@ -132,8 +132,8 @@ public class IntakeAfsprakenMakenReader implements ItemReader<ClientAfspraak>, I
 				intakeMelding.setAantalClienten(String.format("%s,%s", intakeMelding.getAantalClienten(), clientAfspraken.size()));
 			}
 
-			AtomicInteger aantalExtraDagen = new AtomicInteger();
-			List<VrijSlot> vrijeSloten = getVrijeSloten(clientAfspraken.size(), aantalExtraDagen, intakeMelding);
+			var aantalExtraDagen = new AtomicInteger();
+			var vrijeSloten = getVrijeSloten(clientAfspraken.size(), aantalExtraDagen, intakeMelding);
 
 			if (intakeMelding.getAantalVrijesloten() == null)
 			{
@@ -153,10 +153,10 @@ public class IntakeAfsprakenMakenReader implements ItemReader<ClientAfspraak>, I
 			{
 				intakeMelding.setLevel(Level.ERROR);
 			}
-			StringBuilder planningResultaat = new StringBuilder();
+			var planningResultaat = new StringBuilder();
 
 			innerExecutionContext.put(IntakeAfsprakenMakenConstants.ALLE_INTAKES_VERWERKT, Boolean.TRUE);
-			long maximaleTijd = aantalSecondenPerClient * clientAfspraken.size();
+			var maximaleTijd = aantalSecondenPerClient * clientAfspraken.size();
 			if (ronde == 0)
 			{
 				if (maximaleTijd > maximumSecondsSpend)
@@ -186,13 +186,13 @@ public class IntakeAfsprakenMakenReader implements ItemReader<ClientAfspraak>, I
 
 		var vandaag = currentDateSupplier.getLocalDate();
 
-		Integer ongunstigeUitslagWachtPeriode = preferenceService.getInteger(PreferenceKey.ONGUNSTIGE_UITSLAG_WACHT_PERIODE.name());
+		var ongunstigeUitslagWachtPeriode = preferenceService.getInteger(PreferenceKey.ONGUNSTIGE_UITSLAG_WACHT_PERIODE.name());
 		if (ongunstigeUitslagWachtPeriode == null)
 		{
 
 			ongunstigeUitslagWachtPeriode = Integer.valueOf(2); 
 		}
-		Integer intakeafspraakperiode = preferenceService.getInteger(PreferenceKey.INTAKEAFSPRAAKPERIODE.name());
+		var intakeafspraakperiode = preferenceService.getInteger(PreferenceKey.INTAKEAFSPRAAKPERIODE.name());
 		if (intakeafspraakperiode == null)
 		{
 
@@ -212,9 +212,9 @@ public class IntakeAfsprakenMakenReader implements ItemReader<ClientAfspraak>, I
 
 		intakeMelding.setBeginTijd(DateUtil.toUtilDate(beginDatum));
 
-		List<VrijSlot> vrijeSloten = intakeAfspraakService.getAllVrijeSlotenIntakeafspraakperiode(aantalGeselecteerdeClienten, beginDatum, eindDatum, aantalExtraDagen);
+		var vrijeSloten = intakeAfspraakService.getAllVrijeSlotenIntakeafspraakperiode(aantalGeselecteerdeClienten, beginDatum, eindDatum, aantalExtraDagen);
 
-		Date newLaatsteEindDatum = DateUtil.toUtilDate(eindDatum.plusDays(aantalExtraDagen.get()));
+		var newLaatsteEindDatum = DateUtil.toUtilDate(eindDatum.plusDays(aantalExtraDagen.get()));
 		intakeMelding.setEindTijd(newLaatsteEindDatum);
 
 		stepExecution.getJobExecution().getExecutionContext().put(IntakeAfsprakenMakenConstants.LAATSTE_EIND_DATUM, newLaatsteEindDatum);

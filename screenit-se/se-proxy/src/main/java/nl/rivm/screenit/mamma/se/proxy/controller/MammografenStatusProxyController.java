@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 import nl.rivm.screenit.mamma.se.proxy.model.MammograafStatus;
 import nl.rivm.screenit.mamma.se.proxy.services.MammografenStatusService;
-import nl.rivm.screenit.mamma.se.proxy.services.SeStatusService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +46,7 @@ public class MammografenStatusProxyController
 	@RequestMapping(method = RequestMethod.GET)
 	private ResponseEntity<List<MammograafStatus>> obtainMammografenStatus(@RequestParam String[] aeTitles)
 	{
-		List<MammograafStatus> statusList = Arrays.stream(aeTitles).map(aeTitle -> mammografenStatusService.getMammograafDicomStatus(aeTitle)).collect(Collectors.toList());
+		var statusList = Arrays.stream(aeTitles).map(aeTitle -> mammografenStatusService.getMammograafDicomStatus(aeTitle)).collect(Collectors.toList());
 		return ResponseEntity.ok(statusList);
 	}
 

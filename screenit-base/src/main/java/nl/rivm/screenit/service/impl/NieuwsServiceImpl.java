@@ -34,7 +34,6 @@ import nl.rivm.screenit.service.NieuwsService;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +55,7 @@ public class NieuwsServiceImpl implements NieuwsService
 	@Override
 	public List<NieuwsItem> getNieuwsItems(boolean inclusiefVerlopenNieuwsItems)
 	{
-		Specification<NieuwsItem> specification = baseSpecification();
+		var specification = baseSpecification();
 		if (!inclusiefVerlopenNieuwsItems)
 		{
 			specification = specification.and(publicerenTot(dateSupplier.getDate()));

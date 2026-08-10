@@ -43,7 +43,6 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -70,7 +69,7 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 	{
 		super(id);
 
-		Form<Void> form = new Form<>("form");
+		var form = new Form<Void>("form");
 		add(form);
 
 		form.add(new ListView<>("organisatieTypes", parameterKeys.stream().map(OrganisatieParameterKey::getOrganisatieType).distinct().collect(Collectors.toList()))
@@ -80,10 +79,10 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 			protected void populateItem(ListItem<OrganisatieType> item)
 			{
 				item.add(new EnumLabel<>("organisatieType", item.getModelObject()));
-				List<OrganisatieParameterKey> keys = parameterKeys.stream().filter(pk -> pk.getOrganisatieType() == item.getModelObject()).collect(Collectors.toList());
+				var keys = parameterKeys.stream().filter(pk -> pk.getOrganisatieType() == item.getModelObject()).collect(Collectors.toList());
 				addTabelHeader(item, keys);
 
-				List<Organisatie> organisaties = organisatieService.getOrganisatieByOrganisatieTypes(List.of(keys.get(0).getOrganisatieType()));
+				var organisaties = organisatieService.getOrganisatieByOrganisatieTypes(List.of(keys.get(0).getOrganisatieType()));
 				addOrganisatieLijst(item, organisaties, keys, valueFieldEnabled);
 			}
 		});
@@ -95,23 +94,23 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 
 	private void addTabelHeader(MarkupContainer container, List<OrganisatieParameterKey> parameterKeys)
 	{
-		ListView<OrganisatieParameterKey> parameters = new ListView<>("parameterHeaders", parameterKeys)
+		var parameters = new ListView<>("parameterHeaders", parameterKeys)
 		{
 			@Override
 			protected void populateItem(ListItem<OrganisatieParameterKey> item)
 			{
-				OrganisatieParameterKey parameterKey = item.getModelObject();
-				boolean parameterKeyNeedsMax = Integer.class.equals(parameterKey.getValueType());
+				var parameterKey = item.getModelObject();
+				var parameterKeyNeedsMax = Integer.class.equals(parameterKey.getValueType());
 				item.add(new EnumLabel<>("param", parameterKey));
 
-				String maxValueTekst = String.format(getString("maxValue"), getUnitTekst(parameterKey), parameterKey.getMaxValue());
+				var maxValueTekst = String.format(getString("maxValue"), getUnitTekst(parameterKey), parameterKey.getMaxValue());
 				item.add(new Label("maxValue", maxValueTekst).setVisible(parameterKeyNeedsMax));
 			}
 
 			private String getUnitTekst(OrganisatieParameterKey parameterKey)
 			{
 
-				String unit = getString(EnumStringUtil.getPropertyString(parameterKey) + ".unit");
+				var unit = getString(EnumStringUtil.getPropertyString(parameterKey) + ".unit");
 				if (StringUtils.isNotBlank(unit))
 				{
 					unit += ", ";
@@ -131,7 +130,7 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 			@Override
 			protected void populateItem(ListItem<Organisatie> itemOrganisatie)
 			{
-				Organisatie organisatie = itemOrganisatie.getModelObject();
+				var organisatie = itemOrganisatie.getModelObject();
 				itemOrganisatie.add(new Label("naam", organisatie.getNaam()));
 
 				itemOrganisatie.add(new ListView<>("parameterValues", parameterKeys)
@@ -139,7 +138,7 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 					@Override
 					protected void populateItem(ListItem<OrganisatieParameterKey> item)
 					{
-						OrganisatieParameterKey parameterKey = item.getModelObject();
+						var parameterKey = item.getModelObject();
 						voegOrganisatieParameterToeAanModel(parameterKey, itemOrganisatie);
 
 						addNumberField(item, parameterKey);
@@ -152,11 +151,11 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 
 					private void voegOrganisatieParameterToeAanModel(OrganisatieParameterKey parameterKey, ListItem<Organisatie> itemOrganisatie)
 					{
-						Organisatie organisatie = itemOrganisatie.getModelObject();
-						List<OrganisatieParameter> allParams = allParametersModel.getObject();
+						var organisatie = itemOrganisatie.getModelObject();
+						var allParams = allParametersModel.getObject();
 						allParams.add(itemOrganisatie.getModelObject().getParameters().stream().filter(p -> p.getKey() == parameterKey).findFirst().orElseGet(() ->
 						{
-							OrganisatieParameter nieuwParameter = new OrganisatieParameter();
+							var nieuwParameter = new OrganisatieParameter();
 							nieuwParameter.setOrganisatie(organisatie);
 							nieuwParameter.setKey(parameterKey);
 							return nieuwParameter;
@@ -165,9 +164,9 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 
 					private void addCheckboxField(ListItem<OrganisatieParameterKey> item, OrganisatieParameterKey parameterKey)
 					{
-						List<OrganisatieParameter> allParams = allParametersModel.getObject();
-						Class<?> valueType = parameterKey.getValueType();
-						CheckBox parameterCheckbox = ComponentHelper.newCheckBox("checkbox",
+						var allParams = allParametersModel.getObject();
+						var valueType = parameterKey.getValueType();
+						var parameterCheckbox = ComponentHelper.newCheckBox("checkbox",
 							new PropertyModel<>(EditOrganisatieParametersHorizontalPanel.this, "allParameters[" + (allParams.size() - 1) + "].value"));
 						parameterCheckbox.setVisible(Boolean.class.equals(valueType));
 						item.add(parameterCheckbox);
@@ -175,9 +174,9 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 
 					private void addTextField(ListItem<OrganisatieParameterKey> item, OrganisatieParameterKey parameterKey)
 					{
-						List<OrganisatieParameter> allParams = allParametersModel.getObject();
-						Class<?> valueType = parameterKey.getValueType();
-						TextField<String> textValueField = new TextField<>("textValue",
+						var allParams = allParametersModel.getObject();
+						var valueType = parameterKey.getValueType();
+						var textValueField = new TextField<String>("textValue",
 							new PropertyModel<>(EditOrganisatieParametersHorizontalPanel.this, "allParameters[" + (allParams.size() - 1) + "].value"));
 						textValueField.setVisible(String.class.equals(valueType) || BigDecimal.class.equals(valueType));
 						textValueField.setEnabled(valueFieldEnabled);
@@ -194,9 +193,9 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 
 					private void addNumberField(ListItem<OrganisatieParameterKey> item, OrganisatieParameterKey parameterKey)
 					{
-						List<OrganisatieParameter> allParams = allParametersModel.getObject();
-						Class<?> valueType = parameterKey.getValueType();
-						TextField<String> numberValueField = new TextField<>("numberValue",
+						var allParams = allParametersModel.getObject();
+						var valueType = parameterKey.getValueType();
+						var numberValueField = new TextField<String>("numberValue",
 							new PropertyModel<>(EditOrganisatieParametersHorizontalPanel.this, "allParameters[" + (allParams.size() - 1) + "].value"));
 						numberValueField.setVisible(Integer.class.equals(valueType));
 						numberValueField.setEnabled(valueFieldEnabled);
@@ -243,7 +242,7 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 									}
 									catch (Exception e)
 									{
-										ValidationError error = new ValidationError(this, "bigdecimal");
+										var error = new ValidationError(this, "bigdecimal");
 										validatable.error(error);
 									}
 								}
@@ -274,7 +273,7 @@ public abstract class EditOrganisatieParametersHorizontalPanel extends GenericPa
 
 	public List<OrganisatieParameter> getAllParameters()
 	{
-		List<OrganisatieParameter> list = ModelUtil.nullSafeGet(allParametersModel);
+		var list = ModelUtil.nullSafeGet(allParametersModel);
 		list.forEach(op -> op.setParameterNaam(getString(EnumStringUtil.getPropertyString(op.getKey()))));
 		return list;
 	}

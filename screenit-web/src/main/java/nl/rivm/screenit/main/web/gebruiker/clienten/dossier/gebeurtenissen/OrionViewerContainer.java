@@ -74,7 +74,7 @@ public class OrionViewerContainer extends PdfObjectContainer implements IRequest
 	@Override
 	public final void onRequest()
 	{
-		Duration cacheDuration = Duration.ofMinutes(30); 
+		var cacheDuration = Duration.ofMinutes(30); 
 
 		IResource resource;
 		if (formulier != null)
@@ -86,7 +86,7 @@ public class OrionViewerContainer extends PdfObjectContainer implements IRequest
 			resource = new ScannedFormulierViewerResourceExternal(String.format(antwoordFormulierUrl, objid), false, cacheDuration);
 		}
 
-		Attributes a = new Attributes(RequestCycle.get().getRequest(), RequestCycle.get().getResponse(), null);
+		var a = new Attributes(RequestCycle.get().getRequest(), RequestCycle.get().getResponse(), null);
 		resource.respond(a);
 	}
 

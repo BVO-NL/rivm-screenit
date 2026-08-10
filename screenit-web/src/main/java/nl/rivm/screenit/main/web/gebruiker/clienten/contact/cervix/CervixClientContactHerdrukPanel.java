@@ -31,10 +31,6 @@ import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.cervix.CervixBrief;
-import nl.rivm.screenit.model.cervix.CervixDossier;
-import nl.rivm.screenit.model.cervix.CervixMonster;
-import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
-import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.service.ClientService;
@@ -65,18 +61,18 @@ public class CervixClientContactHerdrukPanel extends AbstractClientContactActieP
 	{
 		super(id, model);
 		Date datum = null;
-		CervixDossier cervixDossier = client.getObject().getCervixDossier();
-		CervixScreeningRonde laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
-		CervixUitnodiging laatsteAfgedrukteUitstrijkjeUitnodiging = clientService.getLaatstVerstuurdeUitnodiging(laatsteScreeningRonde, false);
-		CervixBrief brief = laatsteAfgedrukteUitstrijkjeUitnodiging.getBrief();
+		var cervixDossier = client.getObject().getCervixDossier();
+		var laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
+		var laatsteAfgedrukteUitstrijkjeUitnodiging = clientService.getLaatstVerstuurdeUitnodiging(laatsteScreeningRonde, false);
+		var brief = laatsteAfgedrukteUitstrijkjeUitnodiging.getBrief();
 		var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(brief);
 		if (verstuurdVoorAfdrukkenMoment != null)
 		{
 			datum = verstuurdVoorAfdrukkenMoment;
 		}
-		CervixMonster uitstrijkje = laatsteAfgedrukteUitstrijkjeUitnodiging.getMonster();
+		var uitstrijkje = laatsteAfgedrukteUitstrijkjeUitnodiging.getMonster();
 		cervixBrief = ModelUtil.sModel(brief);
-		String extraOmschrijving = "Uitnodiging-id: " + laatsteAfgedrukteUitstrijkjeUitnodiging.getUitnodigingsId() + ", Monster-id: " + uitstrijkje.getMonsterId();
+		var extraOmschrijving = "Uitnodiging-id: " + laatsteAfgedrukteUitstrijkjeUitnodiging.getUitnodigingsId() + ", Monster-id: " + uitstrijkje.getMonsterId();
 		if (cervixBrief.getObject().getTemplateNaam() != null)
 		{
 			extraOmschrijving += ", " + cervixBrief.getObject().getTemplateNaam();
@@ -94,7 +90,7 @@ public class CervixClientContactHerdrukPanel extends AbstractClientContactActieP
 	@Override
 	public Map<ExtraOpslaanKey, Object> getOpslaanObjecten()
 	{
-		Map<ExtraOpslaanKey, Object> opslaanObjecten = super.getOpslaanObjecten();
+		var opslaanObjecten = super.getOpslaanObjecten();
 		opslaanObjecten.put(ExtraOpslaanKey.CERVIX_HERDRUK_BRIEF, cervixBrief.getObject());
 		return opslaanObjecten;
 	}
@@ -102,7 +98,7 @@ public class CervixClientContactHerdrukPanel extends AbstractClientContactActieP
 	@Override
 	public List<String> getOpslaanMeldingen()
 	{
-		List<String> opslaanMeldingen = super.getOpslaanMeldingen();
+		var opslaanMeldingen = super.getOpslaanMeldingen();
 		opslaanMeldingen.add(getString("opslaan.melding"));
 		return opslaanMeldingen;
 	}

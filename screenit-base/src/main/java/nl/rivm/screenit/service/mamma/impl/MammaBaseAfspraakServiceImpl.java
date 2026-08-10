@@ -351,7 +351,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 	{
 		var laatsteMammografieAfgerond = dossier.getLaatsteMammografieAfgerond();
 		var onderzoek = dossierService.getLaatsteOnderzoek(dossier);
-		boolean heeftGeforceerdeAfspraak = dossier.getLaatsteScreeningRonde() != null && dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging() != null
+		var heeftGeforceerdeAfspraak = dossier.getLaatsteScreeningRonde() != null && dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging() != null
 			&& dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging().getAfspraken().stream().anyMatch(MammaAfspraak::isGeforceerdeAfspraak);
 		if (laatsteMammografieAfgerond != null && onderzoek != null
 			&& onderzoek.getStatus() != MammaOnderzoekStatus.ONDERBROKEN && onderzoek.getStatus() != MammaOnderzoekStatus.ONDERBROKEN_ZONDER_VERVOLG
@@ -422,7 +422,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 	{
 		var screeningOrganisatie = MammaScreeningsEenheidUtil.getScreeningsOrganisatie(screeningsEenheid);
 
-		for (MammaAfspraak afspraak : afspraken)
+		for (var afspraak : afspraken)
 		{
 			if (afspraak.getBenodigdeCapaciteit() == null) 
 			{
@@ -570,7 +570,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 	@Override
 	public int koppelNietGekoppeldeAfspraken(MammaCapaciteitBlok capaciteitBlok, boolean runDry)
 	{
-		int aantalAfspraken = 0;
+		var aantalAfspraken = 0;
 		if (capaciteitBlok.getBlokType() != MammaCapaciteitBlokType.GEEN_SCREENING)
 		{
 			LOG.debug("Zoek afspraken voor cap.blok om te kunnen (her)koppelen");
@@ -604,7 +604,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 	@Override
 	public void afspraakAnnuleren(MammaAfspraak afspraak, MammaAfspraakStatus nieuweStatus, Date rondeAfgemeldOp)
 	{
-		boolean afspraakStatusWijzigen = afspraak.getVanaf().compareTo(currentDateSupplier.getDate()) > 0;
+		var afspraakStatusWijzigen = afspraak.getVanaf().compareTo(currentDateSupplier.getDate()) > 0;
 		afspraakAnnuleren(afspraak, nieuweStatus, rondeAfgemeldOp, afspraakStatusWijzigen, true);
 	}
 
@@ -753,11 +753,11 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 
 		var laatsteAfspraak = MammaScreeningRondeUtil.getLaatsteAfspraak(laatsteScreeningRonde);
 
-		boolean isLaatsteAfspraakGeenGeforceerdeAfspraak = laatsteAfspraak == null || !laatsteAfspraak.isGeforceerdeAfspraak();
+		var isLaatsteAfspraakGeenGeforceerdeAfspraak = laatsteAfspraak == null || !laatsteAfspraak.isGeforceerdeAfspraak();
 
-		boolean heeftRondeGeenOnderzoek = laatsteScreeningRonde == null || laatsteScreeningRonde.getLaatsteOnderzoek() == null;
+		var heeftRondeGeenOnderzoek = laatsteScreeningRonde == null || laatsteScreeningRonde.getLaatsteOnderzoek() == null;
 
-		boolean isGeenTehuisClient = dossier.getTehuis() == null;
+		var isGeenTehuisClient = dossier.getTehuis() == null;
 
 		return heeftRondeGeenOnderzoek && isLaatsteAfspraakGeenGeforceerdeAfspraak && isGeenTehuisClient && !bijAfspraakForceren;
 	}

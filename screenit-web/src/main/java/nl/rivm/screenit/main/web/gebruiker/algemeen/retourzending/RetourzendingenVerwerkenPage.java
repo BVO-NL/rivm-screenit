@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.retourzending;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.RetourzendingService;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
@@ -33,13 +32,11 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.FileType;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.logging.RetourzendingLogEvent;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.IModel;
@@ -66,16 +63,16 @@ public class RetourzendingenVerwerkenPage extends RetourzendingBasePage
 
 	public RetourzendingenVerwerkenPage()
 	{
-		Form<Void> form = new Form<>("form");
+		var form = new Form<Void>("form");
 		final IModel<List<FileUpload>> retourzendingBestanden = new ListModel<>();
 
-		FormComponent<List<FileUpload>> retourzendingBestand = new FileUploadField("retourzendingBestand", retourzendingBestanden)
+		var retourzendingBestand = new FileUploadField("retourzendingBestand", retourzendingBestanden)
 			.add(new FileValidator(FileType.EXCEL_NIEUW));
 		form.add(retourzendingBestand);
 		retourzendingBestand.setRequired(true);
 		retourzendingBestand.setOutputMarkupId(true);
 
-		final BootstrapDialog dialog = new BootstrapDialog("dialog");
+		final var dialog = new BootstrapDialog("dialog");
 		add(dialog);
 		form.add(new IndicatingAjaxButton("verwerken", form)
 		{
@@ -85,11 +82,11 @@ public class RetourzendingenVerwerkenPage extends RetourzendingBasePage
 				if (retourzendingBestanden.getObject().size() == 1)
 				{
 
-					FileUpload retourzendingBestandFileUpload = retourzendingBestanden.getObject().get(0);
+					var retourzendingBestandFileUpload = retourzendingBestanden.getObject().get(0);
 
 					try
 					{
-						RetourzendingLogEvent logEvent = retourzendingService.verwerkBestandMetRetourzendingen(getIngelogdeOrganisatieMedewerker(),
+						var logEvent = retourzendingService.verwerkBestandMetRetourzendingen(getIngelogdeOrganisatieMedewerker(),
 							retourzendingBestandFileUpload.getContentType(), retourzendingBestandFileUpload.writeToTempFile(), retourzendingBestandFileUpload.getClientFileName());
 						dialog.openWith(target, new RetourzendingenVerwerkingsVerslagPopup(IDialog.CONTENT_ID, ModelUtil.cRModel(logEvent)));
 					}

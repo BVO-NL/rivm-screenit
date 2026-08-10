@@ -24,6 +24,8 @@ package nl.rivm.screenit.huisartsenportaal.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.jms.ConnectionFactory;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
@@ -34,8 +36,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
-
-import jakarta.jms.ConnectionFactory;
 
 @Configuration
 public class JmsConfigHuisartsPortaal
@@ -52,7 +52,7 @@ public class JmsConfigHuisartsPortaal
 	@Bean
 	protected JmsListenerContainerFactory jmsListenerContainerFactory()
 	{
-		DefaultJmsListenerContainerFactory containerFactory = new DefaultJmsListenerContainerFactory();
+		var containerFactory = new DefaultJmsListenerContainerFactory();
 		containerFactory.setConnectionFactory(pooledConnectionFactory(connectionFactory()));
 		return containerFactory;
 	}
@@ -60,7 +60,7 @@ public class JmsConfigHuisartsPortaal
 	@Bean(destroyMethod = "stop", initMethod = "start")
 	protected PooledConnectionFactory pooledConnectionFactory(ConnectionFactory connectionFactory)
 	{
-		PooledConnectionFactory jmsFactory = new PooledConnectionFactory();
+		var jmsFactory = new PooledConnectionFactory();
 		jmsFactory.setConnectionFactory(connectionFactory);
 		jmsFactory.setIdleTimeout(0);
 		return jmsFactory;
@@ -69,7 +69,7 @@ public class JmsConfigHuisartsPortaal
 	@Bean
 	protected ConnectionFactory connectionFactory()
 	{
-		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
+		var connectionFactory = new ActiveMQConnectionFactory();
 		connectionFactory.setUseAsyncSend(true);
 		connectionFactory.setPrefetchPolicy(prefetchPolicy());
 		connectionFactory.setRedeliveryPolicy(redeliveryPolicy());
@@ -92,7 +92,7 @@ public class JmsConfigHuisartsPortaal
 	@Bean
 	RedeliveryPolicy redeliveryPolicy()
 	{
-		RedeliveryPolicy policy = new RedeliveryPolicy();
+		var policy = new RedeliveryPolicy();
 		policy.setMaximumRedeliveries(3);
 		policy.setInitialRedeliveryDelay(3000);
 		return policy;
@@ -101,7 +101,7 @@ public class JmsConfigHuisartsPortaal
 	@Bean
 	ActiveMQPrefetchPolicy prefetchPolicy()
 	{
-		ActiveMQPrefetchPolicy policy = new ActiveMQPrefetchPolicy();
+		var policy = new ActiveMQPrefetchPolicy();
 		policy.setQueuePrefetch(1);
 		return policy;
 	}
@@ -109,7 +109,7 @@ public class JmsConfigHuisartsPortaal
 	@Bean
 	JmsTemplate jmsTemplate()
 	{
-		JmsTemplate template = new JmsTemplate();
+		var template = new JmsTemplate();
 		template.setConnectionFactory(connectionFactory());
 		return template;
 	}

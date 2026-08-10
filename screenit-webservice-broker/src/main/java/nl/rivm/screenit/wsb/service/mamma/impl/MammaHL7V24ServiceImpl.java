@@ -39,7 +39,7 @@ import nl.rivm.screenit.model.mamma.berichten.MammaIMSBericht;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.mamma.MammaImsBerichtRepository;
-import nl.rivm.screenit.service.BezwaarService;
+import nl.rivm.screenit.service.BaseBezwaarService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.wsb.service.BaseHL7v2Service;
@@ -68,7 +68,7 @@ public abstract class MammaHL7V24ServiceImpl extends BaseHL7v2Service<ORM_O01> i
 	private ClientService clientService;
 
 	@Autowired
-	private BezwaarService bezwaarService;
+	private BaseBezwaarService bezwaarService;
 
 	@Autowired
 	private SimplePreferenceService preferenceService;
@@ -150,7 +150,7 @@ public abstract class MammaHL7V24ServiceImpl extends BaseHL7v2Service<ORM_O01> i
 		}
 		else
 		{
-			String melding = String.format("Ontvangen IMS bericht (%s) kon niet gekoppeld worden aan BSN (%s) en/of accession number (%s).",
+			var melding = String.format("Ontvangen IMS bericht (%s) kon niet gekoppeld worden aan BSN (%s) en/of accession number (%s).",
 				berichtWrapper.getMessageId(), berichtWrapper.getBsn(), berichtWrapper.getAccessionNumber());
 			throw new HL7Exception(melding);
 		}

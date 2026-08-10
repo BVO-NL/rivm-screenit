@@ -29,7 +29,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractBEAccordio
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaLezingPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaLezingParameters;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDto;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaLezing;
@@ -77,10 +76,10 @@ public class DiscrepantieArbitrageLezingenContainer extends AbstractBEAccordionP
 		IModel<MammaLezing> eersteLezing = new CompoundPropertyModel<>(new PropertyModel<>(getModel(), "eersteLezing"));
 		IModel<MammaLezing> tweedeLezing = new CompoundPropertyModel<>(new PropertyModel<>(getModel(), "tweedeLezing"));
 
-		OrganisatieMedewerker organisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
+		var organisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 		huidigeLezingModel = ModelUtil.cModel(beoordelingService.getOrCreateDiscrepantieOfArbitrageLezing(getModelObject(), huidigeLezingType(), organisatieMedewerker));
 
-		MammaLezingParameters mammaLezingParameters = MammaLezingParameters.maakAlleenInzien()
+		var mammaLezingParameters = MammaLezingParameters.maakAlleenInzien()
 			.setMetAfbeelding(true)
 			.setToonOvernemenKnop(!isDezeBeoordelingAlleenInzien())
 			.setToonTomosyntheseSlicesRadioButtons(MammaOnderzoekType.TOMOSYNTHESE == getModelObject().getOnderzoek().getOnderzoekType())
@@ -118,7 +117,7 @@ public class DiscrepantieArbitrageLezingenContainer extends AbstractBEAccordionP
 		if (huidigeLezingType() == MammaLezingType.ARBITRAGE_LEZING)
 		{
 
-			boolean doorEersteBeoordelaar = eersteLezing.getObject().getBeoordelaar().equals(discrepantieLezing.getObject().getBeoordelaar());
+			var doorEersteBeoordelaar = eersteLezing.getObject().getBeoordelaar().equals(discrepantieLezing.getObject().getBeoordelaar());
 			panelContainer.add(
 				new DiscrepantieOpmerkingPanel(doorEersteBeoordelaar ? "discrepantieopmerkingOnderEersteLezing" : "discrepantieopmerkingOnderTweedeLezing", discrepantieLezing));
 			panelContainer.add(new EmptyPanel(doorEersteBeoordelaar ? "discrepantieopmerkingOnderTweedeLezing" : "discrepantieopmerkingOnderEersteLezing"));
@@ -143,7 +142,7 @@ public class DiscrepantieArbitrageLezingenContainer extends AbstractBEAccordionP
 
 	private boolean beoordeeldDoorIngelogdeOrganisatieMedewerker()
 	{
-		OrganisatieMedewerker organisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
+		var organisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 		return organisatieMedewerker.equals(getModelObject().getEersteLezing().getBeoordelaar())
 			|| organisatieMedewerker.equals(getModelObject().getTweedeLezing().getBeoordelaar());
 	}

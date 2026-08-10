@@ -23,8 +23,9 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 import nl.rivm.screenit.huisartsenportaal.dto.VerificatieLocatieDto;
-import nl.rivm.screenit.huisartsenportaal.dto.VerificatieStatusDto;
 import nl.rivm.screenit.huisartsenportaal.exception.ValidatieException;
 import nl.rivm.screenit.huisartsenportaal.service.LocatieService;
 import nl.rivm.screenit.huisartsenportaal.service.LocatieVerificatieService;
@@ -37,8 +38,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("verificatie")
@@ -63,7 +62,7 @@ public class VerificatieController extends BaseController
 		{
 			throw new ValidatieException(result.getAllErrors());
 		}
-		VerificatieStatusDto verificatieStatus = verificatieService.verifieerLocatie(locatieDto);
+		var verificatieStatus = verificatieService.verifieerLocatie(locatieDto);
 		if (verificatieStatus.getSucces())
 		{
 			return ResponseEntity.ok(verificatieStatus);

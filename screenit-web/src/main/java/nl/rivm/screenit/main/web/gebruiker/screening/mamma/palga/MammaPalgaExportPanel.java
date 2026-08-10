@@ -60,7 +60,7 @@ public class MammaPalgaExportPanel extends GenericPanel<UploadDocument>
 			protected void onBeforeDownloadClick(AjaxRequestTarget target)
 			{
 				super.onBeforeDownloadClick(target);
-				String logRegel = String.format("Gedownload: %s", getModelObject().getNaam());
+				var logRegel = String.format("Gedownload: %s", getModelObject().getNaam());
 				logService.logGebeurtenis(LogGebeurtenis.MAMMA_PALGA_CSV_EXPORT, ScreenitSession.get().getIngelogdAccount(), logRegel);
 			}
 		});

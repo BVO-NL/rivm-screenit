@@ -29,7 +29,6 @@ import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -53,18 +52,18 @@ public abstract class CervixHuisartsOpvraagPanel extends Panel
 		super(id);
 		this.onbekendeArtsNieuweAanmaken = onbekendeArtsNieuwAanmaken;
 
-		Form<CervixHuisartsOpvraagPanel> form = new Form<>("form", new CompoundPropertyModel<>(this));
+		var form = new Form<CervixHuisartsOpvraagPanel>("form", new CompoundPropertyModel<>(this));
 		add(form);
 
-		FormComponent<Integer> agbCodeField = ComponentHelper.addTextField(form, "agbCode", true, 8, Integer.class, false);
+		var agbCodeField = ComponentHelper.addTextField(form, "agbCode", true, 8, Integer.class, false);
 
-		IndicatingAjaxSubmitLink huisartsZoekButton = new IndicatingAjaxSubmitLink("submit", form)
+		var huisartsZoekButton = new IndicatingAjaxSubmitLink("submit", form)
 		{
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				String agbCodeFormatted = StringUtils.leftPad(agbCode, 8, '0');
+				var agbCodeFormatted = StringUtils.leftPad(agbCode, 8, '0');
 				if (agbCodeFormatted.length() > 8)
 				{
 					error(getString("agbCode.IConverter.Integer"));

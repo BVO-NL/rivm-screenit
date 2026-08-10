@@ -21,7 +21,6 @@ package nl.rivm.screenit.batch.jobs.colon.vervolgintakeconclusie.briefandereinta
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -91,7 +90,7 @@ public class HerinneringClientWilAnderIntakeLocatieBriefReader extends BaseSpeci
 
 	private Date getHerinneringClientWilAnderIntakeAfspraakDate()
 	{
-		LocalDate vandaag = currentDateSupplier.getLocalDate();
+		var vandaag = currentDateSupplier.getLocalDate();
 		return DateUtil.toUtilDate(vandaag.minusWeeks(6));
 	}
 

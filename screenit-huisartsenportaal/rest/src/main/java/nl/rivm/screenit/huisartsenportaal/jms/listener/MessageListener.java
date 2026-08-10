@@ -21,6 +21,9 @@ package nl.rivm.screenit.huisartsenportaal.jms.listener;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+
 import nl.rivm.screenit.huisartsenportaal.dto.AanvraagDto;
 import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
 import nl.rivm.screenit.huisartsenportaal.dto.LocatieDto;
@@ -28,7 +31,6 @@ import nl.rivm.screenit.huisartsenportaal.dto.OvereenkomstDto;
 import nl.rivm.screenit.huisartsenportaal.dto.ResetDto;
 import nl.rivm.screenit.huisartsenportaal.dto.VerrichtingDto;
 import nl.rivm.screenit.huisartsenportaal.dto.WoonplaatsDto;
-import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.service.AuthenticatieService;
 import nl.rivm.screenit.huisartsenportaal.service.HuisartsService;
 import nl.rivm.screenit.huisartsenportaal.service.LabformulierService;
@@ -44,9 +46,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
-
-import jakarta.jms.JMSException;
-import jakarta.jms.Message;
 
 @Component
 public class MessageListener
@@ -83,7 +82,7 @@ public class MessageListener
 	{
 		try
 		{
-			String loginfo = "Synchronisatie bericht " + message.getJMSMessageID();
+			var loginfo = "Synchronisatie bericht " + message.getJMSMessageID();
 			if (message instanceof ActiveMQObjectMessage objectMessage)
 			{
 				Object object = objectMessage.getObject();
@@ -96,7 +95,7 @@ public class MessageListener
 
 				else if (object instanceof LocatieDto dto)
 				{
-					Huisarts huisarts = huisartsService.getHuisartsWith(dto.getHuisartsId());
+					var huisarts = huisartsService.getHuisartsWith(dto.getHuisartsId());
 					LOG.info("{} voor type locatie(ha_id: {}, s_id: {})", loginfo, dto.getHuisartsportaalId(), dto.getScreenitId());
 
 					locatieService.updateAndGetLocatie(huisarts, dto);
@@ -119,7 +118,7 @@ public class MessageListener
 				}
 				else if (object instanceof ResetDto dto)
 				{
-					Huisarts huisarts = huisartsService.getHuisartsWith(dto.getHuisarts_id());
+					var huisarts = huisartsService.getHuisartsWith(dto.getHuisarts_id());
 					huisarts = authenticatieService.wachtwoordVergeten(huisarts);
 					synchronisatieService.syncHuisarts(huisarts);
 				}

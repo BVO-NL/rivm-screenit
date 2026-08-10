@@ -61,7 +61,7 @@ public class MppsRecord
 
 	public String logTekst()
 	{
-		String statusTekst = discontinuedReason == null ? status : String.format("%s (%s)", status, discontinuedReason);
+		var statusTekst = discontinuedReason == null ? status : String.format("%s (%s)", status, discontinuedReason);
 		return String.format("SopInstanceUid: %s, Studie-id: %s, Status: %s, %s", sopInstanceUid, accessionNumber, statusTekst, beeldenZijdeString());
 	}
 

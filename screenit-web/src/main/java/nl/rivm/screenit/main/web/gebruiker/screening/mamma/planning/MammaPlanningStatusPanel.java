@@ -59,7 +59,7 @@ public class MammaPlanningStatusPanel extends GenericPanel<PlanningStatusDto>
 	{
 		super.onInitialize();
 
-		WebMarkupContainer container = new WebMarkupContainer("container");
+		var container = new WebMarkupContainer("container");
 		container.setOutputMarkupId(true);
 
 		container.add(new EnumLabel<MammaPlanningStatus>("status"));
@@ -130,7 +130,7 @@ public class MammaPlanningStatusPanel extends GenericPanel<PlanningStatusDto>
 	private String getScreeningorganisatieNaam()
 	{
 		String soNaam = null;
-		PlanningStatusDto statusDto = getModelObject();
+		var statusDto = getModelObject();
 		if (statusDto.getSoId() != null)
 		{
 			soNaam = new SimpleHibernateModel<ScreeningOrganisatie>(ScreeningOrganisatie.class, statusDto.getSoId()).getObject().getNaam();

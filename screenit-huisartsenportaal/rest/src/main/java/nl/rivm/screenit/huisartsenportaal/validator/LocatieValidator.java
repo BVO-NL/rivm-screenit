@@ -26,7 +26,6 @@ import java.util.List;
 import nl.rivm.screenit.huisartsenportaal.dto.AdresDto;
 import nl.rivm.screenit.huisartsenportaal.dto.LocatieDto;
 import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
-import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.model.Locatie;
 import nl.rivm.screenit.huisartsenportaal.repository.LocatieCriteriaRepository;
 import nl.rivm.screenit.huisartsenportaal.repository.LocatieRepository;
@@ -63,7 +62,7 @@ public class LocatieValidator extends BaseValidator<LocatieDto>
 			errors.reject("error.locaties.valid", "Niet alle velden van de locatie zijn (goed) gevuld.");
 		}
 
-		Locatie locatieMetDezelfdeNaam = isErEenLocatieMetDezelfdeNaam(dto);
+		var locatieMetDezelfdeNaam = isErEenLocatieMetDezelfdeNaam(dto);
 		if (locatieMetDezelfdeNaam != null)
 		{
 			if (locatieMetDezelfdeNaam.getStatus().equals(CervixLocatieStatus.ACTIEF)
@@ -97,24 +96,24 @@ public class LocatieValidator extends BaseValidator<LocatieDto>
 
 	private boolean isLocatieGoedIngevuld(LocatieDto locatieDto)
 	{
-		boolean isAdres = controleerAdresOpNullVelden(locatieDto.getLocatieAdres());
+		var isAdres = controleerAdresOpNullVelden(locatieDto.getLocatieAdres());
 		return CervixLocatieUtil.isLocatieCompleet(locatieDto) && isAdres;
 	}
 
 	private boolean controleerAdresOpNullVelden(AdresDto adresDto)
 	{
-		boolean isStraat = adresDto.getStraat() != null;
-		boolean isHuisnummer = adresDto.getHuisnummer() != null;
-		boolean isPostcode = adresDto.getPostcode() != null;
-		boolean isPlaats = adresDto.getWoonplaats() != null;
+		var isStraat = adresDto.getStraat() != null;
+		var isHuisnummer = adresDto.getHuisnummer() != null;
+		var isPostcode = adresDto.getPostcode() != null;
+		var isPlaats = adresDto.getWoonplaats() != null;
 		return isStraat && isHuisnummer && isPostcode && isPlaats;
 	}
 
 	private Locatie isErEenLocatieMetDezelfdeNaam(LocatieDto dto)
 	{
-		Huisarts huisarts = getIngelogdeHuisarts();
-		List<Locatie> locaties = locatieRepository.findByHuisarts(huisarts);
-		for (Locatie locatie : locaties)
+		var huisarts = getIngelogdeHuisarts();
+		var locaties = locatieRepository.findByHuisarts(huisarts);
+		for (var locatie : locaties)
 		{
 			if (StringUtils.lowerCase(locatie.getNaam()).equals(StringUtils.lowerCase(dto.getNaam())) && !locatie.getHuisartsportaalId().equals(dto.getHuisartsportaalId()))
 			{

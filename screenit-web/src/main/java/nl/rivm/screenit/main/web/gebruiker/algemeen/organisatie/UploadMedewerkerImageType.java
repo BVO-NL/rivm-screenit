@@ -45,7 +45,7 @@ public enum UploadMedewerkerImageType implements UploadImageType<Medewerker>
 			@Override
 			public UploadDocument setUploadDocument(IModel<Medewerker> model)
 			{
-				UploadDocument uploadDocument = createNieuwUploadDocument();
+				var uploadDocument = createNieuwUploadDocument();
 				model.getObject().setHandtekening(uploadDocument);
 				return uploadDocument;
 			}
@@ -81,7 +81,7 @@ public enum UploadMedewerkerImageType implements UploadImageType<Medewerker>
 
 	private static UploadDocument createNieuwUploadDocument()
 	{
-		UploadDocument uploadDocument = new UploadDocument();
+		var uploadDocument = new UploadDocument();
 		uploadDocument.setActief(true);
 		return uploadDocument;
 	}

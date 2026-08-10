@@ -132,7 +132,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 		filterModel.getObject().setGeprint(false);
 		filterModel.getObject().setControle(null);
 
-		final WebMarkupContainer documentContainer = new WebMarkupContainer("documentContainer");
+		final var documentContainer = new WebMarkupContainer("documentContainer");
 		documentContainer.setOutputMarkupId(true);
 		add(documentContainer);
 
@@ -153,7 +153,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 			protected void onTimer(AjaxRequestTarget target)
 			{
 				super.onTimer(target);
-				for (Component comp : postfixes)
+				for (var comp : postfixes)
 				{
 					target.add(comp);
 				}
@@ -161,7 +161,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 		};
 		add(timer);
 
-		final BootstrapDialog printDialog = new BootstrapDialog("printDialog")
+		final var printDialog = new BootstrapDialog("printDialog")
 		{
 			@Override
 			public void onClose(AjaxRequestTarget target)
@@ -173,7 +173,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 		add(printDialog);
 
 		ScreeningOrganisatie screeningOrganisatieToSet = null;
-		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, getPaginaRecht(mergedBrievenClass));
+		var toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, getPaginaRecht(mergedBrievenClass));
 		if (toegangLevel != ToegangLevel.LANDELIJK)
 		{
 			screeningOrganisatieToSet = ScreenitSession.get().getScreeningOrganisatie();
@@ -232,11 +232,11 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 			@Override
 			public void populateItem(Item<ICellPopulator<MB>> item, String componentId, IModel<MB> rowModel)
 			{
-				MergedBrieven mBrieven = (MergedBrieven) Hibernate.unproxy(rowModel.getObject());
+				var mBrieven = (MergedBrieven) Hibernate.unproxy(rowModel.getObject());
 				if (mBrieven.getControle())
 				{
-					SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-					String controleerValue = format.format(mBrieven.getControleerDatum());
+					var format = new SimpleDateFormat("dd-MM-yyyy");
+					var controleerValue = format.format(mBrieven.getControleerDatum());
 					controleerValue += " (aantal: " + mBrieven.getAantalBrieven() + ")";
 					item.add(new Label(componentId, Model.of(controleerValue)));
 				}
@@ -268,7 +268,7 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 		columns.add(new PropertyColumn<>(Model.of("Medewerker"), propertyChain(MergedBrieven_.AFGEDRUKT_DOOR, Medewerker_.ACHTERNAAM),
 			propertyChain(MergedBrieven_.AFGEDRUKT_DOOR, "naamVolledig")));
 
-		ScreenitDataTable<MB, String> brieven = new ScreenitDataTable<>("brieven", columns, new MergedBrievenDataProvider(), new Model<>(""));
+		var brieven = new ScreenitDataTable<MB, String>("brieven", columns, new MergedBrievenDataProvider(), new Model<>(""));
 
 		documentContainer.add(brieven);
 	}
@@ -359,23 +359,23 @@ public abstract class AfdrukkenDocumentenBasePage<MB extends MergedBrieven<?>> e
 
 	private <MBP extends MergedBrieven<?>> Component getAantalPostfixLabel(String id, Class<MBP> clazz)
 	{
-		Label label = new Label(id, new LoadableDetachableModel<String>()
+		var label = new Label(id, new LoadableDetachableModel<String>()
 		{
 			@Override
 			protected String load()
 			{
 				ScreeningOrganisatie screeningOrganisatieToSet = null;
-				ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, getPaginaRecht(clazz));
+				var toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, getPaginaRecht(clazz));
 				if (toegangLevel != ToegangLevel.LANDELIJK)
 				{
 					screeningOrganisatieToSet = ScreenitSession.get().getScreeningOrganisatie();
 				}
 
-				MergedBrievenFilter<MBP> mergedBrievenFilter = new MergedBrievenFilter<>();
+				var mergedBrievenFilter = new MergedBrievenFilter<MBP>();
 				mergedBrievenFilter.setMergedBrievenClass(clazz);
 				mergedBrievenFilter.setGeprint(false);
 				mergedBrievenFilter.setExctMatch(true);
-				Long aantalBrieven = briefService.countMergedBrieven(screeningOrganisatieToSet, mergedBrievenFilter);
+				var aantalBrieven = briefService.countMergedBrieven(screeningOrganisatieToSet, mergedBrievenFilter);
 				return "(" + aantalBrieven + ")";
 			}
 		});

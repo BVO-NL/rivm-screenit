@@ -32,7 +32,6 @@ import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.mamma.afspraken.IMammaAfspraakWijzigenFilter;
-import nl.rivm.screenit.dto.mamma.afspraken.MammaStandplaatsPeriodeMetAfstandDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
 import nl.rivm.screenit.main.exception.MagOpslaanException;
 import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
@@ -155,14 +154,14 @@ public class MammaStandplaatsPeriodeServiceImpl implements MammaStandplaatsPerio
 	@Override
 	public List<MammaStandplaats> getStandplaatsenBuitenRegio(IMammaAfspraakWijzigenFilter filter, boolean uitstellen)
 	{
-		List<MammaStandplaatsPeriodeMetAfstandDto> standplaatsPeriodeMetAfstandDtos = baseStandplaatsService.getStandplaatsPeriodeMetAfstandDtos(filter, uitstellen);
+		var standplaatsPeriodeMetAfstandDtos = baseStandplaatsService.getStandplaatsPeriodeMetAfstandDtos(filter, uitstellen);
 
 		Set<MammaStandplaats> standplaatsenBuitenRegio = new HashSet<>();
-		for (MammaStandplaatsPeriodeMetAfstandDto standplaatsPeriodeMetAfstandDto : standplaatsPeriodeMetAfstandDtos)
+		for (var standplaatsPeriodeMetAfstandDto : standplaatsPeriodeMetAfstandDtos)
 		{
-			MammaStandplaatsPeriode standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, standplaatsPeriodeMetAfstandDto.getStandplaatsPeriodeId());
+			var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, standplaatsPeriodeMetAfstandDto.getStandplaatsPeriodeId());
 
-			LocalDate vrijgegevenTotEnMetDatum = DateUtil.toLocalDate(standplaatsPeriode.getScreeningsEenheid().getVrijgegevenTotEnMet());
+			var vrijgegevenTotEnMetDatum = DateUtil.toLocalDate(standplaatsPeriode.getScreeningsEenheid().getVrijgegevenTotEnMet());
 			if (vrijgegevenTotEnMetDatum != null || uitstellen)
 			{
 				standplaatsenBuitenRegio.add(standplaatsPeriode.getStandplaatsRonde().getStandplaats());
@@ -174,14 +173,14 @@ public class MammaStandplaatsPeriodeServiceImpl implements MammaStandplaatsPerio
 	@Override
 	public List<MammaScreeningsEenheid> getScreeningEenhedenBuitenRegio(IMammaAfspraakWijzigenFilter filter, boolean uitstellen)
 	{
-		List<MammaStandplaatsPeriodeMetAfstandDto> standplaatsPeriodeMetAfstandDtos = baseStandplaatsService.getStandplaatsPeriodeMetAfstandDtos(filter, uitstellen);
+		var standplaatsPeriodeMetAfstandDtos = baseStandplaatsService.getStandplaatsPeriodeMetAfstandDtos(filter, uitstellen);
 
 		Set<MammaScreeningsEenheid> standplaatsenBuitenRegio = new HashSet<>();
-		for (MammaStandplaatsPeriodeMetAfstandDto standplaatsPeriodeMetAfstandDto : standplaatsPeriodeMetAfstandDtos)
+		for (var standplaatsPeriodeMetAfstandDto : standplaatsPeriodeMetAfstandDtos)
 		{
-			MammaStandplaatsPeriode standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, standplaatsPeriodeMetAfstandDto.getStandplaatsPeriodeId());
+			var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, standplaatsPeriodeMetAfstandDto.getStandplaatsPeriodeId());
 
-			LocalDate vrijgegevenTotEnMetDatum = DateUtil.toLocalDate(standplaatsPeriode.getScreeningsEenheid().getVrijgegevenTotEnMet());
+			var vrijgegevenTotEnMetDatum = DateUtil.toLocalDate(standplaatsPeriode.getScreeningsEenheid().getVrijgegevenTotEnMet());
 			if (vrijgegevenTotEnMetDatum != null || uitstellen)
 			{
 				standplaatsenBuitenRegio.add(standplaatsPeriode.getScreeningsEenheid());
@@ -319,7 +318,7 @@ public class MammaStandplaatsPeriodeServiceImpl implements MammaStandplaatsPerio
 		var datumLaatsteAfspraak = DateUtil.toLocalDate(afspraakService.getDatumLaatsteGeplandeAfspraak(standplaatsPeriodeDto.id));
 		if (datumLaatsteAfspraak != null && datumLaatsteAfspraak.isAfter(nieuweEindDatum) && !isLopendeStandplaatsPeriode(standplaatsPeriodeDto.vanaf, nieuweEindDatum))
 		{
-			String datumLaatsteAfspraakText = datumLaatsteAfspraak.format(DateUtil.LOCAL_DATE_FORMAT);
+			var datumLaatsteAfspraakText = datumLaatsteAfspraak.format(DateUtil.LOCAL_DATE_FORMAT);
 			throw new MagOpslaanException("Standplaatsperiode.einddatum.veranderen.overschrijdt.afspraak.na", datumLaatsteAfspraakText);
 		}
 	}
@@ -341,7 +340,7 @@ public class MammaStandplaatsPeriodeServiceImpl implements MammaStandplaatsPerio
 			var datumEersteAfspraakVolgendePeriode = DateUtil.toLocalDate(afspraakService.getDatumEersteGeplandeAfspraak(volgendeStandplaatsPeriode.id));
 			if (datumEersteAfspraakVolgendePeriode != null && !nieuweEindDatum.isBefore(datumEersteAfspraakVolgendePeriode))
 			{
-				String datumEersteAfspraakVolgendePeriodeText = datumEersteAfspraakVolgendePeriode.format(DateUtil.LOCAL_DATE_FORMAT);
+				var datumEersteAfspraakVolgendePeriodeText = datumEersteAfspraakVolgendePeriode.format(DateUtil.LOCAL_DATE_FORMAT);
 				throw new MagOpslaanException("Standplaatsperiode.einddatum.veranderen.overschrijdt.afspraak.voor", datumEersteAfspraakVolgendePeriodeText);
 			}
 		}

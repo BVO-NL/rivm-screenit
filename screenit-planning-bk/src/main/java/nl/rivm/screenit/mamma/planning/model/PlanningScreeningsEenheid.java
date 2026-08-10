@@ -78,13 +78,13 @@ public class PlanningScreeningsEenheid extends PlanningEntiteit
 		blokSet.clear();
 		dagNavigableMap.clear();
 		weekNavigableMap.clear();
-		for (LocalDate date = PlanningConstanten.plannenVanafDatum; date.compareTo(PlanningConstanten.plannenTotEnMetDatum) <= 0; date = date.plusDays(1))
+		for (var date = PlanningConstanten.plannenVanafDatum; date.compareTo(PlanningConstanten.plannenTotEnMetDatum) <= 0; date = date.plusDays(1))
 		{
 			var dag = new PlanningDag(date, this);
 			putDag(date, dag);
 
-			LocalDate weekDag = date.with(MONDAY);
-			PlanningWeek week = weekNavigableMap.get(weekDag);
+			var weekDag = date.with(MONDAY);
+			var week = weekNavigableMap.get(weekDag);
 			if (week == null)
 			{
 				week = new PlanningWeek(weekDag);

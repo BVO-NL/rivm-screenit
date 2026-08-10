@@ -49,7 +49,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.GebeurtenisBron;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -114,7 +113,7 @@ public class ClientDossierPanel extends GenericPanel<Client>
 		IModel<ClientDossierFilter> zoekObjectModel;
 		if (!ScreenitSession.get().isZoekObjectGezetForComponent(ClientPage.class))
 		{
-			List<Bevolkingsonderzoek> bevolkingsonderzoeken = ingelogdeOrganisatieMedewerker.getBevolkingsonderzoeken();
+			var bevolkingsonderzoeken = ingelogdeOrganisatieMedewerker.getBevolkingsonderzoeken();
 			zoekObjectModel = new Model<>(new ClientDossierFilter(new ArrayList<>(bevolkingsonderzoeken), Boolean.TRUE));
 			ScreenitSession.get().setZoekObject(ClientPage.class, zoekObjectModel);
 		}
@@ -128,7 +127,7 @@ public class ClientDossierPanel extends GenericPanel<Client>
 			@Override
 			protected void doFilter(IModel<ClientDossierFilter> filterModel, AjaxRequestTarget target)
 			{
-				ListView<ScreeningRondeGebeurtenissen> newlistView = getGebeurtenissenContainer(filterModel.getObject());
+				var newlistView = getGebeurtenissenContainer(filterModel.getObject());
 				ClientDossierPanel.this.listView.replaceWith(newlistView);
 				ClientDossierPanel.this.listView = newlistView;
 				target.add(gebeurtenissenContainer);
@@ -168,7 +167,7 @@ public class ClientDossierPanel extends GenericPanel<Client>
 		dossierModel = new DetachableListModel<>(dossierService.getScreeningRondeGebeurtenissen((Client) ClientDossierPanel.this.getDefaultModelObject(), clientDossierFilter));
 		var client = getModelObject();
 
-		ListView<ScreeningRondeGebeurtenissen> rondeListView = new ListView<>("rondes", dossierModel)
+		var rondeListView = new ListView<>("rondes", dossierModel)
 		{
 			@Override
 			protected void populateItem(ListItem<ScreeningRondeGebeurtenissen> item)
@@ -191,7 +190,7 @@ public class ClientDossierPanel extends GenericPanel<Client>
 					break;
 				}
 				item.add(new Label("index", item.getModelObject().getRondenr() + ""));
-				boolean gepushtbadge = false;
+				var gepushtbadge = false;
 				if (ColonScreeningRonde.class.equals(hibernateService.getDeproxiedClass(item.getModelObject().getScreeningRonde())))
 				{
 					gepushtbadge = ((ColonScreeningRonde) item.getModelObject().getScreeningRonde()).isGepusht();
@@ -216,9 +215,9 @@ public class ClientDossierPanel extends GenericPanel<Client>
 			protected void populateItem(final ListItem<ScreeningRondeGebeurtenis> item)
 			{
 				var screeningRondeGebeurtenis = item.getModelObject();
-				IModel<Client> clientModel = ClientDossierPanel.this.getModel();
+				var clientModel = ClientDossierPanel.this.getModel();
 
-				final TypeGebeurtenis gebeurtenis = screeningRondeGebeurtenis.getGebeurtenis();
+				final var gebeurtenis = screeningRondeGebeurtenis.getGebeurtenis();
 				item.add(DateLabel.forDatePattern("datum", "dd-MM-yyyy HH:mm:ss"));
 				item.add(new EnumLabel<TypeGebeurtenis>("gebeurtenis"));
 				item.add(new EnumLabel<GebeurtenisBron>("bron"));
@@ -273,8 +272,8 @@ public class ClientDossierPanel extends GenericPanel<Client>
 						{
 							dialog.setCloseCallback((IDialogCloseCallback) target1 ->
 							{
-								ListView<ScreeningRondeGebeurtenissen> list = getGebeurtenissenContainer(clientDossierFilter);
-								WebMarkupContainer nieuwGebCont = new WebMarkupContainer("gebeurtenissenContainer");
+								var list = getGebeurtenissenContainer(clientDossierFilter);
+								var nieuwGebCont = new WebMarkupContainer("gebeurtenissenContainer");
 								nieuwGebCont.setOutputMarkupId(true);
 								nieuwGebCont.add(list);
 								gebeurtenissenContainer.replaceWith(nieuwGebCont);
@@ -286,7 +285,7 @@ public class ClientDossierPanel extends GenericPanel<Client>
 					});
 				}
 
-				ColonScreeningRonde colonScreeningRonde = (ColonScreeningRonde) screeningRondeGebeurtenis.getScreeningRondeGebeurtenissen()
+				var colonScreeningRonde = (ColonScreeningRonde) screeningRondeGebeurtenis.getScreeningRondeGebeurtenissen()
 					.getScreeningRonde();
 				if (gebeurtenis.equals(TypeGebeurtenis.AFGEROND))
 				{
@@ -308,8 +307,8 @@ public class ClientDossierPanel extends GenericPanel<Client>
 			@Override
 			protected void populateItem(final ListItem<ScreeningRondeGebeurtenis> item)
 			{
-				ScreeningRondeGebeurtenis screeningRondeGebeurtenis = item.getModelObject();
-				final TypeGebeurtenis gebeurtenis = screeningRondeGebeurtenis.getGebeurtenis();
+				var screeningRondeGebeurtenis = item.getModelObject();
+				final var gebeurtenis = screeningRondeGebeurtenis.getGebeurtenis();
 
 				item.add(DateLabel.forDatePattern("datum", "dd-MM-yyyy HH:mm:ss"));
 				item.add(new EnumLabel<TypeGebeurtenis>("gebeurtenis"));
@@ -339,8 +338,8 @@ public class ClientDossierPanel extends GenericPanel<Client>
 						{
 							dialog.setCloseCallback((IDialogCloseCallback) target1 ->
 							{
-								ListView<ScreeningRondeGebeurtenissen> list = getGebeurtenissenContainer(clientDossierFilter);
-								WebMarkupContainer nieuwGebCont = new WebMarkupContainer("gebeurtenissenContainer");
+								var list = getGebeurtenissenContainer(clientDossierFilter);
+								var nieuwGebCont = new WebMarkupContainer("gebeurtenissenContainer");
 								nieuwGebCont.setOutputMarkupId(true);
 								nieuwGebCont.add(list);
 								gebeurtenissenContainer.replaceWith(nieuwGebCont);
@@ -422,8 +421,8 @@ public class ClientDossierPanel extends GenericPanel<Client>
 						{
 							dialog.setCloseCallback((IDialogCloseCallback) target1 ->
 							{
-								ListView<ScreeningRondeGebeurtenissen> list = getGebeurtenissenContainer(clientDossierFilter);
-								WebMarkupContainer nieuwGebCont = new WebMarkupContainer("gebeurtenissenContainer");
+								var list = getGebeurtenissenContainer(clientDossierFilter);
+								var nieuwGebCont = new WebMarkupContainer("gebeurtenissenContainer");
 								nieuwGebCont.setOutputMarkupId(true);
 								nieuwGebCont.add(list);
 								gebeurtenissenContainer.replaceWith(nieuwGebCont);
@@ -466,8 +465,8 @@ public class ClientDossierPanel extends GenericPanel<Client>
 	{
 		item.add(new Label("extraOmschrijving", (IModel<String>) () ->
 		{
-			ScreeningRondeGebeurtenis screeningRondeGebeurtenis = item.getModelObject();
-			String[] extraOmschrijvingen = screeningRondeGebeurtenis.getExtraOmschrijving();
+			var screeningRondeGebeurtenis = item.getModelObject();
+			var extraOmschrijvingen = screeningRondeGebeurtenis.getExtraOmschrijving();
 			return BriefOmschrijvingUtil.verwerkExtraOmschrijvingen(extraOmschrijvingen, ClientDossierPanel.this::getString);
 		})
 		{
@@ -495,13 +494,13 @@ public class ClientDossierPanel extends GenericPanel<Client>
 
 	private WebMarkupContainer getProjectBadge(Client client, Bevolkingsonderzoek onderzoek)
 	{
-		List<ProjectClient> projectClienten = ProjectUtil.getProjectClientenForBVO(client, onderzoek, currentDateSupplier.getDate());
-		RepeatingView projectBadges = new RepeatingView("projectBadges");
-		for (ProjectClient projectClient : projectClienten)
+		var projectClienten = ProjectUtil.getProjectClientenForBVO(client, onderzoek, currentDateSupplier.getDate());
+		var projectBadges = new RepeatingView("projectBadges");
+		for (var projectClient : projectClienten)
 		{
-			Boolean isActief = ProjectUtil.isClientActiefInProject(projectClient, currentDateSupplier.getDate());
-			String clientProjectLabel = ProjectUtil.getClientActiefInProjectString(projectClient, currentDateSupplier.getDate());
-			Label label = new Label(projectBadges.newChildId(), Model.of(clientProjectLabel));
+			var isActief = ProjectUtil.isClientActiefInProject(projectClient, currentDateSupplier.getDate());
+			var clientProjectLabel = ProjectUtil.getClientActiefInProjectString(projectClient, currentDateSupplier.getDate());
+			var label = new Label(projectBadges.newChildId(), Model.of(clientProjectLabel));
 			if (isActief)
 			{
 				label.add(new AttributeAppender("class", Model.of("status-actief"), " "));

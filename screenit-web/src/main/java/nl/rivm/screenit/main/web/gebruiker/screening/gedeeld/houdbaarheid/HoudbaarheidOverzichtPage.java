@@ -50,7 +50,7 @@ public abstract class HoudbaarheidOverzichtPage<H extends AbstractHoudbaarheid> 
 
 	public HoudbaarheidOverzichtPage()
 	{
-		List<IColumn<H, String>> columns = createColumns();
+		var columns = createColumns();
 
 		add(new ScreenitDataTable<H, String>("data", columns,
 			new HoudbaarheidDataProvider<H>((Class<H>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]), 10, new Model<>("actuele batches"))

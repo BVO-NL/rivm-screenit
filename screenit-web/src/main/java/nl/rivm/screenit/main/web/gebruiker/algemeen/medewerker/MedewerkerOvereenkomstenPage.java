@@ -27,7 +27,6 @@ import nl.rivm.screenit.main.service.OvereenkomstService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.overeenkomsten.AfgeslotenOvereenkomstPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -64,15 +63,15 @@ public class MedewerkerOvereenkomstenPage extends MedewerkerBeheer
 	{
 		IModel<Boolean> actiefModel = new Model<>(Boolean.TRUE);
 
-		Medewerker medewerker = getCurrentSelectedMedewerker();
-		Actie actie = autorisatieService.getActieVoorMedewerker(getIngelogdeOrganisatieMedewerker(), medewerker, Recht.MEDEWERKER_OVEREENKOMSTEN_BEHEER);
+		var medewerker = getCurrentSelectedMedewerker();
+		var actie = autorisatieService.getActieVoorMedewerker(getIngelogdeOrganisatieMedewerker(), medewerker, Recht.MEDEWERKER_OVEREENKOMSTEN_BEHEER);
 
 		add(new AfgeslotenOvereenkomstPanel("overeenkomstenPanel", actie, medewerker, new KwaliteitsOvereenkomstDataProvider(actiefModel), actiefModel)
 		{
 			@Override
 			protected AbstractAfgeslotenOvereenkomst createAfgeslotenOvereenkomst()
 			{
-				AfgeslotenMedewerkerOvereenkomst afgeslotenMedewerkerOvereenkomst = new AfgeslotenMedewerkerOvereenkomst();
+				var afgeslotenMedewerkerOvereenkomst = new AfgeslotenMedewerkerOvereenkomst();
 				afgeslotenMedewerkerOvereenkomst.setMedewerker(ScreenitSession.get().getCurrentSelectedMedewerker());
 				afgeslotenMedewerkerOvereenkomst.setScreeningOrganisatie(ScreenitSession.get().getScreeningOrganisatie());
 				afgeslotenMedewerkerOvereenkomst.setTeAccoderen(true);

@@ -33,7 +33,7 @@ class OnderzoekDtoMapper
 	{
 		if (onderzoek != null)
 		{
-			OnderzoekSeDto onderzoekDto = new OnderzoekSeDto();
+			var onderzoekDto = new OnderzoekSeDto();
 			onderzoekDto.setId(onderzoek.getId());
 			onderzoekDto.setEerderMammogramJaartal(onderzoek.getEerderMammogramJaartal());
 			onderzoekDto.setEerderMammogramZorginstellingId(onderzoek.getEerderMammogramZorginstelling() != null ? onderzoek.getEerderMammogramZorginstelling().getId() : null);

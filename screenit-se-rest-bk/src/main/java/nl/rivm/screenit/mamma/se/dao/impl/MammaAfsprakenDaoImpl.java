@@ -65,7 +65,7 @@ public class MammaAfsprakenDaoImpl implements MammaAfsprakenDao
 		query.setParameterList("clientIds", clientIds);
 		final List<Object[]> queryResult = query.list();
 		Map<Long, ClientIdentificatie> result = new HashMap<>();
-		for (Object[] entry : queryResult)
+		for (var entry : queryResult)
 		{
 			result.put((Long) entry[0],
 				new ClientIdentificatie(MammaIdentificatiesoort.valueOf((String) entry[1]), (String) entry[2]));

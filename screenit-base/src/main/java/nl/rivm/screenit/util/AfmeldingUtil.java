@@ -38,7 +38,7 @@ public final class AfmeldingUtil
 
 	public static boolean isEenmaligOfDefinitiefAfgemeld(Dossier<?, ?> dossier)
 	{
-		boolean isAfgemeld = false;
+		var isAfgemeld = false;
 
 		if (isAfgerondeDefinitieveAfmelding(dossier.getLaatsteAfmelding()))
 		{
@@ -114,7 +114,7 @@ public final class AfmeldingUtil
 		if (DossierStatus.INACTIEF.equals(dossier.getStatus()))
 		{
 			var definitieveAfmeldingen = dossier.getAfmeldingen();
-			for (A afmelding : definitieveAfmeldingen)
+			for (var afmelding : definitieveAfmeldingen)
 			{
 				if (isAfmeldingVerwerktNietHeraangemeld(afmelding))
 				{
@@ -122,7 +122,7 @@ public final class AfmeldingUtil
 				}
 			}
 			var eenmaligOfTijdelijkeAfmeldingen = dossier.getLaatsteScreeningRonde().getAfmeldingen();
-			for (A afmelding : eenmaligOfTijdelijkeAfmeldingen)
+			for (var afmelding : eenmaligOfTijdelijkeAfmeldingen)
 			{
 				if (isAfgerondeAfmeldingNietHeraangemeldEnJuisteType(afmelding, AfmeldingType.TIJDELIJK))
 				{
@@ -132,7 +132,7 @@ public final class AfmeldingUtil
 		}
 		else if (DossierStatus.ACTIEF.equals(dossier.getStatus()) && dossier.getLaatsteScreeningRonde() != null)
 		{
-			for (A afmelding : dossier.getLaatsteScreeningRonde().getAfmeldingen())
+			for (var afmelding : dossier.getLaatsteScreeningRonde().getAfmeldingen())
 			{
 				if (isAfgerondeAfmeldingNietHeraangemeldEnJuisteType(afmelding, AfmeldingType.EENMALIG))
 				{
@@ -158,7 +158,7 @@ public final class AfmeldingUtil
 		if (laatsteRonde != null)
 		{
 			var afmeldingen = laatsteRonde.getAfmeldingen();
-			for (int i = afmeldingen.size(); i-- > 0; )
+			for (var i = afmeldingen.size(); i-- > 0; )
 			{
 				var afmelding = afmeldingen.get(i);
 				if (AfmeldingType.TIJDELIJK == afmelding.getType())

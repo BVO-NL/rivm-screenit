@@ -57,20 +57,20 @@ public class PlanningPostcodeReeks extends PlanningEntiteit
 		Integer vanCijfer = Integer.parseInt(vanPostcode.substring(0, 4));
 		Integer maxCijfer = Integer.parseInt(totPostcode.substring(0, 4));
 
-		char vanLetter1 = vanPostcode.charAt(4);
-		char totLetter1 = totPostcode.charAt(4);
-		char vanLetter2 = vanPostcode.charAt(5);
-		char totLetter2 = totPostcode.charAt(5);
+		var vanLetter1 = vanPostcode.charAt(4);
+		var totLetter1 = totPostcode.charAt(4);
+		var vanLetter2 = vanPostcode.charAt(5);
+		var totLetter2 = totPostcode.charAt(5);
 
 		for (int cijfer = vanCijfer; cijfer <= maxCijfer; cijfer++)
 		{
-			char letter1 = cijfer == vanCijfer ? vanLetter1 : 'A';
-			char maxLetter1 = cijfer == maxCijfer ? totLetter1 : 'Z';
+			var letter1 = cijfer == vanCijfer ? vanLetter1 : 'A';
+			var maxLetter1 = cijfer == maxCijfer ? totLetter1 : 'Z';
 
 			for (; letter1 <= maxLetter1; letter1++)
 			{
-				char letter2 = cijfer == vanCijfer && letter1 == vanLetter1 ? vanLetter2 : 'A';
-				char maxLetter2 = cijfer == maxCijfer && letter1 == totLetter1 ? totLetter2 : 'Z';
+				var letter2 = cijfer == vanCijfer && letter1 == vanLetter1 ? vanLetter2 : 'A';
+				var maxLetter2 = cijfer == maxCijfer && letter1 == totLetter1 ? totLetter2 : 'Z';
 
 				for (; letter2 <= maxLetter2; letter2++)
 				{
@@ -97,14 +97,14 @@ public class PlanningPostcodeReeks extends PlanningEntiteit
 
 	public boolean inPostcodeReeks(PlanningClient client)
 	{
-		String postcode = client.getPostcode();
+		var postcode = client.getPostcode();
 		return postcode.compareTo(vanPostcode) >= 0 && postcode.compareTo(totPostcode) <= 0;
 	}
 
 	public PlanningPostcodeReeksRegio getPostcodeReeksRegio(PlanningClient client)
 	{
-		String postcodeCijfer = client.getPostcode().substring(0, 4);
-		PlanningPostcodeReeksRegio postcodeReeksRegio = postcodeReeksRegioMap.get(postcodeCijfer);
+		var postcodeCijfer = client.getPostcode().substring(0, 4);
+		var postcodeReeksRegio = postcodeReeksRegioMap.get(postcodeCijfer);
 		if (postcodeReeksRegio == null)
 		{
 			postcodeReeksRegio = new PlanningPostcodeReeksRegio(postcodeCijfer);

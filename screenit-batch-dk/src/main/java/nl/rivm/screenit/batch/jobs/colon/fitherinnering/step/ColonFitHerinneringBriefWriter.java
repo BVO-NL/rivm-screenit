@@ -61,7 +61,7 @@ public class ColonFitHerinneringBriefWriter extends BaseWriter<Client>
 
 	private void updateExecutionPlusOne()
 	{
-		int herinnerd = getExecutionContext().getInt(ColonFitHerinneringJobConstants.HERINNERD);
+		var herinnerd = getExecutionContext().getInt(ColonFitHerinneringJobConstants.HERINNERD);
 		getExecutionContext().put(ColonFitHerinneringJobConstants.HERINNERD, herinnerd + 1);
 	}
 }

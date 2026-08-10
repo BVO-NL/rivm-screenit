@@ -34,7 +34,6 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.InlogStatus;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.Organisatie;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
@@ -80,7 +79,7 @@ public class BaseMedewerkerServiceImpl implements BaseMedewerkerService
 	public ScreeningOrganisatie getScreeningOrganisatie(Medewerker medewerker)
 	{
 		List<ScreeningOrganisatie> screeningOrganisaties = new ArrayList<>();
-		for (OrganisatieMedewerker organisatieMedewerker : medewerker.getOrganisatieMedewerkers())
+		for (var organisatieMedewerker : medewerker.getOrganisatieMedewerkers())
 		{
 			if (ScreeningOrganisatie.class.isAssignableFrom(Hibernate.getClass(organisatieMedewerker.getOrganisatie())))
 			{
@@ -116,12 +115,12 @@ public class BaseMedewerkerServiceImpl implements BaseMedewerkerService
 			else if (pathologen.size() > 1 && organisatie != null)
 			{
 
-				boolean gebruikerNietUniek = false;
-				for (Medewerker subMedewerker : pathologen)
+				var gebruikerNietUniek = false;
+				for (var subMedewerker : pathologen)
 				{
 					if (subMedewerker.getOrganisatieMedewerkers() != null)
 					{
-						for (OrganisatieMedewerker organisatieMedewerker : subMedewerker.getOrganisatieMedewerkers())
+						for (var organisatieMedewerker : subMedewerker.getOrganisatieMedewerkers())
 						{
 							if (Boolean.TRUE.equals(organisatieMedewerker.getActief()) && Boolean.TRUE.equals(organisatieMedewerker.getOrganisatie().getActief())
 								&& organisatieMedewerker.getOrganisatie().equals(organisatie))

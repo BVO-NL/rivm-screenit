@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.NavigableSet;
 import java.util.Set;
 
 import nl.rivm.screenit.mamma.planning.model.PlanningClient;
@@ -33,8 +32,6 @@ import nl.rivm.screenit.mamma.planning.model.PlanningPostcodeReeks;
 import nl.rivm.screenit.mamma.planning.model.PlanningPostcodeReeksRegio;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaats;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsRonde;
 import nl.rivm.screenit.mamma.planning.model.PlanningTehuis;
 
 public enum PlanningWijzigingen
@@ -55,7 +52,7 @@ public enum PlanningWijzigingen
 
 	public static PlanningWijzigingenRoute getWijzigingenRoute(PlanningScreeningsEenheid screeningsEenheid)
 	{
-		PlanningWijzigingenRoute wijzigingenRoute = wijzigingenRouteMap.get(screeningsEenheid);
+		var wijzigingenRoute = wijzigingenRouteMap.get(screeningsEenheid);
 		if (wijzigingenRoute == null)
 		{
 			wijzigingenRoute = new PlanningWijzigingenRoute(screeningsEenheid);
@@ -68,9 +65,9 @@ public enum PlanningWijzigingen
 	{
 		getStandplaatsSet().add(standplaats);
 
-		for (PlanningStandplaatsRonde standplaatsRonde : standplaats.getStandplaatsRondeNavigableSet())
+		for (var standplaatsRonde : standplaats.getStandplaatsRondeNavigableSet())
 		{
-			for (PlanningStandplaatsPeriode standplaatsPeriode : standplaatsRonde.getStandplaatsPeriodeNavigableSet())
+			for (var standplaatsPeriode : standplaatsRonde.getStandplaatsPeriodeNavigableSet())
 			{
 				getWijzigingenRoute(standplaatsPeriode.getScreeningsEenheid()).setVanafStandplaatsPeriode(standplaatsPeriode);
 			}
@@ -116,13 +113,13 @@ public enum PlanningWijzigingen
 		{
 			if (wijzigingenRoute.getVanafStandplaatsPeriode() != null)
 			{
-				NavigableSet<PlanningStandplaatsPeriode> standplaatsPeriodeNavigableSet = screeningsEenheid.getStandplaatsPeriodeNavigableSet().tailSet(
+				var standplaatsPeriodeNavigableSet = screeningsEenheid.getStandplaatsPeriodeNavigableSet().tailSet(
 					wijzigingenRoute.getVanafStandplaatsPeriode(),
 					true);
 
-				for (PlanningStandplaatsPeriode standplaatsPeriode : standplaatsPeriodeNavigableSet)
+				for (var standplaatsPeriode : standplaatsPeriodeNavigableSet)
 				{
-					NavigableSet<PlanningStandplaatsPeriode> gesplitsteStandplaatsPeriodeNavigableSet = standplaatsPeriode.getStandplaatsRonde().getStandplaatsPeriodeNavigableSet()
+					var gesplitsteStandplaatsPeriodeNavigableSet = standplaatsPeriode.getStandplaatsRonde().getStandplaatsPeriodeNavigableSet()
 						.tailSet(standplaatsPeriode, false);
 
 					gesplitsteStandplaatsPeriodeNavigableSet.forEach(gesplitsteStandplaatsPeriode -> getWijzigingenRoute(gesplitsteStandplaatsPeriode.getScreeningsEenheid())

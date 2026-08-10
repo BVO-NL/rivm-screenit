@@ -26,7 +26,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.dto.mamma.planning.PlanningStatusDto;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.PollingAbstractAjaxTimerBehavior;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
@@ -38,7 +37,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.dashboard.Ma
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.screeningseenheid.MammaSEZoekenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.standplaats.MammaStandplaatsZoekenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.tehuis.MammaTehuisZoekenPage;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.enums.MammaPlanningStatus;
@@ -62,7 +60,7 @@ public abstract class MammaPlanningBasePage extends MammaScreeningBasePage
 	{
 		super();
 		ScreenitSession.get().setInPlanningmodule(true);
-		ScreeningOrganisatie sessionSO = ScreenitSession.get().getScreeningOrganisatie();
+		var sessionSO = ScreenitSession.get().getScreeningOrganisatie();
 		ingelogdNamensRegio = sessionSO != null;
 		magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN) && ingelogdNamensRegio;
 	}
@@ -78,10 +76,10 @@ public abstract class MammaPlanningBasePage extends MammaScreeningBasePage
 			protected void onTimer(AjaxRequestTarget target)
 			{
 				super.onTimer(target);
-				PlanningStatusDto statusDto = conceptPlanningsApplicatie.getStatus();
+				var statusDto = conceptPlanningsApplicatie.getStatus();
 				if (statusDto.getStatus() != MammaPlanningStatus.OPERATIONEEL)
 				{
-					MammaPlanningStatusPopupPanel popup = new MammaPlanningStatusPopupPanel(IDialog.CONTENT_ID, statusDto)
+					var popup = new MammaPlanningStatusPopupPanel(IDialog.CONTENT_ID, statusDto)
 					{
 						@Override
 						protected void onPlanningOperationeel(AjaxRequestTarget target)
@@ -114,7 +112,7 @@ public abstract class MammaPlanningBasePage extends MammaScreeningBasePage
 	@Override
 	protected Component maakContextMenuExtensie(String id)
 	{
-		PlanningStatusDto statusDto = conceptPlanningsApplicatie.getStatus();
+		var statusDto = conceptPlanningsApplicatie.getStatus();
 		if (statusDto.getStatus() != MammaPlanningStatus.OPERATIONEEL)
 		{
 			throw new RestartResponseAtInterceptPageException(MammaPlanningNietOperationeelPage.class);

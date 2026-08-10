@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import nl.rivm.screenit.main.model.Parameterisatie;
 import nl.rivm.screenit.main.service.ParameterisatieService;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
@@ -52,7 +51,7 @@ public class MammaParameterisatiePage extends ParameterisatieBasePage
 
 	public MammaParameterisatiePage()
 	{
-		Parameterisatie parameterisatie = parameterisatieService.loadParameterisatie();
+		var parameterisatie = parameterisatieService.loadParameterisatie();
 		add(new MammaPrimaireParametersPanel("landelijkeParameters", new Model<>(parameterisatie)));
 
 		List<MammaUitnodigingsinterval> intervalParameters = new ArrayList<>(parameterisatieService.getMammmaIntervalParameters());

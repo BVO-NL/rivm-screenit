@@ -88,7 +88,7 @@ public class LogFilter implements Filter
 				Class<?> ingelogdAccountClass = session.getLoggedInAccountClass();
 				if (ingelogdAccountClass != null)
 				{
-					String prefix = "";
+					var prefix = "";
 					if (Medewerker.class.isAssignableFrom(ingelogdAccountClass))
 					{
 						prefix = "G";

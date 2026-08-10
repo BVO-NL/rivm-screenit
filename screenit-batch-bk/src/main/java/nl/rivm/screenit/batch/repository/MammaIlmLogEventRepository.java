@@ -32,8 +32,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface MammaIlmLogEventRepository extends BaseJpaRepository<MammaIlmLogEvent>
 {
-	@Query("SELECT ilmLogEvent.rapportage FROM MammaIlmLogEvent ilmLogEvent " +
-		"JOIN ilmLogEvent.logRegel logRegel " +
-		"ORDER BY logRegel.gebeurtenisDatum DESC")
+	@Query("""
+		SELECT ilmLogEvent.rapportage FROM MammaIlmLogEvent ilmLogEvent
+		JOIN LogRegel logRegel ON logRegel.logEvent = ilmLogEvent
+		ORDER BY logRegel.gebeurtenisDatum DESC""")
 	List<MammaIlmBeeldenStatusRapportage> haalRapportagesOp(Pageable pageable);
 }

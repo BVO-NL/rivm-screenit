@@ -24,12 +24,8 @@ package nl.rivm.screenit.hl7v3.cda.helper;
 import java.io.StringReader;
 
 import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.Unmarshaller;
-import jakarta.xml.bind.ValidationEvent;
 import jakarta.xml.bind.util.ValidationEventCollector;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.sax.SAXSource;
 
 import nl.rivm.screenit.hl7v3.cda.ClinicalDocument;
@@ -43,7 +39,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
 
 public class ExtractCDA
 {
@@ -95,16 +90,16 @@ public class ExtractCDA
 		{
 			setSystemPropertiesForParserEnTransformer();
 
-			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			ValidationEventCollector vec = new ValidationEventCollector();
+			var unmarshaller = jaxbContext.createUnmarshaller();
+			var vec = new ValidationEventCollector();
 			unmarshaller.setEventHandler(vec);
 
 			object = (ClinicalDocument) unmarshaller.unmarshal(getSource(cda));
 
 			if (vec.hasEvents())
 			{
-				ValidationEvent[] events = vec.getEvents();
-				for (ValidationEvent event : events)
+				var events = vec.getEvents();
+				for (var event : events)
 				{
 					LOG.warn("Schema validation event: ", event.getMessage());
 				}
@@ -122,7 +117,7 @@ public class ExtractCDA
 	{
 		try
 		{
-			SAXParserFactory spf = SAXParserFactoryImpl.newInstance();
+			var spf = SAXParserFactoryImpl.newInstance();
 			spf.setNamespaceAware(true);
 			spf.setValidating(true);
 
@@ -134,7 +129,7 @@ public class ExtractCDA
 
 			spf.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
 
-			SAXParser saxParser = spf.newSAXParser();
+			var saxParser = spf.newSAXParser();
 			try
 			{
 				saxParser.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
@@ -145,7 +140,7 @@ public class ExtractCDA
 				LOG.error(x.getMessage(), x);
 			}
 
-			XMLReader xmlReader = saxParser.getXMLReader();
+			var xmlReader = saxParser.getXMLReader();
 			xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
 
 			xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);

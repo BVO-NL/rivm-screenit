@@ -35,15 +35,15 @@ public final class CodeGenerator
 
 	public static String genereerCode(int aantalCodeSegmenten, int segmentenLengte)
 	{
-		Random random = new Random();
-		String code = "";
-		for (int s = 0; s < aantalCodeSegmenten; s++)
+		var random = new Random();
+		var code = "";
+		for (var s = 0; s < aantalCodeSegmenten; s++)
 		{
 			if (s > 0)
 			{
 				code += "-";
 			}
-			for (int l = 0; l < segmentenLengte; l++)
+			for (var l = 0; l < segmentenLengte; l++)
 			{
 				code += characters[random.nextInt(characters.length)];
 			}

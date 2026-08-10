@@ -89,7 +89,7 @@ public class ColonFitHerinneringJobListener extends BaseLogListener
 		else if (!Level.ERROR.equals(herinneringLogEvent.getLevel()))
 		{
 			herinneringLogEvent.setLevel(Level.INFO);
-			String melding = "Aantal herinneringsbrieven gemaakt: " + herinneringLogEvent.getAantalHerinnering();
+			var melding = "Aantal herinneringsbrieven gemaakt: " + herinneringLogEvent.getAantalHerinnering();
 			herinneringLogEvent.setMelding(melding);
 		}
 		return herinneringLogEvent;

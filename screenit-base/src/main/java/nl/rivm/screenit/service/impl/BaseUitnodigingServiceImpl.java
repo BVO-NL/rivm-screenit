@@ -27,7 +27,6 @@ import java.util.Arrays;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.JoinType;
 
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.InpakbareUitnodiging;
 import nl.rivm.screenit.model.Persoon;
@@ -42,7 +41,6 @@ import nl.rivm.screenit.model.colon.ColonScreeningRonde_;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.ColonUitnodiging_;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
-import nl.rivm.screenit.model.gba.GbaMutatie;
 import nl.rivm.screenit.model.logging.LoggingZoekCriteria;
 import nl.rivm.screenit.repository.cervix.CervixUitnodigingRepository;
 import nl.rivm.screenit.repository.colon.ColonUitnodigingRepository;
@@ -86,8 +84,8 @@ public class BaseUitnodigingServiceImpl implements BaseUitnodigingService
 	@Override
 	public <U extends Uitnodiging<?>> boolean heeftAlEenNieuwereUitnodiging(U huidigeUitnodiging)
 	{
-		boolean heeftAlEenNieuwereUitnodiging = false;
-		for (Uitnodiging<?> uitnodiging : huidigeUitnodiging.getScreeningRonde().getUitnodigingen())
+		var heeftAlEenNieuwereUitnodiging = false;
+		for (var uitnodiging : huidigeUitnodiging.getScreeningRonde().getUitnodigingen())
 		{
 			if (DateUtil.compareAfter(uitnodiging.getCreatieDatum(), huidigeUitnodiging.getCreatieDatum()))
 			{
@@ -109,10 +107,10 @@ public class BaseUitnodigingServiceImpl implements BaseUitnodigingService
 	@Override
 	public <U extends InpakbareUitnodiging<?>> boolean isAdresGewijzigdNaUitnodigingsdatum(U uitnodiging)
 	{
-		boolean isAdresGewijzigd = false;
-		Client client = uitnodiging.getScreeningRonde().getDossier().getClient();
-		boolean kanVersturenMetTijdelijkAdres = clientService.isTijdelijkeAdresNuActueel(client.getPersoon());
-		boolean verstuurdMetTijdelijkAdres = isVerstuurdMetTijdelijkAdres(uitnodiging);
+		var isAdresGewijzigd = false;
+		var client = uitnodiging.getScreeningRonde().getDossier().getClient();
+		var kanVersturenMetTijdelijkAdres = clientService.isTijdelijkeAdresNuActueel(client.getPersoon());
+		var verstuurdMetTijdelijkAdres = isVerstuurdMetTijdelijkAdres(uitnodiging);
 
 		isAdresGewijzigd |= verstuurdMetTijdelijkAdres && !kanVersturenMetTijdelijkAdres;
 
@@ -125,7 +123,7 @@ public class BaseUitnodigingServiceImpl implements BaseUitnodigingService
 		if (!isAdresGewijzigd && verstuurdMetTijdelijkAdres && kanVersturenMetTijdelijkAdres)
 		{
 
-			LoggingZoekCriteria loggingZoekCriteria = new LoggingZoekCriteria();
+			var loggingZoekCriteria = new LoggingZoekCriteria();
 
 			loggingZoekCriteria.setBsnClient(client.getPersoon().getBsn());
 			loggingZoekCriteria.setGebeurtenis(Arrays.asList(LogGebeurtenis.WIJZIG_TIJDELIJK_ADRES));
@@ -135,7 +133,7 @@ public class BaseUitnodigingServiceImpl implements BaseUitnodigingService
 
 		if (!isAdresGewijzigd)
 		{
-			for (GbaMutatie mutatie : client.getGbaMutaties())
+			for (var mutatie : client.getGbaMutaties())
 			{
 				if (DateUtil.compareAfter(mutatie.getMutatieDatum(), uitnodiging.getVerstuurdDatum()))
 				{

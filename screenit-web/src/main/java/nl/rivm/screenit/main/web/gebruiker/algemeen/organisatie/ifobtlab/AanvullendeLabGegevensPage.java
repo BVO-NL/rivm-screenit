@@ -29,7 +29,6 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspo
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieZoeken;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Medewerker;
-import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -44,7 +43,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
@@ -67,16 +65,16 @@ public class AanvullendeLabGegevensPage extends OrganisatieBeheer
 
 	public AanvullendeLabGegevensPage()
 	{
-		Organisatie organisatie = getCurrentSelectedOrganisatie();
-		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_LABORATORIA_BEHEER);
-		final boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
+		var organisatie = getCurrentSelectedOrganisatie();
+		var actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_LABORATORIA_BEHEER);
+		final var inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(super.getCurrentSelectedOrganisatie())));
 
-		final IModel<Organisatie> model = ModelUtil.cModel(super.getCurrentSelectedOrganisatie());
+		final var model = ModelUtil.cModel(super.getCurrentSelectedOrganisatie());
 		setDefaultModel(model);
 
-		Form<Void> form = new Form<>("form");
+		var form = new Form<Void>("form");
 		add(form);
 
 		dialog = new BootstrapDialog("dialog");
@@ -106,7 +104,7 @@ public class AanvullendeLabGegevensPage extends OrganisatieBeheer
 
 		});
 
-		AjaxLink<Medewerker> annuleren = new AjaxLink<Medewerker>("annuleren")
+		var annuleren = new AjaxLink<Medewerker>("annuleren")
 		{
 
 			private static final long serialVersionUID = 1L;

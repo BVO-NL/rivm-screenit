@@ -23,7 +23,6 @@ package nl.rivm.screenit.mamma.planning.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import nl.rivm.screenit.dto.mamma.planning.PlanningPostcodeReeksDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningRestConstants;
@@ -32,8 +31,6 @@ import nl.rivm.screenit.mamma.planning.index.PlanningPostcodeReeksIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningStandplaatsIndex;
 import nl.rivm.screenit.mamma.planning.model.PlanningClient;
 import nl.rivm.screenit.mamma.planning.model.PlanningPostcodeReeks;
-import nl.rivm.screenit.mamma.planning.model.PlanningPostcodeReeksRegio;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaats;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningDoorrekenenManager;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingen;
 
@@ -52,9 +49,9 @@ public class PlanningPostcodeReeksController
 	@PostMapping
 	public void post(@RequestBody PlanningPostcodeReeksDto postcodeReeksDto)
 	{
-		PlanningStandplaats standplaats = PlanningStandplaatsIndex.get(postcodeReeksDto.standplaatsId);
+		var standplaats = PlanningStandplaatsIndex.get(postcodeReeksDto.standplaatsId);
 
-		PlanningPostcodeReeks postcodeReeks = new PlanningPostcodeReeks(postcodeReeksDto.id, postcodeReeksDto.vanPostcode, postcodeReeksDto.totPostcode);
+		var postcodeReeks = new PlanningPostcodeReeks(postcodeReeksDto.id, postcodeReeksDto.vanPostcode, postcodeReeksDto.totPostcode);
 		postcodeReeks.setStandplaats(standplaats);
 		standplaats.getPostcodeReeksSet().add(postcodeReeks);
 
@@ -71,17 +68,17 @@ public class PlanningPostcodeReeksController
 	@PutMapping
 	public void put(@RequestBody PlanningPostcodeReeksDto postcodeReeksDto)
 	{
-		PlanningPostcodeReeks postcodeReeks = PlanningPostcodeReeksIndex.get(postcodeReeksDto.id);
-		Set<String> oudePostcodeSet = postcodeReeks.getPostcodeSet();
+		var postcodeReeks = PlanningPostcodeReeksIndex.get(postcodeReeksDto.id);
+		var oudePostcodeSet = postcodeReeks.getPostcodeSet();
 		postcodeReeks.setPostcodeReeks(postcodeReeksDto.vanPostcode, postcodeReeksDto.totPostcode);
 		PlanningPostcodeReeksIndex.update(postcodeReeks, oudePostcodeSet);
 
 		List<String> removedPlanningPostcodeReeksRegioList = new ArrayList<>();
-		for (PlanningPostcodeReeksRegio postcodeReeksRegio : postcodeReeks.getPostcodeReeksRegios())
+		for (var postcodeReeksRegio : postcodeReeks.getPostcodeReeksRegios())
 		{
-			Set<PlanningClient> postcodeReeksRegioClientSet = postcodeReeksRegio.getClientSet();
+			var postcodeReeksRegioClientSet = postcodeReeksRegio.getClientSet();
 			List<PlanningClient> removedClientList = new ArrayList<>();
-			for (PlanningClient client : postcodeReeksRegioClientSet)
+			for (var client : postcodeReeksRegioClientSet)
 			{
 				if (!postcodeReeks.inPostcodeReeks(client))
 				{
@@ -99,8 +96,8 @@ public class PlanningPostcodeReeksController
 
 		clientenZonderPostcodeReeksToevoegen(postcodeReeks);
 
-		PlanningStandplaats oudeStandplaats = postcodeReeks.getStandplaats();
-		PlanningStandplaats nieuweStandplaats = PlanningStandplaatsIndex.get(postcodeReeksDto.standplaatsId);
+		var oudeStandplaats = postcodeReeks.getStandplaats();
+		var nieuweStandplaats = PlanningStandplaatsIndex.get(postcodeReeksDto.standplaatsId);
 		if (!nieuweStandplaats.equals(oudeStandplaats))
 		{
 			oudeStandplaats.getPostcodeReeksSet().remove(postcodeReeks);
@@ -118,9 +115,9 @@ public class PlanningPostcodeReeksController
 
 	private void clientenZonderPostcodeReeksToevoegen(PlanningPostcodeReeks postcodeReeks)
 	{
-		for (PlanningClient client : PlanningClientZonderPostcodeReeksIndex.getClienten(postcodeReeks))
+		for (var client : PlanningClientZonderPostcodeReeksIndex.getClienten(postcodeReeks))
 		{
-			PlanningPostcodeReeksRegio postcodeReeksRegio = postcodeReeks.getPostcodeReeksRegio(client);
+			var postcodeReeksRegio = postcodeReeks.getPostcodeReeksRegio(client);
 			postcodeReeksRegio.getClientSet().add(client);
 
 			PlanningClientZonderPostcodeReeksIndex.removeClient(client);
@@ -132,11 +129,11 @@ public class PlanningPostcodeReeksController
 	@DeleteMapping("/{postcodeReeksId}")
 	public void delete(@PathVariable Long postcodeReeksId)
 	{
-		PlanningPostcodeReeks postcodeReeks = PlanningPostcodeReeksIndex.get(postcodeReeksId);
+		var postcodeReeks = PlanningPostcodeReeksIndex.get(postcodeReeksId);
 
-		for (PlanningPostcodeReeksRegio postcodeReeksRegio : postcodeReeks.getPostcodeReeksRegios())
+		for (var postcodeReeksRegio : postcodeReeks.getPostcodeReeksRegios())
 		{
-			for (PlanningClient client : postcodeReeksRegio.getClientSet())
+			for (var client : postcodeReeksRegio.getClientSet())
 			{
 				PlanningClientZonderPostcodeReeksIndex.putClient(client);
 			}

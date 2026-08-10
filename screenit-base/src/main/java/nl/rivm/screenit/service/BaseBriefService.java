@@ -87,8 +87,6 @@ public interface BaseBriefService
 
 	CervixRegioBrief maakRegioBrief(ScreeningOrganisatie so, BriefType type, Date date, CervixHuisarts arts);
 
-	<B extends ClientBrief<?, ?, ?>> boolean clientHeeftOngegenereerdeBriefVanType(BriefType type, Client client, Class<B> briefClass);
-
 	void completePdf(MergedBrieven<?> mergedBrieven);
 
 	void pdfBestandOpslaanVoorVersturen(File pdfBestand, String bestandsNaam) throws IOException;

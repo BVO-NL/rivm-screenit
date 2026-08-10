@@ -21,9 +21,6 @@ package nl.rivm.screenit.huisartsenportaal.validator;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Date;
-
-import nl.rivm.screenit.huisartsenportaal.dto.BetalingFilterDto;
 import nl.rivm.screenit.huisartsenportaal.dto.BetalingZoekObjectDto;
 
 import org.springframework.stereotype.Component;
@@ -35,14 +32,14 @@ public class BetalingenValidator extends BaseValidator<BetalingZoekObjectDto>
 	@Override
 	public void validateTarget(BetalingZoekObjectDto target, Errors errors)
 	{
-		BetalingFilterDto betalingFilterDto = target.getBetalingenZoekObject();
+		var betalingFilterDto = target.getBetalingenZoekObject();
 		if (betalingFilterDto != null)
 		{
-			Date vanafDatum = betalingFilterDto.getBetalingsdatumVanaf();
-			Date totenmetDatum = betalingFilterDto.getBetalingsdatumTotenMet();
+			var vanafDatum = betalingFilterDto.getBetalingsdatumVanaf();
+			var totenmetDatum = betalingFilterDto.getBetalingsdatumTotEnMet();
 			if (vanafDatum != null && totenmetDatum != null)
 			{
-				int compare = vanafDatum.compareTo(totenmetDatum);
+				var compare = vanafDatum.compareTo(totenmetDatum);
 				if (compare > 0)
 				{
 					errors.reject("error.betaling.geldigetotenmetdatum", "De tot en met datum moet gelijk zijn of na de vanaf datum liggen.");

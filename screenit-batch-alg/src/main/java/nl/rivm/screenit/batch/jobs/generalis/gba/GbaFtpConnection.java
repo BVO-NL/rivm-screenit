@@ -32,7 +32,6 @@ import nl.rivm.screenit.model.gba.GbaVerwerkingsLog;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -79,21 +78,21 @@ public abstract class GbaFtpConnection
 
 	private Session connect(GbaConfig gbaConfig, JSch jsch) throws JSchException
 	{
-		boolean checkHostKey = Boolean.parseBoolean(System.getProperty("SFTP_CHECK_HOST_KEY"));
+		var checkHostKey = Boolean.parseBoolean(System.getProperty("SFTP_CHECK_HOST_KEY"));
 		if (checkHostKey)
 		{
 			jsch.setKnownHosts(gbaConfig.gbaFtpKnownHostFile());
 		}
-		Session session = jsch.getSession(gbaConfig.gbaFtpUsername(), gbaConfig.gbaFtpHost(), gbaConfig.gbaFtpPort());
+		var session = jsch.getSession(gbaConfig.gbaFtpUsername(), gbaConfig.gbaFtpHost(), gbaConfig.gbaFtpPort());
 		if (!checkHostKey)
 		{
-			java.util.Properties config = new java.util.Properties();
+			var config = new java.util.Properties();
 			config.put("StrictHostKeyChecking", "no");
 			session.setConfig(config);
 		}
 
-		String serverHostKey = System.getProperty("SERVER_HOST_KEY");
-		String keyfile = System.getProperty("PRIVATE_KEYFILE");
+		var serverHostKey = System.getProperty("SERVER_HOST_KEY");
+		var keyfile = System.getProperty("PRIVATE_KEYFILE");
 		if (StringUtils.isNotBlank(serverHostKey) && StringUtils.isNotBlank(keyfile))
 		{
 			session.setConfig("server_host_key", serverHostKey);
@@ -106,14 +105,14 @@ public abstract class GbaFtpConnection
 
 	private ChannelSftp openChannel(Session session) throws JSchException
 	{
-		Channel channel = session.openChannel("sftp");
+		var channel = session.openChannel("sftp");
 		channel.connect();
 		return (ChannelSftp) channel;
 	}
 
 	protected void createFoutRegel(GbaVerwerkingsLog gbaVerwerkingsLog, String foutregel)
 	{
-		GbaFoutRegel gbaFoutRegel = new GbaFoutRegel();
+		var gbaFoutRegel = new GbaFoutRegel();
 		gbaFoutRegel.setFout(foutregel);
 		gbaFoutRegel.setFoutCategorie(GbaFoutCategorie.PROCES);
 		gbaFoutRegel.setVerwerkingsLog(gbaVerwerkingsLog);

@@ -79,9 +79,9 @@ public class MammaMammografenPanel extends GenericPanel<MammaScreeningsEenheid>
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				final MammaScreeningsEenheid se = MammaMammografenPanel.this.getModelObject();
-				final String drieLetterRegioAfkorting = RegioUtil.drieLetterRegioafkorting(ScreenitSession.get().getScreeningOrganisatie().getRegioCode());
-				final String aeTitle = drieLetterRegioAfkorting + "-" + se.getCode() + "-MG" + String.format("%02d", mammografenProvider.size() + 1);
+				final var se = MammaMammografenPanel.this.getModelObject();
+				final var drieLetterRegioAfkorting = RegioUtil.drieLetterRegioafkorting(ScreenitSession.get().getScreeningOrganisatie().getRegioCode());
+				final var aeTitle = drieLetterRegioAfkorting + "-" + se.getCode() + "-MG" + String.format("%02d", mammografenProvider.size() + 1);
 				openMammograafDialog(target, ModelUtil.cModel(new MammaMammograaf().setScreeningsEenheid(se).setAeTitle(aeTitle)), mammografenProvider, true);
 			}
 		};

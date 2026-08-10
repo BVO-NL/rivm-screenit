@@ -26,8 +26,6 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
@@ -35,8 +33,6 @@ import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.mamma.planning.index.PlanningBlokkadeIndex;
-import nl.rivm.screenit.mamma.planning.model.PlanningBenodigdJaar;
-import nl.rivm.screenit.mamma.planning.model.PlanningBeschikbaar;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlokkade;
 import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
@@ -47,7 +43,6 @@ import nl.rivm.screenit.mamma.planning.model.PlanningStandplaats;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsRonde;
 import nl.rivm.screenit.mamma.planning.model.PlanningWeek;
-import nl.rivm.screenit.model.mamma.enums.MammaCapaciteitBlokType;
 import nl.rivm.screenit.model.mamma.enums.MammaMeldingNiveau;
 
 @Slf4j
@@ -59,10 +54,10 @@ enum PlanningDoorrekenenRoute
 	{
 		LOG.trace("run blok: " + blok.getId());
 
-		BigDecimal totaal = new BigDecimal(blok.getAantalOnderzoeken());
-		MammaCapaciteitBlokType blokType = blok.getCapaciteitBlokType();
+		var totaal = new BigDecimal(blok.getAantalOnderzoeken());
+		var blokType = blok.getCapaciteitBlokType();
 
-		PlanningBeschikbaar beschikbaar = blok.getBeschikbaar();
+		var beschikbaar = blok.getBeschikbaar();
 		beschikbaar.clear();
 		beschikbaar.add(totaal, blokType);
 	}
@@ -71,10 +66,10 @@ enum PlanningDoorrekenenRoute
 	{
 		LOG.trace("run dag: " + dag.getDatum());
 
-		PlanningBeschikbaar beschikbaar = dag.getBeschikbaar();
+		var beschikbaar = dag.getBeschikbaar();
 		beschikbaar.clear();
 
-		for (PlanningBlok blok : dag.getBlokSet())
+		for (var blok : dag.getBlokSet())
 		{
 			beschikbaar.add(blok.getBeschikbaar());
 		}
@@ -84,10 +79,10 @@ enum PlanningDoorrekenenRoute
 	{
 		LOG.trace("run week: " + week.getDatum());
 
-		PlanningBeschikbaar beschikbaar = week.getBeschikbaar();
+		var beschikbaar = week.getBeschikbaar();
 		beschikbaar.clear();
 
-		for (PlanningDag dag : week.getDagList())
+		for (var dag : week.getDagList())
 		{
 			beschikbaar.add(dag.getBeschikbaar());
 		}
@@ -97,17 +92,17 @@ enum PlanningDoorrekenenRoute
 	{
 		LOG.debug("run standplaatsPeriode: " + standplaatsPeriode.getId() + " volgnr" + standplaatsPeriode.getScreeningsEenheidVolgNr());
 
-		PlanningScreeningsEenheid screeningsEenheid = standplaatsPeriode.getScreeningsEenheid();
-		Map<LocalDate, Set<PlanningBlokkade>> screeningsOrganisatieBlokkadeDatumMap = PlanningBlokkadeIndex.getBlokkadeDatumMap(screeningsEenheid.getScreeningsOrganisatie());
-		Map<LocalDate, Set<PlanningBlokkade>> screeningsEenheidBlokkadeDatumMap = PlanningBlokkadeIndex.getBlokkadeDatumMap(screeningsEenheid);
+		var screeningsEenheid = standplaatsPeriode.getScreeningsEenheid();
+		var screeningsOrganisatieBlokkadeDatumMap = PlanningBlokkadeIndex.getBlokkadeDatumMap(screeningsEenheid.getScreeningsOrganisatie());
+		var screeningsEenheidBlokkadeDatumMap = PlanningBlokkadeIndex.getBlokkadeDatumMap(screeningsEenheid);
 
-		DoorrekenenStandplaatsPeriodeContext context = new DoorrekenenStandplaatsPeriodeContext(standplaatsPeriode);
-		Iterator<PlanningStandplaatsPeriode> standplaatsPeriodeIterator = screeningsEenheid.getStandplaatsPeriodeNavigableSet().tailSet(standplaatsPeriode, false)
+		var context = new DoorrekenenStandplaatsPeriodeContext(standplaatsPeriode);
+		var standplaatsPeriodeIterator = screeningsEenheid.getStandplaatsPeriodeNavigableSet().tailSet(standplaatsPeriode, false)
 			.iterator();
 
-		for (LocalDate datum = standplaatsPeriode.getVanaf(); datum.compareTo(PlanningConstanten.plannenTotEnMetDatum) <= 0; datum = datum.plusDays(1))
+		for (var datum = standplaatsPeriode.getVanaf(); datum.compareTo(PlanningConstanten.plannenTotEnMetDatum) <= 0; datum = datum.plusDays(1))
 		{
-			PlanningDag dag = context.screeningsEenheid.getDagNavigableMap().get(datum);
+			var dag = context.screeningsEenheid.getDagNavigableMap().get(datum);
 			dag.setStandplaatsPeriode(standplaatsPeriode);
 
 			dag.getBlokkadeSet().clear();
@@ -119,16 +114,16 @@ enum PlanningDoorrekenenRoute
 			{
 				if (!standplaatsPeriode.gesplitst() && !context.oudCorrectieToegepast && !datum.isBefore(context.jaarovergang))
 				{
-					PlanningBenodigdJaar benodigdEersteJaarStandplaatsRonde = context.standplaats.getBenodigd().get(context.jaarEersteStandplaatsPeriode);
-					BigDecimal benodigdStandplaatsTotaal = benodigdEersteJaarStandplaatsRonde.getTotaal();
+					var benodigdEersteJaarStandplaatsRonde = context.standplaats.getBenodigd().get(context.jaarEersteStandplaatsPeriode);
+					var benodigdStandplaatsTotaal = benodigdEersteJaarStandplaatsRonde.getTotaal();
 					if (context.jaar > context.jaarEersteStandplaatsPeriode)
 					{
-						PlanningBenodigdJaar benodigdJaar = context.standplaats.getBenodigd().get(context.jaar);
+						var benodigdJaar = context.standplaats.getBenodigd().get(context.jaar);
 						benodigdStandplaatsTotaal = benodigdStandplaatsTotaal.add(benodigdJaar.getNieuw());
 					}
 
-					BigDecimal benodigdVoorJaarovergangTotaal = BigDecimal.ZERO;
-					for (PlanningStandplaatsPeriode sp : context.standplaatsRonde.getStandplaatsPeriodeNavigableSet())
+					var benodigdVoorJaarovergangTotaal = BigDecimal.ZERO;
+					for (var sp : context.standplaatsRonde.getStandplaatsPeriodeNavigableSet())
 					{
 						benodigdVoorJaarovergangTotaal = benodigdVoorJaarovergangTotaal.add(sp.getBeschikbaarVoorJaarovergangTotaal());
 					}
@@ -139,10 +134,10 @@ enum PlanningDoorrekenenRoute
 					context.oudCorrectieToegepast = true;
 				}
 
-				boolean benodigdRestantNegatief = false;
+				var benodigdRestantNegatief = false;
 				if (dag.getBlokkadeSet().isEmpty())
 				{
-					BigDecimal dagBeschikbaarTotaal = dag.getBeschikbaar().getTotaal();
+					var dagBeschikbaarTotaal = dag.getBeschikbaar().getTotaal();
 					context.benodigdTotaalRestant = context.benodigdTotaalRestant.subtract(dagBeschikbaarTotaal);
 					benodigdRestantNegatief = context.benodigdTotaalRestant.compareTo(BigDecimal.ZERO) <= 0;
 					standplaatsPeriode.add(datum.toEpochDay(), dagBeschikbaarTotaal, datum.isBefore(context.jaarovergang));
@@ -157,9 +152,9 @@ enum PlanningDoorrekenenRoute
 					context.standplaatsPeriodeTotEnMet = datum;
 					if (context.jaar != context.standplaatsPeriodeTotEnMet.getYear())
 					{
-						for (int j = context.jaar + 1; j <= datum.getYear(); j++)
+						for (var j = context.jaar + 1; j <= datum.getYear(); j++)
 						{
-							PlanningBenodigdJaar benodigdJaar = context.standplaats.getBenodigd().get(j);
+							var benodigdJaar = context.standplaats.getBenodigd().get(j);
 							context.benodigdTotaalRestant = context.benodigdTotaalRestant.add(benodigdJaar.getNieuw());
 							if (context.isEersteStandplaatsRonde)
 							{
@@ -168,7 +163,7 @@ enum PlanningDoorrekenenRoute
 							}
 							else
 							{
-								BigDecimal eersteOnderzoekCorrectieRestant = benodigdJaar.getEersteOnderzoekCorrectie()
+								var eersteOnderzoekCorrectieRestant = benodigdJaar.getEersteOnderzoekCorrectie()
 									.subtract(context.standplaats.getBenodigd().get(context.jaar).getEersteOnderzoekCorrectie());
 								context.benodigdTotaalRestant = context.benodigdTotaalRestant.add(eersteOnderzoekCorrectieRestant);
 							}
@@ -204,12 +199,12 @@ enum PlanningDoorrekenenRoute
 		if (standplaatsPeriode != null)
 		{
 			standplaatsPeriode.setTotEnMet(standplaatsPeriode.getVanaf());
-			List<PlanningMelding> meldingList = context.standplaatsRonde.getMeldingList();
+			var meldingList = context.standplaatsRonde.getMeldingList();
 			meldingList.clear();
 			meldingList.add(new PlanningMelding("Er zijn te weinig onderzoeken beschikbaar om een prognose te maken", MammaMeldingNiveau.PROBLEEM));
 			while (standplaatsPeriodeIterator.hasNext())
 			{
-				PlanningStandplaatsPeriode vorigeStandplaatsPeriode = standplaatsPeriode;
+				var vorigeStandplaatsPeriode = standplaatsPeriode;
 
 				if (standplaatsPeriode.gesplitst())
 				{
@@ -229,7 +224,7 @@ enum PlanningDoorrekenenRoute
 	{
 		if (blokkadeDatumMap != null)
 		{
-			Set<PlanningBlokkade> blokkadeSet = blokkadeDatumMap.get(dag.getDatum());
+			var blokkadeSet = blokkadeDatumMap.get(dag.getDatum());
 			if (blokkadeSet != null)
 			{
 				dag.getBlokkadeSet().addAll(blokkadeSet);
@@ -239,10 +234,10 @@ enum PlanningDoorrekenenRoute
 
 	private static void bepaalMeldingen(DoorrekenenStandplaatsPeriodeContext context, PlanningDag laatsteDag)
 	{
-		List<PlanningMelding> meldingList = context.standplaatsRonde.getMeldingList();
+		var meldingList = context.standplaatsRonde.getMeldingList();
 		meldingList.clear();
 
-		BigDecimal aantalBasisOnderzoeken = context.benodigdTotaalRestant.abs().setScale(1, BigDecimal.ROUND_UP);
+		var aantalBasisOnderzoeken = context.benodigdTotaalRestant.abs().setScale(1, BigDecimal.ROUND_UP);
 
 		meldingList.add(new PlanningMelding(
 			aantalBasisOnderzoeken + " " + (context.benodigdTotaalRestant.compareTo(BigDecimal.ZERO) < 0 ? "te veel" : "te weinig"),
@@ -272,8 +267,8 @@ enum PlanningDoorrekenenRoute
 	{
 		if (benodigd.compareTo(BigDecimal.ZERO) != 0)
 		{
-			BigDecimal percentageOud = benodigdOud.divide(benodigd, 6, RoundingMode.HALF_UP);
-			BigDecimal benodigdTotaalNaJaarovergang = benodigd.subtract(benodigdVoorJaarovergang);
+			var percentageOud = benodigdOud.divide(benodigd, 6, RoundingMode.HALF_UP);
+			var benodigdTotaalNaJaarovergang = benodigd.subtract(benodigdVoorJaarovergang);
 
 			return benodigdTotaalNaJaarovergang.multiply(percentageOud);
 		}
@@ -289,7 +284,7 @@ enum PlanningDoorrekenenRoute
 		LOG.debug("run standplaatsRonde: " + standplaatsRonde.getId());
 
 		standplaatsRonde.setNiveau(MammaMeldingNiveau.INFO);
-		for (PlanningMelding melding : standplaatsRonde.getMeldingList())
+		for (var melding : standplaatsRonde.getMeldingList())
 		{
 			if (standplaatsRonde.getNiveau().compareTo(melding.getNiveau()) < 0)
 			{
@@ -301,21 +296,21 @@ enum PlanningDoorrekenenRoute
 			}
 		}
 
-		BigDecimal somGewogenDatum = BigDecimal.ZERO;
-		BigDecimal beschikbaarTotaal = BigDecimal.ZERO;
-		for (PlanningStandplaatsPeriode standplaatsPeriode : standplaatsRonde.getStandplaatsPeriodeNavigableSet())
+		var somGewogenDatum = BigDecimal.ZERO;
+		var beschikbaarTotaal = BigDecimal.ZERO;
+		for (var standplaatsPeriode : standplaatsRonde.getStandplaatsPeriodeNavigableSet())
 		{
 			somGewogenDatum = somGewogenDatum.add(standplaatsPeriode.getSomGewogenDatum());
 			beschikbaarTotaal = beschikbaarTotaal.add(standplaatsPeriode.getBeschikbaarTotaal());
 		}
 
-		BigDecimal gewogenGemiddeldeDatum = somGewogenDatum.divide(
+		var gewogenGemiddeldeDatum = somGewogenDatum.divide(
 			beschikbaarTotaal.compareTo(BigDecimal.ZERO) == 0 ? new BigDecimal(standplaatsRonde.getStandplaatsPeriodeNavigableSet().size()) : beschikbaarTotaal, 0,
 			BigDecimal.ROUND_HALF_UP);
-		long epochDay = gewogenGemiddeldeDatum.longValue();
+		var epochDay = gewogenGemiddeldeDatum.longValue();
 		if (epochDay != 0)
 		{
-			int wekenVanTevorenUitnodigen = standplaatsRonde.getStandplaats().getScreeningsOrganisatie().getWekenVanTevorenUitnodigen();
+			var wekenVanTevorenUitnodigen = standplaatsRonde.getStandplaats().getScreeningsOrganisatie().getWekenVanTevorenUitnodigen();
 			standplaatsRonde.setGewogenGemiddeldeDatum(LocalDate.ofEpochDay(epochDay - wekenVanTevorenUitnodigen * 7));
 		}
 		else
@@ -327,10 +322,10 @@ enum PlanningDoorrekenenRoute
 		standplaatsRonde.setBeschikbaarTotaal(beschikbaarTotaal);
 
 		LocalDate vorigeGewogenGemiddeldeDatum = null;
-		PlanningStandplaats standplaats = standplaatsRonde.getStandplaats();
+		var standplaats = standplaatsRonde.getStandplaats();
 		if (standplaatsRonde.getId() != null)
 		{
-			PlanningStandplaatsRonde vorigeStandplaatsRonde = standplaats.getStandplaatsRondeNavigableSet().lower(standplaatsRonde);
+			var vorigeStandplaatsRonde = standplaats.getStandplaatsRondeNavigableSet().lower(standplaatsRonde);
 			if (vorigeStandplaatsRonde != null)
 			{
 				vorigeGewogenGemiddeldeDatum = vorigeStandplaatsRonde.getGewogenGemiddeldeDatum();
@@ -357,9 +352,9 @@ enum PlanningDoorrekenenRoute
 		Set<PlanningStandplaatsRonde> standplaatsRondeSet = new HashSet<>();
 
 		screeningsEenheid.setNiveau(MammaMeldingNiveau.INFO);
-		for (PlanningStandplaatsPeriode standplaatsPeriode : screeningsEenheid.getStandplaatsPeriodeNavigableSet())
+		for (var standplaatsPeriode : screeningsEenheid.getStandplaatsPeriodeNavigableSet())
 		{
-			PlanningStandplaatsRonde standplaatsRonde = standplaatsPeriode.getStandplaatsRonde();
+			var standplaatsRonde = standplaatsPeriode.getStandplaatsRonde();
 			standplaatsRondeSet.add(standplaatsRonde);
 			if (screeningsEenheid.getNiveau().compareTo(standplaatsRonde.getNiveau()) < 0)
 			{
@@ -367,11 +362,11 @@ enum PlanningDoorrekenenRoute
 			}
 		}
 
-		BigDecimal somGewogenInterval = BigDecimal.ZERO;
-		BigDecimal beschikbaarTotaal = BigDecimal.ZERO;
-		for (PlanningStandplaatsRonde standplaatsRonde : standplaatsRondeSet)
+		var somGewogenInterval = BigDecimal.ZERO;
+		var beschikbaarTotaal = BigDecimal.ZERO;
+		for (var standplaatsRonde : standplaatsRondeSet)
 		{
-			BigDecimal interval = standplaatsRonde.getInterval();
+			var interval = standplaatsRonde.getInterval();
 			if (interval != null)
 			{
 				somGewogenInterval = somGewogenInterval.add(interval.multiply(standplaatsRonde.getBeschikbaarTotaal()));
@@ -419,8 +414,8 @@ class DoorrekenenStandplaatsPeriodeContext
 
 	DoorrekenenStandplaatsPeriodeContext(PlanningStandplaatsPeriode standplaatsPeriode)
 	{
-		PlanningStandplaatsPeriode vorigeStandplaatsPeriode = standplaatsPeriode.getScreeningsEenheid().getStandplaatsPeriodeNavigableSet().lower(standplaatsPeriode);
-		LocalDate vanaf = vorigeStandplaatsPeriode != null ? vorigeStandplaatsPeriode.getTotEnMet().plusDays(1) : standplaatsPeriode.getVanaf();
+		var vorigeStandplaatsPeriode = standplaatsPeriode.getScreeningsEenheid().getStandplaatsPeriodeNavigableSet().lower(standplaatsPeriode);
+		var vanaf = vorigeStandplaatsPeriode != null ? vorigeStandplaatsPeriode.getTotEnMet().plusDays(1) : standplaatsPeriode.getVanaf();
 		init(standplaatsPeriode, vanaf);
 	}
 
@@ -442,7 +437,7 @@ class DoorrekenenStandplaatsPeriodeContext
 		jaar = jaarEersteStandplaatsPeriode;
 		oudCorrectieToegepast = false;
 
-		PlanningBenodigdJaar benodigdJaar = standplaats.getBenodigd().get(jaar);
+		var benodigdJaar = standplaats.getBenodigd().get(jaar);
 		benodigdTotaalRestant = benodigdJaar.getTotaal();
 
 		isEersteStandplaatsRonde = standplaatsRonde.equals(standplaats.getStandplaatsRondeNavigableSet().first());
@@ -461,7 +456,7 @@ class DoorrekenenStandplaatsPeriodeContext
 		{
 			voorgaandeStandplaatsPeriodeSet.last().await();
 
-			for (PlanningStandplaatsPeriode voorgaandeStandplaatsPeriode : voorgaandeStandplaatsPeriodeSet)
+			for (var voorgaandeStandplaatsPeriode : voorgaandeStandplaatsPeriodeSet)
 			{
 				benodigdTotaalRestant = benodigdTotaalRestant.subtract(voorgaandeStandplaatsPeriode.getBeschikbaarTotaal());
 			}

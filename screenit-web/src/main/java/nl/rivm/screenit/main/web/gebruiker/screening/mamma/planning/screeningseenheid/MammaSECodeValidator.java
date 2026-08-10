@@ -34,7 +34,7 @@ public class MammaSECodeValidator implements IValidator<String>
 	@Override
 	public void validate(IValidatable<String> validatable)
 	{
-		final String seCode = validatable.getValue();
+		final var seCode = validatable.getValue();
 		if (!isValide(seCode))
 		{
 			error(validatable);
@@ -51,7 +51,7 @@ public class MammaSECodeValidator implements IValidator<String>
 		{
 			try
 			{
-				final int nummer = Integer.parseInt(seCode.substring(3, 6));
+				final var nummer = Integer.parseInt(seCode.substring(3, 6));
 				if (nummer < 1)
 				{
 					return false;

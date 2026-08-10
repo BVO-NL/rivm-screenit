@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -74,8 +73,9 @@ public class AchtergrondRequestServiceImpl implements AchtergrondRequestService
 	@Override
 	public void queueStatusPostenRequest(SeStatusDto statusDto)
 	{
-		queueRequest(new OphaalRequest(RequestTypeCentraal.POST_STATUS, () -> {
-			RequestEntity.BodyBuilder requestBuilder = proxyService.getProxyRequestEntity("/status", HttpMethod.POST);
+		queueRequest(new OphaalRequest(RequestTypeCentraal.POST_STATUS, () ->
+		{
+			var requestBuilder = proxyService.getProxyRequestEntity("/status", HttpMethod.POST);
 			proxyService.sendUncheckedProxyRequest(requestBuilder.body(statusDto), SeStatusDto.class);
 		}));
 	}
@@ -132,7 +132,7 @@ public class AchtergrondRequestServiceImpl implements AchtergrondRequestService
 			{
 				try
 				{
-					OphaalRequest ophaalRequest = opTeHalenRequestsQueue.take();
+					var ophaalRequest = opTeHalenRequestsQueue.take();
 					LOG.info("Start ophaalactie voor {} {}", ophaalRequest.getRequestType(), ophaalRequest.getDatum() != null ? "met datum: " + ophaalRequest.getDatum() : "");
 					ophaalRequest.run();
 				}

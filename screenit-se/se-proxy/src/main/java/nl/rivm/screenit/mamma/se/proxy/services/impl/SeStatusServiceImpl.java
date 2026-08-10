@@ -110,12 +110,12 @@ public class SeStatusServiceImpl implements SeStatusService
 
 	private String maakProxyIp(String ip)
 	{
-		int indexLastDot = ip.lastIndexOf('.');
+		var indexLastDot = ip.lastIndexOf('.');
 		if (indexLastDot == -1)
 		{
 			throw new IllegalStateException("Zet SE_CODE, u werkt waarschijnlijk via localhost.");
 		}
-		String newIp = ip.substring(0, indexLastDot);
+		var newIp = ip.substring(0, indexLastDot);
 		return newIp + PROXY_ADDRESS_POST_FIX;
 	}
 }

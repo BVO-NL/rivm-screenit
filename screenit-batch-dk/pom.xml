@@ -50,8 +50,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.optaplanner</groupId>
-            <artifactId>optaplanner-core</artifactId>
+            <groupId>ai.timefold.solver</groupId>
+            <artifactId>timefold-solver-core</artifactId>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>

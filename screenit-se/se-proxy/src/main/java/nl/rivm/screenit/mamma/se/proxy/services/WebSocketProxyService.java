@@ -21,8 +21,6 @@ package nl.rivm.screenit.mamma.se.proxy.services;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.mamma.se.proxy.model.WebsocketBerichtType;
-
 public interface WebSocketProxyService
 {
 	void broadcast(String transactionString);

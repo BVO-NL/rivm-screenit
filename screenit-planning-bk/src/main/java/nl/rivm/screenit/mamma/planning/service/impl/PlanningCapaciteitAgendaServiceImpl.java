@@ -25,9 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.NavigableMap;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -47,7 +45,6 @@ import nl.rivm.screenit.mamma.planning.model.PlanningWeek;
 import nl.rivm.screenit.mamma.planning.service.PlanningCapaciteitAgendaService;
 import nl.rivm.screenit.mamma.planning.service.PlanningCapaciteitBlokService;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingen;
-import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingenRoute;
 import nl.rivm.screenit.util.DateUtil;
 
 import org.springframework.stereotype.Service;
@@ -74,7 +71,7 @@ public class PlanningCapaciteitAgendaServiceImpl implements PlanningCapaciteitAg
 
 		if (herhalenTotEnMet == null)
 		{
-			long wekenVerschil = ChronoUnit.WEEKS.between(teHerhalenWeek.getDatum(), herhalenVanaf);
+			var wekenVerschil = ChronoUnit.WEEKS.between(teHerhalenWeek.getDatum(), herhalenVanaf);
 			if (wekenVerschil == 1 && bronScreeningsEenheid.equals(doelScreeningsEenheid))
 			{
 
@@ -95,9 +92,9 @@ public class PlanningCapaciteitAgendaServiceImpl implements PlanningCapaciteitAg
 	@Override
 	public void herhalen(LocalDate herhalenVanaf)
 	{
-		for (PlanningScreeningsEenheid screeningsEenheid : PlanningScreeningsEenheidIndex.getScreeningsEenheden())
+		for (var screeningsEenheid : PlanningScreeningsEenheidIndex.getScreeningsEenheden())
 		{
-			PlanningWeek herhalingsWeek = screeningsEenheid.getHerhalingsWeek();
+			var herhalingsWeek = screeningsEenheid.getHerhalingsWeek();
 			herhaal(herhalingsWeek, screeningsEenheid, herhalenVanaf, null);
 		}
 	}
@@ -172,7 +169,7 @@ public class PlanningCapaciteitAgendaServiceImpl implements PlanningCapaciteitAg
 
 	private void herhaal(PlanningWeek teHerhalenWeek, PlanningScreeningsEenheid naarScreeningsEenheid, LocalDate herhalenVanaf, LocalDate herhalenTotEnMet)
 	{
-		NavigableMap<LocalDate, PlanningWeek> weekNavigableMapNaar = naarScreeningsEenheid.getWeekNavigableMap();
+		var weekNavigableMapNaar = naarScreeningsEenheid.getWeekNavigableMap();
 		if (herhalenTotEnMet == null)
 		{
 			herhalenTotEnMet = weekNavigableMapNaar.lastKey();
@@ -180,33 +177,33 @@ public class PlanningCapaciteitAgendaServiceImpl implements PlanningCapaciteitAg
 
 		if (!herhalenVanaf.isAfter(herhalenTotEnMet))
 		{
-			PlanningWijzigingenRoute wijzigingenRoute = PlanningWijzigingen.getWijzigingenRoute(naarScreeningsEenheid);
+			var wijzigingenRoute = PlanningWijzigingen.getWijzigingenRoute(naarScreeningsEenheid);
 
-			Set<PlanningBlok> naarScreeningsEenheidBlokSet = naarScreeningsEenheid.getBlokSet();
+			var naarScreeningsEenheidBlokSet = naarScreeningsEenheid.getBlokSet();
 
-			Collection<PlanningWeek> naarWeekCollection = weekNavigableMapNaar.subMap(herhalenVanaf, true, herhalenTotEnMet, true).values();
+			var naarWeekCollection = weekNavigableMapNaar.subMap(herhalenVanaf, true, herhalenTotEnMet, true).values();
 
-			ArrayList<PlanningBlok> deletedBlokList = new ArrayList<>();
-			ArrayList<PlanningBlok> changedBlokList = new ArrayList<>();
+			var deletedBlokList = new ArrayList<PlanningBlok>();
+			var changedBlokList = new ArrayList<PlanningBlok>();
 
-			for (PlanningWeek naarWeek : naarWeekCollection)
+			for (var naarWeek : naarWeekCollection)
 			{
-				for (int i = 0; i < 7; i++)
+				for (var i = 0; i < 7; i++)
 				{
-					PlanningDag naarDag = naarWeek.getDagList().get(i);
-					PlanningDag teHerhalenDag = teHerhalenWeek.getDagList().get(i);
+					var naarDag = naarWeek.getDagList().get(i);
+					var teHerhalenDag = teHerhalenWeek.getDagList().get(i);
 
-					Set<PlanningBlok> naarDagBlokSet = naarDag.getBlokSet();
+					var naarDagBlokSet = naarDag.getBlokSet();
 					deletedBlokList.addAll(naarDagBlokSet);
 					naarScreeningsEenheidBlokSet.removeAll(naarDagBlokSet);
 					naarDagBlokSet.clear();
 
-					for (PlanningBlok teHerhalenBlok : teHerhalenDag.getBlokSet())
+					for (var teHerhalenBlok : teHerhalenDag.getBlokSet())
 					{
 						var teHerhalenReserveringen = teHerhalenBlok.getMindervalideReserveringen().stream()
 							.map(r -> new PlanningMindervalideReservering(null, r.getVanaf()))
 							.toList();
-						PlanningBlok naarBlok = new PlanningBlok(null,
+						var naarBlok = new PlanningBlok(null,
 							teHerhalenBlok.getVanaf(),
 							teHerhalenBlok.getTot(),
 							teHerhalenBlok.getAantalOnderzoeken(),

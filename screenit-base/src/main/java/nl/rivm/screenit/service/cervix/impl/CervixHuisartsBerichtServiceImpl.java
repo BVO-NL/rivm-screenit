@@ -72,7 +72,7 @@ public class CervixHuisartsBerichtServiceImpl implements CervixHuisartsBerichtSe
 		{
 			LOG.info("Verstuur Zorgmail klantnummer verificatiebericht voor huisartslocatie hp-id:" + locatie.getHuisartsportaalId());
 
-			CervixHuisartsBericht huisartsBericht = new CervixHuisartsBericht();
+			var huisartsBericht = new CervixHuisartsBericht();
 			huisartsBericht.setBerichtType(HuisartsBerichtType.CERVIX_ZORGMAIL_VERIFICATIE);
 			huisartsBericht.setHuisartsLocatie(locatie);
 			huisartsBericht.setScreeningsOrganisatie(locatie.getLocatieAdres().getGbaGemeente().getScreeningOrganisatie());
@@ -93,7 +93,7 @@ public class CervixHuisartsBerichtServiceImpl implements CervixHuisartsBerichtSe
 	@Override
 	public CervixHuisartsBericht maakCervixHuisartsBericht(HuisartsBerichtType berichtType, Client client, CervixUitstrijkje uitstrijkje, CervixOmissieType omissieType)
 	{
-		CervixHuisartsBericht huisartsBericht = maakCervixHuisartsBericht(berichtType, client, uitstrijkje.getUitnodiging());
+		var huisartsBericht = maakCervixHuisartsBericht(berichtType, client, uitstrijkje.getUitnodiging());
 
 		huisartsBericht.setOmissieType(omissieType);
 
@@ -109,7 +109,7 @@ public class CervixHuisartsBerichtServiceImpl implements CervixHuisartsBerichtSe
 	@Override
 	public CervixHuisartsBericht maakCervixHuisartsBericht(HuisartsBerichtType berichtType, Client client, CervixHuisartsLocatie huisartsLocatie, CervixUitnodiging uitnodiging)
 	{
-		CervixHuisartsBericht huisartsBericht = maakCervixHuisartsBericht(berichtType, client, uitnodiging);
+		var huisartsBericht = maakCervixHuisartsBericht(berichtType, client, uitnodiging);
 
 		huisartsBericht.setHuisartsLocatie(huisartsLocatie);
 		huisartsLocatie.getHuisartsberichten().add(huisartsBericht);

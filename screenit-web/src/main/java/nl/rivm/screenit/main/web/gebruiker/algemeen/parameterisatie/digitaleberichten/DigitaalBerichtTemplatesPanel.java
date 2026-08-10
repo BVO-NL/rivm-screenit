@@ -77,7 +77,7 @@ public abstract class DigitaalBerichtTemplatesPanel extends Panel
 
 	private void maakBvoFilter(DigitaalBerichtType digitaalBerichtType, Label selecteerEenTemplate)
 	{
-		BvoZoekCriteria zoekCriteria = new BvoZoekCriteria();
+		var zoekCriteria = new BvoZoekCriteria();
 		zoekCriteria.setBevolkingsonderzoeken(ScreenitSession.get().getOnderzoeken());
 		add(new FilterBvoFormPanel<>("bvoFilter", Model.of(zoekCriteria))
 		{

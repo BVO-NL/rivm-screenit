@@ -72,7 +72,7 @@ public class MammaBeoordelingenAccorderenWriter extends BaseWriter<MammaBeoordel
 	{
 		var stepExecution = getStepExecution();
 
-		Set<String> radiologen = (Set<String>) stepExecution.getJobExecution().getExecutionContext()
+		var radiologen = (Set<String>) stepExecution.getJobExecution().getExecutionContext()
 			.get(MammaBeoordelingenAccorderenListener.MAMMA_RADIOLOGEN_BEOORDELINGEN_GEACCORDEERD);
 
 		if (radiologen == null)
@@ -87,7 +87,7 @@ public class MammaBeoordelingenAccorderenWriter extends BaseWriter<MammaBeoordel
 	private void hoogAantalBeoordelingenOp()
 	{
 		var stepExecution = getStepExecution();
-		long aantalBeoordelingen = stepExecution.getJobExecution().getExecutionContext()
+		var aantalBeoordelingen = stepExecution.getJobExecution().getExecutionContext()
 			.getLong(MammaBeoordelingenAccorderenListener.MAMMA_RADIOLOGEN_BEOORDELINGEN_GEACCORDEERD_AANTAL, 0L);
 
 		getExecutionContext().put(MammaBeoordelingenAccorderenListener.MAMMA_RADIOLOGEN_BEOORDELINGEN_GEACCORDEERD_AANTAL, aantalBeoordelingen + 1);

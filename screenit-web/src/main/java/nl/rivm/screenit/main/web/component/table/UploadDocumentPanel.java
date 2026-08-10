@@ -58,9 +58,9 @@ public abstract class UploadDocumentPanel<T extends IDocument> extends GenericPa
 		this.fileValidator = validator;
 		this.refreshContainer = refreshContainer;
 
-		Form<Void> uploadForm = new Form<>("uploadForm");
+		var uploadForm = new Form<Void>("uploadForm");
 
-		FileUploadField field = new FileUploadField("fileUpload", files);
+		var field = new FileUploadField("fileUpload", files);
 		uploadForm.add(field);
 
 		if (getFileValidator() != null)
@@ -77,7 +77,7 @@ public abstract class UploadDocumentPanel<T extends IDocument> extends GenericPa
 					try
 					{
 
-						T modelObject = UploadDocumentPanel.this.getModelObject();
+						var modelObject = UploadDocumentPanel.this.getModelObject();
 
 						var oldDocument = modelObject.getDocument();
 						oldDocument.setActief(false);

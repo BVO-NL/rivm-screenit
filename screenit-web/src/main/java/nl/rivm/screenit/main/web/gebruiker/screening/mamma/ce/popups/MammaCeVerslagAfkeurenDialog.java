@@ -53,10 +53,10 @@ public abstract class MammaCeVerslagAfkeurenDialog extends GenericPanel<MammaBeo
 	{
 		super(contentId, model);
 
-		ScreenitForm<MammaBeoordeling> form = new ScreenitForm<>("form", getModel());
+		var form = new ScreenitForm<MammaBeoordeling>("form", getModel());
 		add(form);
 
-		TextArea<String> textArea = new TextArea<>("afkeurreden");
+		var textArea = new TextArea<String>("afkeurreden");
 		textArea.add(StringValidator.maximumLength(255));
 		textArea.setRequired(true);
 		form.add(textArea);
@@ -75,7 +75,7 @@ public abstract class MammaCeVerslagAfkeurenDialog extends GenericPanel<MammaBeo
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaBeoordeling beoordeling = MammaCeVerslagAfkeurenDialog.this.getModelObject();
+				var beoordeling = MammaCeVerslagAfkeurenDialog.this.getModelObject();
 				beoordelingService.verslagAfkeurenDoorCE(beoordeling,
 					ModelUtil.nullSafeGet(radioloogZoekPanel.getSelectedOrganisatieMedewerkerModel()),
 					ScreenitSession.get().getIngelogdeOrganisatieMedewerker());

@@ -85,19 +85,19 @@ public class TijdelijkeBeAanSeValidator extends AbstractFormValidator
 	@SuppressWarnings("unchecked")
 	public void validate(Form<?> form)
 	{
-		IModel<MammaScreeningsEenheid> se = (IModel<MammaScreeningsEenheid>) page.getDefaultModel();
+		var se = (IModel<MammaScreeningsEenheid>) page.getDefaultModel();
 		tijdelijkeBe = getBeIdFromForm(tijdelijkeBeoordelingsEenheid);
 		beId = getBeIdFromForm(beoordelingsEenheid);
 		vanafDatum = DateUtil.toLocalDate((Date) tijdelijkeBeVanafDatum.getConvertedInput());
 		totMetDatum = DateUtil.toLocalDate((Date) tijdelijkeBeTotEnMetDatum.getConvertedInput());
-		boolean isHuidigeTijdelijkeBeActief = checkRangeActiveHuidigeTijdelijkeBE(se.getObject().getTijdelijkeBeVanafDatum(),
+		var isHuidigeTijdelijkeBeActief = checkRangeActiveHuidigeTijdelijkeBE(se.getObject().getTijdelijkeBeVanafDatum(),
 			se.getObject().getTijdelijkeBeTotEnMetDatum());
-		boolean isVanafDatumOngewijzigd = checkDatumOngewijzigd(se.getObject().getTijdelijkeBeVanafDatum(), vanafDatum);
-		boolean isTotMetToekomstig = checkDatumToekomst(totMetDatum);
-		boolean isVanafToekomstig = checkDatumToekomst(vanafDatum);
-		boolean isTotMetDeHuidigeDag = checkDagIsVandaag(totMetDatum);
-		boolean isVanafDeHuidigeDag = checkDagIsVandaag(vanafDatum);
-		boolean isTijdelijkeBeOngewijzigd = checkBeOngewijzigd(se.getObject(), tijdelijkeBe);
+		var isVanafDatumOngewijzigd = checkDatumOngewijzigd(se.getObject().getTijdelijkeBeVanafDatum(), vanafDatum);
+		var isTotMetToekomstig = checkDatumToekomst(totMetDatum);
+		var isVanafToekomstig = checkDatumToekomst(vanafDatum);
+		var isTotMetDeHuidigeDag = checkDagIsVandaag(totMetDatum);
+		var isVanafDeHuidigeDag = checkDagIsVandaag(vanafDatum);
+		var isTijdelijkeBeOngewijzigd = checkBeOngewijzigd(se.getObject(), tijdelijkeBe);
 		if (heeftGeenWijzigingen(vanafDatum, totMetDatum, tijdelijkeBe, se.getObject(), beId))
 		{
 			return;
@@ -157,7 +157,7 @@ public class TijdelijkeBeAanSeValidator extends AbstractFormValidator
 
 	private boolean checkBeOngewijzigd(MammaScreeningsEenheid se, long nieuweTijdelijkeBe)
 	{
-		long huidigeTijdelijkeBE = se.getTijdelijkeBeoordelingsEenheid() != null ? se.getTijdelijkeBeoordelingsEenheid().getId() : 0L;
+		var huidigeTijdelijkeBE = se.getTijdelijkeBeoordelingsEenheid() != null ? se.getTijdelijkeBeoordelingsEenheid().getId() : 0L;
 		return huidigeTijdelijkeBE != 0L && huidigeTijdelijkeBE == nieuweTijdelijkeBe;
 	}
 
@@ -219,7 +219,7 @@ public class TijdelijkeBeAanSeValidator extends AbstractFormValidator
 			{
 				return 0L;
 			}
-			int value = Integer.parseInt(beoordelingsEenheid.getInput());
+			var value = Integer.parseInt(beoordelingsEenheid.getInput());
 			return beoordelingsEenheid.getChoices().get(value).getId();
 		}
 		catch (NumberFormatException | IndexOutOfBoundsException e)

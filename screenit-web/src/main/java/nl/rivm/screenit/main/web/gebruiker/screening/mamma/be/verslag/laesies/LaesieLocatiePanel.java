@@ -26,7 +26,6 @@ import java.math.BigDecimal;
 import nl.rivm.screenit.main.web.component.form.BigDecimalField;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDto;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDtoMapper;
-import nl.rivm.screenit.model.mamma.MammaLaesie;
 import nl.rivm.screenit.model.mamma.enums.MammaLaesieType;
 import nl.rivm.screenit.service.mamma.MammaLaesieLocatieService;
 
@@ -45,10 +44,10 @@ class LaesieLocatiePanel extends GenericPanel<LaesieDto>
 	LaesieLocatiePanel(String id, IModel<LaesieDto> model)
 	{
 		super(id, model);
-		LaesieDtoMapper mapper = new LaesieDtoMapper();
-		MammaLaesie laesie = mapper.laesieDtoToMammaLaesie(getModelObject());
-		WebMarkupContainer laesieGrootteContainer = new WebMarkupContainer("laesieGrootteContainer");
-		BigDecimalField laesieGrootteInCm = new BigDecimalField("laesieGrootteInCm", 1, BigDecimal.valueOf(1, 1), BigDecimal.valueOf(100));
+		var mapper = new LaesieDtoMapper();
+		var laesie = mapper.laesieDtoToMammaLaesie(getModelObject());
+		var laesieGrootteContainer = new WebMarkupContainer("laesieGrootteContainer");
+		var laesieGrootteInCm = new BigDecimalField("laesieGrootteInCm", 1, BigDecimal.valueOf(1, 1), BigDecimal.valueOf(100));
 		laesieGrootteContainer.add(laesieGrootteInCm);
 		laesieGrootteContainer.setVisible(!MammaLaesieType.ARCHITECTUURVERSTORING.equals(laesie.getMammaLaesieType()));
 		add(laesieGrootteContainer);

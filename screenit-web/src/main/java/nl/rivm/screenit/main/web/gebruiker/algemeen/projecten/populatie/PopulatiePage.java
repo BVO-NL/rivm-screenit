@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.populatie;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.algemeen.ProjectService;
@@ -116,11 +115,11 @@ public class PopulatiePage extends ProjectBasePage
 			public void onConfigure()
 			{
 				super.onConfigure();
-				Project project = getProjectModel().getObject();
-				Date eindDatum = project.getEindDatum();
-				Date nu = currentDateSupplier.getDate();
-				boolean levelProject = getToegangsLevel(Recht.MEDEWERKER_PROJECT_SELECTIE, Actie.TOEVOEGEN) != null;
-				boolean levelBriefproject = getToegangsLevel(Recht.MEDEWERKER_BRIEFPROJECT_SELECTIE, Actie.TOEVOEGEN) != null;
+				var project = getProjectModel().getObject();
+				var eindDatum = project.getEindDatum();
+				var nu = currentDateSupplier.getDate();
+				var levelProject = getToegangsLevel(Recht.MEDEWERKER_PROJECT_SELECTIE, Actie.TOEVOEGEN) != null;
+				var levelBriefproject = getToegangsLevel(Recht.MEDEWERKER_BRIEFPROJECT_SELECTIE, Actie.TOEVOEGEN) != null;
 				setVisible(!eindDatum.before(nu) && (levelProject || levelBriefproject) && project.getGroepSelectieType() == GroepSelectieType.STATISCH);
 			}
 		});
@@ -132,7 +131,7 @@ public class PopulatiePage extends ProjectBasePage
 
 	private WebMarkupContainer getGroepenDataTable()
 	{
-		WebMarkupContainer groepenContainer = new WebMarkupContainer("groepenContainer");
+		var groepenContainer = new WebMarkupContainer("groepenContainer");
 		groepenContainer.setOutputMarkupId(true);
 
 		List<IColumn<ProjectGroep, String>> columns = new ArrayList<IColumn<ProjectGroep, String>>();
@@ -143,11 +142,11 @@ public class PopulatiePage extends ProjectBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<ProjectGroep>> cellItem, String componentId, IModel<ProjectGroep> rowModel)
 			{
-				Long inactieveProjectClienten = projectService.getAantalInactieveProjectClientenVanProjectGroep(rowModel.getObject());
+				var inactieveProjectClienten = projectService.getAantalInactieveProjectClientenVanProjectGroep(rowModel.getObject());
 				cellItem.add(new Label(componentId, Model.of(inactieveProjectClienten)));
 			}
 		});
-		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		var format = new SimpleDateFormat("dd-MM-yyyy");
 		columns.add(new DateTimePropertyColumn<>(Model.of("Push"), UITNODIGINGEN_PUSHEN_NA, UITNODIGINGEN_PUSHEN_NA, format));
 		columns.add(new EnumPropertyColumn<ProjectGroep, String, GroepInvoer>(Model.of("Type"), GROEP_INVOER));
 		columns
@@ -157,10 +156,10 @@ public class PopulatiePage extends ProjectBasePage
 				@Override
 				protected void onAfterToggleActief(AjaxRequestTarget target, ProjectGroep actiefObject)
 				{
-					String melding = projectService.updateProjectGroepActiefStatus(actiefObject, ScreenitSession.get().getIngelogdAccount());
+					var melding = projectService.updateProjectGroepActiefStatus(actiefObject, ScreenitSession.get().getIngelogdAccount());
 					info(melding);
 
-					WebMarkupContainer container = getGroepenDataTable();
+					var container = getGroepenDataTable();
 					PopulatiePage.this.groepenContainer.replaceWith(container);
 					PopulatiePage.this.groepenContainer = container;
 					target.add(PopulatiePage.this.groepenContainer);
@@ -177,7 +176,7 @@ public class PopulatiePage extends ProjectBasePage
 				{
 					projectService.verwijderProjectGroep(rowModel.getObject(), ScreenitSession.get().getIngelogdAccount());
 
-					WebMarkupContainer container = getGroepenDataTable();
+					var container = getGroepenDataTable();
 					PopulatiePage.this.groepenContainer.replaceWith(container);
 					PopulatiePage.this.groepenContainer = container;
 					target.add(PopulatiePage.this.groepenContainer);
@@ -192,7 +191,7 @@ public class PopulatiePage extends ProjectBasePage
 			columns.add(verwijderPropertyColumn);
 		}
 
-		ScreenitDataTable<ProjectGroep, String> dataTable = new ScreenitDataTable<>("groepen", columns, new PopulatieDataProvider(zoekModel), 10,
+		var dataTable = new ScreenitDataTable<>("groepen", columns, new PopulatieDataProvider(zoekModel), 10,
 			Model.of("Groepen"))
 		{
 

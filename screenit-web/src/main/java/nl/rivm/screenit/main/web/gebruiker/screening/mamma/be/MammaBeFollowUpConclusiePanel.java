@@ -39,7 +39,7 @@ public class MammaBeFollowUpConclusiePanel extends AbstractBEAccordionPanel<Mamm
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		MammaFollowUpConclusieStatus followUpConclusieStatus = getModel().getObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde()
+		var followUpConclusieStatus = getModel().getObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde()
 			.getFollowUpConclusieStatus();
 
 		panelContainer.add(new EnumLabel<MammaFollowUpConclusieStatus>("followUpConclusie", followUpConclusieStatus)

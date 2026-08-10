@@ -25,10 +25,7 @@ import java.io.Serial;
 
 import ca.uhn.hl7v2.AcknowledgmentCode;
 import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v24.datatype.ELD;
 import ca.uhn.hl7v2.model.v24.message.ACK;
-import ca.uhn.hl7v2.model.v24.segment.ERR;
-import ca.uhn.hl7v2.model.v24.segment.MSA;
 import ca.uhn.hl7v2.util.StringUtil;
 
 public class ScreenITResponseV24MessageWrapper implements ScreenITResponseHL7v2MessageWrapper
@@ -54,7 +51,7 @@ public class ScreenITResponseV24MessageWrapper implements ScreenITResponseHL7v2M
 		{
 			acknowledgmentCode = AcknowledgmentCode.AE;
 		}
-		String meldingUitBericht = getFoutmelding(message);
+		var meldingUitBericht = getFoutmelding(message);
 		if (StringUtil.isBlank(meldingUitBericht) && acknowledgmentCodeString == null)
 		{
 			this.melding = "Kon de acknowledgmentcode niet uit het bericht halen.";
@@ -79,16 +76,16 @@ public class ScreenITResponseV24MessageWrapper implements ScreenITResponseHL7v2M
 
 	private String getFoutmelding(Message response)
 	{
-		ACK ack = (ACK) response;
-		ERR error = ack.getERR();
-		ELD eld = error.getErr1_ErrorCodeAndLocation(0);
+		var ack = (ACK) response;
+		var error = ack.getERR();
+		var eld = error.getErr1_ErrorCodeAndLocation(0);
 		return eld.getEld4_CodeIdentifyingError().getText().getValue();
 	}
 
 	private String getFoutCode(Message response)
 	{
-		ACK ack = (ACK) response;
-		MSA msa = ack.getMSA();
+		var ack = (ACK) response;
+		var msa = ack.getMSA();
 		return msa.getAcknowledgementCode().getValue();
 	}
 

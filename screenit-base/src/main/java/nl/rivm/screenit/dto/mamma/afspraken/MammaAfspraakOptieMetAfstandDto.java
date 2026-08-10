@@ -42,7 +42,7 @@ public class MammaAfspraakOptieMetAfstandDto extends MammaBaseAfspraakOptieDto i
 	@Override
 	public int compareTo(MammaAfspraakOptieMetAfstandDto afspraakOptieDto)
 	{
-		int compareTo = this.afstand.compareTo(afspraakOptieDto.afstand);
+		var compareTo = this.afstand.compareTo(afspraakOptieDto.afstand);
 		if (compareTo == 0)
 		{
 			compareTo = this.getDatumTijd().compareTo(afspraakOptieDto.getDatumTijd());
@@ -61,7 +61,7 @@ public class MammaAfspraakOptieMetAfstandDto extends MammaBaseAfspraakOptieDto i
 		{
 			return false;
 		}
-		MammaAfspraakOptieMetAfstandDto that = (MammaAfspraakOptieMetAfstandDto) other;
+		var that = (MammaAfspraakOptieMetAfstandDto) other;
 		return Objects.equals(getCapaciteitBlokId(), that.getCapaciteitBlokId()) &&
 			Objects.equals(getDatumTijd(), that.getDatumTijd()) &&
 			Objects.equals(getStandplaatsPeriodeId(), that.getStandplaatsPeriodeId());

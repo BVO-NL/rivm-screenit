@@ -44,16 +44,16 @@ public class PostcodeCoordinatenWriter implements ItemWriter<String>
 	@Override
 	public void write(Chunk<? extends String> chunk)
 	{
-		for (String item : chunk.getItems())
+		for (var item : chunk.getItems())
 		{
-			String[] lineParts = item.split(",");
+			var lineParts = item.split(",");
 			if (lineParts.length == 11 && !lineParts[0].equals("nummeraanduiding_id"))
 			{
-				String postcode = lineParts[2] + lineParts[3];
-				String huisnr = lineParts[4];
-				String huisnummerToevoeging = lineParts[5];
-				String lat = lineParts[9];
-				String lon = lineParts[10];
+				var postcode = lineParts[2] + lineParts[3];
+				var huisnr = lineParts[4];
+				var huisnummerToevoeging = lineParts[5];
+				var lat = lineParts[9];
+				var lon = lineParts[10];
 				coordinatenService.addOrUpdateCoordinaten(postcode, huisnr, huisnummerToevoeging, lat, lon);
 			}
 		}

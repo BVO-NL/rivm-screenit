@@ -115,7 +115,7 @@ public class BaseDossierAuditServiceImpl implements BaseDossierAuditService
 	public Date getLastRevisionDate(HibernateObject entity, AuditCriterion extraCriteria, Class<? extends Account> accountType)
 	{
 		Date actionDate = null;
-		ScreenitRevisionEntity revisionEntity = getLastRevision(entity, extraCriteria, accountType);
+		var revisionEntity = getLastRevision(entity, extraCriteria, accountType);
 
 		if (revisionEntity != null && revisionEntity.getTimestamp() > 0)
 		{

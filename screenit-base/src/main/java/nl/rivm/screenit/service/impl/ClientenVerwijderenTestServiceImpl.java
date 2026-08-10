@@ -33,8 +33,8 @@ import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
 import nl.rivm.screenit.model.exception.VerwijderClientException;
 import nl.rivm.screenit.model.logging.colon.ColonNieuwFitAanvraagLogEvent;
+import nl.rivm.screenit.service.BaseBezwaarService;
 import nl.rivm.screenit.service.BaseProjectService;
-import nl.rivm.screenit.service.BezwaarService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ClientenVerwijderenTestService;
 import nl.rivm.screenit.service.HibernateService;
@@ -76,7 +76,7 @@ public class ClientenVerwijderenTestServiceImpl implements ClientenVerwijderenTe
 
 	private final MammaBaseScreeningrondeService screeningrondeService;
 
-	private final BezwaarService bezwaarService;
+	private final BaseBezwaarService bezwaarService;
 
 	private final UploadDocumentService uploadDocumentService;
 
@@ -127,7 +127,7 @@ public class ClientenVerwijderenTestServiceImpl implements ClientenVerwijderenTe
 
 	private String verwijderClientVeilig(Client client)
 	{
-		Long clientId = client.getId();
+		var clientId = client.getId();
 		try
 		{
 			verwijderClient(client);
@@ -164,7 +164,7 @@ public class ClientenVerwijderenTestServiceImpl implements ClientenVerwijderenTe
 
 		logService.verwijderLogRegelsVanClient(client);
 
-		List<ColonNieuwFitAanvraagLogEvent> logEvents = hibernateService.getByParameters(ColonNieuwFitAanvraagLogEvent.class, ImmutableMap.of("client", client));
+		var logEvents = hibernateService.getByParameters(ColonNieuwFitAanvraagLogEvent.class, ImmutableMap.of("client", client));
 		logEvents.forEach(le -> hibernateService.delete(le.getLogRegel()));
 
 		bezwaarService.verwijderBezwaarMomenten(client);

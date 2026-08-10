@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Locale;
 
 import nl.rivm.screenit.Constants;
@@ -42,7 +41,7 @@ public class TimeLocalDateConverter implements IConverter<LocalDate>
 	{
 		if (StringUtils.isNotBlank(value))
 		{
-			Date convertToObject = new MultiDateConverter().convertToObject(value, locale);
+			var convertToObject = new MultiDateConverter().convertToObject(value, locale);
 			if (convertToObject != null)
 			{
 				return DateUtil.toLocalDate(convertToObject);

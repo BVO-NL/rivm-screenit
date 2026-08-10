@@ -54,11 +54,9 @@ import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -102,16 +100,16 @@ public class AanvullendeGegevensBMHKLaboratoriumPage extends OrganisatieBeheer
 
 	public AanvullendeGegevensBMHKLaboratoriumPage()
 	{
-		Organisatie organisatie = getCurrentSelectedOrganisatie();
-		Actie actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_BMHK_LABORATORIA_BEHEER);
-		final boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
+		var organisatie = getCurrentSelectedOrganisatie();
+		var actie = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), organisatie, Recht.MEDEWERKER_BMHK_LABORATORIA_BEHEER);
+		final var inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(super.getCurrentSelectedOrganisatie())));
 
-		final IModel<Organisatie> model = ModelUtil.cModel(super.getCurrentSelectedOrganisatie());
+		final var model = ModelUtil.cModel(super.getCurrentSelectedOrganisatie());
 		setDefaultModel(model);
 
-		Form<Organisatie> form = new Form<>("form", model);
+		var form = new Form<Organisatie>("form", model);
 		add(form);
 
 		FormComponent<List<String>> instrumentNames = new TextField<List<String>>("instrumentNames")
@@ -134,8 +132,8 @@ public class AanvullendeGegevensBMHKLaboratoriumPage extends OrganisatieBeheer
 						public List<String> convertToObject(String value, Locale locale)
 						{
 							List<String> result = new ArrayList<>();
-							String[] values = value.split(",");
-							for (String splittedValue : values)
+							var values = value.split(",");
+							for (var splittedValue : values)
 							{
 								splittedValue = splittedValue.trim();
 								if (splittedValue.isEmpty())
@@ -180,8 +178,8 @@ public class AanvullendeGegevensBMHKLaboratoriumPage extends OrganisatieBeheer
 						public List<String> convertToObject(String value, Locale locale)
 						{
 							List<String> result = new ArrayList<>();
-							String[] values = value.split(",");
-							for (String splittedValue : values)
+							var values = value.split(",");
+							for (var splittedValue : values)
 							{
 								splittedValue = splittedValue.trim();
 								if (splittedValue.isEmpty())
@@ -206,30 +204,30 @@ public class AanvullendeGegevensBMHKLaboratoriumPage extends OrganisatieBeheer
 		userIdScanners.setEnabled(!inzien);
 		form.add(userIdScanners);
 
-		CheckBox oruBerichten = ComponentHelper.newCheckBox("oruBerichtenVerwerken", !inzien);
+		var oruBerichten = ComponentHelper.newCheckBox("oruBerichtenVerwerken", !inzien);
 		form.add(oruBerichten);
 
-		FormComponent<String> ibanField = ComponentHelper.addTextField(form, "iban", true, 34, inzien);
+		var ibanField = ComponentHelper.addTextField(form, "iban", true, 34, inzien);
 		ibanField.add(new ScreenITIBANValidator());
 		ComponentHelper.addTextField(form, "ibanTenaamstelling", true, 70, inzien);
 
-		Component medischMircobioloog = new TextArea<>("medischMircobioloog").add(StringValidator.maximumLength(255));
+		var medischMircobioloog = new TextArea<>("medischMircobioloog").add(StringValidator.maximumLength(255));
 		medischMircobioloog.setEnabled(!inzien);
 		form.add(medischMircobioloog);
 		form.add(
 			new UploadOrganisatieImageFormComponent("handtekeningMedischMircobioloog", model, UploadOrganisatieImageType.BMHK_HANDTEKENING_MEDISCH_MICROBIOLOOG).setEnabled(
 				!inzien));
-		Component patholoog = new TextArea<>("patholoog").add(StringValidator.maximumLength(255));
+		var patholoog = new TextArea<>("patholoog").add(StringValidator.maximumLength(255));
 		patholoog.setEnabled(!inzien);
 		form.add(patholoog);
 		form.add(new UploadOrganisatieImageFormComponent("handtekeningPatholoog", model, UploadOrganisatieImageType.BMHK_HANDTEKENING_PATHOLOOG).setEnabled(!inzien));
 
 		ComponentHelper.addTextField(form, "bmhkLabWarnMail", true, 100, inzien).add(EmailAddressValidator.getInstance());
 
-		List<Gemeente> allNietGekoppeldeGemeentes = gemeenteService.getNietOfAanBMHKLaboratoriumGekoppeldGemeentes((BMHKLaboratorium) model.getObject());
+		var allNietGekoppeldeGemeentes = gemeenteService.getNietOfAanBMHKLaboratoriumGekoppeldGemeentes((BMHKLaboratorium) model.getObject());
 
-		SimpleListHibernateModel<Gemeente> choices = new SimpleListHibernateModel<>(allNietGekoppeldeGemeentes);
-		ChoiceRenderer<Gemeente> choiceRenderer = new ChoiceRenderer<Gemeente>("naam", "code")
+		var choices = new SimpleListHibernateModel<Gemeente>(allNietGekoppeldeGemeentes);
+		var choiceRenderer = new ChoiceRenderer<Gemeente>("naam", "code")
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -237,10 +235,10 @@ public class AanvullendeGegevensBMHKLaboratoriumPage extends OrganisatieBeheer
 			@Override
 			public Object getDisplayValue(Gemeente object)
 			{
-				Object gemeente = super.getDisplayValue(object);
+				var gemeente = super.getDisplayValue(object);
 				if (object.getCode() != null)
 				{
-					StringBuilder sb = new StringBuilder();
+					var sb = new StringBuilder();
 					sb.append(gemeente);
 					sb.append(" (");
 					sb.append(object.getCode());
@@ -255,7 +253,7 @@ public class AanvullendeGegevensBMHKLaboratoriumPage extends OrganisatieBeheer
 
 		};
 
-		final PingPongInput<Gemeente> gemeentes = new PingPongInput<Gemeente>("gemeentes", new PropertyModel<List<Gemeente>>(model, "gemeentes"), choices, choiceRenderer)
+		final var gemeentes = new PingPongInput<Gemeente>("gemeentes", new PropertyModel<List<Gemeente>>(model, "gemeentes"), choices, choiceRenderer)
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -297,7 +295,7 @@ public class AanvullendeGegevensBMHKLaboratoriumPage extends OrganisatieBeheer
 
 		});
 
-		AjaxLink<Medewerker> annuleren = new AjaxLink<Medewerker>("annuleren")
+		var annuleren = new AjaxLink<Medewerker>("annuleren")
 		{
 
 			private static final long serialVersionUID = 1L;

@@ -37,7 +37,7 @@ public enum AanduidingBijzonderNederlanderschap
 
 	public static AanduidingBijzonderNederlanderschap getAanduidingBijzonderNederlanderschap(String gbaValue)
 	{
-		for (AanduidingBijzonderNederlanderschap aanduidingBijzonderNederlanderschap : AanduidingBijzonderNederlanderschap.values())
+		for (var aanduidingBijzonderNederlanderschap : AanduidingBijzonderNederlanderschap.values())
 		{
 			if (aanduidingBijzonderNederlanderschap.getGbaValue().equals(gbaValue))
 			{

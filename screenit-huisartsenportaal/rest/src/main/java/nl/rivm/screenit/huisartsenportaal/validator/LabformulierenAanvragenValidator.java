@@ -22,14 +22,12 @@ package nl.rivm.screenit.huisartsenportaal.validator;
  */
 
 import java.time.LocalDate;
-import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.huisartsenportaal.dto.AanvraagDto;
 import nl.rivm.screenit.huisartsenportaal.dto.AanvragenZoekObjectDto;
 import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
-import nl.rivm.screenit.huisartsenportaal.model.LabformulierAanvraag;
 import nl.rivm.screenit.huisartsenportaal.model.Locatie;
 import nl.rivm.screenit.huisartsenportaal.repository.AanvraagCriteriaRepository;
 import nl.rivm.screenit.huisartsenportaal.repository.LocatieRepository;
@@ -88,7 +86,7 @@ public class LabformulierenAanvragenValidator extends BaseValidator<AanvraagDto>
 			var beginDatumVandaag = LocalDate.now();
 			var eindDatumVandaag = LocalDate.now().plusDays(1);
 
-			List<LabformulierAanvraag> aanvragenVandaag = aanvraagCriteriaRepository.findByLocatieAndAanvraagDatumBetween(locatieVanDto, beginDatumVandaag, eindDatumVandaag);
+			var aanvragenVandaag = aanvraagCriteriaRepository.findByLocatieAndAanvraagDatumBetween(locatieVanDto, beginDatumVandaag, eindDatumVandaag);
 			if (aanvragenVandaag.size() >= 2)
 			{
 				LOG.debug("error.max.aanvragen");

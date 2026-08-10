@@ -21,11 +21,10 @@ package nl.rivm.screenit.huisartsenportaal.repository;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.huisartsenportaal.model.AbstractReferenceObject;
+import java.io.Serializable;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-
-import java.io.Serializable;
 
 @NoRepositoryBean
 interface BaseRepository<T extends Serializable> extends CrudRepository<T, Long>

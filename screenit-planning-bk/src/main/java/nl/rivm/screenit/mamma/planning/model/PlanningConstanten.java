@@ -64,8 +64,8 @@ public enum PlanningConstanten
 		plannenVanafJaar = PlanningConstanten.plannenVanafDatum.getYear();
 		plannenTotEnMetJaar = PlanningConstanten.plannenTotEnMetDatum.getYear();
 
-		int plannenVanafGeboortejaar = plannenVanafJaar - PlanningConstanten.totEnMetLeeftijd;
-		int plannenTotEnMetGeboortejaar = plannenTotEnMetJaar - PlanningConstanten.vanafLeeftijd;
+		var plannenVanafGeboortejaar = plannenVanafJaar - PlanningConstanten.totEnMetLeeftijd;
+		var plannenTotEnMetGeboortejaar = plannenTotEnMetJaar - PlanningConstanten.vanafLeeftijd;
 		plannenVanafGeboortedatum = LocalDate.of(plannenVanafGeboortejaar, 1, 1);
 		plannenTotEnMetGeboortedatum = LocalDate.of(plannenTotEnMetGeboortejaar, 12, 31);
 

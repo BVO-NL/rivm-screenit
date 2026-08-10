@@ -25,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.mamma.se.dto.MammaHuisartsDto;
@@ -40,7 +39,6 @@ import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.TijdelijkAdres;
-import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
@@ -48,7 +46,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaGeenHuisartsOption;
 import nl.rivm.screenit.service.BaseAfmeldService;
-import nl.rivm.screenit.service.BezwaarService;
+import nl.rivm.screenit.service.BaseBezwaarService;
 import nl.rivm.screenit.service.BriefHerdrukkenService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.HibernateService;
@@ -69,7 +67,7 @@ public class InschrijvenServiceImpl implements InschrijvenService
 	private HibernateService hibernateService;
 
 	@Autowired
-	private BezwaarService bezwaarService;
+	private BaseBezwaarService bezwaarService;
 
 	@Autowired
 	private BriefHerdrukkenService briefHerdrukkenService;
@@ -117,7 +115,7 @@ public class InschrijvenServiceImpl implements InschrijvenService
 	{
 		Map<String, Boolean> parameters = new HashMap<>();
 		parameters.put("verwijderd", Boolean.FALSE);
-		List<EnovationHuisarts> enovationHuisartsen = hibernateService.getByParameters(EnovationHuisarts.class, parameters);
+		var enovationHuisartsen = hibernateService.getByParameters(EnovationHuisarts.class, parameters);
 		return enovationHuisartsen.stream().map(HuisartsDtoMapper::createMammaHuisarsDto).collect(Collectors.toList());
 	}
 
@@ -148,11 +146,11 @@ public class InschrijvenServiceImpl implements InschrijvenService
 
 	private void vraagBezwaarAan(MammaAfspraak afspraak, OrganisatieMedewerker organisatieMedewerker)
 	{
-		Client client = afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient();
+		var client = afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient();
 
 		if (Boolean.FALSE.equals(afspraak.getBezwaarAangevraagd()))
 		{
-			Optional<BezwaarBrief> bezwaarBrief = bezwaarService.getLaatsteBezwaarBriefVanTypeVoorClient(client, BriefType.CLIENT_BEZWAAR_AANVRAAG);
+			var bezwaarBrief = bezwaarService.getLaatsteBezwaarBriefVanTypeVoorClient(client, BriefType.CLIENT_BEZWAAR_AANVRAAG);
 			if (bezwaarBrief.isEmpty())
 			{
 				bezwaarService.maakBezwaarAanvraag(client);
@@ -186,7 +184,7 @@ public class InschrijvenServiceImpl implements InschrijvenService
 	private void opslaanClientgegevens(InschrijvenDto inschrijvenDto, Client client, OrganisatieMedewerker organisatieMedewerker, LocalDateTime transactieDatumTijd,
 		MammaScreeningsEenheid screeningsEenheid)
 	{
-		Persoon persoon = client.getPersoon();
+		var persoon = client.getPersoon();
 		if (inschrijvenDto.getTijdelijkAdres() != null)
 		{
 			opslaanTijdelijkAdres(inschrijvenDto, persoon);
@@ -239,7 +237,7 @@ public class InschrijvenServiceImpl implements InschrijvenService
 
 	private void opslaanTijdelijkAdres(InschrijvenDto inschrijvenDto, Persoon persoon)
 	{
-		TijdelijkAdres tijdelijkAdres = persoon.getTijdelijkAdres();
+		var tijdelijkAdres = persoon.getTijdelijkAdres();
 		if (tijdelijkAdres == null)
 		{
 			tijdelijkAdres = new TijdelijkAdres();

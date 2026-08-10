@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.logging.verwerkingsverslage
  */
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
@@ -51,7 +50,7 @@ public class MammaIlmBeeldenStatusRapportagePanel extends GenericPanel<MammaIlmL
 		add(DateLabel.forDatePattern("logRegel.gebeurtenisDatum", "dd-MM-yyyy HH:mm:ss"));
 		add(new Label("rapportage.aantalRetries"));
 		add(new Label("rapportage.aantalFailedRetries"));
-		List<MammaIlmBeeldenStatusRapportageEntry> entries = getModelObject().getRapportage().getEntries()
+		var entries = getModelObject().getRapportage().getEntries()
 			.stream()
 			.filter(MammaIlmBeeldenStatusRapportageEntry::isFailedRetry)
 			.sorted(Comparator.comparing(MammaIlmBeeldenStatusRapportageEntry::getStatusDatum))
@@ -72,7 +71,7 @@ public class MammaIlmBeeldenStatusRapportagePanel extends GenericPanel<MammaIlmL
 					@Override
 					public void onClick(AjaxRequestTarget target)
 					{
-						BootstrapDialog dialog = ((AlgemeenPage) getPage()).getDialog();
+						var dialog = ((AlgemeenPage) getPage()).getDialog();
 						dialog.openWith(target,
 							new MammaIlmBeeldenStatusForcerenPopupPanel(BootstrapDialog.CONTENT_ID, entryRow.getModel())
 							{

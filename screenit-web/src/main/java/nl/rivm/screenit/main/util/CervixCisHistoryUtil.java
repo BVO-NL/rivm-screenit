@@ -41,8 +41,9 @@ public class CervixCisHistoryUtil
 	{
 		Map<String, List<CervixCISHistorieOngestructureerdRegel>> regelsPerRonde = new HashMap<>();
 		List<CervixCISHistorieOngestructureerdRegel> regels = new ArrayList<>(historie.getCisHistorieRegels());
-		regels.sort((o1, o2) -> {
-			int result = 1;
+		regels.sort((o1, o2) ->
+		{
+			var result = 1;
 			if (o2.getDatum().before(o1.getDatum()))
 			{
 				result = -1;
@@ -50,7 +51,8 @@ public class CervixCisHistoryUtil
 
 			return result * (asc ? -1 : 1);
 		});
-		regels.forEach(regel -> {
+		regels.forEach(regel ->
+		{
 			if (!regelsPerRonde.containsKey(regel.getRonde()))
 			{
 				regelsPerRonde.put(regel.getRonde(), new ArrayList<>());
@@ -80,11 +82,11 @@ public class CervixCisHistoryUtil
 		@Override
 		public int compare(String o1, String o2)
 		{
-			int result = 0;
+			var result = 0;
 			try
 			{
-				int rondeO1 = Integer.parseInt(o1);
-				int rondeO2 = Integer.parseInt(o2);
+				var rondeO1 = Integer.parseInt(o1);
+				var rondeO2 = Integer.parseInt(o2);
 				if (rondeO1 == rondeO2)
 				{
 					result = 0;

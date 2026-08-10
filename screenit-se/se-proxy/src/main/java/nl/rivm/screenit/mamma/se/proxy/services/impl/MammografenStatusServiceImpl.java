@@ -42,7 +42,7 @@ public class MammografenStatusServiceImpl implements MammografenStatusService
 	@Override
 	public void registreerLaatstSuccesvolleDmwlBerichtVanMammograaf(Association as)
 	{
-		MammograafStatus status = getMammograafDicomStatus(as.getCallingAET());
+		var status = getMammograafDicomStatus(as.getCallingAET());
 		status.setLaatsteSuccesDmwlBerichtTimestamp(DateUtil.getCurrentDateTime());
 		status.getFoutenSindsLaatsteSuccesDmwlBericht().clear();
 	}
@@ -50,7 +50,7 @@ public class MammografenStatusServiceImpl implements MammografenStatusService
 	@Override
 	public void registreerDmwlFout(Association as, String foutMelding)
 	{
-		MammograafStatus status = getMammograafDicomStatus(as.getCallingAET());
+		var status = getMammograafDicomStatus(as.getCallingAET());
 		if (status.getFoutenSindsLaatsteSuccesDmwlBericht().size() >= MAXIMAAL_AANTAL_GETOONDE_DICOM_FOUTEN)
 		{
 			status.getFoutenSindsLaatsteSuccesDmwlBericht().remove(0);
@@ -61,14 +61,14 @@ public class MammografenStatusServiceImpl implements MammografenStatusService
 	@Override
 	public void registreerMammograafDatum(Association as, String datum)
 	{
-		MammograafStatus status = getMammograafDicomStatus(as.getCallingAET());
+		var status = getMammograafDicomStatus(as.getCallingAET());
 		status.setMammograafDatum(datum);
 	}
 
 	@Override
 	public void registreerLaatstSuccesvolleMppsBerichtVanMammograaf(Association as)
 	{
-		MammograafStatus status = getMammograafDicomStatus(as.getCallingAET());
+		var status = getMammograafDicomStatus(as.getCallingAET());
 		status.setLaatsteSuccesMppsBerichtTimestamp(DateUtil.getCurrentDateTime());
 		status.getFoutenSindsLaatsteSuccesMppsBericht().clear();
 	}
@@ -76,7 +76,7 @@ public class MammografenStatusServiceImpl implements MammografenStatusService
 	@Override
 	public void registreerMppsFout(Association as, String foutMelding)
 	{
-		MammograafStatus status = getMammograafDicomStatus(as.getCallingAET());
+		var status = getMammograafDicomStatus(as.getCallingAET());
 		if (status.getFoutenSindsLaatsteSuccesMppsBericht().size() >= MAXIMAAL_AANTAL_GETOONDE_DICOM_FOUTEN)
 		{
 			status.getFoutenSindsLaatsteSuccesMppsBericht().remove(0);

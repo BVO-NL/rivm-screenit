@@ -48,16 +48,16 @@ public class SCPConfig
 
 	public static SCPConfig parse(String scpString, String defaultHost, Integer defaultPoort)
 	{
-		SCPConfig result = new SCPConfig();
+		var result = new SCPConfig();
 		result.host = defaultHost;
 		if (defaultPoort != null)
 		{
 			result.poort = defaultPoort;
 		}
-		String[] aeAtHostAndPort = StringUtils.split(scpString, ':');
+		var aeAtHostAndPort = StringUtils.split(scpString, ':');
 		if (aeAtHostAndPort.length > 0)
 		{
-			String[] aeHost = StringUtils.split(aeAtHostAndPort[0], '@');
+			var aeHost = StringUtils.split(aeAtHostAndPort[0], '@');
 			result.aeTitle = aeHost[0];
 			if (aeHost.length > 1)
 			{

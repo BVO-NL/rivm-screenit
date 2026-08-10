@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,7 +57,6 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.mamma.MammaUitstel;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.HibernateService;
@@ -169,7 +167,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 
 		if (!ScreenitSession.get().isZoekObjectGezetForComponent(ClientPage.class))
 		{
-			List<Bevolkingsonderzoek> bevolkingsonderzoeken = ScreenitSession.get().getIngelogdeOrganisatieMedewerker().getBevolkingsonderzoeken();
+			var bevolkingsonderzoeken = ScreenitSession.get().getIngelogdeOrganisatieMedewerker().getBevolkingsonderzoeken();
 			zoekObjectModel = Model.of(new ClientDossierFilter(new ArrayList<>(bevolkingsonderzoeken), Boolean.TRUE));
 			ScreenitSession.get().setZoekObject(ClientPage.class, zoekObjectModel);
 		}
@@ -194,7 +192,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 
 	private void filter()
 	{
-		FilterBvoFormPanel<ClientDossierFilter> bvoFilter = new FilterBvoFormPanel<>("bvoFilterContainer", zoekObjectModel, true)
+		var bvoFilter = new FilterBvoFormPanel<>("bvoFilterContainer", zoekObjectModel, true)
 		{
 
 			@Override
@@ -212,7 +210,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 
 	private void refreshHistory(AjaxRequestTarget target)
 	{
-		ScreenitDataTable<ClientContact, String> nieuweHistorie = historie();
+		var nieuweHistorie = historie();
 		historie.replaceWith(nieuweHistorie);
 		historie = nieuweHistorie;
 		target.add(historie);
@@ -234,7 +232,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 			public void populateItem(Item<ICellPopulator<ClientContact>> cellItem, String componentId, IModel<ClientContact> rowModel)
 			{
 				var acties = ModelUtil.nullSafeGet(rowModel).getActies();
-				StringBuilder actiesList = new StringBuilder();
+				var actiesList = new StringBuilder();
 				for (var actie : acties)
 				{
 					var actieType = actie.getType();
@@ -294,7 +292,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 
 			});
 		}
-		ScreenitDataTable<ClientContact, String> dataTable = new ScreenitDataTable<>("contacten", columns, provider, Model.of("contacten"))
+		var dataTable = new ScreenitDataTable<>("contacten", columns, provider, Model.of("contacten"))
 		{
 
 			@Override
@@ -335,15 +333,15 @@ public class ClientContactPanel extends GenericPanel<Client>
 				selectedActies.addAll(Arrays.asList(defaultSelectedActies));
 			}
 
-			Client client = ClientContactPanel.this.getModelObject();
+			var client = ClientContactPanel.this.getModelObject();
 
-			List<ClientContactActieType> availableActieTypes = clientContactService.getAvailableActies(client);
+			var availableActieTypes = clientContactService.getAvailableActies(client);
 
-			for (ClientContactActieTypeWrapper actie : ClientContactActieTypeWrapper.values())
+			for (var actie : ClientContactActieTypeWrapper.values())
 			{
 				if (actie.getRecht() != null && ScreenitSession.get().checkPermission(actie.getRecht(), null) && availableActieTypes.contains(actie.getType()))
 				{
-					List<Bevolkingsonderzoek> actieBvos = actie.getType().getBevolkingsonderzoeken();
+					var actieBvos = actie.getType().getBevolkingsonderzoeken();
 					if (Bevolkingsonderzoek.heeftAlleBevolkingsonderzoeken(actieBvos))
 					{
 						genActies.add(actie);
@@ -408,11 +406,11 @@ public class ClientContactPanel extends GenericPanel<Client>
 				@Override
 				protected void onSubmit(AjaxRequestTarget target)
 				{
-					for (Entry<ClientContactActieTypeWrapper, Panel> entry : actiePanelsCache.entrySet())
+					for (var entry : actiePanelsCache.entrySet())
 					{
 						if (selectedActies.contains(entry.getKey()))
 						{
-							Panel panel = entry.getValue();
+							var panel = entry.getValue();
 							if (panel instanceof AbstractClientContactActiePanel)
 							{
 								((AbstractClientContactActiePanel<?>) panel).validate();
@@ -429,25 +427,25 @@ public class ClientContactPanel extends GenericPanel<Client>
 					{
 						List<String> meldingen = new ArrayList<>();
 
-						for (Entry<ClientContactActieTypeWrapper, Panel> entry : actiePanelsCache.entrySet())
+						for (var entry : actiePanelsCache.entrySet())
 						{
 							if (selectedActies.contains(entry.getKey()))
 							{
-								Panel panel = entry.getValue();
+								var panel = entry.getValue();
 								if (panel instanceof AbstractClientContactActiePanel)
 								{
 									meldingen.addAll(((AbstractClientContactActiePanel<?>) panel).getOpslaanMeldingen());
 								}
 							}
 						}
-						Client client = ClientContactPanel.this.getModelObject();
+						var client = ClientContactPanel.this.getModelObject();
 						if (selectedActies.contains(ClientContactActieTypeWrapper.MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS))
 						{
 							if (clientContactService.heeftOpenMammaAfspraak(client))
 							{
 								meldingen.add(getString("mv.onderzoek.in.ziekenhuis.afspraak.annuleren"));
 							}
-							MammaUitstel laatsteUitstel = client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitstel();
+							var laatsteUitstel = client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitstel();
 							if (laatsteUitstel != null && laatsteUitstel.getGeannuleerdOp() == null && laatsteUitstel.getUitnodiging() == null)
 							{
 								meldingen.add(getString("mv.onderzoek.in.ziekenhuis.uitstel.annuleren"));
@@ -486,7 +484,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 
 		private void createInitialActiePanels(List<Object> extraPanelParams)
 		{
-			RepeatingView actiePanels = new RepeatingView("actiePanels");
+			var actiePanels = new RepeatingView("actiePanels");
 
 			List<ClientContactActieTypeWrapper> acties = new ArrayList<>();
 			acties.addAll(genActies);
@@ -495,14 +493,14 @@ public class ClientContactPanel extends GenericPanel<Client>
 			acties.addAll(mammaActies);
 
 			extraPanelParams.add(dialog);
-			for (ClientContactActieTypeWrapper actie : acties)
+			for (var actie : acties)
 			{
 				Panel actiePanel = null;
-				IModel<ClientContactActie> contactActieModel = ModelUtil.ccModel(new ClientContactActie(actie.getType()));
+				var contactActieModel = ModelUtil.ccModel(new ClientContactActie(actie.getType()));
 				if (selectedActies.contains(actie) && actie.getPanelClass() != null && actie.getType() != null)
 				{
 
-					Object[] initArgs = new Object[] { actiePanels.newChildId(), contactActieModel, ClientContactPanel.this.getModel(), extraPanelParams };
+					var initArgs = new Object[] { actiePanels.newChildId(), contactActieModel, ClientContactPanel.this.getModel(), extraPanelParams };
 					try
 					{
 						actiePanel = (Panel) ConstructorUtils.invokeConstructor(actie.getPanelClass(), initArgs);
@@ -536,16 +534,16 @@ public class ClientContactPanel extends GenericPanel<Client>
 			List<Object> extraPanelParams = new ArrayList<>();
 			extraPanelParams.add(dialog);
 
-			for (ClientContactActieTypeWrapper typeWrapper : acties)
+			for (var typeWrapper : acties)
 			{
-				Panel actiePanel = actiePanelsCache.get(typeWrapper);
+				var actiePanel = actiePanelsCache.get(typeWrapper);
 				Panel newActiePanel = null;
 
 				if (actiePanel instanceof EmptyPanel && selectedActies.contains(typeWrapper) && typeWrapper.getPanelClass() != null && typeWrapper.getType() != null)
 				{
-					IModel<ClientContactActie> contactActieModel = ModelUtil.ccModel(new ClientContactActie(typeWrapper.getType()));
+					var contactActieModel = ModelUtil.ccModel(new ClientContactActie(typeWrapper.getType()));
 
-					Object[] initArgs = new Object[] { actiePanel.getId(), contactActieModel, ClientContactPanel.this.getModel(), extraPanelParams };
+					var initArgs = new Object[] { actiePanel.getId(), contactActieModel, ClientContactPanel.this.getModel(), extraPanelParams };
 					try
 					{
 						newActiePanel = (Panel) ConstructorUtils.invokeConstructor(typeWrapper.getPanelClass(), initArgs);
@@ -602,9 +600,9 @@ public class ClientContactPanel extends GenericPanel<Client>
 			@SuppressWarnings("unchecked")
 			Collection<ClientContactActieTypeWrapper> nieuweActieTypes = CollectionUtils.subtract(vervolgacties, selectedActies);
 
-			for (ClientContactActieTypeWrapper nieuwType : nieuweActieTypes)
+			for (var nieuwType : nieuweActieTypes)
 			{
-				for (ClientContactActieTypeWrapper exclusieType : nieuwType.getExclusie())
+				for (var exclusieType : nieuwType.getExclusie())
 				{
 					vervolgacties.remove(exclusieType);
 				}
@@ -624,7 +622,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 		private void updateBvoVisibility()
 		{
 			List<ClientContactActieTypeWrapper> currentSelectedActies = new ArrayList<>(selectedActies);
-			int aantalBvosZichtbaar = 0;
+			var aantalBvosZichtbaar = 0;
 			if (!colonActies.isEmpty() && zoekObjectModel.getObject().getBevolkingsonderzoeken().contains(Bevolkingsonderzoek.COLON))
 			{
 				vervolgactiesColonContainer.setVisible(true);
@@ -633,7 +631,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 			else
 			{
 				vervolgactiesColonContainer.setVisible(false);
-				for (ClientContactActieTypeWrapper actie : currentSelectedActies)
+				for (var actie : currentSelectedActies)
 				{
 					if (Bevolkingsonderzoek.alleenDarmkanker(actie.getType().getBevolkingsonderzoeken()))
 					{
@@ -649,7 +647,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 			else
 			{
 				vervolgactiesCervixContainer.setVisible(false);
-				for (ClientContactActieTypeWrapper actie : currentSelectedActies)
+				for (var actie : currentSelectedActies)
 				{
 					if (Bevolkingsonderzoek.alleenBaarmoederhalskanker(actie.getType().getBevolkingsonderzoeken()))
 					{
@@ -665,7 +663,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 			else
 			{
 				vervolgactiesMammaContainer.setVisible(false);
-				for (ClientContactActieTypeWrapper actie : currentSelectedActies)
+				for (var actie : currentSelectedActies)
 				{
 					if (Bevolkingsonderzoek.alleenBorstkanker(actie.getType().getBevolkingsonderzoeken()))
 					{
@@ -673,7 +671,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 					}
 				}
 			}
-			int span = 12 / (aantalBvosZichtbaar + 1);
+			var span = 12 / (aantalBvosZichtbaar + 1);
 			vervolgactiesMammaContainer.add(new AttributeModifier("class", "span" + span));
 			vervolgactiesCervixContainer.add(new AttributeModifier("class", "span" + span));
 			vervolgactiesColonContainer.add(new AttributeModifier("class", "span" + span));
@@ -682,8 +680,8 @@ public class ClientContactPanel extends GenericPanel<Client>
 
 		private void contactAfronden(AjaxRequestTarget target)
 		{
-			Client client = ClientContactPanel.this.getModelObject();
-			ClientContact contact = ContactForm.this.getModelObject();
+			var client = ClientContactPanel.this.getModelObject();
+			var contact = ContactForm.this.getModelObject();
 			if (contact.getId() != null)
 			{
 				ScreenitSession.get().warn("Het contact was al afgerond en daarom is er een nieuwe contact scherm voor u geopened.");
@@ -699,13 +697,13 @@ public class ClientContactPanel extends GenericPanel<Client>
 			try
 			{
 
-				for (Entry<ClientContactActieTypeWrapper, Panel> entry : actiePanelsCache.entrySet())
+				for (var entry : actiePanelsCache.entrySet())
 				{
 					if (selectedActies.contains(entry.getKey()))
 					{
-						Panel panel = entry.getValue();
-						ClientContactActie actie = (ClientContactActie) panel.getDefaultModelObject();
-						ClientContactActieType actieType = entry.getKey().getType();
+						var panel = entry.getValue();
+						var actie = (ClientContactActie) panel.getDefaultModelObject();
+						var actieType = entry.getKey().getType();
 						if (panel instanceof AbstractClientContactActiePanel)
 						{
 							extraOpslaanObjecten.put(actieType, ((AbstractClientContactActiePanel<?>) panel).getOpslaanObjecten());
@@ -731,7 +729,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 					{
 						List<Object> extraParameters = new ArrayList<>();
 						extraParameters.add(Constants.RONDE_FORCEREN_MELDING_BIJ_AFSPRAAK_MAKEN);
-						ClientContactActieTypeWrapper actie = ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN;
+						var actie = ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN;
 						setResponsePage(new ClientContactPage(ModelUtil.sModel(client), extraParameters, actie));
 					}
 					else
@@ -761,9 +759,9 @@ public class ClientContactPanel extends GenericPanel<Client>
 		{
 			hibernateService.reload(ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 			BasePage.markeerFormulierenOpgeslagen(target);
-			IModel<Client> clientIModel = ClientContactPanel.this.getModel();
+			var clientIModel = ClientContactPanel.this.getModel();
 			contact.setOrganisatieMedewerker(null);
-			Client client1 = hibernateService.load(Client.class, clientIModel.getObject().getId());
+			var client1 = hibernateService.load(Client.class, clientIModel.getObject().getId());
 			contactNietAfgerond(client1);
 		}
 
@@ -778,7 +776,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 			@Override
 			protected void populateItem(ListItem<ClientContactActieTypeWrapper> item)
 			{
-				Check<ClientContactActieTypeWrapper> check = new Check<>("checkbox", item.getModel());
+				var check = new Check<ClientContactActieTypeWrapper>("checkbox", item.getModel());
 				item.add(check);
 				item.add(new EnumLabel<>("label", item.getModelObject().getType()));
 			}

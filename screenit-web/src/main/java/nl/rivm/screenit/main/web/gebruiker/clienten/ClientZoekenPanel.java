@@ -85,8 +85,8 @@ public class ClientZoekenPanel extends Panel
 	public ClientZoekenPanel(String id)
 	{
 		super(id);
-		Client zoekobject = new Client();
-		Persoon persoon = new Persoon();
+		var zoekobject = new Client();
+		var persoon = new Persoon();
 		persoon.setGbaAdres(new BagAdres());
 		zoekobject.setPersoon(persoon);
 
@@ -108,7 +108,7 @@ public class ClientZoekenPanel extends Panel
 
 	private void logAction(LogGebeurtenis gebeurtenis, Client client, String briefkenmerk)
 	{
-		String bsn = client.getPersoon().getBsn();
+		var bsn = client.getPersoon().getBsn();
 		if (bsn != null)
 		{
 			logService.logGebeurtenis(gebeurtenis, ScreenitSession.get().getIngelogdAccount(), "Gezocht op bsn: " + bsn);
@@ -124,8 +124,8 @@ public class ClientZoekenPanel extends Panel
 		}
 		else
 		{
-			String melding = "Gezocht op alleen geboortedatum.";
-			LogEvent logEvent = new LogEvent(melding);
+			var melding = "Gezocht op alleen geboortedatum.";
+			var logEvent = new LogEvent(melding);
 			logEvent.setLevel(Level.ERROR);
 			logService.logGebeurtenis(gebeurtenis, logEvent, ScreenitSession.get().getIngelogdAccount(), null);
 		}
@@ -159,12 +159,12 @@ public class ClientZoekenPanel extends Panel
 
 			add(new TextField<>("briefkenmerk", briefkenmerkModel));
 
-			AjaxSubmitLink submit = new AjaxSubmitLink("submit")
+			var submit = new AjaxSubmitLink("submit")
 			{
 				@Override
 				protected void onSubmit(AjaxRequestTarget target)
 				{
-					Client client = getModelObject();
+					var client = getModelObject();
 					if (StringUtils.isNotBlank(client.getPersoon().getBsn())
 						|| client.getPersoon().getGbaAdres().getHuisnummer() != null && StringUtils.isNotBlank(client.getPersoon().getGbaAdres().getPostcode()))
 					{
@@ -174,7 +174,7 @@ public class ClientZoekenPanel extends Panel
 					}
 					else if (StringUtils.isNotBlank(briefkenmerkModel.getObject()))
 					{
-						String errorString = clientService.valideerBriefkenmerk(briefkenmerkModel.getObject(), client);
+						var errorString = clientService.valideerBriefkenmerk(briefkenmerkModel.getObject(), client);
 						if (StringUtils.isBlank(errorString))
 						{
 							logAction(LogGebeurtenis.ZOEKEN_CLIENT, client, briefkenmerkModel.getObject());
@@ -208,8 +208,8 @@ public class ClientZoekenPanel extends Panel
 				@Override
 				public IModel<Object> getDataModel(IModel<Client> rowModel)
 				{
-					Client persoon = rowModel.getObject();
-					String naam = NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(persoon);
+					var persoon = rowModel.getObject();
+					var naam = NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(persoon);
 					return new Model(naam);
 				}
 
@@ -222,12 +222,12 @@ public class ClientZoekenPanel extends Panel
 			columns.add(new PostcodeColumn<>("persoon.gbaAdres.postcode", "persoon.gbaAdres.postcode"));
 			columns.add(new PropertyColumn<>(Model.of("Huisnummer"), "persoon.gbaAdres.huisnummer", "persoon.gbaAdres.huisnummer"));
 
-			final ScreenitDataTable<Client, String> tabel = new ScreenitDataTable<Client, String>("tabel", columns, new SortableDataProvider<Client, String>()
+			final var tabel = new ScreenitDataTable<Client, String>("tabel", columns, new SortableDataProvider<Client, String>()
 			{
 				@Override
 				public Iterator<? extends Client> iterator(long first, long count)
 				{
-					List<Client> clienten = getClienten();
+					var clienten = getClienten();
 					return clienten.iterator();
 				}
 
@@ -249,9 +249,9 @@ public class ClientZoekenPanel extends Panel
 				public void onClick(AjaxRequestTarget target, IModel<Client> model)
 				{
 					var client = model.getObject();
-					for (Object[] menuItem : ClientPage.getClientDossierTabs(client))
+					for (var menuItem : ClientPage.getClientDossierTabs(client))
 					{
-						Class<ClientPage> targetPageClass = (Class<ClientPage>) menuItem[1];
+						var targetPageClass = (Class<ClientPage>) menuItem[1];
 						if (Session.get().getAuthorizationStrategy().isInstantiationAuthorized(targetPageClass))
 						{
 
@@ -283,15 +283,15 @@ public class ClientZoekenPanel extends Panel
 		private List<Client> getClienten()
 		{
 			List<Client> clienten = new ArrayList<>();
-			Client zoekClient = ClientZoekenForm.this.getModelObject();
-			Persoon zoekPersoon = zoekClient.getPersoon();
+			var zoekClient = ClientZoekenForm.this.getModelObject();
+			var zoekPersoon = zoekClient.getPersoon();
 			if (briefkenmerkModel.getObject() != null)
 			{
-				Client client = clientService.getClientMetBriefkenmerk(briefkenmerkModel.getObject());
+				var client = clientService.getClientMetBriefkenmerk(briefkenmerkModel.getObject());
 
 				if (client != null)
 				{
-					Persoon gevondenBriefkenmerkPersoon = client.getPersoon();
+					var gevondenBriefkenmerkPersoon = client.getPersoon();
 
 					if (gevondenBriefkenmerkPersoon.getGeboortedatumPrecisie() != null)
 					{

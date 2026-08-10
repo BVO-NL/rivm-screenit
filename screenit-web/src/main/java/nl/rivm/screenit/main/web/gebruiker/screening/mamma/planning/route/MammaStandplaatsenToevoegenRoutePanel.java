@@ -54,7 +54,7 @@ public abstract class MammaStandplaatsenToevoegenRoutePanel extends GenericPanel
 	{
 		super(id, model);
 
-		Form form = new Form("form");
+		var form = new Form("form");
 		add(form);
 
 		form.add(new IndicatingAjaxSubmitLink("toevoegen")
@@ -65,15 +65,17 @@ public abstract class MammaStandplaatsenToevoegenRoutePanel extends GenericPanel
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				List<MammaStandplaats> toegevoegdeStandplaatsList = standplaatsenModel.getObject();
+				var toegevoegdeStandplaatsList = standplaatsenModel.getObject();
 
 				toegevoegdeStandplaatsList.stream()
 					.filter(toegevoegdeStandplaats -> toegevoegdeStandplaats.getPostcodeReeksen().isEmpty() && toegevoegdeStandplaats.getTehuizen().isEmpty())
-					.forEach(standplaatsZonderPostcodeReeksenOfTehuizen -> {
+					.forEach(standplaatsZonderPostcodeReeksenOfTehuizen ->
+					{
 						error("Standplaats '" + standplaatsZonderPostcodeReeksenOfTehuizen.getNaam() + "' heeft geen gekoppelde postcodereeksen of tehuizen.");
 					});
 				toegevoegdeStandplaatsList.stream().filter(toegevoegdeStandplaats -> heeftOnvolledigeDatumOfLocatieGegevens(toegevoegdeStandplaats))
-					.forEach(standplaatsZonderValideLocatieGegevens -> {
+					.forEach(standplaatsZonderValideLocatieGegevens ->
+					{
 						error("Standplaats '" + standplaatsZonderValideLocatieGegevens.getNaam() + "' heeft onvolledige locatiegegevens.");
 					});
 
@@ -87,7 +89,7 @@ public abstract class MammaStandplaatsenToevoegenRoutePanel extends GenericPanel
 
 			private boolean heeftOnvolledigeDatumOfLocatieGegevens(MammaStandplaats standplaats)
 			{
-				boolean heeftOnvolledigeDatumOfLocatieGegegevens = heeftOnvolledigeLocatieGegegevens(standplaats.getLocatie());
+				var heeftOnvolledigeDatumOfLocatieGegegevens = heeftOnvolledigeLocatieGegegevens(standplaats.getLocatie());
 				if (standplaats.getTijdelijkeLocatie().getStartDatum() != null || standplaats.getTijdelijkeLocatie().getEindDatum() != null)
 				{
 					heeftOnvolledigeDatumOfLocatieGegegevens |= heeftOnvolledigeLocatieGegegevens(standplaats.getTijdelijkeLocatie());
@@ -115,8 +117,8 @@ public abstract class MammaStandplaatsenToevoegenRoutePanel extends GenericPanel
 			}
 		});
 
-		List<MammaStandplaats> standplaatsenZonderRoute = routeService.getStandplaatsenZonderRoute(ScreenitSession.get().getScreeningOrganisatie());
-		ScreenitListMultipleChoice<MammaStandplaats> standplaatsen = new ScreenitListMultipleChoice<>("standplaatsen", standplaatsenModel,
+		var standplaatsenZonderRoute = routeService.getStandplaatsenZonderRoute(ScreenitSession.get().getScreeningOrganisatie());
+		var standplaatsen = new ScreenitListMultipleChoice<MammaStandplaats>("standplaatsen", standplaatsenModel,
 			ModelUtil.listRModel(standplaatsenZonderRoute),
 			new ChoiceRenderer<>("naam"));
 		standplaatsen.setRequired(true);

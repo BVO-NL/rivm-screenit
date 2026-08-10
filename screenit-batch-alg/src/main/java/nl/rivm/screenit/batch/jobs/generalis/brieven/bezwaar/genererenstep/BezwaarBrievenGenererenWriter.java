@@ -22,7 +22,6 @@ package nl.rivm.screenit.batch.jobs.generalis.brieven.bezwaar.genererenstep;
  */
 
 import java.util.Date;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 
@@ -34,16 +33,14 @@ import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
-import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
 import nl.rivm.screenit.model.algemeen.BezwaarMergedBrieven;
 import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
-import nl.rivm.screenit.service.BezwaarService;
+import nl.rivm.screenit.service.BaseBezwaarService;
 import nl.rivm.screenit.util.BriefUtil;
 
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -51,12 +48,12 @@ import org.springframework.stereotype.Component;
 public class BezwaarBrievenGenererenWriter extends AbstractBrievenGenererenWriter<BezwaarBrief, BezwaarMergedBrieven>
 {
 
-	private final BezwaarService bezwaarService;
+	private final BaseBezwaarService bezwaarService;
 
 	@Override
 	protected BezwaarMergedBrieven createConcreteMergedBrieven(Date aangemaaktOp)
 	{
-		BezwaarMergedBrieven mergedBrieven = new BezwaarMergedBrieven();
+		var mergedBrieven = new BezwaarMergedBrieven();
 		mergedBrieven.setScreeningOrganisatie(getScreeningOrganisatie());
 		mergedBrieven.setCreatieDatum(aangemaaktOp);
 		mergedBrieven.setBriefType(getBriefType());
@@ -66,10 +63,10 @@ public class BezwaarBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 	@Override
 	public BaseDocumentCreator getDocumentCreator(MailMergeContext context)
 	{
-		Client client = context.getClient();
-		BezwaarBrief brief = (BezwaarBrief) BriefUtil.getOrigineleBrief(context.getBrief());
-		BezwaarMoment moment = getBezwaarMomentVoorBrief(client, brief);
-		List<BezwaarGroupViewWrapper> wrappers = bezwaarService.getEditBezwaarGroupViewWrappers(client, moment,
+		var client = context.getClient();
+		var brief = (BezwaarBrief) BriefUtil.getOrigineleBrief(context.getBrief());
+		var moment = getBezwaarMomentVoorBrief(client, brief);
+		var wrappers = bezwaarService.getEditBezwaarGroupViewWrappers(client, moment,
 			brief.getBriefType() != BriefType.CLIENT_BEZWAAR_BEVESTIGING_VERWIJDERING_DOSSIER, BezwaarType.ALGEMENE_BEZWAAR_TYPES);
 		return new BezwaarDocumentCreatorOneDatasetCoupleTables(wrappers, brief.getBriefType());
 	}

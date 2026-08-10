@@ -22,8 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.zorginstelling;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.main.web.base.BasePage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.FqdnPanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.KoppelAanParentOrganisatiePanel;
@@ -31,8 +29,6 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBehee
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspoortPanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieZoeken;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Organisatie;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ZorgInstelling;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -46,7 +42,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
@@ -68,22 +63,22 @@ public class AanvullendeZiGegevensPage extends OrganisatieBeheer
 
 	public AanvullendeZiGegevensPage()
 	{
-		Organisatie organisatie = getCurrentSelectedOrganisatie();
+		var organisatie = getCurrentSelectedOrganisatie();
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(organisatie)));
 
-		final IModel<ZorgInstelling> model = ModelUtil.cModel((ZorgInstelling) organisatie);
+		final var model = ModelUtil.cModel((ZorgInstelling) organisatie);
 		setDefaultModel(model);
 
-		Form<Void> form = new Form<>("form");
+		var form = new Form<Void>("form");
 		add(form);
 
-		OrganisatieMedewerker organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
-		Actie actie = autorisatieService.getActieVoorOrganisatie(organisatieMedewerker, organisatie, Recht.MEDEWERKER_ZORGINSTELLING_ORG_BEHEER);
-		List<Bevolkingsonderzoek> bevolkingsonderzoeken = autorisatieService.getBevolkingsonderzoeken(organisatieMedewerker);
-		boolean inzien = !isMinimumActie(actie, Actie.AANPASSEN);
-		boolean gebruikerMagColonZien =
+		var organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		var actie = autorisatieService.getActieVoorOrganisatie(organisatieMedewerker, organisatie, Recht.MEDEWERKER_ZORGINSTELLING_ORG_BEHEER);
+		var bevolkingsonderzoeken = autorisatieService.getBevolkingsonderzoeken(organisatieMedewerker);
+		var inzien = !isMinimumActie(actie, Actie.AANPASSEN);
+		var gebruikerMagColonZien =
 			bevolkingsonderzoeken.contains(Bevolkingsonderzoek.COLON) && organisatieMedewerker.getBevolkingsonderzoeken().contains(Bevolkingsonderzoek.COLON);
-		boolean gebruikerMagMammaZien =
+		var gebruikerMagMammaZien =
 			bevolkingsonderzoeken.contains(Bevolkingsonderzoek.MAMMA) && organisatieMedewerker.getBevolkingsonderzoeken().contains(Bevolkingsonderzoek.MAMMA);
 
 		form.add(new KoppelAanParentOrganisatiePanel<>("parent", model).setEnabled(!inzien || organisatie.getParent() == null));
@@ -103,7 +98,7 @@ public class AanvullendeZiGegevensPage extends OrganisatieBeheer
 			}
 		});
 
-		AjaxLink<Void> annuleren = new AjaxLink<Void>("annuleren")
+		var annuleren = new AjaxLink<Void>("annuleren")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)

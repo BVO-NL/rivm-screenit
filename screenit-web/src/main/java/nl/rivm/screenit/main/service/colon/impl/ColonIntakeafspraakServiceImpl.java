@@ -48,40 +48,40 @@ public class ColonIntakeafspraakServiceImpl implements ColonIntakeafspraakServic
 
 	private final ICurrentDateSupplier currentDateSupplier;
 
-	private Specification<ColonIntakeAfspraak> getSpecification(ColonIntakelocatie intakelocatie, WerklijstIntakeFilter zoekObject, ICurrentDateSupplier dateSupplier)
+	private Specification<ColonIntakeAfspraak> getSpecification(ColonIntakelocatie intakelocatie, WerklijstIntakeFilter zoekObject)
 	{
 		return ColonIntakeAfspraakSpecification.heeftGeenVerslagen()
 			.and(ColonIntakeAfspraakSpecification.heeftClientNietOverledenOfVerhuisdVoorColoscopie())
 			.and(ColonIntakeAfspraakSpecification.heeftConclusieType(ColonConclusieType.COLOSCOPIE))
 			.and(ColonIntakeAfspraakSpecification.heeftIntakelocatie(intakelocatie))
-			.and(ColonIntakeAfspraakSpecification.heeftConclusieInVerleden(dateSupplier.getDateMidnight()))
+			.and(ColonIntakeAfspraakSpecification.heeftConclusieInVerleden(currentDateSupplier.getDateMidnight()))
 
 			.and(ColonIntakeAfspraakSpecification.metFilter(zoekObject));
 	}
 
 	@Override
-	public List<ColonIntakeAfspraak> getAfsprakenZonderVerslag(WerklijstIntakeFilter zoekObject, ColonIntakelocatie intakeLocatie, long first, long count, Sort sort)
+	public List<ColonIntakeAfspraak> getAfsprakenZonderVerslag(WerklijstIntakeFilter zoekObject, ColonIntakelocatie intakelocatie, long first, long count, Sort sort)
 	{
-		return intakeAfspraakRepository.findWith(getSpecification(intakeLocatie, zoekObject, currentDateSupplier), q -> q.sortBy(sort)).all(first, count);
+		return intakeAfspraakRepository.findWith(getSpecification(intakelocatie, zoekObject), q -> q.sortBy(sort)).all(first, count);
 	}
 
 	@Override
-	public long getAantalAfsprakenZonderVerslag(WerklijstIntakeFilter zoekObject, ColonIntakelocatie intakeLocatie)
+	public long getAantalAfsprakenZonderVerslag(WerklijstIntakeFilter zoekObject, ColonIntakelocatie intakelocatie)
 	{
-		return intakeAfspraakRepository.count(getSpecification(intakeLocatie, zoekObject, currentDateSupplier));
+		return intakeAfspraakRepository.count(getSpecification(intakelocatie, zoekObject));
 	}
 
 	@Override
 	public long countAfsprakenOpDagVanDeWeek(DayOfWeek dagVanDeWeek)
 	{
 		var result = intakeAfspraakRepository.countColonIntakeAfsprakenOpDag(dagVanDeWeek.getValue());
-		return result.get(0);
+		return result.getFirst();
 	}
 
 	@Override
 	public long countAfsprakenInNacht(LocalTime startTijd, LocalTime eindTijd)
 	{
 		var result = intakeAfspraakRepository.countColonIntakeAfsprakenInNacht(eindTijd, startTijd);
-		return result.get(0);
+		return result.getFirst();
 	}
 }

@@ -24,7 +24,12 @@ package nl.rivm.screenit.huisartsenportaal.repository.impl;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import nl.rivm.screenit.huisartsenportaal.dto.TableResultOptionsDto;
 import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
@@ -42,13 +47,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-
 @Transactional
 @Repository
 public class AanvraagCriteriaRepositoryImpl extends BaseCustomRepositoryImpl<LabformulierAanvraag> implements AanvraagCriteriaRepository
@@ -57,18 +55,18 @@ public class AanvraagCriteriaRepositoryImpl extends BaseCustomRepositoryImpl<Lab
 	@Override
 	public List<LabformulierAanvraag> findByHuisarts(Huisarts huisarts, TableResultOptionsDto tableResultOptionsDto)
 	{
-		CriteriaBuilder cb = getCriteriaBuilder();
-		CriteriaQuery<LabformulierAanvraag> query = cb.createQuery(LabformulierAanvraag.class);
+		var cb = getCriteriaBuilder();
+		var query = cb.createQuery(LabformulierAanvraag.class);
 
-		Root<LabformulierAanvraag> labformulierAanvraagRoot = createFromAndWhere(huisarts, cb, query);
+		var labformulierAanvraagRoot = createFromAndWhere(huisarts, cb, query);
 
 		query.select(labformulierAanvraagRoot);
 
 		if (tableResultOptionsDto.getSortOptions() != null && !tableResultOptionsDto.getSortOptions().isEmpty())
 		{
-			Map.Entry<String, String> entry = tableResultOptionsDto.getSortOptions().entrySet().iterator().next();
+			var entry = tableResultOptionsDto.getSortOptions().entrySet().iterator().next();
 			From orderByObject = labformulierAanvraagRoot;
-			String filter = StringUtils.remove(entry.getKey(), '.'); 
+			var filter = StringUtils.remove(entry.getKey(), '.'); 
 			if (StringUtils.startsWith(filter, "locatie"))
 			{
 				filter = filter.replace("locatie", "");
@@ -94,10 +92,10 @@ public class AanvraagCriteriaRepositoryImpl extends BaseCustomRepositoryImpl<Lab
 	@Override
 	public long countAanvragen(Huisarts huisarts)
 	{
-		CriteriaBuilder cb = getCriteriaBuilder();
-		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+		var cb = getCriteriaBuilder();
+		var query = cb.createQuery(Long.class);
 
-		Root<LabformulierAanvraag> labformulierAanvraagRoot = createFromAndWhere(huisarts, cb, query);
+		var labformulierAanvraagRoot = createFromAndWhere(huisarts, cb, query);
 
 		query.select(cb.count(labformulierAanvraagRoot));
 		return getEntityManager().createQuery(query).getSingleResult();
@@ -108,7 +106,7 @@ public class AanvraagCriteriaRepositoryImpl extends BaseCustomRepositoryImpl<Lab
 
 		Root<LabformulierAanvraag> labformulierAanvraagRoot = query.from(LabformulierAanvraag.class);
 
-		Join<LabformulierAanvraag, Locatie> locatieJoin = labformulierAanvraagRoot.join(LabformulierAanvraag_.locatie);
+		var locatieJoin = labformulierAanvraagRoot.join(LabformulierAanvraag_.locatie);
 
 		List<Predicate> condities = new ArrayList<>();
 		condities.add(cb.equal(labformulierAanvraagRoot.get(LabformulierAanvraag_.huisarts), huisarts));
@@ -125,10 +123,10 @@ public class AanvraagCriteriaRepositoryImpl extends BaseCustomRepositoryImpl<Lab
 	@Override
 	public List<LabformulierAanvraag> findByLocatieAndAanvraagDatumBetween(Locatie locatie, LocalDate datum1, LocalDate datum2)
 	{
-		CriteriaBuilder cb = getCriteriaBuilder();
-		CriteriaQuery<LabformulierAanvraag> query = cb.createQuery(LabformulierAanvraag.class);
+		var cb = getCriteriaBuilder();
+		var query = cb.createQuery(LabformulierAanvraag.class);
 
-		Root<LabformulierAanvraag> labformulierAanvraagRoot = query.from(LabformulierAanvraag.class);
+		var labformulierAanvraagRoot = query.from(LabformulierAanvraag.class);
 
 		query.select(labformulierAanvraagRoot);
 
@@ -148,10 +146,10 @@ public class AanvraagCriteriaRepositoryImpl extends BaseCustomRepositoryImpl<Lab
 	@Override
 	public List<LabformulierAanvraag> findByLocatie(Locatie locatie)
 	{
-		CriteriaBuilder cb = getCriteriaBuilder();
-		CriteriaQuery<LabformulierAanvraag> query = cb.createQuery(LabformulierAanvraag.class);
+		var cb = getCriteriaBuilder();
+		var query = cb.createQuery(LabformulierAanvraag.class);
 
-		Root<LabformulierAanvraag> labformulierAanvraagRoot = query.from(LabformulierAanvraag.class);
+		var labformulierAanvraagRoot = query.from(LabformulierAanvraag.class);
 
 		query.select(labformulierAanvraagRoot);
 

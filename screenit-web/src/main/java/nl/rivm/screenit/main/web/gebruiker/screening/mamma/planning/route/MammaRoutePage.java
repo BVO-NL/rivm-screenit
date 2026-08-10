@@ -35,8 +35,6 @@ import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.MammaPlanningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.dashboard.MammaPlanningDashboardPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.BeoordelingsEenheid;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -108,10 +106,10 @@ public class MammaRoutePage extends MammaPlanningBasePage
 
 	public MammaRoutePage(MammaScreeningsEenheid screeningsEenheidInit)
 	{
-		ScreeningOrganisatie sessionSO = ScreenitSession.get().getScreeningOrganisatie();
+		var sessionSO = ScreenitSession.get().getScreeningOrganisatie();
 
 		this.screeningsEenheidModel1 = ModelUtil.cModel(screeningsEenheidInit);
-		List<MammaScreeningsEenheid> actieveScreeningsEenheden = screeningsEenheidService.getActieveScreeningsEenhedenVoorScreeningOrganisatie(sessionSO);
+		var actieveScreeningsEenheden = screeningsEenheidService.getActieveScreeningsEenhedenVoorScreeningOrganisatie(sessionSO);
 		this.screeningsEenhedenModel1 = ModelUtil.listModel(actieveScreeningsEenheden);
 
 		addSEDropdown1();
@@ -157,8 +155,8 @@ public class MammaRoutePage extends MammaPlanningBasePage
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				ScreeningOrganisatie sessionSO = ScreenitSession.get().getScreeningOrganisatie();
-				List<MammaScreeningsEenheid> screeningsEenheidList2 = screeningsEenheidService.getActieveScreeningsEenhedenVoorScreeningOrganisatie(sessionSO);
+				var sessionSO = ScreenitSession.get().getScreeningOrganisatie();
+				var screeningsEenheidList2 = screeningsEenheidService.getActieveScreeningsEenhedenVoorScreeningOrganisatie(sessionSO);
 				screeningsEenheidList2.remove(screeningsEenheidModel1.getObject());
 				screeningsEenhedenModel2.setObject(screeningsEenheidList2);
 				target.add(screeningsEenheid2Container);
@@ -170,13 +168,13 @@ public class MammaRoutePage extends MammaPlanningBasePage
 
 	private void controleerBeoordelingsEenheden()
 	{
-		MammaScreeningsEenheid screeningsEenheid1 = screeningsEenheidModel1.getObject();
-		MammaScreeningsEenheid screeningsEenheid2 = screeningsEenheidModel2.getObject();
+		var screeningsEenheid1 = screeningsEenheidModel1.getObject();
+		var screeningsEenheid2 = screeningsEenheidModel2.getObject();
 
 		if (magAanpassen && screeningsEenheid2Container.isVisible() && screeningsEenheid1 != null && screeningsEenheid2 != null)
 		{
-			BeoordelingsEenheid beoordelingsEenheid1 = screeningsEenheid1.getBeoordelingsEenheid();
-			BeoordelingsEenheid beoordelingsEenheid2 = screeningsEenheid2.getBeoordelingsEenheid();
+			var beoordelingsEenheid1 = screeningsEenheid1.getBeoordelingsEenheid();
+			var beoordelingsEenheid2 = screeningsEenheid2.getBeoordelingsEenheid();
 			if (!beoordelingsEenheid1.equals(beoordelingsEenheid2))
 			{
 				warn(String.format("Let op: '%s' behoort to beoordelingseenheid '%s' en '%s' tot beoordelingseenheid '%s'. " +
@@ -204,8 +202,8 @@ public class MammaRoutePage extends MammaPlanningBasePage
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				ScreeningOrganisatie sessionSO = ScreenitSession.get().getScreeningOrganisatie();
-				List<MammaScreeningsEenheid> screeningsEenheidList1 = screeningsEenheidService.getActieveScreeningsEenhedenVoorScreeningOrganisatie(sessionSO);
+				var sessionSO = ScreenitSession.get().getScreeningOrganisatie();
+				var screeningsEenheidList1 = screeningsEenheidService.getActieveScreeningsEenhedenVoorScreeningOrganisatie(sessionSO);
 				screeningsEenheidList1.remove(screeningsEenheidModel2.getObject());
 				screeningsEenhedenModel1.setObject(screeningsEenheidList1);
 				target.add(screeningsEenheid1Container);
@@ -301,7 +299,7 @@ public class MammaRoutePage extends MammaPlanningBasePage
 				target.add(exportToXslLink);
 
 				screeningsEenheid2Container.setVisible(false);
-				List<MammaScreeningsEenheid> screeningsEenheidList1 = screeningsEenhedenModel1.getObject();
+				var screeningsEenheidList1 = screeningsEenhedenModel1.getObject();
 				if (screeningsEenheidModel2.getObject() != null)
 				{
 					screeningsEenheidList1.add(screeningsEenheidModel2.getObject());
@@ -341,7 +339,7 @@ public class MammaRoutePage extends MammaPlanningBasePage
 	public void renderHead(IHeaderResponse response)
 	{
 		super.renderHead(response);
-		JsStatement jsStatement = new JsStatement();
+		var jsStatement = new JsStatement();
 		jsStatement.append("$('.paginering').hide()");
 		response.render(OnDomReadyHeaderItem.forScript(jsStatement.render()));
 	}

@@ -63,7 +63,7 @@ public class EnumPropertyColumn<T, S extends Serializable, E extends Enum<E>> ex
 	@Override
 	public IModel<?> getDataModel(IModel<T> rowModel)
 	{
-		Enum<E> enumValue = getEnumValue(rowModel);
+		var enumValue = getEnumValue(rowModel);
 		IModel<?> dataModel = null;
 		if (enumValue != null)
 		{
@@ -93,8 +93,8 @@ public class EnumPropertyColumn<T, S extends Serializable, E extends Enum<E>> ex
 
 	protected final Enum<E> getEnumValue(IModel<T> rowModel)
 	{
-		IModel<?> propertyModel = super.getDataModel(rowModel);
-		Object propertyObject = propertyModel.getObject();
+		var propertyModel = super.getDataModel(rowModel);
+		var propertyObject = propertyModel.getObject();
 		if (propertyObject instanceof Enum<?>)
 		{
 			return (Enum<E>) propertyObject;

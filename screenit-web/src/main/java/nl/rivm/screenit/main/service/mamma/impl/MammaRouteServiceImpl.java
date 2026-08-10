@@ -63,9 +63,9 @@ public class MammaRouteServiceImpl implements MammaRouteService
 	@Override
 	public void standplaatsenToevoegenRoute(MammaScreeningsEenheid screeningsEenheid, List<MammaStandplaats> standplaatsen, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		for (MammaStandplaats standplaats : standplaatsen)
+		for (var standplaats : standplaatsen)
 		{
-			PlanningStandplaatsPeriodeDto item = new PlanningStandplaatsPeriodeDto();
+			var item = new PlanningStandplaatsPeriodeDto();
 			item.standplaatsId = standplaats.getId();
 			baseConceptPlanningsApplicatie.changeRoute(item, screeningsEenheid, ingelogdeOrganisatieMedewerker);
 		}
@@ -75,14 +75,14 @@ public class MammaRouteServiceImpl implements MammaRouteService
 	@Override
 	public String getCsvString(MammaScreeningsEenheid screeningsEenheid)
 	{
-		StringBuilder csvBuilder = new StringBuilder();
+		var csvBuilder = new StringBuilder();
 
-		String header = "Naam,Opmerkingen,Drempel,Start,Eind,Mindervalide uitnodigen vanaf,Interval,Indicatie,Locatie, Standplaatsomschrijving, Tijdelijke locatie, Standplaatsomschrijving (tijdelijke locatie), Start tijdelijke locatie, Eind tijdelijke locatie\n";
+		var header = "Naam,Opmerkingen,Drempel,Start,Eind,Mindervalide uitnodigen vanaf,Interval,Indicatie,Locatie, Standplaatsomschrijving, Tijdelijke locatie, Standplaatsomschrijving (tijdelijke locatie), Start tijdelijke locatie, Eind tijdelijke locatie\n";
 		csvBuilder.append(header);
 
-		for (PlanningStandplaatsPeriodeDto standplaatsPeriode : standplaatsPeriodeService.getStandplaatsPeriodesSorted(screeningsEenheid))
+		for (var standplaatsPeriode : standplaatsPeriodeService.getStandplaatsPeriodesSorted(screeningsEenheid))
 		{
-			MammaStandplaats standplaats = hibernateService.get(MammaStandplaats.class, standplaatsPeriode.standplaatsId);
+			var standplaats = hibernateService.get(MammaStandplaats.class, standplaatsPeriode.standplaatsId);
 
 			csvBuilder.append(ExportToXslUtil.getCsvValue(StandplaatsPeriodeUtil.getStandplaatsPeriodeNaam(standplaatsPeriode, standplaats)));
 			csvBuilder.append(",");

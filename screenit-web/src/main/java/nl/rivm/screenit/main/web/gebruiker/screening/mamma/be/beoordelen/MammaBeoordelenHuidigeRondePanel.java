@@ -35,7 +35,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDtoMappe
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.mamma.MammaAnnotatieAfbeelding;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.enums.MammaAmputatie;
@@ -90,10 +89,10 @@ public class MammaBeoordelenHuidigeRondePanel extends AbstractMammaRondePanel
 
 	private void createMammaBeoordelenPanel(WebMarkupContainer panelContainer)
 	{
-		MammaLezing lezing = beoordelingService.getOrCreate1eOf2eLezing(getModelObject(),
+		var lezing = beoordelingService.getOrCreate1eOf2eLezing(getModelObject(),
 			ScreenitSession.get().getIngelogdeOrganisatieMedewerker(),
 			isOnervarenRadioloog());
-		IModel<MammaLezing> lezingModel = createModel(getModelObject(), lezing, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+		var lezingModel = createModel(getModelObject(), lezing, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 		mammaBeoordelenLezingPanel = new MammaBeoordelenLezingPanel(this, "mammaBeoordelenPanel", lezingModel);
 		panelContainer.add(mammaBeoordelenLezingPanel);
 	}
@@ -112,7 +111,7 @@ public class MammaBeoordelenHuidigeRondePanel extends AbstractMammaRondePanel
 
 	private void koppelNieuweLaesiesAanLezing(IModel<MammaLezing> lezingModel, List<LaesieDto> laesieDtos)
 	{
-		LaesieDtoMapper mapper = new LaesieDtoMapper();
+		var mapper = new LaesieDtoMapper();
 		mapper.koppelNieuweLaesiesAanLezing(mapper.laesieDtosToMammaLaesies(laesieDtos), lezingModel.getObject());
 	}
 
@@ -128,7 +127,7 @@ public class MammaBeoordelenHuidigeRondePanel extends AbstractMammaRondePanel
 
 	private boolean toonMBBSignaleren()
 	{
-		MammaBeoordelingStatus beoordelingStatus = getModelObject().getStatus();
+		var beoordelingStatus = getModelObject().getStatus();
 		return opslaanPopupGezien || (MammaBeoordelingStatus.EERSTE_LEZING_OPGESLAGEN.equals(beoordelingStatus)
 			|| MammaBeoordelingStatus.TWEEDE_LEZING_OPGESLAGEN.equals(beoordelingStatus))
 			|| MammaBeoordelingStatus.DISCREPANTIE.equals(beoordelingStatus)
@@ -138,7 +137,7 @@ public class MammaBeoordelenHuidigeRondePanel extends AbstractMammaRondePanel
 	private IModel<MammaLezing> createModel(MammaBeoordeling beoordeling, MammaLezing lezing, OrganisatieMedewerker beoordelaar)
 	{
 
-		IModel<MammaLezing> model = ModelUtil.ccModel(lezing);
+		var model = ModelUtil.ccModel(lezing);
 		if ((MammaBeoordelingStatus.EERSTE_LEZING.equals(beoordeling.getStatus()) ||
 			MammaBeoordelingStatus.EERSTE_LEZING_OPGESLAGEN.equals(beoordeling.getStatus())) &&
 			beoordeling.getEersteLezing() != null)
@@ -153,9 +152,9 @@ public class MammaBeoordelenHuidigeRondePanel extends AbstractMammaRondePanel
 		}
 		else
 		{
-			MammaLezing lezingProxy = model.getObject();
+			var lezingProxy = model.getObject();
 
-			MammaAmputatie amputatie = getModelObject().getOnderzoek().getAmputatie();
+			var amputatie = getModelObject().getOnderzoek().getAmputatie();
 			lezingProxy.setBiradsRechts(amputatie != null && MammaAmputatie.RECHTERBORST.equals(amputatie) ? MammaBIRADSWaarde.GEEN : MammaBIRADSWaarde.EEN);
 			lezingProxy.setBiradsLinks(amputatie != null && MammaAmputatie.LINKERBORST.equals(amputatie) ? MammaBIRADSWaarde.GEEN : MammaBIRADSWaarde.EEN);
 			lezingProxy.setBeoordelaar(beoordelaar);
@@ -199,7 +198,7 @@ public class MammaBeoordelenHuidigeRondePanel extends AbstractMammaRondePanel
 
 	private int getVisueleInspectiePanelSize()
 	{
-		MammaAnnotatieAfbeelding visueleInspectieAfbeelding = getModelObject().getOnderzoek().getMammografie().getVisueleInspectieAfbeelding();
+		var visueleInspectieAfbeelding = getModelObject().getOnderzoek().getMammografie().getVisueleInspectieAfbeelding();
 		return toonMBBSignaleren() || visueleInspectieAfbeelding == null || visueleInspectieAfbeelding.getIconen().isEmpty() ? 4 : 6;
 	}
 }

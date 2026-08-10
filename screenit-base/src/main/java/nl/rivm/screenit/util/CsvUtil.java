@@ -32,7 +32,7 @@ public class CsvUtil
 {
 	public static void truncateLastLine(File file)
 	{
-		try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw"))
+		try (var randomAccessFile = new RandomAccessFile(file, "rw"))
 		{
 			randomAccessFile.setLength(randomAccessFile.length() - 1);
 		}

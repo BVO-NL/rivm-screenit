@@ -22,7 +22,6 @@ package nl.rivm.screenit.service.mamma.impl;
  */
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import nl.rivm.screenit.model.Client;
@@ -30,12 +29,7 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpFollowupPa;
-import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpMonstermateriaal;
-import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpPathologieMedischeObservatie;
 import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpPtnmEnGradering;
-import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpVerrichting;
-import nl.rivm.screenit.model.mamma.verslag.followup.MammaFollowUpVerslagContent;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.mamma.MammaBaseFollowUpService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
@@ -66,7 +60,7 @@ public class MammaVerwerkVerslagServiceImpl implements MammaVerwerkVerslagServic
 	public void verwerkVerslagInDossier(MammaFollowUpVerslag verslag)
 	{
 		hibernateService.saveOrUpdate(verslag);
-		MammaScreeningRonde screeningRonde = verslag.getScreeningRonde();
+		var screeningRonde = verslag.getScreeningRonde();
 		screeningRonde.getFollowUpVerslagen().add(verslag);
 
 		hibernateService.saveOrUpdate(screeningRonde);
@@ -76,8 +70,8 @@ public class MammaVerwerkVerslagServiceImpl implements MammaVerwerkVerslagServic
 	@Override
 	public void verwerkImportVerslagInDossier(MammaFollowUpVerslag nieuwVerslag)
 	{
-		List<MammaFollowUpVerslag> verslagen = nieuwVerslag.getScreeningRonde().getFollowUpVerslagen();
-		for (MammaFollowUpVerslag verslag : verslagen)
+		var verslagen = nieuwVerslag.getScreeningRonde().getFollowUpVerslagen();
+		for (var verslag : verslagen)
 		{
 			if (isZelfdeVerslag(nieuwVerslag, verslag))
 			{
@@ -99,17 +93,17 @@ public class MammaVerwerkVerslagServiceImpl implements MammaVerwerkVerslagServic
 		{
 			return false;
 		}
-		MammaFollowUpVerslagContent nieuwVerslagContent = nieuwVerslag.getVerslagContent();
-		MammaFollowUpVerslagContent oudVerslagContent = oudVerslag.getVerslagContent();
+		var nieuwVerslagContent = nieuwVerslag.getVerslagContent();
+		var oudVerslagContent = oudVerslag.getVerslagContent();
 
-		MammaFollowUpPathologieMedischeObservatie nieuwPathologieMedischeObservatie = nieuwVerslagContent.getPathologieMedischeObservatie();
-		MammaFollowUpPathologieMedischeObservatie oudPathologieMedischeObservatie = oudVerslagContent.getPathologieMedischeObservatie();
+		var nieuwPathologieMedischeObservatie = nieuwVerslagContent.getPathologieMedischeObservatie();
+		var oudPathologieMedischeObservatie = oudVerslagContent.getPathologieMedischeObservatie();
 
-		MammaFollowUpFollowupPa oudFollowupPa = oudVerslagContent.getFollowupPa().get(0);
-		MammaFollowUpFollowupPa nieuwFollowupPa = nieuwVerslagContent.getFollowupPa().get(0);
+		var oudFollowupPa = oudVerslagContent.getFollowupPa().get(0);
+		var nieuwFollowupPa = nieuwVerslagContent.getFollowupPa().get(0);
 
-		MammaFollowUpMonstermateriaal nieuwMonstermateriaal = nieuwFollowupPa.getMonstermateriaal();
-		MammaFollowUpMonstermateriaal oudMonstermateriaal = oudFollowupPa.getMonstermateriaal();
+		var nieuwMonstermateriaal = nieuwFollowupPa.getMonstermateriaal();
+		var oudMonstermateriaal = oudFollowupPa.getMonstermateriaal();
 
 		return Objects.equals(nieuwVerslag.getType(), oudVerslag.getType())
 			&& Objects.equals(DateUtil.toLocalDate(nieuwPathologieMedischeObservatie.getDatumAutorisatieUitslag()),
@@ -120,23 +114,23 @@ public class MammaVerwerkVerslagServiceImpl implements MammaVerwerkVerslagServic
 
 	private boolean isIdentiekVerslag(MammaFollowUpVerslag nieuwVerslag, MammaFollowUpVerslag oudVerslag)
 	{
-		MammaFollowUpVerslagContent nieuwVerslagContent = nieuwVerslag.getVerslagContent();
-		MammaFollowUpVerslagContent oudVerslagContent = oudVerslag.getVerslagContent();
+		var nieuwVerslagContent = nieuwVerslag.getVerslagContent();
+		var oudVerslagContent = oudVerslag.getVerslagContent();
 
-		MammaFollowUpPathologieMedischeObservatie nieuwPathologieMedischeObservatie = nieuwVerslagContent.getPathologieMedischeObservatie();
-		MammaFollowUpPathologieMedischeObservatie oudPathologieMedischeObservatie = oudVerslagContent.getPathologieMedischeObservatie();
+		var nieuwPathologieMedischeObservatie = nieuwVerslagContent.getPathologieMedischeObservatie();
+		var oudPathologieMedischeObservatie = oudVerslagContent.getPathologieMedischeObservatie();
 
-		MammaFollowUpFollowupPa oudFollowupPa = oudVerslagContent.getFollowupPa().get(0);
-		MammaFollowUpFollowupPa nieuwFollowupPa = nieuwVerslagContent.getFollowupPa().get(0);
+		var oudFollowupPa = oudVerslagContent.getFollowupPa().get(0);
+		var nieuwFollowupPa = nieuwVerslagContent.getFollowupPa().get(0);
 
-		MammaFollowUpMonstermateriaal nieuwMonstermateriaal = nieuwFollowupPa.getMonstermateriaal();
-		MammaFollowUpMonstermateriaal oudMonstermateriaal = oudFollowupPa.getMonstermateriaal();
+		var nieuwMonstermateriaal = nieuwFollowupPa.getMonstermateriaal();
+		var oudMonstermateriaal = oudFollowupPa.getMonstermateriaal();
 
-		MammaFollowUpPtnmEnGradering nieuwPtnmEnGradering = nieuwFollowupPa.getPtnmEnGradering();
-		MammaFollowUpPtnmEnGradering oudPtnmEnGradering = oudFollowupPa.getPtnmEnGradering();
+		var nieuwPtnmEnGradering = nieuwFollowupPa.getPtnmEnGradering();
+		var oudPtnmEnGradering = oudFollowupPa.getPtnmEnGradering();
 
-		MammaFollowUpVerrichting nieuwVerrichting = nieuwVerslagContent.getVerrichting();
-		MammaFollowUpVerrichting oudVerrichting = oudVerslagContent.getVerrichting();
+		var nieuwVerrichting = nieuwVerslagContent.getVerrichting();
+		var oudVerrichting = oudVerslagContent.getVerrichting();
 
 		return Objects.equals(nieuwVerslag.getStatus(), oudVerslag.getStatus())
 			&& Objects.equals(nieuwVerslag.getType(), oudVerslag.getType())
@@ -199,10 +193,10 @@ public class MammaVerwerkVerslagServiceImpl implements MammaVerwerkVerslagServic
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public void valideerVerslagVoorAfronden(MammaFollowUpVerslag verslag, OrganisatieMedewerker organisatieMedewerker)
 	{
-		for (MammaFollowUpFollowupPa followupPa : verslag.getVerslagContent().getFollowupPa())
+		for (var followupPa : verslag.getVerslagContent().getFollowupPa())
 		{
-			boolean heeftLocatietopologie = followupPa.getMonstermateriaal().getLocatietopologie() != null;
-			boolean heeftLocatieuren = followupPa.getMonstermateriaal().getLocatieuren() != null;
+			var heeftLocatietopologie = followupPa.getMonstermateriaal().getLocatietopologie() != null;
+			var heeftLocatieuren = followupPa.getMonstermateriaal().getLocatieuren() != null;
 			if (heeftLocatietopologie == heeftLocatieuren)
 			{
 				throw new IllegalStateException("error.followup.locatieuren.locatietopologie");

@@ -60,8 +60,8 @@ public class ProjectPaspoortPanel extends GenericPanel<Project>
 	{
 		super.onInitialize();
 
-		IModel<Project> model = getModel();
-		ProjectType projectType = model.getObject().getType();
+		var model = getModel();
+		var projectType = model.getObject().getType();
 
 		add(new Label("passpoortNaam", Model.of(getProjectNaamEnBvo(model))));
 		add(new EnumLabel("passpoortStatus", ProjectUtil.getStatus(model.getObject(), currentDateSupplier.getDate())));
@@ -89,8 +89,8 @@ public class ProjectPaspoortPanel extends GenericPanel<Project>
 
 	private String getProjectNaamEnBvo(IModel<Project> model)
 	{
-		Project project = model.getObject();
-		String projectNaam = project.getNaam();
+		var project = model.getObject();
+		var projectNaam = project.getNaam();
 		if (project.getBevolkingsonderzoeken() != null && !project.getBevolkingsonderzoeken().isEmpty())
 		{
 			projectNaam += " (" + Bevolkingsonderzoek.getAfkortingen(project.getBevolkingsonderzoeken()) + ")";

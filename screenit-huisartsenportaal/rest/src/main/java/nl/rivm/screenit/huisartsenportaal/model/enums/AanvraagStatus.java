@@ -41,7 +41,7 @@ public enum AanvraagStatus
 
 	public static AanvraagStatus getAanvraagStatusByName(String naam)
 	{
-		for (AanvraagStatus status : AanvraagStatus.values())
+		for (var status : AanvraagStatus.values())
 		{
 			if (status.getNaam().equals(naam))
 			{

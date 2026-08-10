@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ScreenitDateTextField;
 import nl.rivm.screenit.model.BagAdres;
@@ -39,7 +37,6 @@ import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.input.validator.BSNValidator;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.Form;
@@ -79,8 +76,8 @@ public abstract class MammaClientZoekenBasePage extends MammaScreeningBasePage
 
 	private IModel<Client> createClientZoekObjectModel()
 	{
-		Client client = new Client();
-		Persoon persoon = new Persoon();
+		var client = new Client();
+		var persoon = new Persoon();
 		persoon.setGbaAdres(new BagAdres());
 		client.setPersoon(persoon);
 		return new CompoundPropertyModel<>(client);
@@ -91,7 +88,7 @@ public abstract class MammaClientZoekenBasePage extends MammaScreeningBasePage
 		clientZoekForm.setOutputMarkupId(true);
 		add(clientZoekForm);
 
-		Component geboortedatumDateField = new ScreenitDateTextField("persoon.geboortedatum")
+		var geboortedatumDateField = new ScreenitDateTextField("persoon.geboortedatum")
 			.setRequired(true)
 			.setOutputMarkupId(true);
 		geboortedatumDateField.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -103,11 +100,11 @@ public abstract class MammaClientZoekenBasePage extends MammaScreeningBasePage
 			}
 		});
 		clientZoekForm.add(geboortedatumDateField);
-		TextField<String> bsnField = new TextField<>("persoon.bsn");
+		var bsnField = new TextField<String>("persoon.bsn");
 		bsnField.setRequired(true);
 		clientZoekForm.add(bsnField.add(new BSNValidator()));
 
-		IndicatingAjaxSubmitLink submitBtn = new IndicatingAjaxSubmitLink("submit")
+		var submitBtn = new IndicatingAjaxSubmitLink("submit")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -122,15 +119,15 @@ public abstract class MammaClientZoekenBasePage extends MammaScreeningBasePage
 
 	protected void zoekClient(AjaxRequestTarget target)
 	{
-		String zoekBsn = clientFilter.getObject().getPersoon().getBsn();
+		var zoekBsn = clientFilter.getObject().getPersoon().getBsn();
 		if (StringUtils.isNotBlank(zoekBsn))
 		{
 			logService.logGebeurtenis(LogGebeurtenis.ZOEKEN_CLIENT, ScreenitSession.get().getIngelogdAccount(), "In het uitwisselportaal is gezocht op BSN: " + zoekBsn);
 		}
-		List<Client> clients = clientService.zoekClienten(clientFilter.getObject());
+		var clients = clientService.zoekClienten(clientFilter.getObject());
 		if (clients.size() == 1)
 		{
-			Client client = clients.get(0);
+			var client = clients.get(0);
 			if (!BezwaarUtil.isBezwaarActiefVoor(client, BezwaarType.GEEN_DIGITALE_UITWISSELING_MET_HET_ZIEKENHUIS, Bevolkingsonderzoek.MAMMA) && client.getMammaDossier() != null)
 			{
 				this.clientOpt = ModelUtil.sModel(client);

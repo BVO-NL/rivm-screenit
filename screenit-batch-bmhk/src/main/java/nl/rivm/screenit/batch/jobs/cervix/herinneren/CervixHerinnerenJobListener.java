@@ -80,7 +80,7 @@ public class CervixHerinnerenJobListener extends BaseLogListener
 	{
 		var context = jobExecution.getExecutionContext();
 
-		long totaalAantal = context.getLong(CervixHerinnerenConstants.TOTAAL_AANTAL_BRIEVEN_KEY, 0);
+		var totaalAantal = context.getLong(CervixHerinnerenConstants.TOTAAL_AANTAL_BRIEVEN_KEY, 0);
 
 		var rapportage = new CervixHerinnerenRapportage();
 		rapportage.setDatumVerwerking(dateSupplier.getDate());

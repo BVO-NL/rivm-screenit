@@ -52,8 +52,12 @@ public class BaseOverdrachtPersoonsgegevensServiceImpl implements BaseOverdracht
 	@Override
 	public void maakOverdrachtVerzoek(Client client)
 	{
-		AlgemeneBrief brief = briefService.maakAlgemeneBrief(client, BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_AANVRAAG);
-		OverdrachtPersoonsgegevens overdracht = new OverdrachtPersoonsgegevens();
+		AlgemeneBrief brief = null;
+		if (client.getPersoon().getDatumVertrokkenUitNederland() == null)
+		{
+			brief = briefService.maakAlgemeneBrief(client, BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_AANVRAAG);
+		}
+		var overdracht = new OverdrachtPersoonsgegevens();
 		overdracht.setClient(client);
 		overdracht.setVerstuurdeAanvraagbrief(brief);
 		overdracht.setStatus(AanvraagBriefStatus.BRIEF);

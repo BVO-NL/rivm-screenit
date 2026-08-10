@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.monster;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +37,6 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.PdfVi
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.CervixBarcodeAfdrukkenBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.monster.popup.CervixMonsterBezwaarDialog;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
@@ -48,7 +46,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
-import nl.rivm.screenit.service.BezwaarService;
+import nl.rivm.screenit.service.BaseBezwaarService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.cervix.CervixVervolgService;
 import nl.rivm.screenit.service.cervix.enums.CervixVervolgTekst;
@@ -73,7 +71,6 @@ import org.apache.wicket.markup.html.form.CheckBoxMultipleChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -94,7 +91,7 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 	private LogService logService;
 
 	@SpringBean
-	private BezwaarService bezwaarService;
+	private BaseBezwaarService bezwaarService;
 
 	@SpringBean
 	private SimplePreferenceService preferenceService;
@@ -145,14 +142,14 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 	{
 		super.onInitialize();
 
-		CervixUitnodiging uitnodiging = getModelObject().getUitnodiging();
-		Client client = uitnodiging.getScreeningRonde().getDossier().getClient();
-		BMHKLaboratorium ingelogdNamensLaboratorium = (BMHKLaboratorium) Hibernate.unproxy(ScreenitSession.get().getOrganisatie());
+		var uitnodiging = getModelObject().getUitnodiging();
+		var client = uitnodiging.getScreeningRonde().getDossier().getClient();
+		var ingelogdNamensLaboratorium = (BMHKLaboratorium) Hibernate.unproxy(ScreenitSession.get().getOrganisatie());
 
 		logService.logGebeurtenis(LogGebeurtenis.CERVIX_UITNODIGING_INGEZIEN, ScreenitSession.get().getIngelogdAccount(), client, getString("titel") + " - " + getStatus(),
 			Bevolkingsonderzoek.CERVIX);
 
-		ScreenitForm<M> form = new ScreenitForm<>("form");
+		var form = new ScreenitForm<M>("form");
 		form.add(new Label("monsterId"));
 		form.add(new EnumLabel<CervixMonsterType>("uitnodiging.monsterType"));
 
@@ -167,8 +164,8 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 		monsterSignaleringenContainer = new WebMarkupContainer("monsterSignaleringenContainer");
 		form.add(monsterSignaleringenContainer);
 
-		CervixMonster monster = uitnodiging.getMonster();
-		boolean heeftDigitaalLabformulier = CervixMonsterUtil.isUitstrijkje(monster)
+		var monster = uitnodiging.getMonster();
+		var heeftDigitaalLabformulier = CervixMonsterUtil.isUitstrijkje(monster)
 			&& CervixMonsterUtil.getUitstrijkje(monster).getLabformulier() != null
 			&& CervixMonsterUtil.getUitstrijkje(monster).getLabformulier().getDigitaal();
 
@@ -189,31 +186,31 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 		overigeSignalering = ComponentHelper.newTextField("overigeSignalering", 255, false);
 		monsterSignaleringenContainer.add(overigeSignalering);
 
-		boolean reedsIngeboekt = reedsIngeboekt();
+		var reedsIngeboekt = reedsIngeboekt();
 		var magNuInboeken = nuInboeken();
 		if (magNuInboeken)
 		{
 			inboeken();
 		}
-		BMHKLaboratorium laboratorium = getModelObject().getLaboratorium();
-		boolean ingeboektInAnderLaboratorium = laboratorium != null && !ingelogdNamensLaboratorium.equals(laboratorium);
+		var laboratorium = getModelObject().getLaboratorium();
+		var ingeboektInAnderLaboratorium = laboratorium != null && !ingelogdNamensLaboratorium.equals(laboratorium);
 
-		CervixVervolgTekst vervolgTekst = vervolgService.bepaalVervolg(getModelObject(), null).getVervolgTekst();
+		var vervolgTekst = vervolgService.bepaalVervolg(getModelObject(), null).getVervolgTekst();
 		vervolgService.digitaalLabformulierKlaarVoorCytologie(getModelObject(), vervolgTekst);
 		if (magNuInboeken)
 		{
 			vervolgService.sendHpvOrder(getModelObject(), vervolgTekst, laboratorium);
 		}
 
-		WebMarkupContainer labformulierLaboratoriumContainer = new WebMarkupContainer("labformulierLaboratoriumContainer");
+		var labformulierLaboratoriumContainer = new WebMarkupContainer("labformulierLaboratoriumContainer");
 		form.add(labformulierLaboratoriumContainer);
 
-		WebMarkupContainer monsterLaboratoriumContainer = new WebMarkupContainer("monsterLaboratoriumContainer");
+		var monsterLaboratoriumContainer = new WebMarkupContainer("monsterLaboratoriumContainer");
 		monsterLaboratoriumContainer.setVisible(ingeboektInAnderLaboratorium);
 		form.add(monsterLaboratoriumContainer);
 		monsterLaboratoriumContainer.add(new Label("laboratorium.naam"));
 
-		DateLabel ontvangstdatum = new DateLabel("ontvangstdatum", new PatternDateConverter("dd-MM-yyyy HH:mm", true));
+		var ontvangstdatum = new DateLabel("ontvangstdatum", new PatternDateConverter("dd-MM-yyyy HH:mm", true));
 		ontvangstdatum.setOutputMarkupId(true);
 		form.add(ontvangstdatum);
 
@@ -226,9 +223,9 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 		vervolgTekstField.setOutputMarkupId(true);
 		form.add(vervolgTekstField);
 
-		WebMarkupContainer fieldset = new WebMarkupContainer("fieldset");
+		var fieldset = new WebMarkupContainer("fieldset");
 		fieldset.add(form);
-		String cssClass = ontvangstMonster() && reedsIngeboekt ? "vervolgstap-reeds-ingeboekt" : vervolgTekst.getCssClass();
+		var cssClass = ontvangstMonster() && reedsIngeboekt ? "vervolgstap-reeds-ingeboekt" : vervolgTekst.getCssClass();
 		fieldset.add(new AttributeAppender("class", cssClass));
 		fieldset.setOutputMarkupId(true);
 		add(fieldset);
@@ -244,10 +241,10 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				BMHKLaboratorium bmhkLaboratorium = getModelObject().getLaboratorium();
+				var bmhkLaboratorium = getModelObject().getLaboratorium();
 				saveMonster(target);
 
-				CervixVervolgTekst vervolgstap = vervolgService.bepaalVervolg(getModelObject(), null).getVervolgTekst();
+				var vervolgstap = vervolgService.bepaalVervolg(getModelObject(), null).getVervolgTekst();
 				vervolgService.digitaalLabformulierKlaarVoorCytologie(getModelObject(), vervolgstap);
 				vervolgService.sendHpvOrder(getModelObject(), vervolgstap, bmhkLaboratorium);
 
@@ -257,7 +254,7 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 				reedsIngeboektLabel.setVisible(false);
 				target.add(reedsIngeboektLabel);
 
-				EnumLabel<CervixVervolgTekst> newVervolgstapField = new EnumLabel<>("vervolgTekst", Model.of(vervolgstap));
+				var newVervolgstapField = new EnumLabel<CervixVervolgTekst>("vervolgTekst", Model.of(vervolgstap));
 				newVervolgstapField.setOutputMarkupId(true);
 				vervolgTekstField.replaceWith(newVervolgstapField);
 				vervolgTekstField = newVervolgstapField;
@@ -318,11 +315,11 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 		printSignaleringen.add(CervixMonsterSignalering.BARCODE_VERTICAAL_GEPLAKT);
 		printSignaleringen.add(CervixMonsterSignalering.BARCODES_POT_FORMULIER_NIET_OVEREEN);
 		printSignaleringen.add(CervixMonsterSignalering.BARCODE_ONTBREEKT_BSN_AANWEZIG);
-		List<CervixMonsterSignalering> signaleringen = getModelObject().getSignaleringen();
-		boolean moetPrinten = false;
+		var signaleringen = getModelObject().getSignaleringen();
+		var moetPrinten = false;
 		if (signaleringen != null)
 		{
-			boolean hadAlPrintDialoog = oudeSignaleringen.stream().anyMatch(printSignaleringen::contains);
+			var hadAlPrintDialoog = oudeSignaleringen.stream().anyMatch(printSignaleringen::contains);
 			moetPrinten = !hadAlPrintDialoog && signaleringen.stream().anyMatch(printSignaleringen::contains);
 			oudeSignaleringen = new ArrayList<>(signaleringen);
 		}
@@ -333,10 +330,10 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 	{
 		dialog = new BootstrapDialog("dialog");
 		add(dialog);
-		Client client = getModelObject().getUitnodiging().getBrief().getClient();
-		boolean geenGebruikLichaamsMateriaal = bezwaarService.checkBezwaarInLaatsteBezwaarMomentAanwezigIs(client,
+		var client = getModelObject().getUitnodiging().getBrief().getClient();
+		var geenGebruikLichaamsMateriaal = bezwaarService.checkBezwaarInLaatsteBezwaarMomentAanwezigIs(client,
 			BezwaarType.GEEN_GEBRUIK_LICHAAMSMATERIAAL_WETENSCHAPPELIJK_ONDERZOEK);
-		boolean geenSignaleringAdvies = bezwaarService.checkBezwaarInLaatsteBezwaarMomentAanwezigIs(client, BezwaarType.GEEN_SIGNALERING_VERWIJSADVIES);
+		var geenSignaleringAdvies = bezwaarService.checkBezwaarInLaatsteBezwaarMomentAanwezigIs(client, BezwaarType.GEEN_SIGNALERING_VERWIJSADVIES);
 		if (geenGebruikLichaamsMateriaal || geenSignaleringAdvies)
 		{
 			CervixMonsterBezwaarDialog cervixMonsterBezwaarDialog = new CervixMonsterBezwaarDialog<M>(IDialog.CONTENT_ID, getModel(), geenGebruikLichaamsMateriaal,
@@ -348,7 +345,7 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 					dialog.close(target);
 				}
 			};
-			final AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
+			final var target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
 			dialog.openWith(target, cervixMonsterBezwaarDialog);
 		}
 	}
@@ -361,10 +358,10 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 		{
 			return;
 		}
-		File barcodeFile = barcodeAfdrukService.saveBarcodeDocument(uitnodiging);
+		var barcodeFile = barcodeAfdrukService.saveBarcodeDocument(uitnodiging);
 		ScreenitSession.get().addTempFile(barcodeFile);
 
-		PdfViewer newBarcode = new PdfViewer("barcode", barcodeFile);
+		var newBarcode = new PdfViewer("barcode", barcodeFile);
 
 		this.barcode.replaceWith(newBarcode);
 		this.barcode = newBarcode;
@@ -384,7 +381,7 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 
 	private void hideBarcode(AjaxRequestTarget target)
 	{
-		EmptyPanel newBarcode = parentPage.maakEmptyPanel("barcode");
+		var newBarcode = parentPage.maakEmptyPanel("barcode");
 
 		this.barcode.replaceWith(newBarcode);
 		this.barcode = newBarcode;
@@ -394,7 +391,7 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 
 	private void showBackupPrintMonsterIdContainer(AjaxRequestTarget target)
 	{
-		WebMarkupContainer container = new WebMarkupContainer("backupPrintMonsterIdContainer");
+		var container = new WebMarkupContainer("backupPrintMonsterIdContainer");
 		container.setOutputMarkupId(true);
 		container.add(new IndicatingAjaxLink<Void>("backupPrintMonsterId")
 		{
@@ -412,7 +409,7 @@ public abstract class CervixUitnodigingPanel<M extends CervixMonster> extends Ge
 
 	protected String getSignaleringen()
 	{
-		List<CervixMonsterSignalering> signaleringen = getModelObject().getSignaleringen();
+		var signaleringen = getModelObject().getSignaleringen();
 		if (CollectionUtils.isNotEmpty(signaleringen))
 		{
 			return " (signaleringen: " + StringUtils.join(signaleringen.stream().map(CervixMonsterSignalering::getBeschrijving).collect(Collectors.toList()), ", ") + ")";

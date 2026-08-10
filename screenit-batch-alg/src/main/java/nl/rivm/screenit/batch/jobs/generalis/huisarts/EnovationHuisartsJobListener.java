@@ -61,9 +61,9 @@ public class EnovationHuisartsJobListener extends BaseLogListener
 	@Override
 	protected LogEvent getEindLogEvent()
 	{
-		LogEvent logEvent = new LogEvent();
-		ZorgmailImportVoortgang voortgang = (ZorgmailImportVoortgang) getJobExecution().getExecutionContext().get(ZM_BESTAND_VOORTGANG);
-		String melding = "Importeren van zorgmail adresboek is afgerond. ";
+		var logEvent = new LogEvent();
+		var voortgang = (ZorgmailImportVoortgang) getJobExecution().getExecutionContext().get(ZM_BESTAND_VOORTGANG);
+		var melding = "Importeren van zorgmail adresboek is afgerond. ";
 		if (voortgang != null)
 		{
 			melding += "Totaal #records: " + voortgang.getTotaalAantalRijen() + ". Huisartsen nieuw: " + voortgang.getNieuweHuisartsen() + ", bijgewerkt: "
@@ -86,10 +86,10 @@ public class EnovationHuisartsJobListener extends BaseLogListener
 	@Override
 	protected Level getLevel(JobExecution execution)
 	{
-		Level level = super.getLevel(execution);
+		var level = super.getLevel(execution);
 		if (level == Level.INFO)
 		{
-			ZorgmailImportVoortgang voortgang = (ZorgmailImportVoortgang) execution.getExecutionContext().get(ZM_BESTAND_VOORTGANG);
+			var voortgang = (ZorgmailImportVoortgang) execution.getExecutionContext().get(ZM_BESTAND_VOORTGANG);
 			if (voortgang.getGeinactiveerdeHuisartsenAfter() > 0)
 			{
 				level = Level.WARNING;

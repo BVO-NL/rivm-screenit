@@ -42,7 +42,7 @@ public class TechnischBeheerPostcodeNlPanel extends BaseTechnischBeheerParameter
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
 		form.add(new TextField<>("postcodeNlApiKey", String.class).setRequired(true));
 		form.add(new TextField<>("postcodeNlApiSecret", String.class).setRequired(true));
 		form.add(new TextField<>("postcodeNlApiHost", String.class).setRequired(true));

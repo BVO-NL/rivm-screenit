@@ -28,11 +28,9 @@ import jakarta.annotation.PostConstruct;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
-import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.Permissie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -101,15 +99,15 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals)
 	{
-		SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-		ScreenitPrincipal screenitPrincipal = (ScreenitPrincipal) principals.fromRealm(getName()).iterator().next();
+		var info = new SimpleAuthorizationInfo();
+		var screenitPrincipal = (ScreenitPrincipal) principals.fromRealm(getName()).iterator().next();
 		boolean checkBvo = screenitPrincipal.getCheckBvo();
 
 		if (OrganisatieMedewerker.class.isAssignableFrom(screenitPrincipal.getAccountClass()))
 		{
-			OrganisatieMedewerker organisatieMedewerker = hibernateService.load(OrganisatieMedewerker.class,
+			var organisatieMedewerker = hibernateService.load(OrganisatieMedewerker.class,
 				screenitPrincipal.getAccountId());
-			final Medewerker medewerker = organisatieMedewerker.getMedewerker();
+			final var medewerker = organisatieMedewerker.getMedewerker();
 			if (Boolean.TRUE.equals(organisatieMedewerker.getActief()) && MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDateMidnight()))
 			{
 				if (LOG.isTraceEnabled())
@@ -117,18 +115,18 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 					LOG.trace("AuthorizationInfo voor " + medewerker.getGebruikersnaam());
 				}
 
-				for (OrganisatieMedewerkerRol rol : organisatieMedewerker.getRollen())
+				for (var rol : organisatieMedewerker.getRollen())
 				{
 					if (rol.isRolActief() && (CollectionUtils.containsAny(rol.getBevolkingsonderzoeken(), organisatieMedewerker.getBevolkingsonderzoeken()) || !checkBvo))
 					{
-						for (Permissie permissie : rol.getRol().getPermissies())
+						for (var permissie : rol.getRol().getPermissies())
 						{
 							if (!Boolean.FALSE.equals(permissie.getActief())
 								&& (CollectionUtils.containsAny(rol.getBevolkingsonderzoeken(), Arrays.asList(permissie.getRecht().getBevolkingsonderzoeken()))
 								&& CollectionUtils.containsAny(Arrays.asList(permissie.getRecht().getBevolkingsonderzoeken()), organisatieMedewerker.getBevolkingsonderzoeken())
 								|| !checkBvo))
 							{
-								Recht recht = permissie.getRecht();
+								var recht = permissie.getRecht();
 								if (CollectionUtils.isEmpty(recht.getOrganisatieTypes()) || recht.getOrganisatieTypes()
 									.contains(organisatieMedewerker.getOrganisatie().getOrganisatieType()))
 								{
@@ -153,7 +151,7 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 			{
 				LOG.trace("AuthorizationInfo voor client");
 			}
-			Permissie permissie = new Permissie();
+			var permissie = new Permissie();
 			permissie.setActie(Actie.INZIEN);
 			permissie.setRecht(Recht.CLIENT_DASHBOARD);
 			permissie.setToegangLevel(ToegangLevel.EIGEN);
@@ -162,7 +160,7 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 			{
 				LOG.trace("* " + permissie.getRecht().name());
 			}
-			Permissie permissie2 = new Permissie();
+			var permissie2 = new Permissie();
 			permissie2.setActie(Actie.AANPASSEN);
 			permissie2.setRecht(Recht.CLIENT_GEGEVENS);
 			permissie2.setToegangLevel(ToegangLevel.EIGEN);
@@ -181,7 +179,7 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 	{
 		if (authcToken instanceof UsernamePasswordToken token)
 		{
-			Medewerker medewerker = medewerkerService.getMedewerkerByGebruikersnaam(token.getUsername()).orElse(null);
+			var medewerker = medewerkerService.getMedewerkerByGebruikersnaam(token.getUsername()).orElse(null);
 			if (medewerker == null)
 			{
 				return null;
@@ -199,8 +197,8 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 		}
 		else if (authcToken instanceof OrganisatieMedewerkerToken igToken)
 		{
-			OrganisatieMedewerker organisatieMedewerker = hibernateService.load(OrganisatieMedewerker.class, igToken.getId());
-			String melding = getParsedUserAgentInfo(igToken.getUserAgent()) + ", Organisatie: " + organisatieMedewerker.getOrganisatie().getNaam();
+			var organisatieMedewerker = hibernateService.load(OrganisatieMedewerker.class, igToken.getId());
+			var melding = getParsedUserAgentInfo(igToken.getUserAgent()) + ", Organisatie: " + organisatieMedewerker.getOrganisatie().getNaam();
 			if (StringUtils.isNotBlank(igToken.getUzipasInlogMethode()))
 			{
 				melding += ". " + igToken.getUzipasInlogMethode();
@@ -210,7 +208,7 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 		}
 		else if (authcToken instanceof UziToken uziToken)
 		{
-			Medewerker medewerker = medewerkerService.getMedewerkerByUzinummer((String) uziToken.getPrincipal()).orElse(null);
+			var medewerker = medewerkerService.getMedewerkerByUzinummer((String) uziToken.getPrincipal()).orElse(null);
 			if (medewerker == null || !Boolean.TRUE.equals(medewerker.getActief()))
 			{
 				return null;
@@ -224,7 +222,7 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 	@Override
 	public void clearCachedAuthorizationInfo(OrganisatieMedewerker organisatieMedewerker)
 	{
-		PrincipalCollection principalCollection = createPrincipalCollection(organisatieMedewerker, true);
+		var principalCollection = createPrincipalCollection(organisatieMedewerker, true);
 		super.clearCachedAuthorizationInfo(principalCollection);
 	}
 
@@ -238,11 +236,11 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 	{
 		if (LOG.isTraceEnabled())
 		{
-			AuthorizationInfo info = getAuthorizationInfo(principals);
+			var info = getAuthorizationInfo(principals);
 			LOG.trace("isPermitted start " + permission.toString());
 			if (info.getObjectPermissions() != null)
 			{
-				for (Permission perm : info.getObjectPermissions())
+				for (var perm : info.getObjectPermissions())
 				{
 					if (perm instanceof Permissie permissie)
 					{
@@ -256,7 +254,7 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 			}
 		}
 
-		boolean permissionResult = super.isPermitted(principals, permission);
+		var permissionResult = super.isPermitted(principals, permission);
 		if (LOG.isTraceEnabled())
 		{
 			LOG.trace("permissionResult1 " + permissionResult);
@@ -265,9 +263,9 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 		if (permissionResult && permission instanceof Constraint constraint && constraint.isCheckScope())
 		{
 
-			ScreenitPrincipal principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
+			var principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
 
-			Account account = hibernateService.load(principal.getAccountClass(), principal.getAccountId());
+			var account = hibernateService.load(principal.getAccountClass(), principal.getAccountId());
 			permissionResult = scopeService.isObjectInScope(constraint, account, principals);
 
 		}
@@ -278,8 +276,8 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 
 		if (permissionResult && permission instanceof Constraint constraint)
 		{
-			ScreenitPrincipal principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
-			Account account = hibernateService.load(principal.getAccountClass(), principal.getAccountId());
+			var principal = (ScreenitPrincipal) principals.getPrimaryPrincipal();
+			var account = hibernateService.load(principal.getAccountClass(), principal.getAccountId());
 			if (account instanceof OrganisatieMedewerker instgeb)
 			{
 				permissionResult = false;
@@ -287,13 +285,13 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 				{
 					LOG.error("GEEN BVO IN CONSTRAINT!!!!!!!!!"); 
 				}
-				for (OrganisatieMedewerkerRol rol : instgeb.getRollen())
+				for (var rol : instgeb.getRollen())
 				{
 					if (rol.isRolActief() && CollectionUtils.containsAny(rol.getBevolkingsonderzoeken(), instgeb.getBevolkingsonderzoeken()))
 					{
-						for (Permissie permissie : rol.getRol().getPermissies())
+						for (var permissie : rol.getRol().getPermissies())
 						{
-							Recht recht = permissie.getRecht();
+							var recht = permissie.getRecht();
 							if (recht.equals(constraint.getRecht()) && !Boolean.FALSE.equals(permissie.getActief())
 								&& CollectionUtils.containsAny(rol.getBevolkingsonderzoeken(), constraint.getBevolkingsonderzoek())
 								&& CollectionUtils.containsAny(constraint.getBevolkingsonderzoek(), instgeb.getBevolkingsonderzoeken())
@@ -318,13 +316,13 @@ public class ScreenitRealm extends AuthorizingRealm implements IScreenitRealm
 
 	public Collection<Permissie> getPermissies(PrincipalCollection principals)
 	{
-		AuthorizationInfo authorizationInfo = getAuthorizationInfo(principals);
+		var authorizationInfo = getAuthorizationInfo(principals);
 		return (Collection) authorizationInfo.getObjectPermissions();
 	}
 
 	public Collection<Permissie> getPermissies(OrganisatieMedewerker organisatieMedewerker, boolean checkBvo)
 	{
-		AuthorizationInfo authorizationInfo = getAuthorizationInfo(createPrincipalCollection(organisatieMedewerker, checkBvo));
+		var authorizationInfo = getAuthorizationInfo(createPrincipalCollection(organisatieMedewerker, checkBvo));
 		return (Collection) authorizationInfo.getObjectPermissions();
 	}
 }

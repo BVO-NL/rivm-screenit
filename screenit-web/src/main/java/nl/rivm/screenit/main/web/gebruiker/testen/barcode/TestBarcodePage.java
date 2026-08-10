@@ -32,8 +32,6 @@ import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.Persoon;
-import nl.rivm.screenit.model.UploadDocument;
-import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -95,7 +93,7 @@ public class TestBarcodePage extends TestenBasePage
 	public TestBarcodePage()
 	{
 		barcodes = new CompoundPropertyModel<>("");
-		Form<Void> form = new Form<>("form");
+		var form = new Form<Void>("form");
 		form.add(new TextField<>("barcodes", barcodes));
 		form.add(new SubmitLink("printen")
 		{
@@ -105,10 +103,10 @@ public class TestBarcodePage extends TestenBasePage
 				if (StringUtils.isNotBlank(barcodes.getObject()))
 				{
 					Document alleDocumenten = null;
-					String[] barcodesArray = StringUtils.split(barcodes.getObject(), ',');
-					for (String barcode : barcodesArray)
+					var barcodesArray = StringUtils.split(barcodes.getObject(), ',');
+					for (var barcode : barcodesArray)
 					{
-						Persoon persoon = new Persoon();
+						var persoon = new Persoon();
 						persoon.setBsn(TestBsnGenerator.getValideBsn());
 						persoon.setGeslacht(Geslacht.VROUW);
 						persoon.setAchternaam("Doe-" + persoon.getBsn());
@@ -116,9 +114,9 @@ public class TestBarcodePage extends TestenBasePage
 						persoon.setGeboortedatum(DateUtil.toUtilDate(dateSupplier.getLocalDate().minusYears(50)));
 						persoon.setGbaAdres(new BagAdres());
 
-						CervixScreeningRonde ronde = cervixTestService.geefScreeningRonde(persoon);
+						var ronde = cervixTestService.geefScreeningRonde(persoon);
 
-						Document document = cervixTestService.geefBarcodeUitnodigingsIdTestPdf(ronde.getLaatsteUitnodiging());
+						var document = cervixTestService.geefBarcodeUitnodigingsIdTestPdf(ronde.getLaatsteUitnodiging());
 						if (alleDocumenten == null)
 						{
 							alleDocumenten = document;
@@ -149,7 +147,7 @@ public class TestBarcodePage extends TestenBasePage
 					{
 						throw new IllegalStateException(getClass().getName() + " bestand was null, kapotstuk.");
 					}
-					String fileName = "barcode.pdf";
+					var fileName = "barcode.pdf";
 					fileName = UrlEncoder.QUERY_INSTANCE.encode(fileName, getRequest().getCharset());
 					IResourceStream resourceStream = new FileResourceStream(new org.apache.wicket.util.file.File(tmpPdfFile));
 					getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(resourceStream).setFileName(fileName)
@@ -162,7 +160,7 @@ public class TestBarcodePage extends TestenBasePage
 			@Override
 			public void onSubmit()
 			{
-				UploadDocument briefTemplateDoc = briefService.getNieuwsteBriefDefinitie(BriefType.CERVIX_UITNODIGING).getDocument();
+				var briefTemplateDoc = briefService.getNieuwsteBriefDefinitie(BriefType.CERVIX_UITNODIGING).getDocument();
 				File briefTemplate = null;
 				if (briefTemplateDoc != null)
 				{
@@ -172,10 +170,10 @@ public class TestBarcodePage extends TestenBasePage
 				if (StringUtils.isNotBlank(barcodes.getObject()) && briefTemplate != null)
 				{
 					Document alleDocumenten = null;
-					String[] barcodesArray = StringUtils.split(barcodes.getObject(), ',');
-					for (String barcode : barcodesArray)
+					var barcodesArray = StringUtils.split(barcodes.getObject(), ',');
+					for (var barcode : barcodesArray)
 					{
-						Persoon persoon = new Persoon();
+						var persoon = new Persoon();
 						persoon.setBsn(TestBsnGenerator.getValideBsn());
 						persoon.setGeslacht(Geslacht.VROUW);
 						persoon.setAchternaam("Doe-" + persoon.getBsn());
@@ -183,16 +181,16 @@ public class TestBarcodePage extends TestenBasePage
 						persoon.setGeboortedatum(DateUtil.toUtilDate(dateSupplier.getLocalDate().minusYears(50)));
 						persoon.setGbaAdres(new BagAdres());
 
-						CervixScreeningRonde ronde = cervixTestService.geefScreeningRonde(persoon);
+						var ronde = cervixTestService.geefScreeningRonde(persoon);
 
-						MailMergeContext context = new MailMergeContext();
+						var context = new MailMergeContext();
 						context.setCervixUitnodiging(ronde.getLaatsteUitnodiging());
 						context.setClient(ronde.getDossier().getClient());
 
 						Document document = null;
 						try
 						{
-							byte[] briefTemplateBytes = FileUtils.readFileToByteArray(briefTemplate);
+							var briefTemplateBytes = FileUtils.readFileToByteArray(briefTemplate);
 							document = asposeService.processDocument(briefTemplateBytes, context);
 						}
 						catch (IOException e)
@@ -235,7 +233,7 @@ public class TestBarcodePage extends TestenBasePage
 					{
 						throw new IllegalStateException(getClass().getName() + " bestand was null, kapotstuk.");
 					}
-					String fileName = "template.pdf";
+					var fileName = "template.pdf";
 					fileName = UrlEncoder.QUERY_INSTANCE.encode(fileName, getRequest().getCharset());
 					IResourceStream resourceStream = new FileResourceStream(new org.apache.wicket.util.file.File(tmpPdfFile));
 					getRequestCycle().scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(resourceStream).setFileName(fileName)

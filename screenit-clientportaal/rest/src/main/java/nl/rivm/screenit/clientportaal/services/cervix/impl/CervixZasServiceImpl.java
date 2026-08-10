@@ -29,9 +29,7 @@ import nl.rivm.screenit.clientportaal.exception.NotValidException;
 import nl.rivm.screenit.clientportaal.model.cervix.CervixZasStatusDto;
 import nl.rivm.screenit.clientportaal.services.cervix.CervixZasService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
-import nl.rivm.screenit.model.cervix.CervixUitstel;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.cervix.CervixBaseScreeningrondeService;
 import nl.rivm.screenit.service.cervix.CervixFactory;
@@ -56,16 +54,16 @@ public class CervixZasServiceImpl implements CervixZasService
 	@Override
 	public CervixZasStatusDto getZasStatus(Client client)
 	{
-		CervixDossier cervixDossier = client.getCervixDossier();
-		CervixScreeningRonde laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
+		var cervixDossier = client.getCervixDossier();
+		var laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
 
 		if (laatsteScreeningRonde == null)
 		{
 			return null;
 		}
 
-		boolean heeftMaxAantalZasBereikt = screeningrondeService.heeftMaxAantalZASsenBereikt(laatsteScreeningRonde, true);
-		CervixUitstel uitstel = laatsteScreeningRonde.getUitstel();
+		var heeftMaxAantalZasBereikt = screeningrondeService.heeftMaxAantalZASsenBereikt(laatsteScreeningRonde, true);
+		var uitstel = laatsteScreeningRonde.getUitstel();
 		Date uitstellenTotDatum = null;
 		if (uitstel != null && uitstel.getGeannuleerdDatum() == null)
 		{
@@ -78,8 +76,8 @@ public class CervixZasServiceImpl implements CervixZasService
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void vraagZasAan(Client client, boolean ontvangenNaUitstel)
 	{
-		CervixDossier cervixDossier = client.getCervixDossier();
-		CervixScreeningRonde laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
+		var cervixDossier = client.getCervixDossier();
+		var laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
 
 		valideerAanvraag(laatsteScreeningRonde);
 
@@ -108,7 +106,7 @@ public class CervixZasServiceImpl implements CervixZasService
 	@Override
 	public boolean rondeHeeftCervixUitstel(CervixScreeningRonde ronde)
 	{
-		CervixUitstel uitstel = ronde.getUitstel();
+		var uitstel = ronde.getUitstel();
 		return uitstel != null && uitstel.getGeannuleerdDatum() == null;
 	}
 }

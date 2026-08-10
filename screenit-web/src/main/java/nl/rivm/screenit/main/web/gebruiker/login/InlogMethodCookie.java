@@ -31,7 +31,7 @@ public class InlogMethodCookie
 {
 	public static final void setCookie(InlogMethode method)
 	{
-		CookieDefaults settings = new CookieDefaults();
+		var settings = new CookieDefaults();
 		settings.setSecure(true);
 		settings.setHttpOnly(true);
 		new CookieUtils(settings).save(Constants.COOKIE_KEY_LOGIN_METHOD, method.name());

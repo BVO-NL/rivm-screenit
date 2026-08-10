@@ -64,8 +64,8 @@ public class SecurityHeadersFilter implements Filter
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException
 	{
-		HttpServletRequest request = (HttpServletRequest) servletRequest;
-		HttpServletResponse response = (HttpServletResponse) servletResponse;
+		var request = (HttpServletRequest) servletRequest;
+		var response = (HttpServletResponse) servletResponse;
 
 		LOG.debug("Invoking SecurityHeadersFilter for " + request.getRequestURI());
 

@@ -168,7 +168,7 @@ public interface LabaanvraagMapper
 	@Named("stringToDate")
 	static Date stringToLabformulierDate(String string) throws ParseException
 	{
-		final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Constants.DATE_FORMAT_YYYYMMDD);
+		final var simpleDateFormat = new SimpleDateFormat(Constants.DATE_FORMAT_YYYYMMDD);
 		simpleDateFormat.setLenient(false);
 		return string != null
 			? simpleDateFormat.parse(string)

@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.followuppat
  */
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -93,7 +92,7 @@ public class MammaFollowUpPathologieWerklijstPage extends AbstractMammaFollowUpP
 		super.onInitialize();
 		add(new Label("naam"));
 
-		MammaFollowUpPathologieProvider followUpPathologieProvider = new MammaFollowUpPathologieProvider((IModel<Organisatie>) getDefaultModel());
+		var followUpPathologieProvider = new MammaFollowUpPathologieProvider((IModel<Organisatie>) getDefaultModel());
 
 		refreshContainer = new WebMarkupContainer("refreshContainer");
 		refreshContainer.setOutputMarkupId(Boolean.TRUE);
@@ -109,7 +108,7 @@ public class MammaFollowUpPathologieWerklijstPage extends AbstractMammaFollowUpP
 			@Override
 			public void populateItem(Item<ICellPopulator<MammaFollowUpRadiologieVerslag>> item, String componentId, IModel<MammaFollowUpRadiologieVerslag> rowModel)
 			{
-				Date urgentVanaf = DateUtil
+				var urgentVanaf = DateUtil
 					.toUtilDate(
 						dateSupplier.getLocalDate().minusDays(preferenceService.getInteger(PreferenceKey.MAMMA_FOLLOW_UP_PATHOLOGIE_WERKLIJST_NA_RADIOLOGIEVERSLAG.name())));
 				if (rowModel.getObject().getIngevoerdOp().compareTo(urgentVanaf) <= 0)
@@ -135,7 +134,7 @@ public class MammaFollowUpPathologieWerklijstPage extends AbstractMammaFollowUpP
 					{
 						super.onOpslaan(ajaxRequestTarget);
 
-						MammaFollowUpRadiologieVerslag verslag = iModel.getObject();
+						var verslag = iModel.getObject();
 						verslag.setLaatstGebeldOverPaVerslag(dateSupplier.getDate());
 						hibernateService.saveOrUpdate(verslag);
 						ajaxRequestTarget.add(refreshContainer);
@@ -162,7 +161,7 @@ public class MammaFollowUpPathologieWerklijstPage extends AbstractMammaFollowUpP
 			}
 		});
 
-		ScreenitDataTable<MammaFollowUpRadiologieVerslag, String> table = new ScreenitDataTable<>("resultaten", columns,
+		var table = new ScreenitDataTable<MammaFollowUpRadiologieVerslag, String>("resultaten", columns,
 			followUpPathologieProvider,
 			10, Model.of("radiologieverslag(en)"));
 

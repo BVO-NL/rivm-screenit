@@ -79,7 +79,7 @@ public class ColonHoudbaarheidFitReeksEditPage extends HoudbaarheidEditPage<Colo
 	@Override
 	protected IModel<String> getTitleModel(IModel<ColonHoudbaarheidFitReeks> model)
 	{
-		final boolean isNieuw = model.getObject().getId() == null;
+		final var isNieuw = model.getObject().getId() == null;
 		return () ->
 		{
 			if (isNieuw)
@@ -93,7 +93,7 @@ public class ColonHoudbaarheidFitReeksEditPage extends HoudbaarheidEditPage<Colo
 	@Override
 	protected FormComponent<ColonFitType> createTypeField(String id)
 	{
-		ScreenitDropdown<ColonFitType> type = new ScreenitDropdown<ColonFitType>(id, Arrays.asList(ColonFitType.values()), new EnumChoiceRenderer<ColonFitType>());
+		var type = new ScreenitDropdown<ColonFitType>(id, Arrays.asList(ColonFitType.values()), new EnumChoiceRenderer<ColonFitType>());
 		type.setRequired(true);
 		return type;
 	}

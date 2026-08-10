@@ -35,7 +35,7 @@ public class FoutmeldingsCodeUtil
 
 	public static synchronized String getFoutmeldingsCode(String prefix)
 	{
-		LocalDate currError = LocalDate.now();
+		var currError = LocalDate.now();
 		if (!lastError.equals(LocalDate.now()))
 		{
 			errorCount = 0L;

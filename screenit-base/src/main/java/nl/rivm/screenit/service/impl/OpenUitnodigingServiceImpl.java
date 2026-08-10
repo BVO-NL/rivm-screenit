@@ -56,10 +56,10 @@ public class OpenUitnodigingServiceImpl implements OpenUitnodigingService
 		if (ronde != null && Bevolkingsonderzoek.COLON.equals(ronde.getDossier().getBevolkingsonderzoek())
 			&& (AanvraagBriefStatus.VERWERKT.equals(afmelding.getAfmeldingStatus()) || AanvraagBriefStatus.VERWERKT.equals(afmelding.getHeraanmeldStatus())))
 		{
-			ColonScreeningRonde colonRonde = (ColonScreeningRonde) ronde;
+			var colonRonde = (ColonScreeningRonde) ronde;
 			if (colonRonde.getOpenUitnodiging() != null)
 			{
-				OpenUitnodiging ou = colonRonde.getOpenUitnodiging();
+				var ou = colonRonde.getOpenUitnodiging();
 				if (ou.getUitslag() == null || OpenUitnodigingUitslag.INTAKE_AFSPRAAK.equals(ou.getUitslag()))
 				{
 					ou.setUitslag(OpenUitnodigingUitslag.AFMELDING);

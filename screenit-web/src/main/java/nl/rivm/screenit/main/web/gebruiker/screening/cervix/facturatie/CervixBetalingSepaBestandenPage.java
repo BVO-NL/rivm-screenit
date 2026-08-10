@@ -182,7 +182,7 @@ public class CervixBetalingSepaBestandenPage extends CervixScreeningBasePage
 				@Override
 				public void populateItem(Item<ICellPopulator<CervixBetaalopdracht>> cellItem, String componentId, final IModel<CervixBetaalopdracht> rowModel)
 				{
-					final AjaxImageCellPanel<CervixBetaalopdracht> imageCellPanel = new AjaxImageCellPanel<>(componentId, rowModel, "icon-trash")
+					final var imageCellPanel = new AjaxImageCellPanel<>(componentId, rowModel, "icon-trash")
 					{
 
 						@Override

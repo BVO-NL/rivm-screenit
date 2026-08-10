@@ -39,7 +39,7 @@ public class TestCervixDeelnamewensAction extends TestCervixVervolgKeuzeAction
 	@Override
 	public void execute()
 	{
-		for (Client client : clienten)
+		for (var client : clienten)
 		{
 			cervixTestTimelineService.registreerDeelnamewens(client);
 		}

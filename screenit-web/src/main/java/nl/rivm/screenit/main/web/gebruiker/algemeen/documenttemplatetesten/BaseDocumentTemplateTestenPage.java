@@ -62,6 +62,7 @@ import nl.rivm.screenit.service.MessageService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
+import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -437,6 +438,17 @@ public abstract class BaseDocumentTemplateTestenPage extends AlgemeenPage
 			return;
 		}
 
+		Document mergedDocument2 = null;
+		if (briefType == BriefType.REGIO_UITSTRIJKEND_ARTS_VOORBLAD_LABFORMULIER)
+		{
+			mergedDocument2 = maakMergedDocumentVoorBriefType(BriefType.REGIO_UITSTRIJKEND_ARTS_LABFORMULIER);
+		}
+		if (briefType == BriefType.REGIO_UITSTRIJKEND_ARTS_LABFORMULIER)
+		{
+			briefType = BriefType.REGIO_UITSTRIJKEND_ARTS_VOORBLAD_LABFORMULIER;
+			mergedDocument2 = mergedDocument;
+			mergedDocument = maakMergedDocumentVoorBriefType(BriefType.REGIO_UITSTRIJKEND_ARTS_VOORBLAD_LABFORMULIER);
+		}
 		var context = bepaalBatchContext(briefType);
 		var aantalNaarParagon = getAantalNaarParagon();
 		for (var i = 0; i < aantalNaarParagon; i++)
@@ -444,27 +456,35 @@ public abstract class BaseDocumentTemplateTestenPage extends AlgemeenPage
 			var pdfBestand = briefService.genereerPdf(mergedDocument, "test_template_brieven", false);
 			var bestandsNaam = UUID.randomUUID().toString();
 			briefService.pdfBestandOpslaanVoorVersturen(pdfBestand, bestandsNaam);
-			var dto = maakBriefafdrukopdrachtDto(briefType, bestandsNaam);
+			String bestandsNaam2 = null;
+			if (mergedDocument2 != null)
+			{
+				var pdfBestand2 = briefService.genereerPdf(mergedDocument2, "test_template_brieven2", false);
+				bestandsNaam2 = UUID.randomUUID().toString();
+				briefService.pdfBestandOpslaanVoorVersturen(pdfBestand2, bestandsNaam2);
+			}
+			var dto = maakBriefafdrukopdrachtDto(briefType, bestandsNaam, bestandsNaam2);
 			messageService.queueMessage(MessageType.BRIEF_AFDRUKKEN, dto, context.name());
 		}
 		info("Template is " + aantalNaarParagon + " keer aan de queue aangeboden.");
 	}
 
-	private BriefafdrukopdrachtDto maakBriefafdrukopdrachtDto(BriefType briefType, String bestandsNaam)
+	private BriefafdrukopdrachtDto maakBriefafdrukopdrachtDto(BriefType briefType, String bestandsNaam, String bestandsNaam2)
 	{
-		var contextBrief = DocumentTemplateTestenFieldsPanel.createMailMergeContext(wrapperModel.getObject(), selectedRegio.getObject(), briefType,
-			zonderHandtekeningModel.getObject()).getBrief();
 		var geselecteerdeCodeAddendum = codeAddendumModel.getObject();
 		var now = dateSupplier.getLocalDateTime();
 
+		var resources = new ArrayList<>(List.of(BriefafdrukopdrachtDto.Resource.builder().order(1).path(bestandsNaam).build()));
+		if (bestandsNaam2 != null)
+		{
+			resources.add(BriefafdrukopdrachtDto.Resource.builder().order(2).path(bestandsNaam2).build());
+		}
 		return BriefafdrukopdrachtDto.builder()
 			.code(briefType.getBriefCode())
-			.kenmerk("K1234567890ABCDEF")
+			.kenmerk(BriefUtil.maakTestParagonKenmerk())
 			.timestamp(now.format(DateTimeFormatter.ofPattern(Constants.DATE_FORMAT_YYYYMMDDHHMMSS)))
 			.codeAddendum(geselecteerdeCodeAddendum == null ? "" : geselecteerdeCodeAddendum.trim())
-			.entityId(contextBrief == null ? null : contextBrief.getId())
-			.entityType(contextBrief == null ? null : contextBrief.getClass())
-			.resources(List.of(BriefafdrukopdrachtDto.Resource.builder().order(1).path(bestandsNaam).build()))
+			.resources(resources)
 			.build();
 	}
 

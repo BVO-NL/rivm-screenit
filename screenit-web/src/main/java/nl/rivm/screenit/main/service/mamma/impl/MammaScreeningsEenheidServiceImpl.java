@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.service.mamma.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -157,11 +156,11 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 	@Override
 	public String getScreeningsEenhedenNamen(BeoordelingsEenheid beoordelingsEenheid)
 	{
-		MammaScreeningsEenheid zoekObject = new MammaScreeningsEenheid();
+		var zoekObject = new MammaScreeningsEenheid();
 		zoekObject.setActief(true);
 		zoekObject.setBeoordelingsEenheid(beoordelingsEenheid);
 
-		List<String> namen = zoekScreeningsEenheden(zoekObject, null, -1, -1, Sort.by(MammaScreeningsEenheid_.NAAM))
+		var namen = zoekScreeningsEenheden(zoekObject, null, -1, -1, Sort.by(MammaScreeningsEenheid_.NAAM))
 			.stream().map(MammaScreeningsEenheid::getNaam).collect(Collectors.toList());
 
 		return !namen.isEmpty() ? String.join(", ", namen) : "Geen screeningseenheden gekoppeld";
@@ -171,7 +170,7 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public String getGekoppeldeScreeningsEenhedenTekst(MammaStandplaats standplaats)
 	{
-		Date nu = currentDateSupplier.getDate();
+		var nu = currentDateSupplier.getDate();
 		return standplaats.getStandplaatsRonden().stream().flatMap(standplaatsRonde -> standplaatsRonde.getStandplaatsPerioden().stream())
 			.filter(standplaatsPeriode -> nu.compareTo(standplaatsPeriode.getTotEnMet()) <= 0).map(standplaatsPeriode -> standplaatsPeriode.getScreeningsEenheid().getNaam())
 			.sorted()
@@ -182,10 +181,10 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 	@Override
 	public boolean saveOrUpdateSE(MammaScreeningsEenheid screeningsEenheid, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		String melding = "";
-		String diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(screeningsEenheid, hibernateService.getHibernateSession());
+		var melding = "";
+		var diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(screeningsEenheid, hibernateService.getHibernateSession());
 
-		boolean isNieuw = screeningsEenheid.getId() == null;
+		var isNieuw = screeningsEenheid.getId() == null;
 		if (isNieuw)
 		{
 			melding += seMetCodeEnNaam(screeningsEenheid) + " aangemaakt.";
@@ -209,7 +208,7 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 	@Override
 	public void deleteMammograaf(MammaMammograaf mammograaf, MammaScreeningsEenheid screeningsEenheid)
 	{
-		String melding = "Mammograaf " + mammograaf.getAeTitle() + " met werkstation IP-adres " + mammograaf.getWerkstationIpAdres() + " verwijderd";
+		var melding = "Mammograaf " + mammograaf.getAeTitle() + " met werkstation IP-adres " + mammograaf.getWerkstationIpAdres() + " verwijderd";
 		hibernateService.delete(mammograaf);
 		screeningsEenheid.getMammografen().remove(mammograaf);
 		logService.logGebeurtenis(LogGebeurtenis.MAMMA_MAMMOGRAAF, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), melding, Bevolkingsonderzoek.MAMMA);
@@ -274,15 +273,15 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 	@Override
 	public String getCsvString(Iterator<? extends MammaScreeningsEenheid> screeningsEenheidIterator)
 	{
-		StringBuilder csvBuilder = new StringBuilder();
-		SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DEFAULT_DATE_FORMAT);
+		var csvBuilder = new StringBuilder();
+		var dateFormat = new SimpleDateFormat(Constants.DEFAULT_DATE_FORMAT);
 
-		String header = "Screeningseenheid,Uitgenodigd tot en met,Uitnodigen tot en met,Vrijgegeven tot en met,Interval,Indicatie\n";
+		var header = "Screeningseenheid,Uitgenodigd tot en met,Uitnodigen tot en met,Vrijgegeven tot en met,Interval,Indicatie\n";
 		csvBuilder.append(header);
 
 		while (screeningsEenheidIterator.hasNext())
 		{
-			MammaScreeningsEenheid screeningsEenheid = screeningsEenheidIterator.next();
+			var screeningsEenheid = screeningsEenheidIterator.next();
 
 			csvBuilder.append(ExportToXslUtil.getCsvValue(screeningsEenheid.getNaam()));
 			csvBuilder.append(",");
@@ -303,10 +302,10 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 	@Override
 	public boolean ipAdressenHebbenZelfdeGemeenschappelijkeBlokken(MammaScreeningsEenheid screeningsEenheid)
 	{
-		String gezamenlijkeBlokkenSeProxy = getEersteDrieIpDelen(screeningsEenheid.getIpAdres());
-		for (MammaMammograaf mammograaf : screeningsEenheid.getMammografen())
+		var gezamenlijkeBlokkenSeProxy = getEersteDrieIpDelen(screeningsEenheid.getIpAdres());
+		for (var mammograaf : screeningsEenheid.getMammografen())
 		{
-			String gezamenlijkeBlokkenMammograaf = getEersteDrieIpDelen(mammograaf.getWerkstationIpAdres());
+			var gezamenlijkeBlokkenMammograaf = getEersteDrieIpDelen(mammograaf.getWerkstationIpAdres());
 			if (gezamenlijkeBlokkenMammograaf == null || !gezamenlijkeBlokkenMammograaf.equals(gezamenlijkeBlokkenSeProxy))
 			{
 				return false;
@@ -317,7 +316,7 @@ public class MammaScreeningsEenheidServiceImpl implements MammaScreeningsEenheid
 
 	private String getEersteDrieIpDelen(String ipAdres)
 	{
-		String[] ipBlokken = ipAdres.split("\\.");
+		var ipBlokken = ipAdres.split("\\.");
 		if (ipBlokken.length != 4)
 		{
 			return null;

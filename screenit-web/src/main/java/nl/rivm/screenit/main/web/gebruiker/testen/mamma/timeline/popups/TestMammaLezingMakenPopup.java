@@ -78,9 +78,9 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 	{
 		super(id, clientModel);
 
-		String huidigeOnderzoeksStatusString = "";
+		var huidigeOnderzoeksStatusString = "";
 
-		MammaBeoordeling beoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(clientModel.getObject().get(0).getMammaDossier().getLaatsteScreeningRonde());
+		var beoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(clientModel.getObject().get(0).getMammaDossier().getLaatsteScreeningRonde());
 		huidigeOnderzoeksStatus = beoordeling.getStatus();
 
 		lezingModel = maakLezingModel(beoordeling);
@@ -115,7 +115,7 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 
 		add(new Label("onderzoeksstatus", huidigeOnderzoeksStatusString));
 
-		List<MammaBIRADSWaarde> biradsWaardes = Arrays.asList(MammaBIRADSWaarde.values());
+		var biradsWaardes = Arrays.asList(MammaBIRADSWaarde.values());
 
 		ComponentHelper.addDropDownChoiceINaam(this, "biradsRechts", true, biradsWaardes, false).setModel(new PropertyModel<>(lezingModel, "biradsRechts"));
 		ComponentHelper.addDropDownChoiceINaam(this, "biradsLinks", true, biradsWaardes, false).setModel(new PropertyModel<>(lezingModel, "biradsLinks"));
@@ -134,7 +134,7 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 		}
 		else
 		{
-			OrganisatieMedewerker zoekOrganisatieMedewerker = new OrganisatieMedewerker();
+			var zoekOrganisatieMedewerker = new OrganisatieMedewerker();
 			zoekOrganisatieMedewerker.setOrganisatie(beoordeling.getBeoordelingsEenheid());
 			var sort = Sort.by(Sort.Order.asc(AbstractHibernateObject_.ID));
 			organisatieMedewerkersListModel = ModelUtil.listRModel(medewerkerService.getActieveRadiologen(zoekOrganisatieMedewerker, exclIds, sort)
@@ -144,7 +144,7 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 				.collect(Collectors.toList()));
 		}
 
-		ScreenitDropdown<OrganisatieMedewerker> dropDownChoice = new ScreenitDropdown<>("beoordelaar", new PropertyModel<>(lezingModel, "beoordelaar"),
+		var dropDownChoice = new ScreenitDropdown<OrganisatieMedewerker>("beoordelaar", new PropertyModel<>(lezingModel, "beoordelaar"),
 			organisatieMedewerkersListModel);
 		dropDownChoice.setChoiceRenderer(new ChoiceRenderer<>("", "id")
 		{
@@ -162,7 +162,7 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 
 	private IModel<MammaLezing> maakLezingModel(MammaBeoordeling beoordeling)
 	{
-		OrganisatieMedewerker beoordelaar = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
+		var beoordelaar = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 
 		if (MammaBeoordelingStatus.EERSTE_LEZING_OPGESLAGEN.equals(huidigeOnderzoeksStatus))
 		{
@@ -180,7 +180,7 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 		}
 		else if (MammaBeoordelingStatus.VERSLAG_MAKEN.equals(huidigeOnderzoeksStatus))
 		{
-			MammaLezing uitgangsituatieLezing = bepaalUitgangsituatieLezing(beoordeling);
+			var uitgangsituatieLezing = bepaalUitgangsituatieLezing(beoordeling);
 			return ModelUtil.cModel(baseBeoordelingService.maakVerslagLezing(uitgangsituatieLezing, beoordelaar, false));
 		}
 		else
@@ -211,9 +211,9 @@ public class TestMammaLezingMakenPopup extends TestMammaAbstractPopupPanel
 	protected void opslaan()
 	{
 		boolean verstuurHl7Berichten = ((MammaTestTimelinePage) getPage()).getVerstuurHl7Berichten().getObject();
-		for (Client client : getModelObject())
+		for (var client : getModelObject())
 		{
-			MammaBeoordeling beoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(client.getMammaDossier().getLaatsteScreeningRonde());
+			var beoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(client.getMammaDossier().getLaatsteScreeningRonde());
 			testTimelineService.voegLezingToe(beoordeling,
 				cloneLezing(lezingModel.getObject(), beoordeling), ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), verstuurHl7Berichten);
 		}

@@ -76,7 +76,7 @@ public class YubikeyLoginPanel extends Panel
 			add(new ScreenitWachtwoordField("wachtwoord", new PropertyModel<>(this, "wachtwoord"), false, null));
 			add(new PasswordTextField("yubikeyOTP", new PropertyModel<>(this, "yubikeyOTP")));
 
-			Boolean aanvragenwachtwoordVisible = preferenceService.getBoolean(PreferenceKey.WACHTWOORDAANVRAGEN.name());
+			var aanvragenwachtwoordVisible = preferenceService.getBoolean(PreferenceKey.WACHTWOORDAANVRAGEN.name());
 			if (aanvragenwachtwoordVisible == null)
 			{
 				aanvragenwachtwoordVisible = Boolean.FALSE;
@@ -87,7 +87,7 @@ public class YubikeyLoginPanel extends Panel
 				@Override
 				public void onClick()
 				{
-					PageParameters parameters = new PageParameters();
+					var parameters = new PageParameters();
 					if (StringUtils.isNotBlank(gebruikersnaam))
 					{
 						parameters.add("naam", gebruikersnaam);
@@ -105,9 +105,9 @@ public class YubikeyLoginPanel extends Panel
 				public void onSubmit()
 				{
 
-					ScreenitSession session = ScreenitSession.get();
+					var session = ScreenitSession.get();
 					session.replaceSession();
-					String yubiOTP = yubikeyOTP;
+					var yubiOTP = yubikeyOTP;
 					if (yubiOTP != null && yubiOTP.length() > 32)
 					{
 						yubiOTP = yubiOTP.substring(yubiOTP.length() - 32);

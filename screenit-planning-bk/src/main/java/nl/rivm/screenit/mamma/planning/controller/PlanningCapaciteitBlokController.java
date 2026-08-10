@@ -21,7 +21,6 @@ package nl.rivm.screenit.mamma.planning.controller;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
@@ -33,9 +32,6 @@ import nl.rivm.screenit.dto.mamma.planning.PlanningRestConstants;
 import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
 import nl.rivm.screenit.mamma.planning.index.PlanningBlokIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsEenheidIndex;
-import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
-import nl.rivm.screenit.mamma.planning.model.PlanningDag;
-import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.mamma.planning.service.PlanningCapaciteitBlokService;
 import nl.rivm.screenit.mamma.planning.service.PlanningConceptOpslaanService;
 import nl.rivm.screenit.mamma.planning.service.PlanningWijzigingenBepalenService;
@@ -80,18 +76,18 @@ public class PlanningCapaciteitBlokController
 	public void put(@RequestBody PlanningCapaciteitBlokDto capaciteitBlokDto) throws OpslaanVerwijderenTijdBlokException
 	{
 		PlanningCapaciteitChangeChecker.magCapaciteitOpslaanVerwijderen(capaciteitBlokDto, true);
-		PlanningBlok blok = PlanningBlokIndex.get(capaciteitBlokDto.conceptId);
-		PlanningScreeningsEenheid screeningsEenheid = PlanningScreeningsEenheidIndex.get(capaciteitBlokDto.screeningsEenheidId);
+		var blok = PlanningBlokIndex.get(capaciteitBlokDto.conceptId);
+		var screeningsEenheid = PlanningScreeningsEenheidIndex.get(capaciteitBlokDto.screeningsEenheidId);
 
 		assert blok.getScreeningsEenheid().equals(screeningsEenheid);
 
-		PlanningDag dag = blok.getDag();
+		var dag = blok.getDag();
 
 		wijzigingenBepalenService.bepaalWijzigingen(dag);
 
 		blok.setCapaciteitBlokType(capaciteitBlokDto.blokType);
 		blok.setAantalOnderzoeken(capaciteitBlokDto.aantalOnderzoeken);
-		LocalDateTime vanaf = DateUtil.toLocalDateTime(capaciteitBlokDto.vanaf);
+		var vanaf = DateUtil.toLocalDateTime(capaciteitBlokDto.vanaf);
 		blok.setVanaf(vanaf.toLocalTime());
 		blok.setTot(DateUtil.toLocalTime(capaciteitBlokDto.tot));
 		capaciteitBlokService.updateMindervalideReserveringenVoorCapaciteitBlok(capaciteitBlokDto.getMindervalideReserveringen(), blok);
@@ -105,7 +101,7 @@ public class PlanningCapaciteitBlokController
 			blok.setOpmerkingen(null);
 		}
 
-		PlanningDag dagNieuw = screeningsEenheid.getDagNavigableMap().get(vanaf.toLocalDate());
+		var dagNieuw = screeningsEenheid.getDagNavigableMap().get(vanaf.toLocalDate());
 
 		if (!dagNieuw.equals(dag))
 		{
@@ -137,19 +133,19 @@ public class PlanningCapaciteitBlokController
 	public Integer getAantalAfspraken(@PathVariable UUID conceptId, @PathVariable MammaCapaciteitBlokType nieuwBlokType, @PathVariable Long vanafTime, @PathVariable Long totTime,
 		@PathVariable Boolean delete)
 	{
-		PlanningBlok blok = PlanningBlokIndex.get(conceptId);
+		var blok = PlanningBlokIndex.get(conceptId);
 
 		if (blok != null && blok.getId() != null)
 		{
-			MammaCapaciteitBlok persistentBlok = hibernateService.get(MammaCapaciteitBlok.class, blok.getId());
+			var persistentBlok = hibernateService.get(MammaCapaciteitBlok.class, blok.getId());
 			if (persistentBlok != null)
 			{
 				if (Boolean.TRUE.equals(delete))
 				{
 					return persistentBlok.getAfspraken().size();
 				}
-				Date vanaf = new Date(vanafTime);
-				Date tot = new Date(totTime);
+				var vanaf = new Date(vanafTime);
+				var tot = new Date(totTime);
 				return conceptOpslaanService.getAantalAfsprakenTeOntkoppelen(persistentBlok, vanaf, tot, nieuwBlokType);
 			}
 		}

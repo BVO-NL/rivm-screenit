@@ -60,7 +60,7 @@ public class PlanningControllerSynchronizedRequestFilter implements Filter
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
 	{
 		LOG.trace("Started");
-		String path = ((HttpServletRequest) request).getRequestURI();
+		var path = ((HttpServletRequest) request).getRequestURI();
 		if (path.startsWith("/" + PlanningRestConstants.C_STATUS))
 		{
 			chain.doFilter(request, response);
@@ -69,7 +69,7 @@ public class PlanningControllerSynchronizedRequestFilter implements Filter
 		{
 			try
 			{
-				boolean acquired = semaphore.tryAcquire(MAX_WACHTTIJD_LANGE_PLANNING_ACTIES, TimeUnit.SECONDS);
+				var acquired = semaphore.tryAcquire(MAX_WACHTTIJD_LANGE_PLANNING_ACTIES, TimeUnit.SECONDS);
 				if (acquired)
 				{
 					try
@@ -94,7 +94,7 @@ public class PlanningControllerSynchronizedRequestFilter implements Filter
 				else
 				{
 					LOG.info("locked");
-					HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+					var httpServletResponse = (HttpServletResponse) response;
 					httpServletResponse.setStatus(HttpStatus.LOCKED.value());
 				}
 
@@ -102,7 +102,7 @@ public class PlanningControllerSynchronizedRequestFilter implements Filter
 			catch (InterruptedException e)
 			{
 				LOG.error("Fout bij wachten op kunnen uitvoeren van een taak", e);
-				HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+				var httpServletResponse = (HttpServletResponse) response;
 				httpServletResponse.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
 				Thread.currentThread().interrupt();
 			}

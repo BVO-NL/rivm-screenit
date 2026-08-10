@@ -68,7 +68,7 @@ public class GebeurtenisPopupBasePanel extends GenericPanel<ScreeningRondeGebeur
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		WebMarkupContainer gebeurtenisBody = new WebMarkupContainer("gebeurtenisBody");
+		var gebeurtenisBody = new WebMarkupContainer("gebeurtenisBody");
 		gebeurtenisBody.add(new AttributeAppender("class", Model.of(typeGebeurtenis.name().toLowerCase()), " "));
 		add(gebeurtenisBody);
 		add(new EnumLabel<TypeGebeurtenis>("gebeurtenis"));
@@ -76,7 +76,7 @@ public class GebeurtenisPopupBasePanel extends GenericPanel<ScreeningRondeGebeur
 
 		gebeurtenisBody.add(DateLabel.forDatePattern("datum", "dd-MM-yyyy HH:mm:ss"));
 
-		String type = "";
+		var type = "";
 		if (screeningRondeGebeurtenis == null || screeningRondeGebeurtenis.getScreeningRondeGebeurtenissen() == null)
 		{
 			gebeurtenisBody.add(new WebMarkupContainer("screeningRondeGebeurtenissen.rondenr").setVisible(false));
@@ -99,8 +99,8 @@ public class GebeurtenisPopupBasePanel extends GenericPanel<ScreeningRondeGebeur
 
 		try
 		{
-			Class<? extends AbstractGebeurtenisDetailPanel> detailPanelClass = typeGebeurtenis.getDetailPanelClass();
-			AbstractGebeurtenisDetailPanel detailPanel = (AbstractGebeurtenisDetailPanel) ConstructorUtils.invokeConstructor(detailPanelClass, params.toArray());
+			var detailPanelClass = typeGebeurtenis.getDetailPanelClass();
+			var detailPanel = (AbstractGebeurtenisDetailPanel) ConstructorUtils.invokeConstructor(detailPanelClass, params.toArray());
 			gebeurtenisBody.add(detailPanel);
 			detailPanel.addButton("button", this);
 			detailPanel.addExtraButton("extraButton", this);

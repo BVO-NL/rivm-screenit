@@ -33,9 +33,10 @@ import org.springframework.data.jpa.repository.Query;
 public interface MammaMindervalideReserveringRepository extends BaseJpaRepository<MammaMindervalideReservering>
 {
 	@Query("""
-		select mvr.id, mvr.capaciteitBlok.id, mvr.vanaf
+		select mvr.id, cb.id, mvr.vanaf
 		from MammaMindervalideReservering mvr
+		join MammaCapaciteitBlok cb on cb = mvr.capaciteitBlok
 		where
-		   mvr.capaciteitBlok.id in :capaciteitBlokIds""")
+		   cb.id in :capaciteitBlokIds""")
 	List<MammaMindervalideReserveringProjectie> leesMindervalideReserveringen(Collection<Long> capaciteitBlokIds);
 }

@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.component.validator;
  */
 
 import java.io.Serializable;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -56,7 +55,7 @@ public class PostcodeOfGetallenValidator implements IValidator<String>
 	{
 		if (validatable != null && StringUtils.isNotBlank(validatable.getValue()))
 		{
-			String postcode = StringUtils.trim(validatable.getValue());
+			var postcode = StringUtils.trim(validatable.getValue());
 			postcode = StringUtils.remove(postcode, " ");
 
 			if (StringUtils.length(postcode) == 4 && (!StringUtils.isNumeric(postcode) || !alleenCijfersToegestaan))
@@ -106,7 +105,7 @@ public class PostcodeOfGetallenValidator implements IValidator<String>
 
 	public static boolean isValidNLPostcode(String postcode)
 	{
-		Matcher matcher = POSTCODE_NL.matcher(postcode);
+		var matcher = POSTCODE_NL.matcher(postcode);
 		return matcher.matches();
 	}
 }

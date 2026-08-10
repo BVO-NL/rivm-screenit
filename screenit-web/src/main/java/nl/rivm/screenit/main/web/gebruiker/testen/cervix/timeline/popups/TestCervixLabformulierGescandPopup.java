@@ -47,7 +47,7 @@ public class TestCervixLabformulierGescandPopup extends TestCervixUitnodigingenL
 	@Override
 	protected void opslaan()
 	{
-		for (CervixUitnodiging uitnodiging : getCurrentUitnodigingen())
+		for (var uitnodiging : getCurrentUitnodigingen())
 		{
 			baseTestTimelineService.labformulierGescand(uitnodiging, laboratoriumModel.getObject());
 		}

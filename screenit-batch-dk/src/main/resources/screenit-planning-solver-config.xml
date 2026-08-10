@@ -28,7 +28,7 @@
     <entityClass>nl.rivm.screenit.batch.model.ClientAfspraak</entityClass>
 
     <scoreDirectorFactory>
-        <scoreDrl>screenit-intake-planning.drl</scoreDrl>
+        <constraintProviderClass>nl.rivm.screenit.batch.score.IntakePlanningConstraintProvider</constraintProviderClass>
         <initializingScoreTrend>ONLY_DOWN</initializingScoreTrend>
     </scoreDirectorFactory>
 

@@ -107,7 +107,7 @@ public class IntakeLocatieFieldsFragment extends Fragment
 		final int interval)
 	{
 		List<Integer> choices = new ArrayList<>();
-		for (int i = startInclusive; i <= endInclusive; i = i + interval)
+		for (var i = startInclusive; i <= endInclusive; i = i + interval)
 		{
 			choices.add(i);
 		}

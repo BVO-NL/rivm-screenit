@@ -26,8 +26,6 @@ import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
 import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsOrganisatieIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningStandplaatsIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningStandplaatsPeriodeIndex;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsRonde;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningDoorrekenenManager;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingen;
 
@@ -43,8 +41,8 @@ public class PlanningStandplaatsPeriodeController
 	@PutMapping
 	public void put(@RequestBody PlanningStandplaatsPeriodeDto standplaatsPeriodeDto)
 	{
-		PlanningStandplaatsPeriode standplaatsPeriode = PlanningStandplaatsPeriodeIndex.get(standplaatsPeriodeDto.conceptId);
-		PlanningStandplaatsRonde standplaatsRonde = standplaatsPeriode.getStandplaatsRonde();
+		var standplaatsPeriode = PlanningStandplaatsPeriodeIndex.get(standplaatsPeriodeDto.conceptId);
+		var standplaatsRonde = standplaatsPeriode.getStandplaatsRonde();
 		standplaatsRonde.setAfspraakDrempel(standplaatsPeriodeDto.afspraakDrempel);
 
 		if (standplaatsPeriode.getPrognose() != standplaatsPeriodeDto.prognose ||

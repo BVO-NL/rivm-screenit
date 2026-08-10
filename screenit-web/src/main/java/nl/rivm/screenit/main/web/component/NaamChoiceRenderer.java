@@ -37,7 +37,7 @@ public class NaamChoiceRenderer<T extends INaam> implements IChoiceRenderer<T>
 	@Override
 	public Object getDisplayValue(INaam object)
 	{
-		String displayValue = "";
+		var displayValue = "";
 		if (object != null)
 		{
 			displayValue = object.getNaam();
@@ -48,15 +48,15 @@ public class NaamChoiceRenderer<T extends INaam> implements IChoiceRenderer<T>
 	@Override
 	public String getIdValue(INaam object, int index)
 	{
-		String idValue = "";
+		var idValue = "";
 		if (object instanceof Enum<?>)
 		{
-			Enum<?> naamEnum = (Enum<?>) object;
+			var naamEnum = (Enum<?>) object;
 			idValue = naamEnum.name();
 		}
 		else if (object instanceof HibernateObject)
 		{
-			HibernateObject hibernateObject = (HibernateObject) object;
+			var hibernateObject = (HibernateObject) object;
 			if (hibernateObject.getId() != null)
 			{
 				idValue = hibernateObject.getId().toString();

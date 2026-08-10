@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.nieuws;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
@@ -67,7 +66,7 @@ public class BeheerNieuwsPage extends AlgemeenPage
 	{
 		super.onInitialize();
 
-		List<NieuwsItem> nieuwsItems = nieuwsService.getNieuwsItems(true);
+		var nieuwsItems = nieuwsService.getNieuwsItems(true);
 
 		IModel<NieuwsItem> nieuwsItemIModel;
 		if (nieuwsItems.isEmpty())
@@ -85,7 +84,7 @@ public class BeheerNieuwsPage extends AlgemeenPage
 
 	private IModel<NieuwsItem> nieuwNieuwsItem()
 	{
-		NieuwsItem nieuwsItem = new NieuwsItem();
+		var nieuwsItem = new NieuwsItem();
 		nieuwsItem.setGemaaktDoor(((ScreenitSession) getSession()).getIngelogdeOrganisatieMedewerker());
 		nieuwsItem.setGemaakt(currentDateSupplier.getDate());
 		return ModelUtil.cModel(nieuwsItem);
@@ -105,14 +104,14 @@ public class BeheerNieuwsPage extends AlgemeenPage
 		{
 			super.onInitialize();
 
-			NieuwsItem nieuwsItem = getModelObject();
+			var nieuwsItem = getModelObject();
 
 			add(ComponentHelper.addTextField(this, "titel", true, 255, false));
 			add(ComponentHelper.newTextArea("tekst", 4096).setRequired(true));
 
 			add(ComponentHelper.addTextField(this, "publicerenVanaf", true, 20, Date.class, false));
 			add(new Label("gemaakt", opDoorTekst(nieuwsItem.getGemaakt(), nieuwsItem.getGemaaktDoor())));
-			String gewijzigdTekst = "";
+			var gewijzigdTekst = "";
 			if (nieuwsItem.getGewijzigd() != null)
 			{
 				gewijzigdTekst = opDoorTekst(nieuwsItem.getGewijzigd(), nieuwsItem.getGewijzigdDoor());
@@ -127,7 +126,7 @@ public class BeheerNieuwsPage extends AlgemeenPage
 				@Override
 				protected void onSubmit(AjaxRequestTarget target)
 				{
-					NieuwsItem formNieuwsItem = (NieuwsItem) getForm().getModelObject();
+					var formNieuwsItem = (NieuwsItem) getForm().getModelObject();
 
 					if (DateUtil.startDag(formNieuwsItem.getPublicerenVanaf()).before(currentDateSupplier.getDateMidnight()))
 					{
@@ -142,12 +141,12 @@ public class BeheerNieuwsPage extends AlgemeenPage
 						formNieuwsItem.setGewijzigdDoor(((ScreenitSession) getSession()).getIngelogdeOrganisatieMedewerker());
 						formNieuwsItem.setGewijzigd(currentDateSupplier.getDate());
 
-						String gewijzigdTekst = "";
+						var gewijzigdTekst = "";
 						if (formNieuwsItem.getGewijzigd() != null)
 						{
 							gewijzigdTekst = opDoorTekst(formNieuwsItem.getGewijzigd(), formNieuwsItem.getGewijzigdDoor());
 						}
-						Label newGewijzigd = new Label("gewijzigd", Model.of(gewijzigdTekst));
+						var newGewijzigd = new Label("gewijzigd", Model.of(gewijzigdTekst));
 						newGewijzigd.setOutputMarkupId(true);
 						gewijzigd.replaceWith(newGewijzigd);
 						gewijzigd = newGewijzigd;
@@ -164,7 +163,7 @@ public class BeheerNieuwsPage extends AlgemeenPage
 
 		private String opDoorTekst(Date date, OrganisatieMedewerker organisatieMedewerker)
 		{
-			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+			var format = new SimpleDateFormat("dd-MM-yyyy");
 			return "op " + format.format(date) + " door " + organisatieMedewerker.getMedewerker().getNaamVolledig();
 		}
 	}

@@ -36,7 +36,7 @@ public class SignalerenDtoMapper
 
 	private SignalerenSeDto createSignalerenDtoFromMammaSignaleren(MammaSignaleren signaleren)
 	{
-		SignalerenSeDto signalerenDto = new SignalerenSeDto();
+		var signalerenDto = new SignalerenSeDto();
 		signalerenDto.setId(signaleren.getId());
 		signalerenDto.setHeeftAfwijkingen(signaleren.isHeeftAfwijkingen());
 		signalerenDto.setDoorsnedeAfbeeldingen(doorsnedeAfbeeldingenDtoMapper.createDoorsnedeAfbeeldingenDtoFromAanzichten(signaleren.getRechtsVerticaleDoorsnede(),

@@ -21,9 +21,6 @@ package nl.rivm.screenit.mamma.se.proxy.dao.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import nl.rivm.screenit.mamma.se.proxy.dao.ConfiguratieDao;
@@ -41,13 +38,13 @@ public class ConfiguratieDaoImpl extends BaseDaoImpl implements ConfiguratieDao
 	@Override
 	public String getConfiguratieValue(SeConfiguratieKey key)
 	{
-		String sql = "SELECT VALUE FROM CONFIGURATIE WHERE key = ?;";
+		var sql = "SELECT VALUE FROM CONFIGURATIE WHERE key = ?;";
 
-		try (Connection dbConnection = getConnection();
-			PreparedStatement statement = dbConnection.prepareStatement(sql))
+		try (var dbConnection = getConnection();
+			var statement = dbConnection.prepareStatement(sql))
 		{
 			statement.setString(1, key.name());
-			ResultSet resultSet = statement.executeQuery();
+			var resultSet = statement.executeQuery();
 			if (resultSet.next())
 			{
 				return resultSet.getString("value");
@@ -84,12 +81,12 @@ public class ConfiguratieDaoImpl extends BaseDaoImpl implements ConfiguratieDao
 	@Override
 	public void insertOrUpdateConfiguratieValue(SeConfiguratieKey key, String value)
 	{
-		String sql = "INSERT INTO CONFIGURATIE(key, value) VALUES (?, ?)" +
+		var sql = "INSERT INTO CONFIGURATIE(key, value) VALUES (?, ?)" +
 			" ON CONFLICT(key)" +
 			" DO UPDATE SET value = excluded.value " +
 			" WHERE value != excluded.value;";
-		try (Connection connection = getConnection();
-			PreparedStatement insertStatement = connection.prepareStatement(sql))
+		try (var connection = getConnection();
+			var insertStatement = connection.prepareStatement(sql))
 		{
 			insertStatement.setString(1, key.name());
 			insertStatement.setString(2, value);
@@ -105,9 +102,9 @@ public class ConfiguratieDaoImpl extends BaseDaoImpl implements ConfiguratieDao
 	@Override
 	public void updateConfiguratieValue(SeConfiguratieKey key, String value)
 	{
-		String sql = "UPDATE CONFIGURATIE SET value = ? WHERE key = ?;";
-		try (Connection connection = getConnection();
-			PreparedStatement updateStatement = connection.prepareStatement(sql))
+		var sql = "UPDATE CONFIGURATIE SET value = ? WHERE key = ?;";
+		try (var connection = getConnection();
+			var updateStatement = connection.prepareStatement(sql))
 		{
 			updateStatement.setString(1, value);
 			updateStatement.setString(2, key.name());

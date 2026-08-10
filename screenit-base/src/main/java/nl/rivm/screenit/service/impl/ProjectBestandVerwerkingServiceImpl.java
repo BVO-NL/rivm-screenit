@@ -31,7 +31,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectBestand;
 import nl.rivm.screenit.model.project.ProjectBestandType;
-import nl.rivm.screenit.model.project.ProjectBestandVerwerking;
 import nl.rivm.screenit.model.project.ProjectBestandVerwerkingEntry;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectClientAttribuut;
@@ -100,8 +99,8 @@ public class ProjectBestandVerwerkingServiceImpl implements ProjectBestandVerwer
 
 	private void addBestandsMelding(ProjectBestand bestand, Integer regelnummer, String melding)
 	{
-		ProjectBestandVerwerking verwerking = bestand.getVerwerking();
-		ProjectBestandVerwerkingEntry entry = new ProjectBestandVerwerkingEntry();
+		var verwerking = bestand.getVerwerking();
+		var entry = new ProjectBestandVerwerkingEntry();
 		entry.setRegelNummer(regelnummer);
 		entry.setMelding(melding);
 		entry.setVerwerking(verwerking);

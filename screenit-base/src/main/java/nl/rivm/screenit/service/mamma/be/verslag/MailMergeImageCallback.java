@@ -37,7 +37,7 @@ public class MailMergeImageCallback implements IFieldMergingCallback
 	{
 		if (isAfbeeldingMergeField(args))
 		{
-			InputStream inputStream = (InputStream) args.getFieldValue();
+			var inputStream = (InputStream) args.getFieldValue();
 
 			args.setImageStream(inputStream);
 		}

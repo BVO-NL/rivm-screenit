@@ -79,7 +79,7 @@ public class CapaciteitsPercWijziging implements Serializable
 	@Override
 	public boolean equals(Object other)
 	{
-		CapaciteitsPercWijziging wijziging = (CapaciteitsPercWijziging) other;
+		var wijziging = (CapaciteitsPercWijziging) other;
 		return ilId.equals(wijziging.ilId) && ugId.equals(wijziging.ugId);
 	}
 

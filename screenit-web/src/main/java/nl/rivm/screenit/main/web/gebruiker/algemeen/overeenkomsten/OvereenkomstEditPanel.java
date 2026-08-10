@@ -71,7 +71,7 @@ public abstract class OvereenkomstEditPanel extends Panel
 	public OvereenkomstEditPanel(String id)
 	{
 		super(id);
-		OvereenkomstEditForm editForm = new OvereenkomstEditForm("form", overeenkomstModel);
+		var editForm = new OvereenkomstEditForm("form", overeenkomstModel);
 		add(editForm);
 
 		add(new Label("titel", (IModel<String>) () ->
@@ -88,7 +88,7 @@ public abstract class OvereenkomstEditPanel extends Panel
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Overeenkomst overeenkomst = overeenkomstModel.getObject();
+				var overeenkomst = overeenkomstModel.getObject();
 				if (overeenkomst.getId() == null && CollectionUtils.isEmpty(fileUploadModel.getObject()))
 				{
 					error(getString("error.nofile"));
@@ -139,11 +139,11 @@ public abstract class OvereenkomstEditPanel extends Panel
 		{
 			super(id, new CompoundPropertyModel<>(model));
 
-			final WebMarkupContainer organisatieTypeContainer = new WebMarkupContainer("organisatieTypeContainer");
+			final var organisatieTypeContainer = new WebMarkupContainer("organisatieTypeContainer");
 			organisatieTypeContainer.setOutputMarkupId(true);
 			add(organisatieTypeContainer);
 
-			RadioGroup<OvereenkomstType> radioGroup = new RadioGroup<OvereenkomstType>("overeenkomst");
+			var radioGroup = new RadioGroup<OvereenkomstType>("overeenkomst");
 			radioGroup.add(new AjaxFormChoiceComponentUpdatingBehavior()
 			{
 
@@ -157,10 +157,10 @@ public abstract class OvereenkomstEditPanel extends Panel
 				public void renderHead(Component component, IHeaderResponse response)
 				{
 					super.renderHead(component, response);
-					Overeenkomst overeenkomst = overeenkomstModel.getObject();
+					var overeenkomst = overeenkomstModel.getObject();
 					if (overeenkomst != null)
 					{
-						OvereenkomstType overeenkomstType = overeenkomst.getOvereenkomst();
+						var overeenkomstType = overeenkomst.getOvereenkomst();
 						if (overeenkomstType != null && overeenkomstType.equals(OvereenkomstType.ZAKELIJKE_OVEREENKOMST))
 						{
 							component.setEnabled(false);
@@ -194,8 +194,8 @@ public abstract class OvereenkomstEditPanel extends Panel
 					protected void onConfigure()
 					{
 						super.onConfigure();
-						Overeenkomst overeenkomst = OvereenkomstEditForm.this.getModelObject();
-						boolean visibleEnRequired = overeenkomst != null && overeenkomst.getOvereenkomst() == OvereenkomstType.OVEREENKOMST;
+						var overeenkomst = OvereenkomstEditForm.this.getModelObject();
+						var visibleEnRequired = overeenkomst != null && overeenkomst.getOvereenkomst() == OvereenkomstType.OVEREENKOMST;
 						setVisible(visibleEnRequired);
 						setRequired(visibleEnRequired);
 					}

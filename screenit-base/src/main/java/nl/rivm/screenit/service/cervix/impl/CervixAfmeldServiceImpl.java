@@ -22,7 +22,6 @@ package nl.rivm.screenit.service.cervix.impl;
  */
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
@@ -32,10 +31,7 @@ import nl.rivm.screenit.model.AfmeldingType;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.cervix.CervixAfmelding;
 import nl.rivm.screenit.model.cervix.CervixBrief;
-import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
-import nl.rivm.screenit.model.cervix.CervixUitnodiging;
-import nl.rivm.screenit.model.cervix.cis.CervixCISHistorie;
 import nl.rivm.screenit.model.cervix.enums.CervixHpvBeoordelingWaarde;
 import nl.rivm.screenit.model.cervix.enums.CervixLeeftijdcategorie;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -90,7 +86,7 @@ public class CervixAfmeldServiceImpl implements CervixAfmeldService
 	@Override
 	public void definitieveAfmeldingAanvragen(CervixAfmelding afmelding, boolean rappelBrief)
 	{
-		BriefType briefType = BriefType.CERVIX_AFMELDING_AANVRAAG;
+		var briefType = BriefType.CERVIX_AFMELDING_AANVRAAG;
 		if (rappelBrief)
 		{
 			briefType = BriefType.CERVIX_AFMELDING_HANDTEKENING;
@@ -102,14 +98,14 @@ public class CervixAfmeldServiceImpl implements CervixAfmeldService
 	@Override
 	public void eenmaligAfmelden(CervixAfmelding afmelding, Account account)
 	{
-		CervixScreeningRonde ronde = afmelding.getScreeningRonde();
+		var ronde = afmelding.getScreeningRonde();
 		screeningrondeService.annuleerHerinnering(ronde);
 		screeningrondeService.annuleerNietVerstuurdeZAS(ronde);
 		screeningrondeService.annuleerUitstel(ronde);
 
-		for (CervixUitnodiging uitnodiging : ronde.getUitnodigingen())
+		for (var uitnodiging : ronde.getUitnodigingen())
 		{
-			CervixBrief brief = uitnodiging.getBrief();
+			var brief = uitnodiging.getBrief();
 			if (BriefUtil.isNietGegenereerdEnNietVervangen(brief) || !uitnodiging.isVerstuurd())
 			{
 				hibernateService.saveOrUpdate(BriefUtil.setTegenhouden(brief, true));
@@ -131,16 +127,16 @@ public class CervixAfmeldServiceImpl implements CervixAfmeldService
 	@Override
 	public void vervolgHeraanmelden(CervixAfmelding herAanTeMeldenAfmelding, Account account)
 	{
-		LocalDateTime creatieDatum = currentDateSupplier.getLocalDateTime().plus(200, ChronoUnit.MILLIS);
+		var creatieDatum = currentDateSupplier.getLocalDateTime().plus(200, ChronoUnit.MILLIS);
 
 		if (herAanTeMeldenAfmelding.getType() == AfmeldingType.DEFINITIEF)
 		{
-			CervixBrief brief = briefService.maakBvoBrief(herAanTeMeldenAfmelding, BriefType.CERVIX_HERAANMELDING_BEVESTIGING, DateUtil.toUtilDate(creatieDatum));
+			var brief = briefService.maakBvoBrief(herAanTeMeldenAfmelding, BriefType.CERVIX_HERAANMELDING_BEVESTIGING, DateUtil.toUtilDate(creatieDatum));
 			herAanTeMeldenAfmelding.setHeraanmeldBevestiging(brief);
 			hibernateService.saveOrUpdate(herAanTeMeldenAfmelding);
 		}
 
-		CervixScreeningRonde ronde = getGeldigeRondeVoorHeraanmelding(herAanTeMeldenAfmelding);
+		var ronde = getGeldigeRondeVoorHeraanmelding(herAanTeMeldenAfmelding);
 		if (ronde != null)
 		{
 
@@ -154,17 +150,17 @@ public class CervixAfmeldServiceImpl implements CervixAfmeldService
 					return;
 				}
 				var laatsteUitnodiging = clientService.getLaatstVerstuurdeUitnodiging(ronde, true);
-				LocalDate geboorteDatum = DateUtil.toLocalDate(ronde.getDossier().getClient().getPersoon().getGeboortedatum());
+				var geboorteDatum = DateUtil.toLocalDate(ronde.getDossier().getClient().getPersoon().getGeboortedatum());
 				if (DateUtil.getLeeftijd(geboorteDatum, creatieDatum.toLocalDate()) < CervixLeeftijdcategorie.minimumLeeftijd())
 				{
 					return;
 				}
 
 				CervixBrief brief;
-				boolean herinneren = true;
+				var herinneren = true;
 				if (laatsteUitnodiging != null && !screeningrondeService.nieuweUitnodigingVoorClientMoetPUZijn(ronde))
 				{
-					CervixBrief laatsteUitnodigingBrief = laatsteUitnodiging.getBrief();
+					var laatsteUitnodigingBrief = laatsteUitnodiging.getBrief();
 					brief = briefService.maakBvoBrief(ronde, laatsteUitnodigingBrief.getBriefType(), DateUtil.toUtilDate(creatieDatum));
 					brief.setHerdruk(laatsteUitnodigingBrief);
 					hibernateService.saveOrUpdate(brief);
@@ -173,7 +169,7 @@ public class CervixAfmeldServiceImpl implements CervixAfmeldService
 				}
 				else
 				{
-					CervixLeeftijdcategorie leeftijdcategorie = CervixLeeftijdcategorie.getLeeftijdcategorie(geboorteDatum, creatieDatum);
+					var leeftijdcategorie = CervixLeeftijdcategorie.getLeeftijdcategorie(geboorteDatum, creatieDatum);
 					brief = briefService.maakBvoBrief(ronde, leeftijdcategorie.getUitnodigingsBrief(), DateUtil.toUtilDate(creatieDatum));
 				}
 
@@ -190,22 +186,22 @@ public class CervixAfmeldServiceImpl implements CervixAfmeldService
 		case EENMALIG:
 			return herAanTeMeldenAfmelding.getScreeningRonde();
 		case DEFINITIEF:
-			CervixDossier dossier = herAanTeMeldenAfmelding.getDossier();
-			Client client = dossier.getClient();
-			CervixScreeningRonde ronde = dossier.getLaatsteScreeningRonde();
+			var dossier = herAanTeMeldenAfmelding.getDossier();
+			var client = dossier.getClient();
+			var ronde = dossier.getLaatsteScreeningRonde();
 			if (ronde != null && (dossier.getVolgendeRondeVanaf() == null || DateUtil.compareBefore(herAanTeMeldenAfmelding.getHeraanmeldDatum(), dossier.getVolgendeRondeVanaf())))
 			{
 				return ronde;
 			}
 			else
 			{
-				CervixCISHistorie cisHistorie = dossier.getCisHistorie();
+				var cisHistorie = dossier.getCisHistorie();
 				if (cisHistorie != null && herAanTeMeldenAfmelding.equals(cisHistorie.getAfmelding()) && !cisHistorie.isHeeftUitslagInRonde0())
 				{
-					LocalDate vandaag = currentDateSupplier.getLocalDate();
-					LocalDate minimaleGeboortedatum = vandaag.minusYears(CervixLeeftijdcategorie._65.getLeeftijd());
-					LocalDate maximaleGeboortedatum = vandaag.minusYears(CervixLeeftijdcategorie.minimumLeeftijd());
-					LocalDate geboortedatum = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum());
+					var vandaag = currentDateSupplier.getLocalDate();
+					var minimaleGeboortedatum = vandaag.minusYears(CervixLeeftijdcategorie._65.getLeeftijd());
+					var maximaleGeboortedatum = vandaag.minusYears(CervixLeeftijdcategorie.minimumLeeftijd());
+					var geboortedatum = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum());
 					if (geboortedatum.isAfter(minimaleGeboortedatum) && geboortedatum.isBefore(maximaleGeboortedatum)
 						&& isHuidigeDatumBinnenRonde0(client))
 					{
@@ -227,13 +223,13 @@ public class CervixAfmeldServiceImpl implements CervixAfmeldService
 
 	private boolean isHuidigeDatumBinnenRonde0(Client client)
 	{
-		String startdatumBMHKString = simplePreferenceService.getString(PreferenceKey.STARTDATUM_BMHK.name());
-		LocalDate startdatumBMHK = LocalDate.parse(startdatumBMHKString, DateTimeFormatter.ofPattern("yyyyMMdd"));
-		LocalDate geboorteDatum = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum());
+		var startdatumBMHKString = simplePreferenceService.getString(PreferenceKey.STARTDATUM_BMHK.name());
+		var startdatumBMHK = LocalDate.parse(startdatumBMHKString, DateTimeFormatter.ofPattern("yyyyMMdd"));
+		var geboorteDatum = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum());
 
-		CervixLeeftijdcategorie leeftijdsCategorie = CervixLeeftijdcategorie.getLeeftijdcategorie(geboorteDatum,
+		var leeftijdsCategorie = CervixLeeftijdcategorie.getLeeftijdcategorie(geboorteDatum,
 			currentDateSupplier.getLocalDateTime());
-		LocalDate leeftijdsCategorieRondeDatum = geboorteDatum.plusYears(leeftijdsCategorie.getLeeftijd());
+		var leeftijdsCategorieRondeDatum = geboorteDatum.plusYears(leeftijdsCategorie.getLeeftijd());
 
 		return leeftijdsCategorieRondeDatum.isBefore(startdatumBMHK);
 	}

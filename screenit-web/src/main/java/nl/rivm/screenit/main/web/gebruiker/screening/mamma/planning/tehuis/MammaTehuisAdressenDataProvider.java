@@ -30,7 +30,6 @@ import nl.rivm.screenit.model.mamma.MammaTehuisAdres;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.injection.Injector;
 import org.apache.wicket.model.IModel;
@@ -57,8 +56,8 @@ public class MammaTehuisAdressenDataProvider extends SortableDataProvider<MammaT
 
 	private List<MammaTehuisAdres> getTehuisAdressenSorted()
 	{
-		List<MammaTehuisAdres> tehuisAdressen = tehuis.getObject().getAdressen();
-		SortParam<String> sortParam = getSort();
+		var tehuisAdressen = tehuis.getObject().getAdressen();
+		var sortParam = getSort();
 		if (sortParam != null && sortParam.getProperty() != null)
 		{
 			tehuisAdressen = tehuisAdressen.stream().sorted(new PropertyComparator<>(sortParam.getProperty(), true, sortParam.isAscending())).collect(Collectors.toList());

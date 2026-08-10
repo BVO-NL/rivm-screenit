@@ -36,14 +36,8 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.Docum
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.DocumentTemplateTestenFieldsPanel;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.ProjectBasePage;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.MailMergeContext;
-import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.model.ZASRetouradres;
-import nl.rivm.screenit.model.cervix.CervixUitnodiging;
-import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.BatchApplicationType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -53,12 +47,8 @@ import nl.rivm.screenit.model.enums.MergeField;
 import nl.rivm.screenit.model.enums.MergeFieldTestType;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
-import nl.rivm.screenit.model.mamma.MammaBeoordeling;
-import nl.rivm.screenit.model.mamma.MammaStandplaats;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.messagequeue.MessageType;
 import nl.rivm.screenit.model.messagequeue.dto.BriefafdrukopdrachtDto;
-import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
 import nl.rivm.screenit.model.project.Project;
 import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.service.AsposeService;
@@ -68,6 +58,7 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.MessageService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
+import nl.rivm.screenit.util.BriefUtil;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -140,7 +131,7 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 	@SpringBean(name = "testModus")
 	private Boolean testModus;
 
-	private boolean automatischAfdrukkenParagonActief = false;
+	private final boolean automatischAfdrukkenParagonActief;
 
 	private final IModel<List<FileUpload>> fileUploads = new ListModel<>();
 
@@ -151,9 +142,8 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 	public ProjectTemplateTestenBasePage(IModel<Project> model)
 	{
 		super(model);
-
+		automatischAfdrukkenParagonActief = briefService.isAutomatischAfdrukkenParagonActief() && testModus;
 		bron = null;
-
 	}
 
 	@Override
@@ -162,23 +152,23 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 		super.onInitialize();
 		MergeField.resetDefaultMergeFields();
 
-		DocumentTemplateTestWrapper wrapper = wrapperModel.getObject();
-		CervixUitnodiging uitnodiging = wrapper.getCervixUitnodiging();
+		var wrapper = wrapperModel.getObject();
+		var uitnodiging = wrapper.getCervixUitnodiging();
 		uitnodiging.setUitnodigingsId(uitnodigingsDao.getNextUitnodigingsId());
-		List<ColonIntakelocatie> actieveIntakelocaties = organisatieService.getActieveIntakelocaties();
+		var actieveIntakelocaties = organisatieService.getActieveIntakelocaties();
 		if (CollectionUtils.isNotEmpty(actieveIntakelocaties))
 		{
 			wrapper.cloneIntakeLocatie(actieveIntakelocaties.get(0));
 		}
 
-		ToegangLevel level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER_DOCUMENTENTEMPLATES);
+		var level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER_DOCUMENTENTEMPLATES);
 
-		List<ScreeningOrganisatie> screeningOrganisatieLijst = getRegios();
+		var screeningOrganisatieLijst = getRegios();
 
 		if (ToegangLevel.REGIO.equals(level))
 		{
 			screeningOrganisatieLijst.clear();
-			ScreeningOrganisatie so = ScreenitSession.get().getScreeningOrganisatie();
+			var so = ScreenitSession.get().getScreeningOrganisatie();
 			if (so != null)
 			{
 				screeningOrganisatieLijst.add(so);
@@ -189,11 +179,11 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 			selectedRegio = ModelUtil.sModel(screeningOrganisatieLijst.get(0));
 		}
 
-		Form<Void> form = new Form<>("regioForm");
+		var form = new Form<Void>("regioForm");
 		form.setMultiPart(true);
 		add(form);
 
-		ScreenitDropdown<ScreeningOrganisatie> screeningOrganisatieDropdown = new ScreenitDropdown<>("regio", selectedRegio,
+		var screeningOrganisatieDropdown = new ScreenitDropdown<ScreeningOrganisatie>("regio", selectedRegio,
 			ModelUtil.listRModel(screeningOrganisatieLijst), new ChoiceRenderer<ScreeningOrganisatie>("naam"));
 		screeningOrganisatieDropdown.setNullValid(false);
 		screeningOrganisatieDropdown.setRequired(true);
@@ -202,13 +192,13 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 		form.add(getPrintButton());
 		form.add(getNaarParagonButton());
 
-		RadioChoice<TemplateBron> bron = new RadioChoice<>("bron", new PropertyModel<TemplateBron>(this, "bron"), Arrays.asList(TemplateBron.values()),
+		var bron = new RadioChoice<TemplateBron>("bron", new PropertyModel<TemplateBron>(this, "bron"), Arrays.asList(TemplateBron.values()),
 			new EnumChoiceRenderer<>(this));
 		bron.setPrefix("<label class=\"radio\">");
 		bron.setSuffix("</label>");
 		bron.setRequired(true);
 		bron.setOutputMarkupId(true);
-		FileUploadField uploadField = new FileUploadField("upload", fileUploads);
+		var uploadField = new FileUploadField("upload", fileUploads);
 		uploadField.setOutputMarkupId(true);
 		uploadField.setOutputMarkupPlaceholderTag(true);
 		uploadField.setVisible(false);
@@ -252,7 +242,7 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 		form.add(fieldsContainer);
 
 		var paragonInstellingenContainer = new WebMarkupContainer("paragonInstellingenContainer");
-		automatischAfdrukkenParagonActief = briefService.isAutomatischAfdrukkenParagonActief() && testModus;
+
 		paragonInstellingenContainer.setVisible(automatischAfdrukkenParagonActief);
 		form.add(paragonInstellingenContainer);
 
@@ -347,11 +337,9 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 	{
 		return BriefafdrukopdrachtDto.builder()
 			.code(briefType != null ? briefType.getBriefCode() : BriefType.FALLBACK_BRIEF_CODE)
-			.kenmerk("K1234567890ABCDEF")
+			.kenmerk(BriefUtil.maakTestParagonKenmerk())
 			.timestamp(currentDateSupplier.getLocalDateTime().format(DateTimeFormatter.ofPattern(Constants.DATE_FORMAT_YYYYMMDDHHMMSS)))
 			.codeAddendum("")
-			.entityId(null)
-			.entityType(ProjectBrief.class)
 			.resources(List.of(BriefafdrukopdrachtDto.Resource.builder().order(1).path(bestandsNaam).build()))
 			.build();
 	}
@@ -363,21 +351,21 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 
 	private Document maakMergedDocument() throws Exception
 	{
-		DocumentTemplateTestWrapper wrapper = wrapperModel.getObject();
-		List<Bevolkingsonderzoek> bevolkingsonderzoeken = getBevolkingsonderzoeken();
+		var wrapper = wrapperModel.getObject();
+		var bevolkingsonderzoeken = getBevolkingsonderzoeken();
 		logService.logGebeurtenis(LogGebeurtenis.TESTEN_VAN_BRIEVEN, ScreenitSession.get().getIngelogdAccount(),
 			bevolkingsonderzoeken.toArray(new Bevolkingsonderzoek[bevolkingsonderzoeken.size()]));
 
-		ScreeningOrganisatie screeningOrganisatie = selectedRegio.getObject();
+		var screeningOrganisatie = selectedRegio.getObject();
 
-		MailMergeContext context = DocumentTemplateTestenFieldsPanel.createMailMergeContext(wrapper, screeningOrganisatie);
+		var context = DocumentTemplateTestenFieldsPanel.createMailMergeContext(wrapper, screeningOrganisatie);
 
-		BMHKLaboratorium bmhkLaboratorium = wrapper.getBmhkLaboratorium();
-		Client client = wrapper.getClient();
-		Gemeente gbaGemeente = client.getPersoon().getGbaAdres().getGbaGemeente();
-		ZASRetouradres zasRetouradres = bmhkLaboratorium.getRetouradressen().get(0);
-		AfgeslotenMedewerkerOvereenkomst overeenkomst = wrapper.getOvereenkomst();
-		CervixUitnodiging cervixUitnodiging = wrapper.getCervixUitnodiging();
+		var bmhkLaboratorium = wrapper.getBmhkLaboratorium();
+		var client = wrapper.getClient();
+		var gbaGemeente = client.getPersoon().getGbaAdres().getGbaGemeente();
+		var zasRetouradres = bmhkLaboratorium.getRetouradressen().get(0);
+		var overeenkomst = wrapper.getOvereenkomst();
+		var cervixUitnodiging = wrapper.getCervixUitnodiging();
 
 		try
 		{
@@ -397,9 +385,9 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 			}
 
 			Document mergedDocument = null;
-			MammaBeoordeling laatsteBeoordelingMetUitslag = wrapper.getClient().getMammaDossier().getLaatsteBeoordelingMetUitslag();
-			Medewerker handmatigeRadioloog1 = laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().getMedewerker();
-			Medewerker handmatigeRadioloog2 = laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().getMedewerker();
+			var laatsteBeoordelingMetUitslag = wrapper.getClient().getMammaDossier().getLaatsteBeoordelingMetUitslag();
+			var handmatigeRadioloog1 = laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().getMedewerker();
+			var handmatigeRadioloog2 = laatsteBeoordelingMetUitslag.getTweedeLezing().getBeoordelaar().getMedewerker();
 			if (!wrapper.isFreeTextBKRADIOLOOG())
 			{
 				laatsteBeoordelingMetUitslag.getEersteLezing().getBeoordelaar().setMedewerker(wrapper.getRadioloog1());
@@ -407,13 +395,13 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 			}
 			if (wrapper.isFromDBINTAKELOCATIE())
 			{
-				List<ColonIntakelocatie> intakeLocaties = organisatieService.getActieveIntakelocatiesBinnenRegio(screeningOrganisatie);
+				var intakeLocaties = organisatieService.getActieveIntakelocatiesBinnenRegio(screeningOrganisatie);
 				var kamer = wrapper.getIntakeAfspraak().getKamer();
-				ColonIntakelocatie handmaktigeIntakeLocatie = kamer.getIntakelocatie();
-				for (ColonIntakelocatie intakeLocatie : intakeLocaties)
+				var handmaktigeIntakeLocatie = kamer.getIntakelocatie();
+				for (var intakeLocatie : intakeLocaties)
 				{
 					kamer.setIntakelocatie(intakeLocatie);
-					Document document = proccesDocument(context, briefTemplate);
+					var document = proccesDocument(context, briefTemplate);
 					mergedDocument = DocumentTemplateTestenFieldsPanel.addDocument(mergedDocument, document);
 				}
 				if (intakeLocaties.isEmpty())
@@ -424,13 +412,13 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 			}
 			else if (wrapper.isFromDBBMHKLAB())
 			{
-				List<BMHKLaboratorium> labs = organisatieService.getActieveOrganisaties(BMHKLaboratorium.class);
-				for (BMHKLaboratorium lab : labs)
+				var labs = organisatieService.getActieveOrganisaties(BMHKLaboratorium.class);
+				for (var lab : labs)
 				{
 					cervixUitnodiging.getMonster().setLaboratorium(lab);
 					gbaGemeente.setBmhkLaboratorium(lab);
 					context.setBmhkLaboratorium(lab);
-					Document document = proccesDocument(context, briefTemplate);
+					var document = proccesDocument(context, briefTemplate);
 					mergedDocument = DocumentTemplateTestenFieldsPanel.addDocument(mergedDocument, document);
 				}
 				if (labs.isEmpty())
@@ -443,14 +431,14 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 			}
 			else if (wrapper.isFromDBBKSTANDPLAATS())
 			{
-				List<MammaStandplaats> standplaatsen = standplaatsService.getActieveStandplaatsen(screeningOrganisatie);
-				MammaStandplaatsRonde standplaatsRonde = context.getClient().getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak()
+				var standplaatsen = standplaatsService.getActieveStandplaatsen(screeningOrganisatie);
+				var standplaatsRonde = context.getClient().getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak()
 					.getStandplaatsPeriode().getStandplaatsRonde();
-				MammaStandplaats handmatigeStandplaats = standplaatsRonde.getStandplaats();
-				for (MammaStandplaats standplaats : standplaatsen)
+				var handmatigeStandplaats = standplaatsRonde.getStandplaats();
+				for (var standplaats : standplaatsen)
 				{
 					standplaatsRonde.setStandplaats(standplaats);
-					Document document = proccesDocument(context, briefTemplate);
+					var document = proccesDocument(context, briefTemplate);
 					mergedDocument = DocumentTemplateTestenFieldsPanel.addDocument(mergedDocument, document);
 				}
 				if (standplaatsen.isEmpty())
@@ -461,7 +449,7 @@ public abstract class ProjectTemplateTestenBasePage extends ProjectBasePage
 			}
 			else
 			{
-				Document document = proccesDocument(context, briefTemplate);
+				var document = proccesDocument(context, briefTemplate);
 				mergedDocument = DocumentTemplateTestenFieldsPanel.addDocument(mergedDocument, document);
 			}
 

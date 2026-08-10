@@ -31,8 +31,6 @@ import nl.rivm.screenit.clientportaal.model.EmailAdresDto;
 import nl.rivm.screenit.clientportaal.model.TelefoonnummerDto;
 import nl.rivm.screenit.clientportaal.model.TijdelijkAdresDto;
 import nl.rivm.screenit.clientportaal.services.ClientGegevensService;
-import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.TijdelijkAdres;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -65,7 +63,7 @@ public class ClientController extends AbstractController
 	@PutMapping("/telefoonnummer")
 	public ResponseEntity<ClientDto> setTelefoonnummer(@RequestBody TelefoonnummerDto telefoonnummerDto, Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 		clientGegevensService.setTelefoonnummer(telefoonnummerDto.getTelefoonnummer1(), telefoonnummerDto.getTelefoonnummer2(), client);
 		return ResponseEntity.ok(clientMapper.clientToDto(client));
 	}
@@ -81,8 +79,8 @@ public class ClientController extends AbstractController
 	@PutMapping("/tijdelijk-adres")
 	public ResponseEntity<ClientDto> setTijdelijkAdres(@RequestBody TijdelijkAdresDto tijdelijkAdresDto, Authentication authentication)
 	{
-		Client client = getClient(authentication);
-		TijdelijkAdres tijdelijkAdres = tijdelijkAdresMapper.dtoToTijdelijkAdres(tijdelijkAdresDto);
+		var client = getClient(authentication);
+		var tijdelijkAdres = tijdelijkAdresMapper.dtoToTijdelijkAdres(tijdelijkAdresDto);
 		clientGegevensService.setTijdelijkAdres(tijdelijkAdres, client);
 		return ResponseEntity.ok(clientMapper.clientToDto(client));
 	}
@@ -90,7 +88,7 @@ public class ClientController extends AbstractController
 	@PutMapping("/aanhef")
 	public ResponseEntity<ClientDto> setAanhef(@RequestBody AanhefDto aanhefDto, Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 		clientGegevensService.setAanhef(aanhefDto.getAanhef(), client);
 		return ResponseEntity.ok(clientMapper.clientToDto(client));
 	}

@@ -57,17 +57,17 @@ public class MammaBiradsKeuzePanel extends GenericPanel<MammaLezing>
 	public MammaBiradsKeuzePanel(String id, IModel<MammaLezing> model, MammaLezingParameters lezingParameters)
 	{
 		super(id, model);
-		boolean amputatieRechts = (lezingParameters.getAmputatie() != null && MammaAmputatie.RECHTERBORST.equals(lezingParameters.getAmputatie()));
+		var amputatieRechts = (lezingParameters.getAmputatie() != null && MammaAmputatie.RECHTERBORST.equals(lezingParameters.getAmputatie()));
 		addBiradsKeuzes("biradsRechts", lezingParameters.isInzien(), lezingParameters.isVerwijzenRechtsVerplicht(), amputatieRechts);
-		boolean amputatieLinks = (lezingParameters.getAmputatie() != null && MammaAmputatie.LINKERBORST.equals(lezingParameters.getAmputatie()));
+		var amputatieLinks = (lezingParameters.getAmputatie() != null && MammaAmputatie.LINKERBORST.equals(lezingParameters.getAmputatie()));
 		addBiradsKeuzes("biradsLinks", lezingParameters.isInzien(), lezingParameters.isVerwijzenLinksVerplicht(), amputatieLinks);
 	}
 
 	private void addBiradsKeuzes(String wicketId, boolean alleenInzien, boolean verwijzenVerplicht, boolean isAmputatie)
 	{
-		List<MammaBIRADSWaarde> biradsWaardes = Arrays.asList(MammaBIRADSWaarde.EEN, MammaBIRADSWaarde.TWEE, MammaBIRADSWaarde.NUL, MammaBIRADSWaarde.VIER, MammaBIRADSWaarde.VIJF);
+		var biradsWaardes = Arrays.asList(MammaBIRADSWaarde.EEN, MammaBIRADSWaarde.TWEE, MammaBIRADSWaarde.NUL, MammaBIRADSWaarde.VIER, MammaBIRADSWaarde.VIJF);
 
-		RadioChoice<MammaBIRADSWaarde> biradsChoices = new RadioChoice<MammaBIRADSWaarde>(wicketId, biradsWaardes, new NaamChoiceRenderer<>())
+		var biradsChoices = new RadioChoice<MammaBIRADSWaarde>(wicketId, biradsWaardes, new NaamChoiceRenderer<>())
 		{
 			@Override
 			protected String getPrefix(int index, MammaBIRADSWaarde choice)

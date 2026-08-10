@@ -25,7 +25,6 @@ import nl.rivm.screenit.mamma.se.proxy.services.MammografenStatusService;
 import nl.rivm.screenit.mamma.se.proxy.services.WerklijstStoreService;
 
 import org.dcm4che3.data.Attributes;
-import org.dcm4che3.data.Sequence;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.data.UID;
 import org.dcm4che3.net.Association;
@@ -55,7 +54,7 @@ public class WorklistProvider extends BasicCFindSCP
 	protected QueryTask calculateMatches(Association as, PresentationContext pc, Attributes rq, Attributes keys) throws DicomServiceException
 	{
 		LOG.info("Received Modality Worklist Request");
-		Sequence scheduledProcedure = keys.getSequence(Tag.ScheduledProcedureStepSequence);
+		var scheduledProcedure = keys.getSequence(Tag.ScheduledProcedureStepSequence);
 		if (scheduledProcedure != null && !scheduledProcedure.isEmpty() && scheduledProcedure.get(0).contains(Tag.ScheduledProcedureStepStartDate))
 		{
 			mammografenStatusService.registreerMammograafDatum(as, scheduledProcedure.get(0).getString(Tag.ScheduledProcedureStepStartDate));

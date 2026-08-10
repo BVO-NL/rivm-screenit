@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.component.table;
  */
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.List;
@@ -62,13 +61,14 @@ public class ExportToCsvLink<T extends Serializable, S> extends GenericPanel<T>
 		add(downloadLink);
 	}
 
-	private ResourceLink<Object> getResourceLink(String bestandsnaam, IDataProvider<T> dataProvider) {
+	private ResourceLink<Object> getResourceLink(String bestandsnaam, IDataProvider<T> dataProvider)
+	{
 		return new ResourceLink<>("download", new AbstractResource()
 		{
 			@Override
 			protected ResourceResponse newResourceResponse(Attributes attributes)
 			{
-				ResourceResponse resourceResponse = new ResourceResponse();
+				var resourceResponse = new ResourceResponse();
 				resourceResponse.setFileName(bestandsnaam + ".csv");
 				resourceResponse.setContentDisposition(ContentDisposition.ATTACHMENT);
 				resourceResponse.setContentType("application/vnd.ms-excel");
@@ -79,9 +79,9 @@ public class ExportToCsvLink<T extends Serializable, S> extends GenericPanel<T>
 					@Override
 					public void writeData(Attributes attributes)
 					{
-						try (OutputStream outputStream = attributes.getResponse().getOutputStream())
+						try (var outputStream = attributes.getResponse().getOutputStream())
 						{
-							CSVDataExporter csvDataExporter = new CSVDataExporter()
+							var csvDataExporter = new CSVDataExporter()
 							{
 								@Override
 								protected String quoteValue(String value)
@@ -105,11 +105,12 @@ public class ExportToCsvLink<T extends Serializable, S> extends GenericPanel<T>
 		});
 	}
 
-	private List<IExportableColumn<T, ?>> filterAndMapToIExportableColumnList(List<IColumn<T, S>> columns) {
+	private List<IExportableColumn<T, ?>> filterAndMapToIExportableColumnList(List<IColumn<T, S>> columns)
+	{
 		return columns.stream()
-				.filter(c -> c instanceof IExportableColumn)
-				.map(c -> ((IExportableColumn<T, S>) c))
-				.collect(Collectors.toList());
+			.filter(c -> c instanceof IExportableColumn)
+			.map(c -> ((IExportableColumn<T, S>) c))
+			.collect(Collectors.toList());
 	}
 
 }

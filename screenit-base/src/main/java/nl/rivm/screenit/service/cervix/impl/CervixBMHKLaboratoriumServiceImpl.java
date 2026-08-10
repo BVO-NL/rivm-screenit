@@ -47,7 +47,7 @@ public class CervixBMHKLaboratoriumServiceImpl implements CervixBMHKLaboratorium
 	@Transactional
 	public void saveOrUpdateLaboratorium(BMHKLaboratorium laboratorium, List<Gemeente> mogelijkeGemeentes)
 	{
-		List<Gemeente> gekoppeldeGemeentes = laboratorium.getGemeentes();
+		var gekoppeldeGemeentes = laboratorium.getGemeentes();
 		gekoppeldeGemeentes.forEach(gemeente -> gemeente.setBmhkLaboratorium(laboratorium));
 		gemeenteRepository.saveAll(gekoppeldeGemeentes);
 

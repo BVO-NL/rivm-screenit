@@ -126,8 +126,8 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 		T value = null;
 		if (orgParam != null && orgParam.getValue() != null)
 		{
-			String orgParamValue = orgParam.getValue();
-			Class<?> valueType = parameterKey.getValueType();
+			var orgParamValue = orgParam.getValue();
+			var valueType = parameterKey.getValueType();
 			if (valueType.equals(Integer.class) && StringUtils.isNumeric(orgParamValue))
 			{
 				value = (T) Integer.valueOf(orgParamValue);
@@ -163,9 +163,9 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 		Set<Organisatie> instellingenToSave = new HashSet<>();
 		Set<Bevolkingsonderzoek> bvos = new HashSet<>();
 		List<String> nieuweValues = new ArrayList<>();
-		for (OrganisatieParameter parameter : parameters)
+		for (var parameter : parameters)
 		{
-			String value = parameter.getValue();
+			var value = parameter.getValue();
 			if (parameter.getId() == null)
 			{
 				value = nieuwValue(instellingenToSave, parameter, value);
@@ -223,7 +223,7 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 
 	private String updateBestaandeValue(OrganisatieParameter parameter, String value)
 	{
-		String diffFieldToLatestVersion = EntityAuditUtil.getDiffFieldsToLatestVersion(parameter, hibernateService.getHibernateSession(), "value");
+		var diffFieldToLatestVersion = EntityAuditUtil.getDiffFieldsToLatestVersion(parameter, hibernateService.getHibernateSession(), "value");
 		if (StringUtil.isBlank(diffFieldToLatestVersion))
 		{
 			value = null;
@@ -263,7 +263,7 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 
 	private <T> T getParamViaCache(Organisatie organisatie, OrganisatieParameterKey parameterKey, T defaultValue)
 	{
-		String key = maakParamKey(organisatie, parameterKey);
+		var key = maakParamKey(organisatie, parameterKey);
 		var keyId = paramKeyIds.get(key);
 		LOG.debug("Use id {} voor Key {} uit cache", keyId, key);
 		var parameter = hibernateService.get(OrganisatieParameter.class, keyId);

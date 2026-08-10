@@ -21,17 +21,12 @@ package nl.rivm.screenit.service.cervix.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Date;
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.UploadDocument;
-import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
@@ -113,13 +108,13 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 
 		hibernateService.saveOrUpdate(monster);
 
-		Client client = monster.getUitnodiging().getScreeningRonde().getDossier().getClient();
+		var client = monster.getUitnodiging().getScreeningRonde().getDossier().getClient();
 		logService.logGebeurtenis(LogGebeurtenis.CERVIX_UITNODIGING_OPGESLAGEN, ingelogdeOrganisatieMedewerker, client, logMessage, Bevolkingsonderzoek.CERVIX);
 	}
 
 	private boolean heeftGecontroleerdLabformulier(CervixUitstrijkje uitstrijkje)
 	{
-		CervixLabformulier labformulier = uitstrijkje.getLabformulier();
+		var labformulier = uitstrijkje.getLabformulier();
 		return labformulier != null && !(labformulier.getStatus() == CervixLabformulierStatus.GESCAND || labformulier.getStatus() == CervixLabformulierStatus.AFGEKEURD);
 	}
 
@@ -127,11 +122,11 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 	@Transactional
 	public void registreerMonsterBarcodeAfgedrukt(CervixMonster monster, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, LogGebeurtenis logGebeurtenis)
 	{
-		List<Date> barcodeAfgedruktList = monster.getBarcodeAfgedrukt();
+		var barcodeAfgedruktList = monster.getBarcodeAfgedrukt();
 		barcodeAfgedruktList.add(currentDateSupplier.getDate());
 		monster.setBarcodeAfgedrukt(barcodeAfgedruktList); 
 		hibernateService.saveOrUpdate(monster);
-		Client client = monster.getUitnodiging().getScreeningRonde().getDossier().getClient();
+		var client = monster.getUitnodiging().getScreeningRonde().getDossier().getClient();
 		logService.logGebeurtenis(logGebeurtenis, ingelogdeOrganisatieMedewerker, client, "Monster-id: " + monster.getMonsterId(), Bevolkingsonderzoek.CERVIX);
 	}
 
@@ -145,7 +140,7 @@ public class CervixBaseUitnodigingServiceImpl implements CervixBaseUitnodigingSe
 			monster.setVerwijderdBrief(uploadDocument);
 		}
 
-		CervixScreeningRonde ronde = monster.getOntvangstScreeningRonde();
+		var ronde = monster.getOntvangstScreeningRonde();
 
 		if (monster.equals(ronde.getUitstrijkjeVervolgonderzoekUitslag()))
 		{

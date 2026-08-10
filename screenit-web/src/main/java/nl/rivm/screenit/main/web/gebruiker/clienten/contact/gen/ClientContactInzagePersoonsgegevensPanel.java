@@ -50,7 +50,7 @@ public class ClientContactInzagePersoonsgegevensPanel extends AbstractClientCont
 	@Override
 	public void validate()
 	{
-		if (overdrachtPersoonsgegevensService.heeftVerzoekZonderGegenereerdeBrief(clientModel.getObject()))
+		if (overdrachtPersoonsgegevensService.heeftOpenstaandVerzoek(clientModel.getObject()))
 		{
 			error(getString("message.aanvraagbriefOnderweg"));
 		}

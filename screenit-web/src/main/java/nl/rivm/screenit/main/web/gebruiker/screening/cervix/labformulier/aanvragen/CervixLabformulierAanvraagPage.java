@@ -35,7 +35,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.cervix.CervixScreeningBaseP
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.huisarts.CervixHuisartsOpvraagPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Organisatie;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Organisatie_;
@@ -92,8 +91,8 @@ public class CervixLabformulierAanvraagPage extends CervixScreeningBasePage
 
 	public CervixLabformulierAanvraagPage()
 	{
-		OrganisatieMedewerker ingelogdeOrganisatieMedewerker = getIngelogdeOrganisatieMedewerker();
-		Organisatie ingelogdeVoorOrganisatie = ingelogdeOrganisatieMedewerker.getOrganisatie();
+		var ingelogdeOrganisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		var ingelogdeVoorOrganisatie = ingelogdeOrganisatieMedewerker.getOrganisatie();
 
 		addFilterOptiesVoorScreeningOrganisatie(ingelogdeVoorOrganisatie);
 		if (OrganisatieType.HUISARTS == ingelogdeVoorOrganisatie.getOrganisatieType())
@@ -118,7 +117,7 @@ public class CervixLabformulierAanvraagPage extends CervixScreeningBasePage
 					{
 						huisartsModel = ModelUtil.sModel(arts);
 
-						WebMarkupContainer container = addUistrijkendArtsContainer();
+						var container = addUistrijkendArtsContainer();
 						uitstrijkendArtsContainer.replaceWith(container);
 						uitstrijkendArtsContainer = container;
 						target.add(uitstrijkendArtsContainer);
@@ -138,7 +137,7 @@ public class CervixLabformulierAanvraagPage extends CervixScreeningBasePage
 
 	private WebMarkupContainer addUistrijkendArtsContainer()
 	{
-		WebMarkupContainer uitstrijkendArtsContrainer = new WebMarkupContainer("uitstrijkendHuisartsContainer");
+		var uitstrijkendArtsContrainer = new WebMarkupContainer("uitstrijkendHuisartsContainer");
 		uitstrijkendArtsContrainer.setOutputMarkupPlaceholderTag(true);
 		uitstrijkendArtsContrainer.setVisible(huisartsModel != null);
 
@@ -150,7 +149,7 @@ public class CervixLabformulierAanvraagPage extends CervixScreeningBasePage
 		uitstrijkendArtsContrainer.add(panel);
 
 		aanvraagModel = ModelUtil.cModel(new CervixLabformulierAanvraag());
-		Form<CervixLabformulierAanvraag> form = new Form<>("form", aanvraagModel);
+		var form = new Form<CervixLabformulierAanvraag>("form", aanvraagModel);
 		uitstrijkendArtsContrainer.add(form);
 
 		ComponentHelper.addTextField(form, "aantal", true, 2, Integer.class, false).add(RangeValidator.range(10, 25));
@@ -160,7 +159,7 @@ public class CervixLabformulierAanvraagPage extends CervixScreeningBasePage
 		{
 			locaties = huisartsService.getActieveHuisartsLocatiesVanHuisarts(huisartsModel.getObject());
 		}
-		ScreenitDropdown<CervixHuisartsLocatie> locatieDropDown = new ScreenitDropdown<CervixHuisartsLocatie>("huisartsLocatie", ModelUtil.listModel(locaties),
+		var locatieDropDown = new ScreenitDropdown<CervixHuisartsLocatie>("huisartsLocatie", ModelUtil.listModel(locaties),
 			new IChoiceRenderer<CervixHuisartsLocatie>()
 			{
 				@Override
@@ -199,7 +198,7 @@ public class CervixLabformulierAanvraagPage extends CervixScreeningBasePage
 
 				huisartsService.aanvraagLabformulieren(aanvraagModel.getObject(), aanvraagModel.getObject().getHuisartsLocatie(), organisatieMedewerker);
 
-				WebMarkupContainer container = addLabformulierenAanvraagDataTableContainer();
+				var container = addLabformulierenAanvraagDataTableContainer();
 				orderContainer.replaceWith(container);
 				orderContainer = container;
 				target.add(orderContainer);
@@ -216,7 +215,7 @@ public class CervixLabformulierAanvraagPage extends CervixScreeningBasePage
 
 	private WebMarkupContainer addLabformulierenAanvraagDataTableContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("aanvraagContainer");
+		var container = new WebMarkupContainer("aanvraagContainer");
 		container.setOutputMarkupId(true);
 
 		List<IColumn<CervixLabformulierAanvraag, String>> columns = new ArrayList<IColumn<CervixLabformulierAanvraag, String>>();
@@ -235,7 +234,7 @@ public class CervixLabformulierAanvraagPage extends CervixScreeningBasePage
 		columns.add(new PropertyColumn<>(Model.of("Locatie"), propertyChain(CervixLabformulierAanvraag_.HUISARTS_LOCATIE, CervixHuisartsLocatie_.NAAM),
 			propertyChain(CervixLabformulierAanvraag_.HUISARTS_LOCATIE, CervixHuisartsLocatie_.NAAM)));
 
-		ScreenitDataTable<CervixLabformulierAanvraag, String> dataTable = new ScreenitDataTable<CervixLabformulierAanvraag, String>("aanvraagDataTable", columns,
+		var dataTable = new ScreenitDataTable<CervixLabformulierAanvraag, String>("aanvraagDataTable", columns,
 			new CervixLabformulierAanvraagDataProvider(huisartsModel), 10, Model.of("order"))
 		{
 			@Override

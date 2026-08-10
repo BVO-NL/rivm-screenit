@@ -141,7 +141,7 @@ public class DocumentTemplateTestWrapper implements IDetachable
 
 	public void cloneIntakeLocatie(ColonIntakelocatie dbIntakeLocatie)
 	{
-		ColonIntakelocatie intakeLocatie = intakeAfspraak.getKamer().getIntakelocatie();
+		var intakeLocatie = intakeAfspraak.getKamer().getIntakelocatie();
 		intakeLocatie.setNaam(dbIntakeLocatie.getNaam());
 		cloneOrganisatieParameters(intakeLocatie, dbIntakeLocatie);
 		var organisatieParameter = new OrganisatieParameter();

@@ -23,7 +23,6 @@ package nl.rivm.screenit.service.mamma.impl;
 
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -37,7 +36,6 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.MailVerzenden;
 import nl.rivm.screenit.model.MedVryOntvanger;
-import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -70,9 +68,9 @@ public class MammaEdiServiceImpl extends EdiServiceBaseImpl implements MammaEdiS
 	{
 		if (huisartsBericht != null)
 		{
-			String transactionId = Long.toString(currentDateSupplier.getDate().getTime());
+			var transactionId = Long.toString(currentDateSupplier.getDate().getTime());
 
-			nl.rivm.screenit.edi.model.MedVryOut medVry = maakMedVry(huisartsBericht);
+			var medVry = maakMedVry(huisartsBericht);
 			zetPatient(huisartsBericht, medVry);
 			zetInhoud(huisartsBericht.getBerichtInhoud(), huisartsBericht.getBerichtType(), medVry, transactionId);
 			if (async)
@@ -100,7 +98,7 @@ public class MammaEdiServiceImpl extends EdiServiceBaseImpl implements MammaEdiS
 				{
 					LOG.debug("Thread start BK HA voor bericht id {}, transaction id {} 2/3", huisartsBerichtId, transactionId);
 					MammaHuisartsBericht huisartsBericht = null;
-					for (int i = 0; i < 8 && huisartsBericht == null; i++)
+					for (var i = 0; i < 8 && huisartsBericht == null; i++)
 					{
 						huisartsBericht = hibernateService.get(MammaHuisartsBericht.class, huisartsBerichtId);
 						Thread.sleep(250);
@@ -132,13 +130,13 @@ public class MammaEdiServiceImpl extends EdiServiceBaseImpl implements MammaEdiS
 	private void verstuurEdiBericht(MammaHuisartsBericht huisartsBericht, String transactionId, MedVryOut medVry)
 	{
 		LOG.debug("[BK HA] verzamel data edi bericht");
-		OrganisatieMedewerker sender = zetZender(huisartsBericht, medVry);
+		var sender = zetZender(huisartsBericht, medVry);
 		zetOntvanger(huisartsBericht, medVry);
-		OutboundMessageData<MedVryOut> outboundMessageData = new OutboundMessageData<>(medVry);
+		var outboundMessageData = new OutboundMessageData<MedVryOut>(medVry);
 		outboundMessageData.setSubject(medVry.getSubject());
 		outboundMessageData.setAddress(medVry.getMail());
 		LOG.debug("[BK HA] Verzend check");
-		String foutmelding = verzendCheck(medVry, huisartsBericht.getScreeningsOrganisatie());
+		var foutmelding = verzendCheck(medVry, huisartsBericht.getScreeningsOrganisatie());
 		try
 		{
 			LOG.debug("[BK HA] Versturen medvry bericht");
@@ -162,7 +160,7 @@ public class MammaEdiServiceImpl extends EdiServiceBaseImpl implements MammaEdiS
 	private void verzendenEdiMedVryBericht(OutboundMessageData<MedVryOut> outboundMessageData, String foutmelding, MedVryOut medVry, OrganisatieMedewerker sender,
 		String transactionId, MammaHuisartsBericht huisartsBericht)
 	{
-		MailVerzenden mailVerzenden = manipulateEmailadressen(sender, outboundMessageData);
+		var mailVerzenden = manipulateEmailadressen(sender, outboundMessageData);
 		if (StringUtils.isBlank(foutmelding)
 			&& (MailVerzenden.UIT.equals(mailVerzenden) || ediMessageService.sendMedVry(sender, sender.getMedewerker().getEmailextra(), outboundMessageData, transactionId)))
 		{
@@ -180,10 +178,10 @@ public class MammaEdiServiceImpl extends EdiServiceBaseImpl implements MammaEdiS
 
 	private void logHuisartsberichtStatus(String foutmelding, MammaHuisartsBericht huisartsBericht, MedVryOut medVry)
 	{
-		final List<Organisatie> organisaties = addLandelijkeBeheerOrganisatie(new ArrayList<>());
+		final var organisaties = addLandelijkeBeheerOrganisatie(new ArrayList<>());
 		organisaties.addAll(clientService.getScreeningOrganisatieVan(huisartsBericht.getClient()));
 
-		final String enovationEdiAdres = huisartsBericht.getScreeningsOrganisatie().getEnovationEdiAdres();
+		final var enovationEdiAdres = huisartsBericht.getScreeningsOrganisatie().getEnovationEdiAdres();
 		if (MammaHuisartsBerichtStatus.VERSTUURD.equals(huisartsBericht.getStatus()))
 		{
 			logService.logGebeurtenis(LogGebeurtenis.MAMMA_HUISARTSBERICHTEN_VERZONDEN,
@@ -220,7 +218,7 @@ public class MammaEdiServiceImpl extends EdiServiceBaseImpl implements MammaEdiS
 	@Override
 	public MammaHuisartsBericht maakHuisartsBericht(Client client, MailMergeContext context, MammaHuisartsBericht huisartsBericht)
 	{
-		String berichtInhoud = merge(context, huisartsBericht.getBerichtType());
+		var berichtInhoud = merge(context, huisartsBericht.getBerichtType());
 		huisartsBericht.setBerichtInhoud(berichtInhoud);
 
 		client.getHuisartsBerichten().add(huisartsBericht);
@@ -230,7 +228,7 @@ public class MammaEdiServiceImpl extends EdiServiceBaseImpl implements MammaEdiS
 
 	private String getLoggingTekst(MammaHuisartsBericht haBericht, String foutmelding, String afzender, String ontvanger)
 	{
-		StringBuilder logtekst = new StringBuilder();
+		var logtekst = new StringBuilder();
 		if (haBericht.getHuisarts() != null)
 		{
 			logtekst.append("Huisarts: ");

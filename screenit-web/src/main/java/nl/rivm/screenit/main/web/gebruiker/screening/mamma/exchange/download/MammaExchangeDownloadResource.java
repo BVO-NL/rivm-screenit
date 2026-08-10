@@ -100,7 +100,7 @@ public class MammaExchangeDownloadResource extends AbstractResource
 	private ResourceResponse maakResourceResponse(UploadDocument zipBestand)
 	{
 		var fileName = zipBestand.getNaam();
-		ResourceResponse resourceResponse = new ResourceResponse();
+		var resourceResponse = new ResourceResponse();
 		resourceResponse.setFileName(fileName);
 		resourceResponse.setContentType(Application.get().getMimeType(fileName));
 		resourceResponse.setCacheDuration(Duration.ofSeconds(1));

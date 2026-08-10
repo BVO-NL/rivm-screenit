@@ -65,14 +65,14 @@ public class LabformulierServiceImpl implements LabformulierService
 	@Override
 	public AanvraagTotalenDto getAanvragenHuisarts(Huisarts huisarts, TableResultOptionsDto tableResultOptionsDto)
 	{
-		List<LabformulierAanvraag> aanvragen = aanvragenCriteriaRepository.findByHuisarts(huisarts, tableResultOptionsDto);
+		var aanvragen = aanvragenCriteriaRepository.findByHuisarts(huisarts, tableResultOptionsDto);
 
 		List<AanvraagDto> dtos = new ArrayList<>();
-		for (LabformulierAanvraag aanvraag : aanvragen)
+		for (var aanvraag : aanvragen)
 		{
 			dtos.add(convertToDto(aanvraag));
 		}
-		AanvraagTotalenDto aanvraagTotalenDto = new AanvraagTotalenDto();
+		var aanvraagTotalenDto = new AanvraagTotalenDto();
 		aanvraagTotalenDto.setAanvragen(dtos);
 		aanvraagTotalenDto.setAantalAanvragen(aanvragenCriteriaRepository.countAanvragen(huisarts));
 		return aanvraagTotalenDto;
@@ -129,11 +129,11 @@ public class LabformulierServiceImpl implements LabformulierService
 	{
 		Integer nogTeVersturen = 0;
 		Integer verstuurd = 0;
-		Locatie locatie = locatieRepository.findByHuisartsportaalId(locatiePortaalId);
-		List<LabformulierAanvraag> aanvragen = aanvragenCriteriaRepository.findByLocatie(locatie);
-		for (LabformulierAanvraag aanvraag : aanvragen)
+		var locatie = locatieRepository.findByHuisartsportaalId(locatiePortaalId);
+		var aanvragen = aanvragenCriteriaRepository.findByLocatie(locatie);
+		for (var aanvraag : aanvragen)
 		{
-			Integer aantalFormulieren = aanvraag.getAantal();
+			var aantalFormulieren = aanvraag.getAantal();
 			if (AanvraagStatus.AFGEDRUKT_EN_VERSTUURD == aanvraag.getStatus())
 			{
 				verstuurd += aantalFormulieren;
@@ -144,7 +144,7 @@ public class LabformulierServiceImpl implements LabformulierService
 			}
 		}
 
-		AanvraagStatistiekenDto aanvraagStatistiekenDto = new AanvraagStatistiekenDto();
+		var aanvraagStatistiekenDto = new AanvraagStatistiekenDto();
 		aanvraagStatistiekenDto.setAantalNogTeVersturen(nogTeVersturen);
 		aanvraagStatistiekenDto.setAantalVerstuurd(verstuurd);
 		aanvraagStatistiekenDto.setAantalTotaal(aanvragen.size());
@@ -154,7 +154,7 @@ public class LabformulierServiceImpl implements LabformulierService
 	@Override
 	public AanvraagDto convertToDto(LabformulierAanvraag aanvraag)
 	{
-		AanvraagDto aanvraagDto = new AanvraagDto();
+		var aanvraagDto = new AanvraagDto();
 		modelMapper.map(aanvraag, aanvraagDto);
 
 		return aanvraagDto;
@@ -163,7 +163,7 @@ public class LabformulierServiceImpl implements LabformulierService
 	@Override
 	public void verwijderNogNietVerstuurdeLabformulierenVanLocatie(Locatie locatie)
 	{
-		List<LabformulierAanvraag> nogNietVerstuurdeLabformulieren = aanvragenRepository.findByLocatieAndStatus(locatie, AanvraagStatus.AANGEVRAAGD);
+		var nogNietVerstuurdeLabformulieren = aanvragenRepository.findByLocatieAndStatus(locatie, AanvraagStatus.AANGEVRAAGD);
 		nogNietVerstuurdeLabformulieren.forEach(aanvraag ->
 		{
 			aanvraag.setStatus(AanvraagStatus.VERWIJDERD);

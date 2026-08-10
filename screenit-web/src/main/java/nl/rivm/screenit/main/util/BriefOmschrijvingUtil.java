@@ -49,10 +49,10 @@ public class BriefOmschrijvingUtil
 	{
 		List<String> brievenStrings = new ArrayList<>();
 		brieven.sort(new BriefCreatieDatumComparator());
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		var formatter = new SimpleDateFormat("dd-MM-yyyy");
 		for (var brief : brieven)
 		{
-			StringBuilder builder = new StringBuilder();
+			var builder = new StringBuilder();
 			builder.append(brief.getBriefType().getWeergaveNaam());
 			builder.append("(");
 			builder.append(formatter.format(brief.getCreatieDatum()));
@@ -77,7 +77,7 @@ public class BriefOmschrijvingUtil
 
 	public static void addExtraOmschrijving(StringBuilder omschrijving, Brief brief, UnaryOperator<String> getString)
 	{
-		TypeGebeurtenis gebeurtenis = bepaalTypeGebeurtenis(brief);
+		var gebeurtenis = bepaalTypeGebeurtenis(brief);
 
 		omschrijving.append(" (");
 		omschrijving.append(getString.apply("label.formulier." + gebeurtenis.name().toLowerCase()));
@@ -114,7 +114,7 @@ public class BriefOmschrijvingUtil
 
 	public static String verwerkExtraOmschrijvingen(String[] extraOmschrijvingen, TriFunction<String, IModel<?>, String, String> getString)
 	{
-		String extraOmschrijving = "";
+		var extraOmschrijving = "";
 		if (extraOmschrijvingen == null)
 		{
 			return extraOmschrijving;
@@ -123,7 +123,7 @@ public class BriefOmschrijvingUtil
 		extraOmschrijvingen = Arrays.stream(extraOmschrijvingen).filter(Objects::nonNull).toArray(String[]::new);
 		var index = 0;
 		var aantal = extraOmschrijvingen.length;
-		for (String omschrijving : extraOmschrijvingen)
+		for (var omschrijving : extraOmschrijvingen)
 		{
 			if (StringUtils.isNotBlank(extraOmschrijving))
 			{

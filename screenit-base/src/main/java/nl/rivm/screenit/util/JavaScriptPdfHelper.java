@@ -30,7 +30,7 @@ public class JavaScriptPdfHelper
 
 	public static String getPrintJavascript()
 	{
-		StringBuilder javascript = new StringBuilder();
+		var javascript = new StringBuilder();
 		javascript.append("var pp = this.getPrintParams();");
 
 		javascript.append("pp.fileName = \"\";");

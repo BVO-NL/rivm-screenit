@@ -69,7 +69,7 @@ class DistributedLockKey
 		{
 			return false;
 		}
-		DistributedLockKey that = (DistributedLockKey) o;
+		var that = (DistributedLockKey) o;
 		return Objects.equals(locknaam, that.locknaam) &&
 			Objects.equals(organisatieMedewerker, that.organisatieMedewerker);
 	}

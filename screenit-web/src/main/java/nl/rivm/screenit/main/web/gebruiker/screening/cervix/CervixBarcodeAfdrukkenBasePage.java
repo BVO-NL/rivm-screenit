@@ -31,7 +31,6 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
-import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.http.WebResponse;
 
 public abstract class CervixBarcodeAfdrukkenBasePage extends CervixScreeningBasePage
@@ -67,8 +66,8 @@ public abstract class CervixBarcodeAfdrukkenBasePage extends CervixScreeningBase
 			@Override
 			protected void respond(AjaxRequestTarget target)
 			{
-				IRequestParameters requestParameters = getComponent().getRequest().getRequestParameters();
-				String errorMessage = requestParameters.getParameterValue(ERROR_CALLBACK_MESSAGE).toString();
+				var requestParameters = getComponent().getRequest().getRequestParameters();
+				var errorMessage = requestParameters.getParameterValue(ERROR_CALLBACK_MESSAGE).toString();
 				error(errorMessage);
 			}
 		};
@@ -77,7 +76,7 @@ public abstract class CervixBarcodeAfdrukkenBasePage extends CervixScreeningBase
 
 	public EmptyPanel maakEmptyPanel(String id)
 	{
-		EmptyPanel panel = new EmptyPanel(id);
+		var panel = new EmptyPanel(id);
 		panel.setVisible(false);
 		panel.setOutputMarkupPlaceholderTag(true);
 		panel.setOutputMarkupId(true);

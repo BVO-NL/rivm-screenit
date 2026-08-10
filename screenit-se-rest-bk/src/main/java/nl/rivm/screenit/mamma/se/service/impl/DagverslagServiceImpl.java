@@ -24,7 +24,6 @@ package nl.rivm.screenit.mamma.se.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -179,13 +178,13 @@ public class DagverslagServiceImpl implements DagverslagService
 	{
 		var vrijeCapaciteit = BigDecimal.ZERO;
 		var beschikbareCapaciteit = BigDecimal.ZERO;
-		for (MammaCapaciteitBlok blok : capaciteitsBlokken)
+		for (var blok : capaciteitsBlokken)
 		{
 			vrijeCapaciteit = vrijeCapaciteit.add(blok.getVrijeCapaciteit());
 			beschikbareCapaciteit = beschikbareCapaciteit.add(blok.getBeschikbareCapaciteit());
 		}
-		LocalDateTime starttijd = DateUtil.toLocalDateTime(capaciteitsBlokken.stream().map(MammaCapaciteitBlok::getVanaf).min(Comparator.naturalOrder()).orElse(null));
-		LocalDateTime eindtijd = DateUtil.toLocalDateTime(capaciteitsBlokken.stream().map(MammaCapaciteitBlok::getTot).max(Comparator.naturalOrder()).orElse(null));
+		var starttijd = DateUtil.toLocalDateTime(capaciteitsBlokken.stream().map(MammaCapaciteitBlok::getVanaf).min(Comparator.naturalOrder()).orElse(null));
+		var eindtijd = DateUtil.toLocalDateTime(capaciteitsBlokken.stream().map(MammaCapaciteitBlok::getTot).max(Comparator.naturalOrder()).orElse(null));
 
 		var statistiekenDto = new DagPlanningSamenvattingDto();
 		statistiekenDto.setDagCapaciteit(beschikbareCapaciteit);

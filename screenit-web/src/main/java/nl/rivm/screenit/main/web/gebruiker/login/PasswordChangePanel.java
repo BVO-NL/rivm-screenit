@@ -60,27 +60,27 @@ public abstract class PasswordChangePanel extends GenericPanel<Medewerker>
 	{
 		super(id, ModelUtil.cRModel(medewerker));
 
-		ScreenitForm<OrganisatieMedewerker> passwordChangeForm = new ScreenitForm<>("passwordChangeForm");
+		var passwordChangeForm = new ScreenitForm<OrganisatieMedewerker>("passwordChangeForm");
 
-		HiddenField<String> gebruikersnaam = new HiddenField<>("gebruikersnaam");
+		var gebruikersnaam = new HiddenField<String>("gebruikersnaam");
 		passwordChangeForm.add(gebruikersnaam);
 
-		ScreenITWachtwoordValidator validator = new ScreenITWachtwoordValidator(gebruikersnaam, getModel());
+		var validator = new ScreenITWachtwoordValidator(gebruikersnaam, getModel());
 		passwordChangeForm.add(new ScreenitWachtwoordField("wachtwoord1", new PropertyModel<>(this, "wachtwoord1"), true, validator));
 		passwordChangeForm.add(new ScreenitWachtwoordField("wachtwoord2", new PropertyModel<>(this, "wachtwoord2"), true, null));
 
-		AjaxSubmitLink opslaan = new AjaxSubmitLink("opslaan")
+		var opslaan = new AjaxSubmitLink("opslaan")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Medewerker medewerker = PasswordChangePanel.this.getModelObject();
+				var medewerker = PasswordChangePanel.this.getModelObject();
 
-				String previousPassword = medewerker.getWachtwoord();
-				Medewerker newPasswordMedewerker = new Medewerker();
+				var previousPassword = medewerker.getWachtwoord();
+				var newPasswordMedewerker = new Medewerker();
 				newPasswordMedewerker.setId(medewerker.getId());
 				wachtwoordService.setWachtwoord(newPasswordMedewerker, wachtwoord1);
-				String newPassword = newPasswordMedewerker.getWachtwoord();
+				var newPassword = newPasswordMedewerker.getWachtwoord();
 
 				if (wachtwoord1 != null && !wachtwoord1.equals(wachtwoord2))
 				{

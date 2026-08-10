@@ -21,8 +21,6 @@ package nl.rivm.screenit.util.cervix;
  * =========================LICENSE_END==================================
  */
 
-import java.math.BigDecimal;
-
 import nl.rivm.screenit.huisartsenportaal.dto.AanvraagDto;
 import nl.rivm.screenit.huisartsenportaal.dto.AdresDto;
 import nl.rivm.screenit.huisartsenportaal.dto.BetalingDto;
@@ -30,7 +28,6 @@ import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
 import nl.rivm.screenit.huisartsenportaal.dto.LocatieDto;
 import nl.rivm.screenit.huisartsenportaal.dto.VerrichtingDto;
 import nl.rivm.screenit.huisartsenportaal.dto.WoonplaatsDto;
-import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.Woonplaats;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsAdres;
@@ -56,12 +53,12 @@ public class CervixHuisartsToDtoUtil
 
 	public static HuisartsDto getHuisartsDto(CervixHuisarts huisarts)
 	{
-		HuisartsDto huisartsDto = new HuisartsDto();
+		var huisartsDto = new HuisartsDto();
 		huisartsDto.setScreenitId(huisarts.getScreenitId());
 		huisartsDto.setHuisartsportaalId(huisarts.getHuisartsportaalId());
 		huisartsDto.setAgbcode(huisarts.getAgbcode());
 		huisartsDto.setEmail(huisarts.getEmail());
-		Medewerker medewerker = huisarts.getOrganisatieMedewerkers().get(0).getMedewerker();
+		var medewerker = huisarts.getOrganisatieMedewerkers().get(0).getMedewerker();
 		huisartsDto.setAchternaam(medewerker.getAchternaam());
 		huisartsDto.setTussenvoegsel(medewerker.getTussenvoegsel());
 		huisartsDto.setVoorletters(medewerker.getVoorletters());
@@ -83,7 +80,7 @@ public class CervixHuisartsToDtoUtil
 
 	public static LocatieDto getLocatieDto(CervixHuisartsLocatie locatie)
 	{
-		LocatieDto locatieDto = new LocatieDto();
+		var locatieDto = new LocatieDto();
 		locatieDto.setScreenitId(locatie.getScreenitId());
 		locatieDto.setHuisartsportaalId(locatie.getHuisartsportaalId());
 		locatieDto.setIban(locatie.getIban());
@@ -101,7 +98,7 @@ public class CervixHuisartsToDtoUtil
 
 	public static AanvraagDto getAanvraagDto(CervixLabformulierAanvraag aanvraag)
 	{
-		AanvraagDto aanvraagDto = new AanvraagDto();
+		var aanvraagDto = new AanvraagDto();
 		aanvraagDto.setScreenitId(aanvraag.getId());
 		aanvraagDto.setHuisartsportaalId(aanvraag.getHuisartsportaalId());
 		aanvraagDto.setAantal(aanvraag.getAantal());
@@ -115,19 +112,19 @@ public class CervixHuisartsToDtoUtil
 
 	public static VerrichtingDto getVerrichtingDto(CervixVerrichting verrichting)
 	{
-		VerrichtingDto verrichtingDto = new VerrichtingDto();
+		var verrichtingDto = new VerrichtingDto();
 		verrichtingDto.setScreenitId(verrichting.getId());
 		verrichtingDto.setRegio(verrichting.getRegio().getNaam());
 		verrichtingDto.setMonsterId(verrichting.getMonster().getMonsterId());
 		verrichtingDto.setVerrichtingsDatum(verrichting.getVerrichtingsDatum());
 
-		for (CervixBoekRegel cervixBoekRegel : verrichting.getBoekRegels())
+		for (var cervixBoekRegel : verrichting.getBoekRegels())
 		{
-			BetalingDto betalingDto = getBetalingDto(cervixBoekRegel);
+			var betalingDto = getBetalingDto(cervixBoekRegel);
 			verrichtingDto.getBetalingen().add(betalingDto);
 		}
 
-		CervixUitstrijkje uitstrijkje = (CervixUitstrijkje) Hibernate.unproxy(verrichting.getMonster());
+		var uitstrijkje = (CervixUitstrijkje) Hibernate.unproxy(verrichting.getMonster());
 		if (uitstrijkje.getLabformulier() != null)
 		{
 			verrichtingDto.setDatumUitstrijkje(uitstrijkje.getLabformulier().getDatumUitstrijkje());
@@ -145,8 +142,8 @@ public class CervixHuisartsToDtoUtil
 	public static BetalingDto getBetalingDto(CervixBoekRegel boekRegel)
 	{
 
-		BigDecimal huisartsBedrag = CervixTariefUtil.getHuisartsBedrag(boekRegel);
-		BetalingDto betalingDto = new BetalingDto();
+		var huisartsBedrag = CervixTariefUtil.getHuisartsBedrag(boekRegel);
+		var betalingDto = new BetalingDto();
 
 		if (boekRegel.getDebet())
 		{
@@ -167,7 +164,7 @@ public class CervixHuisartsToDtoUtil
 
 	private static AdresDto getAdresDto(CervixHuisartsAdres adres)
 	{
-		AdresDto adresDto = new AdresDto();
+		var adresDto = new AdresDto();
 		adresDto.setScreenitId(adres.getScreenitId());
 		adresDto.setHuisartsportaalId(adres.getHuisartsportaalId());
 		adresDto.setStraat(adres.getStraat());
@@ -180,7 +177,7 @@ public class CervixHuisartsToDtoUtil
 
 	private static WoonplaatsDto getWoonplaatsDto(Woonplaats woonplaats)
 	{
-		WoonplaatsDto woonplaatsDto = new WoonplaatsDto();
+		var woonplaatsDto = new WoonplaatsDto();
 		woonplaatsDto.setScreenitId(woonplaats.getId());
 		woonplaatsDto.setNaam(woonplaats.getNaam());
 		woonplaatsDto.setCode(woonplaats.getCode());

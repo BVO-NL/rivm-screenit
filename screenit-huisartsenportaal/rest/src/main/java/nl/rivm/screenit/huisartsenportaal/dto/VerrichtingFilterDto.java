@@ -32,9 +32,9 @@ public class VerrichtingFilterDto
 {
 	private String clientNaam;
 
-	private Date verrichtingsDatumVanaf;
+	private Date verrichtingsdatumVanaf;
 
-	private Date verrichtingsDatumTotenmet;
+	private Date verrichtingsdatumTotEnMet;
 
 	private Date datumUitstrijkje;
 

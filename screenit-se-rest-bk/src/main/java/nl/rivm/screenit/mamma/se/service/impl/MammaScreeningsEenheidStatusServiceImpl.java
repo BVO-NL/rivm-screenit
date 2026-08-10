@@ -55,7 +55,7 @@ public class MammaScreeningsEenheidStatusServiceImpl implements MammaScreeningsE
 	@Override
 	public void verwerkStatusBericht(MammaScreeningsEenheid screeningsEenheid, SeStatusDto statusDto)
 	{
-		MammaScreeningsEenheidStatus status = screeningsEenheid.getStatus();
+		var status = screeningsEenheid.getStatus();
 		if (status == null)
 		{
 			status = new MammaScreeningsEenheidStatus();
@@ -75,13 +75,13 @@ public class MammaScreeningsEenheidStatusServiceImpl implements MammaScreeningsE
 	@Override
 	public void slaVerbindingStatusOp(String seCode, boolean online)
 	{
-		MammaScreeningsEenheid screeningsEenheid = mammaScreeningsEenheidService.getActieveScreeningsEenheidByCode(seCode);
+		var screeningsEenheid = mammaScreeningsEenheidService.getActieveScreeningsEenheidByCode(seCode);
 		if (screeningsEenheid == null)
 		{
 			LOG.warn("Statusupdate van onbekende SE ({}) ontvangen", seCode);
 			return;
 		}
-		MammaScreeningsEenheidStatus status = screeningsEenheid.getStatus();
+		var status = screeningsEenheid.getStatus();
 		if (status == null)
 		{
 			LOG.warn("SE {} heeft nog geen status", seCode);

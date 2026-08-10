@@ -23,18 +23,18 @@ package nl.rivm.screenit.huisartsenportaal.model;
 
 import java.io.Serializable;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import org.hibernate.Hibernate;
-import org.hibernate.envers.Audited;
-
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import org.hibernate.Hibernate;
+import org.hibernate.envers.Audited;
 
 @Audited
 @MappedSuperclass
@@ -53,8 +53,8 @@ public abstract class AbstractReferenceObject implements Serializable
 	@Override
 	public int hashCode()
 	{
-		final int prime = 31;
-		int result = 1;
+		final var prime = 31;
+		var result = 1;
 
 		if (getHuisartsportaalId() != null)
 		{
@@ -71,7 +71,7 @@ public abstract class AbstractReferenceObject implements Serializable
 	@Override
 	public boolean equals(Object obj)
 	{
-		boolean returnValue = true;
+		var returnValue = true;
 		if (obj == null)
 		{
 			returnValue = false;
@@ -82,7 +82,7 @@ public abstract class AbstractReferenceObject implements Serializable
 		}
 		else
 		{
-			AbstractReferenceObject other = (AbstractReferenceObject) obj;
+			var other = (AbstractReferenceObject) obj;
 			if (getHuisartsportaalId() == null)
 			{
 				if (other.getHuisartsportaalId() != null)

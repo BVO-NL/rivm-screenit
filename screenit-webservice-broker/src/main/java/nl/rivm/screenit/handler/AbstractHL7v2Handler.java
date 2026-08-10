@@ -33,7 +33,6 @@ import nl.topicuszorg.hl7v2.services.server.impl.TypedHL7BerichtTypeHandlerImpl;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.ApplicationException;
 import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v24.datatype.MSG;
 import ca.uhn.hl7v2.model.v24.segment.MSH;
 
 @Slf4j
@@ -53,10 +52,10 @@ public abstract class AbstractHL7v2Handler<T extends Message> extends TypedHL7Be
 	@Override
 	public Message processTypedMessage(T message) throws ApplicationException, HL7Exception
 	{
-		AtomicReference<Message> response = new AtomicReference<>();
+		var response = new AtomicReference<Message>();
 		databaseRunner.runInSessionOnly(() ->
 			{
-				long exchangeId = technischeBerichtenLoggingSaverService.logRequest("HL7V2_REQ_IN", getBerichtType().getSimpleName(), message.toString());
+				var exchangeId = technischeBerichtenLoggingSaverService.logRequest("HL7V2_REQ_IN", getBerichtType().getSimpleName(), message.toString());
 				response.set(verwerkTypedMessage(message));
 				technischeBerichtenLoggingSaverService.logResponse("HL7V2_RESP_OUT", exchangeId, response.toString());
 			}
@@ -90,17 +89,17 @@ public abstract class AbstractHL7v2Handler<T extends Message> extends TypedHL7Be
 
 	private boolean checkHL7v24Header(Message arg0) throws HL7Exception
 	{
-		MSH msh = (MSH) arg0.get("MSH");
-		MSG messageType = msh.getMessageType();
+		var msh = (MSH) arg0.get("MSH");
+		var messageType = msh.getMessageType();
 		return messageType.getMessageType().getValue().equals(getMessageType())
 			&& messageType.getTriggerEvent().getValue().equals(getTriggerEvent());
 	}
 
 	private boolean checkHL7v251Header(Message arg0) throws HL7Exception
 	{
-		ca.uhn.hl7v2.model.v251.segment.MSH msh = (ca.uhn.hl7v2.model.v251.segment.MSH) arg0.get("MSH");
+		var msh = (ca.uhn.hl7v2.model.v251.segment.MSH) arg0.get("MSH");
 
-		ca.uhn.hl7v2.model.v251.datatype.MSG messageType = msh.getMessageType();
+		var messageType = msh.getMessageType();
 		return messageType.getMessageCode().getValue().equals(getMessageType()) && messageType.getTriggerEvent().getValue().equals(getTriggerEvent());
 	}
 }

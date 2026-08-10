@@ -22,7 +22,6 @@ package nl.rivm.screenit.batch.jobs.cervix;
  */
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import lombok.AllArgsConstructor;
@@ -52,7 +51,7 @@ public class CervixLabPartitioner extends BasePartitioner
 		var partities = new HashMap<String, ExecutionContext>(gridSize);
 		databaseRunner.runInSessionOnly(() ->
 		{
-			List<BMHKLaboratorium> bmhkLabs = organisatieService.getActieveOrganisaties(BMHKLaboratorium.class);
+			var bmhkLabs = organisatieService.getActieveOrganisaties(BMHKLaboratorium.class);
 
 			for (var bmhkLab : bmhkLabs)
 			{

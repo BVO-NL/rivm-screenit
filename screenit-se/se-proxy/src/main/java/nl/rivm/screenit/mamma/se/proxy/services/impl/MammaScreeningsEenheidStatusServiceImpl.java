@@ -50,7 +50,7 @@ public class MammaScreeningsEenheidStatusServiceImpl implements MammaScreeningsE
 	public void maakStatusEnQueueRequestNaarCentraal()
 	{
 		proxyService.cacheVullingInfo();
-		SeStatusDto statusDto = new SeStatusDto();
+		var statusDto = new SeStatusDto();
 		statusDto.setVersie(environmentInfoService.getVersion());
 		statusDto.setHuisartsenAanwezig(proxyService.huisartsenInCache());
 		statusDto.setZorginstellingenAanwezig(proxyService.zorginstellingeninCache());

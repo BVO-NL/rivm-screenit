@@ -35,7 +35,7 @@ public abstract class NavigeerNaarCellPanel<T> extends GenericPanel<T>
 	{
 		super(id, rowModel);
 
-		AjaxLink<Void> navigeerNaar = new AjaxLink<Void>("navigeerNaar")
+		var navigeerNaar = new AjaxLink<Void>("navigeerNaar")
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -47,7 +47,7 @@ public abstract class NavigeerNaarCellPanel<T> extends GenericPanel<T>
 			}
 
 		};
-		boolean magNavigeren = magNavigerenNaar(rowModel);
+		var magNavigeren = magNavigerenNaar(rowModel);
 		navigeerNaar.setVisible(magNavigeren);
 		add(navigeerNaar);
 		setEnabled(magNavigeren);

@@ -83,7 +83,7 @@ public class OvereenkomstenBeheerPage extends AlgemeenPage
 		overeenkomstenContainer.setOutputMarkupId(true);
 		add(overeenkomstenContainer);
 
-		final OvereenkomstEditPanel overeenkomstEditPanel = new OvereenkomstEditPanel(IDialog.CONTENT_ID)
+		final var overeenkomstEditPanel = new OvereenkomstEditPanel(IDialog.CONTENT_ID)
 		{
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
@@ -94,7 +94,7 @@ public class OvereenkomstenBeheerPage extends AlgemeenPage
 		};
 		editDialog = new BootstrapDialog("editDialog", overeenkomstEditPanel);
 		add(editDialog);
-		BootstrapDialog confirmDialog = new BootstrapDialog("confirmDialog");
+		var confirmDialog = new BootstrapDialog("confirmDialog");
 		add(confirmDialog);
 
 		add(new AjaxLink<Void>("toevoegen")

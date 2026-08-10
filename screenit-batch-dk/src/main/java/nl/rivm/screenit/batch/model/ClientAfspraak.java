@@ -32,8 +32,10 @@ import nl.rivm.screenit.util.BigDecimalUtil;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.optaplanner.core.api.domain.entity.PlanningEntity;
-import org.optaplanner.core.api.domain.variable.PlanningVariable;
+
+import ai.timefold.solver.core.api.domain.common.PlanningId;
+import ai.timefold.solver.core.api.domain.entity.PlanningEntity;
+import ai.timefold.solver.core.api.domain.variable.PlanningVariable;
 
 @PlanningEntity
 public class ClientAfspraak implements Cloneable
@@ -64,7 +66,7 @@ public class ClientAfspraak implements Cloneable
 
 	private double distance;
 
-	@PlanningVariable(strengthComparatorClass = VrijSlotComparator.class, valueRangeProviderRefs = { "vrijeSlotenRange" })
+	@PlanningVariable(comparatorClass = VrijSlotComparator.class, valueRangeProviderRefs = { "vrijeSlotenRange" })
 	public VrijSlot getVrijSlot()
 	{
 		return vrijSlot;
@@ -77,6 +79,7 @@ public class ClientAfspraak implements Cloneable
 		cachedAfstand = null;
 	}
 
+	@PlanningId
 	public Long getClientId()
 	{
 		return clientId;
@@ -105,7 +108,7 @@ public class ClientAfspraak implements Cloneable
 		}
 		else if (o instanceof ClientAfspraak)
 		{
-			ClientAfspraak other = (ClientAfspraak) o;
+			var other = (ClientAfspraak) o;
 			return new EqualsBuilder().append(vrijSlot, other.vrijSlot).isEquals();
 		}
 		else
@@ -122,7 +125,7 @@ public class ClientAfspraak implements Cloneable
 	@Override
 	protected ClientAfspraak clone()
 	{
-		ClientAfspraak clone = new ClientAfspraak();
+		var clone = new ClientAfspraak();
 		clone.vrijSlot = vrijSlot;
 		clone.clientId = clientId;
 		clone.analyseDatum = analyseDatum;
@@ -154,7 +157,7 @@ public class ClientAfspraak implements Cloneable
 			return cachedWachttijd;
 		}
 
-		long wachttijd = Duration.of(vrijSlot.getStartTijd().getTime() - analyseDatum.getTime(), ChronoUnit.MILLIS).toHours();
+		var wachttijd = Duration.of(vrijSlot.getStartTijd().getTime() - analyseDatum.getTime(), ChronoUnit.MILLIS).toHours();
 
 		cachedWachttijd = (int) Math.pow(wachttijd * wachttijdNormering, 2.0);
 		return cachedWachttijd;
@@ -170,8 +173,8 @@ public class ClientAfspraak implements Cloneable
 		{
 			return cachedAfstand;
 		}
-		BigDecimal latitudeTo = vrijSlot.getLatitude();
-		BigDecimal longitudeTo = vrijSlot.getLongitude();
+		var latitudeTo = vrijSlot.getLatitude();
+		var longitudeTo = vrijSlot.getLongitude();
 		if (latitudeTo == null || latitude == null)
 		{
 			cachedAfstand = (int) (Math.pow(defaultAfstand * afstandNormering, 2.0));

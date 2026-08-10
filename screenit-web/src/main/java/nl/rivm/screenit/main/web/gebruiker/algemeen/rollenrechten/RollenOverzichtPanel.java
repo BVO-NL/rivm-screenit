@@ -99,8 +99,8 @@ public class RollenOverzichtPanel extends GenericPanel<Rol>
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				Rol rol = new Rol();
-				Permissie rolRecht = new Permissie(rol);
+				var rol = new Rol();
+				var rolRecht = new Permissie(rol);
 				rol.getPermissies().add(rolRecht);
 				((RollenBeheer) getPage()).addOrReplaceContentWith(new RolEditPanel(RollenBeheer.CONTENT_ID, ModelUtil.cModel(rol)));
 			}
@@ -111,7 +111,7 @@ public class RollenOverzichtPanel extends GenericPanel<Rol>
 
 	private IModel<Rol> getZoekRolModel()
 	{
-		ScreenitSession session = ScreenitSession.get();
+		var session = ScreenitSession.get();
 		if ((rolModel = (IModel<Rol>) session.getZoekObject(RollenOverzichtPanel.class)) != null)
 		{
 			return rolModel;
@@ -126,7 +126,7 @@ public class RollenOverzichtPanel extends GenericPanel<Rol>
 		columns.add(new PropertyColumn<>(Model.of("Naam"), Rol_.NAAM, Rol_.NAAM));
 		columns.add(new ActiefPropertyColumn<>(Model.of(""), Rol_.ACTIEF, refreshContainer, zoekRol));
 
-		ScreenitDataTable<Rol, String> linkDataTable = new ScreenitDataTable<Rol, String>("rollen", columns,
+		var linkDataTable = new ScreenitDataTable<Rol, String>("rollen", columns,
 			new RolDataProvider(), Model.of("rollen"))
 		{
 			@Override

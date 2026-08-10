@@ -76,15 +76,15 @@ public class EditProjectParametersPanel extends GenericPanel<Project>
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		Form<Void> form = new Form<>("form");
+		var form = new Form<Void>("form");
 		add(form);
 
-		List<ProjectParameter> parameters = getModelObject().getParameters();
-		RepeatingView parametersView = new RepeatingView("parameters");
-		List<ProjectParameterKey> parameterKeysVanParameters = parameters.stream().map(ProjectParameter::getKey).collect(Collectors.toList());
-		for (ProjectParameterKey parameterKey : ProjectParameterKey.values())
+		var parameters = getModelObject().getParameters();
+		var parametersView = new RepeatingView("parameters");
+		var parameterKeysVanParameters = parameters.stream().map(ProjectParameter::getKey).collect(Collectors.toList());
+		for (var parameterKey : ProjectParameterKey.values())
 		{
-			int i = parameterKeysVanParameters.indexOf(parameterKey);
+			var i = parameterKeysVanParameters.indexOf(parameterKey);
 			if (i >= 0)
 			{
 				addParameterKeyRowToParametersView(parametersView, parameterKey, i);
@@ -96,16 +96,16 @@ public class EditProjectParametersPanel extends GenericPanel<Project>
 	private void addParameterKeyRowToParametersView(RepeatingView parametersView, ProjectParameterKey parameterKey, int i)
 	{
 		IModel<ProjectParameter> parameterModel = new CompoundPropertyModel<>(new PropertyModel<>(getModel(), "parameters[" + i + "]"));
-		final WebMarkupContainer parameterRow = new WebMarkupContainer(parametersView.newChildId(), parameterModel);
-		ProjectParameter parameter = parameterModel.getObject();
+		final var parameterRow = new WebMarkupContainer(parametersView.newChildId(), parameterModel);
+		var parameter = parameterModel.getObject();
 
 		parameterRow.add(new EnumLabel<ProjectParameterKey>("key"));
 
-		FormComponent<String> valueField = ComponentHelper.addTextField(this, "value", false, 9, false);
+		var valueField = ComponentHelper.addTextField(this, "value", false, 9, false);
 		valideerValueField(parameterKey, parameter, valueField);
 		parameterRow.add(valueField);
 
-		ScreenitDropdown<ColonOnderzoeksVariant> onderzoeksvariantDropDown = maakOnderzoeksvariantDropdown(parameterModel);
+		var onderzoeksvariantDropDown = maakOnderzoeksvariantDropdown(parameterModel);
 
 		if (!parameterKey.getValueType().equals(ColonOnderzoeksVariant.class))
 		{
@@ -129,22 +129,22 @@ public class EditProjectParametersPanel extends GenericPanel<Project>
 
 	private ScreenitDropdown<ColonOnderzoeksVariant> maakOnderzoeksvariantDropdown(IModel<ProjectParameter> parameterModel)
 	{
-		List<ColonOnderzoeksVariant> onderzoeksvarianten = Arrays.asList(ColonOnderzoeksVariant.STANDAARD, ColonOnderzoeksVariant.VERGELIJKEND);
-		ScreenitDropdown<ColonOnderzoeksVariant> onderzoeksvariantDropDown = ComponentHelper.addDropDownChoice(this, "enumValue", true, onderzoeksvarianten, false);
+		var onderzoeksvarianten = Arrays.asList(ColonOnderzoeksVariant.STANDAARD, ColonOnderzoeksVariant.VERGELIJKEND);
+		var onderzoeksvariantDropDown = ComponentHelper.addDropDownChoice(this, "enumValue", true, onderzoeksvarianten, false);
 		onderzoeksvariantDropDown.setModel(new IModel<>()
 		{
 			@Override
 			public ColonOnderzoeksVariant getObject()
 			{
-				ProjectParameter parameter = parameterModel.getObject();
-				String value = parameter.getValue();
+				var parameter = parameterModel.getObject();
+				var value = parameter.getValue();
 				return StringUtils.isNotBlank(value) ? ColonOnderzoeksVariant.valueOf(value) : null;
 			}
 
 			@Override
 			public void setObject(ColonOnderzoeksVariant object)
 			{
-				ProjectParameter parameter = parameterModel.getObject();
+				var parameter = parameterModel.getObject();
 				parameter.setValue(object.name());
 			}
 		});
@@ -160,7 +160,7 @@ public class EditProjectParametersPanel extends GenericPanel<Project>
 			addUniqueFieldValidator(parameter, parameterKey, valueField);
 		}
 
-		Class<?> valueType = parameterKey.getValueType();
+		var valueType = parameterKey.getValueType();
 		if (valueType.equals(Integer.class))
 		{
 			addIntegerValidators(parameterKey, valueField);
@@ -189,7 +189,7 @@ public class EditProjectParametersPanel extends GenericPanel<Project>
 
 				if (hibernateService.existsOther(ProjectParameter.class, getObjectId(), restrictions, false))
 				{
-					ValidationError error = new ValidationError();
+					var error = new ValidationError();
 
 					error.addKey("ScreenitUniqueFieldValidator");
 					error.getVariables().put("field", getString(EnumStringUtil.getPropertyString(parameterKey)));
@@ -240,7 +240,7 @@ public class EditProjectParametersPanel extends GenericPanel<Project>
 					}
 					catch (Exception e)
 					{
-						ValidationError error = new ValidationError(this, "bigdecimal");
+						var error = new ValidationError(this, "bigdecimal");
 						validatable.error(error);
 					}
 				}

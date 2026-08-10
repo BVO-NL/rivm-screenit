@@ -48,12 +48,12 @@ public class MammaBeoordelingPdfTonenPanel extends GenericPanel<MammaBeoordeling
 		super(id, model);
 		if (getModelObject().getVerslagPdf() != null)
 		{
-			File verslag = uploadDocumentService.load(getModelObject().getVerslagPdf());
+			var verslag = uploadDocumentService.load(getModelObject().getVerslagPdf());
 			add(new PdfViewer("verslagPdf", verslag, false));
 		}
 		else
 		{
-			File tempFile = maakVerwijsVerslagPdfFile();
+			var tempFile = maakVerwijsVerslagPdfFile();
 			add(new PdfViewer("verslagPdf", tempFile, true));
 		}
 	}

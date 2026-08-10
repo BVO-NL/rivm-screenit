@@ -40,7 +40,7 @@ public abstract class IndicatingAjaxFormChoiceComponentUpdatingBehavior extends 
 
 	protected void onUpdate(AjaxRequestTarget target)
 	{
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		sb.append("$('#showLink').click();");
 		target.prependJavaScript(sb.toString());
 		this.onComponentUpdate(target);

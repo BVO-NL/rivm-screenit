@@ -34,8 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class MedewerkerStoreServiceImpl implements MedewerkerStoreService
@@ -70,10 +68,10 @@ public class MedewerkerStoreServiceImpl implements MedewerkerStoreService
 
 	private String maakAddTransactie(long organisatieMedewerkerId, String displayName)
 	{
-		ObjectNode transactieNode = objectMapper.createObjectNode();
-		ArrayNode actieNodes = transactieNode.putArray("actions");
+		var transactieNode = objectMapper.createObjectNode();
+		var actieNodes = transactieNode.putArray("actions");
 
-		ObjectNode actieNode = objectMapper.createObjectNode();
+		var actieNode = objectMapper.createObjectNode();
 		actieNode.put("type", "ADD_SE_MEDEWERKER");
 		actieNode.put("organisatieMedewerkerId", organisatieMedewerkerId);
 		actieNode.put("displayName", displayName);

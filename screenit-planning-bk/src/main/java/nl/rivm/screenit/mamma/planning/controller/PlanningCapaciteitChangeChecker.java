@@ -22,7 +22,6 @@ package nl.rivm.screenit.mamma.planning.controller;
  */
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -38,8 +37,6 @@ import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
 import nl.rivm.screenit.exceptions.SeTijdBlokOverlapException;
 import nl.rivm.screenit.mamma.planning.index.PlanningBlokIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsEenheidIndex;
-import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
-import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.util.DateUtil;
 
 import com.google.common.collect.Range;
@@ -54,9 +51,9 @@ public class PlanningCapaciteitChangeChecker
 		if (props == null)
 		{
 			props = new Properties();
-			String resourceName = "capaciteitConflictMeldingen.properties"; 
-			ClassLoader loader = Thread.currentThread().getContextClassLoader();
-			try (InputStream resourceStream = loader.getResourceAsStream(resourceName))
+			var resourceName = "capaciteitConflictMeldingen.properties"; 
+			var loader = Thread.currentThread().getContextClassLoader();
+			try (var resourceStream = loader.getResourceAsStream(resourceName))
 			{
 				props.load(resourceStream);
 			}
@@ -109,12 +106,12 @@ public class PlanningCapaciteitChangeChecker
 			Set<UUID> idsVanBestaandeBlokken = new HashSet<>();
 			idsVanBestaandeBlokken.add(blok.conceptId);
 
-			for (Object[] overlapteBlokItem : overlapteBlokken)
+			for (var overlapteBlokItem : overlapteBlokken)
 			{
 				var startDateTimeBestaand = DateUtil.startMinuut((Date) overlapteBlokItem[0]);
 				var endDateTimeBestaand = DateUtil.startMinuut((Date) overlapteBlokItem[1]);
 				var overlapteBlok = Range.closed(startDateTimeBestaand, endDateTimeBestaand);
-				UUID blokItemId = (UUID) overlapteBlokItem[2];
+				var blokItemId = (UUID) overlapteBlokItem[2];
 
 				if (!idsVanBestaandeBlokken.contains(blokItemId))
 				{
@@ -133,16 +130,16 @@ public class PlanningCapaciteitChangeChecker
 	private static List<Object[]> getBlokTijden(List<Range<Date>> nieuweBlokken, PlanningCapaciteitBlokDto blokDto)
 	{
 		List<Object[]> overlappendeBlokken = new ArrayList<>();
-		PlanningBlok changedBlok = PlanningBlokIndex.get(blokDto.conceptId);
+		var changedBlok = PlanningBlokIndex.get(blokDto.conceptId);
 
 		if (changedBlok != null)
 		{
-			Object[] items = new Object[] { changedBlok.getDateVanaf(), changedBlok.getDateTot(), changedBlok.getConceptId() };
+			var items = new Object[] { changedBlok.getDateVanaf(), changedBlok.getDateTot(), changedBlok.getConceptId() };
 			overlappendeBlokken.add(items);
 		}
-		PlanningScreeningsEenheid screeningsEenheid = PlanningScreeningsEenheidIndex.get(blokDto.screeningsEenheidId);
+		var screeningsEenheid = PlanningScreeningsEenheidIndex.get(blokDto.screeningsEenheidId);
 
-		for (PlanningBlok blok : screeningsEenheid.getBlokSet())
+		for (var blok : screeningsEenheid.getBlokSet())
 		{
 			if (!PlanningBlokIndex.getBlokDeletedSet(screeningsEenheid).contains(blok))
 			{
@@ -153,7 +150,7 @@ public class PlanningCapaciteitChangeChecker
 					var range = Range.closed(vanaf, tot);
 					if (DateUtil.overlaps(rangeToCheck, range))
 					{
-						Object[] items = new Object[] { vanaf, tot, blok.getConceptId() };
+						var items = new Object[] { vanaf, tot, blok.getConceptId() };
 						overlappendeBlokken.add(items);
 					}
 				}

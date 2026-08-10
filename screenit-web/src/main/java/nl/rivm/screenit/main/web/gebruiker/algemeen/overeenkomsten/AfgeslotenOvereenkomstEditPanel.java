@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.overeenkomsten;
  */
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.OvereenkomstService;
@@ -31,8 +30,6 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ScreenitIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
-import nl.rivm.screenit.model.Organisatie;
-import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.overeenkomsten.AbstractAfgeslotenOvereenkomst;
 import nl.rivm.screenit.model.overeenkomsten.AfgeslotenMedewerkerOvereenkomst;
@@ -62,7 +59,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.hibernate.Hibernate;
-import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
 public abstract class AfgeslotenOvereenkomstEditPanel extends Panel
 {
@@ -108,7 +104,7 @@ public abstract class AfgeslotenOvereenkomstEditPanel extends Panel
 			}
 		}));
 
-		AfgeslotenOvereenkomstEditForm form = new AfgeslotenOvereenkomstEditForm("form", overeenkomstModel);
+		var form = new AfgeslotenOvereenkomstEditForm("form", overeenkomstModel);
 		add(form);
 
 		add(new ScreenitIndicatingAjaxSubmitLink("submit", form)
@@ -122,7 +118,7 @@ public abstract class AfgeslotenOvereenkomstEditPanel extends Panel
 				super.onSubmit(target);
 
 				FileUpload fileUpload = null;
-				List<FileUpload> filesUploaded = fileUploadModel.getObject();
+				var filesUploaded = fileUploadModel.getObject();
 				if (filesUploaded != null && !filesUploaded.isEmpty())
 				{
 					fileUpload = filesUploaded.get(0);
@@ -154,12 +150,12 @@ public abstract class AfgeslotenOvereenkomstEditPanel extends Panel
 		{
 			super(id, new CompoundPropertyModel<>(model));
 
-			Organisatie currentSelectedOrganisatie = ScreenitSession.get().getCurrentSelectedOrganisatie();
-			OvereenkomstType[] overeenkomstTypes = getOvereenkomstTypes(model.getObject());
-			List<OvereenkomstType> listOvereenkomstTypes = Arrays.asList(overeenkomstTypes);
-			OrganisatieType organisatieType = currentSelectedOrganisatie != null && listOvereenkomstTypes.contains(OvereenkomstType.OVEREENKOMST)
+			var currentSelectedOrganisatie = ScreenitSession.get().getCurrentSelectedOrganisatie();
+			var overeenkomstTypes = getOvereenkomstTypes(model.getObject());
+			var listOvereenkomstTypes = Arrays.asList(overeenkomstTypes);
+			var organisatieType = currentSelectedOrganisatie != null && listOvereenkomstTypes.contains(OvereenkomstType.OVEREENKOMST)
 				? currentSelectedOrganisatie.getOrganisatieType() : null;
-			List<Overeenkomst> overeenkomsten = overeenkomstService.getOvereenkomsten(organisatieType, overeenkomstTypes);
+			var overeenkomsten = overeenkomstService.getOvereenkomsten(organisatieType, overeenkomstTypes);
 
 			add(new ScreenitDropdown<Overeenkomst>("overeenkomst", new SimpleListHibernateModel<Overeenkomst>(overeenkomsten), new IChoiceRenderer<Overeenkomst>()
 			{
@@ -188,13 +184,13 @@ public abstract class AfgeslotenOvereenkomstEditPanel extends Panel
 					return null;
 				}
 			}).setRequired(true));
-			DatePicker<Date> startDatum = ComponentHelper.newYearDatePicker("startDatum");
+			var startDatum = ComponentHelper.newYearDatePicker("startDatum");
 			startDatum.setRequired(true);
 			add(startDatum);
-			DatePicker<Date> eindDatum = ComponentHelper.newYearDatePicker("eindDatum");
+			var eindDatum = ComponentHelper.newYearDatePicker("eindDatum");
 			add(eindDatum);
 
-			CheckBox teAccoderen = new CheckBox("teAccoderen")
+			var teAccoderen = new CheckBox("teAccoderen")
 			{
 
 				private static final long serialVersionUID = 1L;
@@ -203,17 +199,17 @@ public abstract class AfgeslotenOvereenkomstEditPanel extends Panel
 				protected void onConfigure()
 				{
 					super.onConfigure();
-					AbstractAfgeslotenOvereenkomst overeenkomst = AfgeslotenOvereenkomstEditForm.this.getModelObject();
-					boolean enabled = BooleanUtils.isNotTrue(getModelObject())
+					var overeenkomst = AfgeslotenOvereenkomstEditForm.this.getModelObject();
+					var enabled = BooleanUtils.isNotTrue(getModelObject())
 						|| ((overeenkomst == null || overeenkomst.getId() == null) && listOvereenkomstTypes.contains(OvereenkomstType.KWALITEITSOVEREENKOMST));
 					setEnabled(enabled);
-					boolean visible = (overeenkomst != null && overeenkomst.getId() != null) || listOvereenkomstTypes.contains(OvereenkomstType.KWALITEITSOVEREENKOMST);
+					var visible = (overeenkomst != null && overeenkomst.getId() != null) || listOvereenkomstTypes.contains(OvereenkomstType.KWALITEITSOVEREENKOMST);
 					setVisible(visible);
 					if (visible && enabled && 
 						(overeenkomst != null && overeenkomst.getGescandDocument() == null && 
 							listOvereenkomstTypes.contains(OvereenkomstType.OVEREENKOMST)))
 					{
-						AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class).orElse(null);
+						var target = getRequestCycle().find(AjaxRequestTarget.class).orElse(null);
 						if (target != null)
 						{
 							target.appendJavaScript("$('teAccorderen').hide();");
@@ -275,7 +271,7 @@ public abstract class AfgeslotenOvereenkomstEditPanel extends Panel
 				protected void onConfigure()
 				{
 					super.onConfigure();
-					AbstractAfgeslotenOvereenkomst overeenkomst = overeenkomstModel.getObject();
+					var overeenkomst = overeenkomstModel.getObject();
 					setVisible(overeenkomst != null && overeenkomst.getGescandDocument() != null);
 				}
 
@@ -290,7 +286,7 @@ public abstract class AfgeslotenOvereenkomstEditPanel extends Panel
 				protected void onConfigure()
 				{
 					super.onConfigure();
-					AbstractAfgeslotenOvereenkomst overeenkomst = overeenkomstModel.getObject();
+					var overeenkomst = overeenkomstModel.getObject();
 					setVisible(overeenkomst != null && overeenkomst.getId() != null && 
 						listOvereenkomstTypes.contains(OvereenkomstType.OVEREENKOMST));
 				}

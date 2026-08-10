@@ -30,7 +30,7 @@ public class TelefoonnummersFormatter
 
 	public static String getTelefoonnummersVoorPersoon(Persoon persoon)
 	{
-		String telefoonnummers = "";
+		var telefoonnummers = "";
 		if (StringUtils.isNotBlank(persoon.getTelefoonnummer1()))
 		{
 			telefoonnummers = persoon.getTelefoonnummer1();

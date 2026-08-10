@@ -100,7 +100,7 @@ public class CervixVervolgServiceImpl implements CervixVervolgService
 	@Override
 	public CervixVervolg bepaalVervolg(CervixMonster monster, LocalDate startdatumGenotypering, boolean digitaalLabformulier)
 	{
-		boolean isZasHoudbaar = false;
+		var isZasHoudbaar = false;
 		if (CervixMonsterUtil.isZAS(monster))
 		{
 			isZasHoudbaar = houdbaarheidService.isZasHoudbaar(monster.getMonsterId());
@@ -120,11 +120,11 @@ public class CervixVervolgServiceImpl implements CervixVervolgService
 			return;
 		}
 
-		CervixLabformulier labformulier = CervixMonsterUtil.getUitstrijkje(monster).getLabformulier();
+		var labformulier = CervixMonsterUtil.getUitstrijkje(monster).getLabformulier();
 
 		if (labformulier != null && labformulier.getDigitaal())
 		{
-			CervixVervolgTekst vervolgTekst = bepaalVervolg(monster, null, false).getVervolgTekst();
+			var vervolgTekst = bepaalVervolg(monster, null, false).getVervolgTekst();
 			digitaalLabformulierKlaarVoorCytologie(vervolgTekst, labformulier);
 		}
 	}
@@ -138,7 +138,7 @@ public class CervixVervolgServiceImpl implements CervixVervolgService
 			return;
 		}
 
-		CervixLabformulier labformulier = CervixMonsterUtil.getUitstrijkje(monster).getLabformulier();
+		var labformulier = CervixMonsterUtil.getUitstrijkje(monster).getLabformulier();
 
 		if (labformulier != null && labformulier.getDigitaal())
 		{
@@ -172,7 +172,7 @@ public class CervixVervolgServiceImpl implements CervixVervolgService
 
 	private boolean triggerHpvOrderVoorZAS(CervixMonster monster, CervixVervolgTekst vervolgTekst, AtomicBoolean cancelOrder)
 	{
-		boolean triggerHpvOrder = false;
+		var triggerHpvOrder = false;
 		var zas = CervixMonsterUtil.getZAS(monster);
 		var vorigeZasVersie = EntityAuditUtil.getPreviousVersionOfEntity(zas, entityManager);
 		CervixZasStatus vorigeZasStatus = null;
@@ -197,7 +197,7 @@ public class CervixVervolgServiceImpl implements CervixVervolgService
 
 	private boolean triggerHpvOrderVoorUitstrijkje(CervixMonster monster, CervixVervolgTekst vervolgTekst, AtomicBoolean cancelOrder)
 	{
-		boolean triggerHpvOrder = false;
+		var triggerHpvOrder = false;
 		var uitstrijkje = CervixMonsterUtil.getUitstrijkje(monster);
 		var vorigeUitstrijkjeVersie = EntityAuditUtil.getPreviousVersionOfEntity(uitstrijkje, entityManager);
 		CervixUitstrijkjeStatus vorigeUitstrijkjeStatus = null;

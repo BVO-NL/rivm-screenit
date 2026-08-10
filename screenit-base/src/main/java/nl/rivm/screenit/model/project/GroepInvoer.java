@@ -52,7 +52,7 @@ public enum GroepInvoer implements INaam
 	public static List<GroepInvoer> getGroepinvoerVanSelectieType(GroepSelectieType... types)
 	{
 		var result = new ArrayList<GroepInvoer>();
-		for (GroepInvoer invoer : GroepInvoer.values())
+		for (var invoer : GroepInvoer.values())
 		{
 			if (!Collections.disjoint(Arrays.asList(invoer.getTypes()), Arrays.asList(types)))
 			{

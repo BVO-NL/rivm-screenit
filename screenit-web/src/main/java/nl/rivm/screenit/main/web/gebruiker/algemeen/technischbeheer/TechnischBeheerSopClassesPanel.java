@@ -41,7 +41,7 @@ public class TechnischBeheerSopClassesPanel extends BaseTechnischBeheerParameter
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
 		form.add(new TextArea<>("mammaDicomSopConfig"));
 		return form;
 	}

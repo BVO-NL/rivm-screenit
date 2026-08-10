@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.jobs.aftergba.retourzendingstep;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.Client;
@@ -30,7 +28,6 @@ import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.InpakbareUitnodiging;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.colon.enums.RetourzendingStatus;
-import nl.rivm.screenit.model.gba.GbaMutatie;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.HibernateService;
 
@@ -50,30 +47,30 @@ public abstract class BaseRetourzendingWriter<C extends Client, U extends Inpakb
 	@Override
 	public void write(Client client) throws Exception
 	{
-		D dossier = getDossier(client);
+		var dossier = getDossier(client);
 
-		S ronde = dossier.getLaatsteScreeningRonde();
+		var ronde = dossier.getLaatsteScreeningRonde();
 		if (ronde != null)
 		{
-			List<U> uitnodigingen = ronde.getUitnodigingen();
-			for (U uitnodiging : uitnodigingen)
+			var uitnodigingen = ronde.getUitnodigingen();
+			for (var uitnodiging : uitnodigingen)
 			{
 				if (RetourzendingStatus.NIEUWE_GBA_ADRES_AANGEVRAAGD.equals(uitnodiging.getRetourzendingStatus()))
 				{
-					boolean kanVersturenMetTijdelijkAdres = clientService.isTijdelijkeAdresNuActueel(client.getPersoon());
-					boolean adresGegevensGewijzigd = false;
-					for (GbaMutatie mutatie : client.getGbaMutaties())
+					var kanVersturenMetTijdelijkAdres = clientService.isTijdelijkeAdresNuActueel(client.getPersoon());
+					var adresGegevensGewijzigd = false;
+					for (var mutatie : client.getGbaMutaties())
 					{
-						String aanvullendeInformatie = mutatie.getAanvullendeInformatie();
+						var aanvullendeInformatie = mutatie.getAanvullendeInformatie();
 
 						if (StringUtils.contains(aanvullendeInformatie, "|" + Constants.RETOURZENDING_UITNODIGINGS_ID_MARKER))
 						{
-							for (String element : aanvullendeInformatie.split("\\|"))
+							for (var element : aanvullendeInformatie.split("\\|"))
 							{
 
 								if (element.startsWith(Constants.RETOURZENDING_UITNODIGINGS_ID_MARKER) && !element.endsWith(":"))
 								{
-									String cuid = element.split(":")[1].trim();
+									var cuid = element.split(":")[1].trim();
 									if (cuid.equals(uitnodiging.getId().toString()))
 									{
 										if (aanvullendeInformatie.contains(Constants.GBA_ADRES_GEGEVENS_GEWIJZIGD))
@@ -91,7 +88,7 @@ public abstract class BaseRetourzendingWriter<C extends Client, U extends Inpakb
 					{
 						if (nieuwUitnodigingNodig(uitnodiging))
 						{
-							U nieuweUitnoding = maakNieuweUitnodiging(uitnodiging);
+							var nieuweUitnoding = maakNieuweUitnodiging(uitnodiging);
 							if (nieuweUitnoding == null)
 							{
 								uitnodiging.setRetourzendingStatus(RetourzendingStatus.GEEN_NIEUWE_UITNODIGING_NODIG);

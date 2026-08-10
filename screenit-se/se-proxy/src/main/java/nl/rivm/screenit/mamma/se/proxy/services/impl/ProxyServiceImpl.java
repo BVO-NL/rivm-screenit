@@ -82,7 +82,7 @@ public class ProxyServiceImpl implements ProxyService
 	public void init()
 	{
 		restTemplate = new RestTemplate();
-		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		var requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setReadTimeout(requestTimeoutInMS);
 		requestFactory.setConnectTimeout(requestTimeoutInMS);
 		restTemplate.setRequestFactory(requestFactory);
@@ -93,8 +93,8 @@ public class ProxyServiceImpl implements ProxyService
 	@Override
 	public RequestEntity.BodyBuilder getProxyRequestEntity(String pathPostfix, HttpMethod method)
 	{
-		final String url = requestUrl(pathPostfix);
-		RequestEntity.BodyBuilder requestBuilder = RequestEntity.method(method, URI.create(url));
+		final var url = requestUrl(pathPostfix);
+		var requestBuilder = RequestEntity.method(method, URI.create(url));
 		addProxyHeaders(requestBuilder);
 		return requestBuilder;
 	}
@@ -112,7 +112,7 @@ public class ProxyServiceImpl implements ProxyService
 	@Override
 	public RequestEntity.BodyBuilder getProxyRequestEntityAccount(String pathPostfix, HttpMethod method, String accountId)
 	{
-		RequestEntity.BodyBuilder requestBuilder = getProxyRequestEntity(pathPostfix, method);
+		var requestBuilder = getProxyRequestEntity(pathPostfix, method);
 		if (StringUtils.isNotBlank(accountId))
 		{
 			requestBuilder.header("ACCOUNT_ID", accountId);
@@ -145,10 +145,10 @@ public class ProxyServiceImpl implements ProxyService
 	@Override
 	public <T> ResponseEntity sendCachableProxyRequest(RequestEntity requestEntity, Class<T> responseType, CacheProxyActie cacheActie)
 	{
-		String url = requestEntity.getUrl().toString();
+		var url = requestEntity.getUrl().toString();
 		if ((cacheActie == CacheProxyActie.ALTIJD_OPHALEN_ALS_ONLINE && seStatusService.isOnline()) || !cachedResponses.containsKey(url))
 		{
-			ResponseEntity<T> response = sendUncheckedProxyRequest(requestEntity, responseType);
+			var response = sendUncheckedProxyRequest(requestEntity, responseType);
 			if (cacheResponse(requestEntity, response))
 			{
 				cachedResponses.put(url, response);
@@ -187,7 +187,7 @@ public class ProxyServiceImpl implements ProxyService
 
 	private ResponseEntity<String> getRequest(String pathPostfix, CacheProxyActie cacheProxyActie)
 	{
-		RequestEntity.BodyBuilder requestBuilder = getProxyRequestEntity(pathPostfix, HttpMethod.GET);
+		var requestBuilder = getProxyRequestEntity(pathPostfix, HttpMethod.GET);
 		return sendCachableProxyRequest(requestBuilder.build(), String.class, cacheProxyActie);
 	}
 
@@ -205,15 +205,15 @@ public class ProxyServiceImpl implements ProxyService
 	@Override
 	public void deleteOudePlanningCache()
 	{
-		LocalDate nu = DateUtil.getCurrentDateTime().toLocalDate();
-		String planningPathPostfix = RequestTypeCentraal.GET_PLANNING.getPathPostfix();
+		var nu = DateUtil.getCurrentDateTime().toLocalDate();
+		var planningPathPostfix = RequestTypeCentraal.GET_PLANNING.getPathPostfix();
 		cachedResponses.entrySet().removeIf(entry ->
 		{
-			String url = entry.getKey();
-			int indexPlanning = url.indexOf(planningPathPostfix);
+			var url = entry.getKey();
+			var indexPlanning = url.indexOf(planningPathPostfix);
 			if (indexPlanning != -1)
 			{
-				String date = url.substring(indexPlanning + (planningPathPostfix + "/").length());
+				var date = url.substring(indexPlanning + (planningPathPostfix + "/").length());
 				return LocalDate.parse(date, DateTimeFormatter.ISO_DATE).isBefore(nu);
 			}
 			return false;

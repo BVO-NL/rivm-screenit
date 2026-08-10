@@ -42,7 +42,7 @@ public class BigDecimalPricePropertyColumn<T, S> extends PropertyColumn<T, S>
 	@Override
 	public void populateItem(Item<ICellPopulator<T>> item, String componentId, IModel<T> rowModel)
 	{
-		BigDecimal bigDecimal = (BigDecimal) getDataModel(rowModel).getObject();
+		var bigDecimal = (BigDecimal) getDataModel(rowModel).getObject();
 		item.add(new Label(componentId, Model.of(NumberFormat.getCurrencyInstance().format(bigDecimal))));
 	}
 }

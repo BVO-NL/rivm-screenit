@@ -29,7 +29,6 @@ import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.CervixBarcodeAfdrukkenBasePage;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixZas;
 import nl.rivm.screenit.model.cervix.enums.CervixNietAnalyseerbaarReden;
 import nl.rivm.screenit.model.cervix.enums.CervixZasStatus;
@@ -90,7 +89,7 @@ public abstract class CervixUitnodigingZasPanel extends CervixUitnodigingPanel<C
 	@Override
 	protected void inboeken()
 	{
-		CervixZas zas = getModelObject();
+		var zas = getModelObject();
 		zas.setZasStatus(CervixZasStatus.ONTVANGEN);
 		if (!isHoudbaar(zas))
 		{
@@ -109,16 +108,16 @@ public abstract class CervixUitnodigingZasPanel extends CervixUitnodigingPanel<C
 	protected void addMonsterTypeSpecifics(ScreenitForm<CervixZas> form, WebMarkupContainer labformulierLaboratoriumContainer, BMHKLaboratorium laboratorium,
 		boolean ingeboektInAnderLaboratorium)
 	{
-		CervixZas zas = getModelObject();
-		CervixZasStatus zasStatus = zas.getZasStatus();
+		var zas = getModelObject();
+		var zasStatus = zas.getZasStatus();
 
 		form.add(new Label("verzenddatum", zas.getVerstuurd()));
 
-		List<CervixZasStatus> mogelijkeZasStatussen = getMogelijkeZasStatussen(zasStatus);
+		var mogelijkeZasStatussen = getMogelijkeZasStatussen(zasStatus);
 		zasStatusDropdown = new ScreenitDropdown<>("monsterStatus", new PropertyModel<>(getModel(), "zasStatus"), mogelijkeZasStatussen, new EnumChoiceRenderer<>());
 		form.add(zasStatusDropdown);
 
-		boolean enabled = ontvangstMonster() && !ingeboektInAnderLaboratorium
+		var enabled = ontvangstMonster() && !ingeboektInAnderLaboratorium
 			&& (zasStatus.equals(CervixZasStatus.VERSTUURD) || zasStatus.equals(CervixZasStatus.ONTVANGEN) || zasStatus.equals(CervixZasStatus.NIET_ANALYSEERBAAR))
 			&& zas.getBrief() == null;
 		zasStatusDropdown.setEnabled(enabled);
@@ -130,7 +129,7 @@ public abstract class CervixUitnodigingZasPanel extends CervixUitnodigingPanel<C
 		form.add(new Label("labformulier.status", ""));
 		form.add(new Label("labformulier.digitaal", ""));
 		labformulierLaboratoriumContainer.add(new Label("labformulier.laboratorium.naam", ""));
-		Label datumUitstrijkje = new Label("labformulier.datumUitstrijkje", "");
+		var datumUitstrijkje = new Label("labformulier.datumUitstrijkje", "");
 		datumUitstrijkje.setVisible(false);
 		form.add(datumUitstrijkje);
 
@@ -149,13 +148,13 @@ public abstract class CervixUitnodigingZasPanel extends CervixUitnodigingPanel<C
 	private List<CervixZasStatus> getMogelijkeZasStatussen(CervixZasStatus huidigeZasStatus)
 	{
 		List<CervixZasStatus> mogelijkeZasStatussen = new ArrayList<>();
-		CervixZas zas = getModelObject();
+		var zas = getModelObject();
 		if (isHoudbaar(zas))
 		{
 			mogelijkeZasStatussen.add(CervixZasStatus.ONTVANGEN);
 		}
 
-		CervixScreeningRonde ontvangstRonde = zas.getOntvangstScreeningRonde();
+		var ontvangstRonde = zas.getOntvangstScreeningRonde();
 		if (ontvangstRonde != null && ontvangstRonde.getMonsterHpvUitslag() == null)
 		{
 			mogelijkeZasStatussen.add(CervixZasStatus.NIET_ANALYSEERBAAR);
@@ -175,10 +174,10 @@ public abstract class CervixUitnodigingZasPanel extends CervixUitnodigingPanel<C
 	@Override
 	protected void saveMonster(AjaxRequestTarget target)
 	{
-		boolean success = true;
+		var success = true;
 
-		CervixZas zas = getModelObject();
-		CervixZasStatus status = zas.getZasStatus();
+		var zas = getModelObject();
+		var status = zas.getZasStatus();
 
 		monsterSignaleringenContainer.setVisible(status != CervixZasStatus.VERSTUURD);
 
@@ -211,7 +210,7 @@ public abstract class CervixUitnodigingZasPanel extends CervixUitnodigingPanel<C
 			target.add(nietAnalyseerbaarReden);
 		}
 
-		String logMessage = getString("titel") + " - " + getStatus();
+		var logMessage = getString("titel") + " - " + getStatus();
 		if (CervixZasStatus.NIET_ANALYSEERBAAR.equals(zas.getZasStatus()))
 		{
 			logMessage = logMessage + " (reden: " + zas.getNietAnalyseerbaarReden().getNaam() + ")";
@@ -221,8 +220,8 @@ public abstract class CervixUitnodigingZasPanel extends CervixUitnodigingPanel<C
 
 		uitnodingingService.saveMonster(zas, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), logMessage);
 
-		String feedback = getString("uitnodiging.opgeslagen");
-		boolean hasFeedbackMessage = getFeedbackMessages().hasMessage(new IFeedbackMessageFilter()
+		var feedback = getString("uitnodiging.opgeslagen");
+		var hasFeedbackMessage = getFeedbackMessages().hasMessage(new IFeedbackMessageFilter()
 		{
 
 			private static final long serialVersionUID = 1L;

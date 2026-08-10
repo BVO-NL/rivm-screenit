@@ -56,7 +56,7 @@ public class CervixGevolgenLabprocesVerwerkenJobListener extends BaseLogListener
 	{
 		super.beforeStarting(jobExecution);
 
-		String startdatumAanleveringGenotyperingString = preferenceService.getString(PreferenceKey.CERVIX_START_AANLEVERING_GENOTYPERING_EN_INVOERING_TRIAGE.name());
+		var startdatumAanleveringGenotyperingString = preferenceService.getString(PreferenceKey.CERVIX_START_AANLEVERING_GENOTYPERING_EN_INVOERING_TRIAGE.name());
 		getJobExecution().getExecutionContext().putString(PreferenceKey.CERVIX_START_AANLEVERING_GENOTYPERING_EN_INVOERING_TRIAGE.name(), startdatumAanleveringGenotyperingString);
 	}
 

@@ -24,13 +24,16 @@ package nl.rivm.screenit.huisartsenportaal.repository.impl;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import nl.rivm.screenit.huisartsenportaal.dto.TableResultOptionsDto;
-import nl.rivm.screenit.huisartsenportaal.dto.VerrichtingFilterDto;
 import nl.rivm.screenit.huisartsenportaal.dto.VerrichtingZoekObjectDto;
 import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
-import nl.rivm.screenit.huisartsenportaal.model.Locatie;
 import nl.rivm.screenit.huisartsenportaal.model.Locatie_;
 import nl.rivm.screenit.huisartsenportaal.model.Verrichting;
 import nl.rivm.screenit.huisartsenportaal.model.Verrichting_;
@@ -42,14 +45,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-
 @Transactional
 @Repository
 public class VerrichtingRepositoryImpl extends BaseCustomRepositoryImpl<Verrichting> implements VerrichtingCriteriaRepository
@@ -58,31 +53,31 @@ public class VerrichtingRepositoryImpl extends BaseCustomRepositoryImpl<Verricht
 	private CriteriaQuery<?> whereVerrichtingen(CriteriaQuery<?> query, Root<Verrichting> verrichtingRoot, Huisarts huisarts,
 		VerrichtingZoekObjectDto object)
 	{
-		CriteriaBuilder cb = getCriteriaBuilder();
+		var cb = getCriteriaBuilder();
 		List<Predicate> condities = new ArrayList<>();
 
 		condities.add(cb.equal(verrichtingRoot.get(Verrichting_.huisarts), huisarts));
 
-		VerrichtingFilterDto filterDto = object.getVerrichtingenZoekObject();
+		var filterDto = object.getVerrichtingenZoekObject();
 		if (filterDto != null)
 		{
 			if (filterDto.getLocatie() != null)
 			{
-				Join<Verrichting, Locatie> locatiesJoin = verrichtingRoot.join(Verrichting_.huisartsLocatie);
+				var locatiesJoin = verrichtingRoot.join(Verrichting_.huisartsLocatie);
 				condities.add(cb.equal(locatiesJoin.get(Locatie_.huisartsportaalId), filterDto.getLocatie().getHuisartsportaalId()));
 			}
 			if (StringUtils.isNotEmpty(filterDto.getClientNaam()))
 			{
 				condities.add(cb.like(cb.lower(verrichtingRoot.get(Verrichting_.clientNaam)), "%" + StringUtils.lowerCase(filterDto.getClientNaam()) + "%"));
 			}
-			if (filterDto.getVerrichtingsDatumVanaf() != null)
+			if (filterDto.getVerrichtingsdatumVanaf() != null)
 			{
-				condities.add(cb.greaterThanOrEqualTo(verrichtingRoot.get(Verrichting_.verrichtingsDatum), filterDto.getVerrichtingsDatumVanaf()));
+				condities.add(cb.greaterThanOrEqualTo(verrichtingRoot.get(Verrichting_.verrichtingsDatum), filterDto.getVerrichtingsdatumVanaf()));
 			}
-			if (filterDto.getVerrichtingsDatumTotenmet() != null)
+			if (filterDto.getVerrichtingsdatumTotEnMet() != null)
 			{
 				condities.add(cb.lessThanOrEqualTo(verrichtingRoot.get(Verrichting_.verrichtingsDatum),
-					DateUtil.plusTijdseenheid(filterDto.getVerrichtingsDatumTotenmet(), 1, ChronoUnit.DAYS)));
+					DateUtil.plusTijdseenheid(filterDto.getVerrichtingsdatumTotEnMet(), 1, ChronoUnit.DAYS)));
 			}
 			if (filterDto.getDatumUitstrijkje() != null)
 			{
@@ -99,10 +94,10 @@ public class VerrichtingRepositoryImpl extends BaseCustomRepositoryImpl<Verricht
 	@Override
 	public List<Verrichting> getVerrichtingen(Huisarts huisarts, VerrichtingZoekObjectDto verrichtingZoekObjectDto, TableResultOptionsDto resultOptions)
 	{
-		CriteriaBuilder cb = getCriteriaBuilder();
-		CriteriaQuery<Verrichting> query = cb.createQuery(Verrichting.class);
-		Root<Verrichting> verrichtingRoot = query.from(Verrichting.class);
-		Join<Verrichting, Locatie> locatieJoin = verrichtingRoot.join(Verrichting_.huisartsLocatie, JoinType.LEFT);
+		var cb = getCriteriaBuilder();
+		var query = cb.createQuery(Verrichting.class);
+		var verrichtingRoot = query.from(Verrichting.class);
+		var locatieJoin = verrichtingRoot.join(Verrichting_.huisartsLocatie, JoinType.LEFT);
 
 		query.select(verrichtingRoot);
 
@@ -110,9 +105,9 @@ public class VerrichtingRepositoryImpl extends BaseCustomRepositoryImpl<Verricht
 
 		if (resultOptions.getSortOptions() != null && !resultOptions.getSortOptions().isEmpty())
 		{
-			Map.Entry<String, String> entry = resultOptions.getSortOptions().entrySet().iterator().next();
+			var entry = resultOptions.getSortOptions().entrySet().iterator().next();
 			From orderByObject = verrichtingRoot;
-			String filter = StringUtils.remove(entry.getKey(), '.'); 
+			var filter = StringUtils.remove(entry.getKey(), '.'); 
 			if (StringUtils.startsWith(filter, "huisartsLocatie"))
 			{
 				filter = filter.replace("huisartsLocatie", "");
@@ -139,10 +134,10 @@ public class VerrichtingRepositoryImpl extends BaseCustomRepositoryImpl<Verricht
 	@Override
 	public long countVerrichtingen(Huisarts huisarts, VerrichtingZoekObjectDto verrichtingZoekObjectDto)
 	{
-		CriteriaBuilder cb = getCriteriaBuilder();
-		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+		var cb = getCriteriaBuilder();
+		var query = cb.createQuery(Long.class);
 
-		Root<Verrichting> verrichtingRoot = query.from(Verrichting.class);
+		var verrichtingRoot = query.from(Verrichting.class);
 		query.select(cb.count(verrichtingRoot));
 		whereVerrichtingen(query, verrichtingRoot, huisarts, verrichtingZoekObjectDto);
 

@@ -53,7 +53,7 @@ public class WachtwoordWijzigenValidator extends BaseWachtwoordValidator<Wachtwo
 	@Override
 	public void validateTarget(WachtwoordWijzigenDto target, Errors errors)
 	{
-		Huisarts huisarts = getIngelogdeHuisarts();
+		var huisarts = getIngelogdeHuisarts();
 		if (target.getOudeWachtwoord() == null && huisarts.getInlogCode() == null)
 		{
 			errors.reject("error.oudepassword.null", "Het huidige wachtwoord dient ingevuld te zijn.");
@@ -70,7 +70,7 @@ public class WachtwoordWijzigenValidator extends BaseWachtwoordValidator<Wachtwo
 
 	void controleerOudeWachtwoordEnControleWachtwoord(Huisarts huisarts, WachtwoordWijzigenDto target, Errors errors)
 	{
-		String encodedPassword = huisarts.getPassword();
+		var encodedPassword = huisarts.getPassword();
 		if (huisarts.getInlogCode() == null)
 		{
 			if (!authenticatieService.controleerWachtwoord(target.getOudeWachtwoord(), encodedPassword))
@@ -104,7 +104,7 @@ public class WachtwoordWijzigenValidator extends BaseWachtwoordValidator<Wachtwo
 
 		return (List<String>) query.getResultList().stream().map((Object auditRow) ->
 			{
-				Huisarts huisartsAtRevision = (Huisarts) ((Object[]) auditRow)[0];
+				var huisartsAtRevision = (Huisarts) ((Object[]) auditRow)[0];
 				return huisartsAtRevision.getPassword();
 			})
 			.limit(2)

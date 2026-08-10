@@ -21,12 +21,10 @@ package nl.rivm.screenit.wsb.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.berichten.cda.PdBerichtResponseCode;
 import nl.rivm.screenit.model.berichten.cda.PdBerichtResponseResult;
 import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
-import nl.rivm.screenit.model.berichten.enums.BerichtType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.BerichtOntvangenLogEvent;
@@ -66,42 +64,42 @@ public class CdaVerslagServiceImpl implements CdaVerslagService
 	@Transactional(propagation = Propagation.REQUIRED)
 	public PdBerichtResponseResult valideerBericht(OntvangenCdaBericht ontvangenCdaBericht, String bsn, String remoteAddr, String orgInfo)
 	{
-		PdBerichtResponseResult result = new PdBerichtResponseResult(PdBerichtResponseCode.OK);
-		String berichtId = ontvangenCdaBericht.getBerichtId();
-		BerichtType berichtType = ontvangenCdaBericht.getBerichtType();
-		Bevolkingsonderzoek bvo = berichtType.getBevolkingsonderzoek();
+		var result = new PdBerichtResponseResult(PdBerichtResponseCode.OK);
+		var berichtId = ontvangenCdaBericht.getBerichtId();
+		var berichtType = ontvangenCdaBericht.getBerichtType();
+		var bvo = berichtType.getBevolkingsonderzoek();
 		if (baseCdaVerslagService.isBerichtReedsVerwerkt(berichtId))
 		{
-			PdBerichtResponseCode code = PdBerichtResponseCode.REEDS_CORRECT_VERWERKT;
-			String codeOmschrijving = String.format(code.toString(), berichtId);
+			var code = PdBerichtResponseCode.REEDS_CORRECT_VERWERKT;
+			var codeOmschrijving = String.format(code.toString(), berichtId);
 
 			meldFout(ontvangenCdaBericht, remoteAddr, orgInfo, result, bvo, code, codeOmschrijving, berichtType.getLbBerichtZelfdeId(), BerichtStatus.WAARSCHUWING);
 		}
 		else
 		{
-			String setId = ontvangenCdaBericht.getSetId();
-			Long versie = ontvangenCdaBericht.getVersie();
+			var setId = ontvangenCdaBericht.getSetId();
+			var versie = ontvangenCdaBericht.getVersie();
 			if (baseCdaVerslagService.isBerichtReedsOntvangen(setId, versie))
 			{
-				PdBerichtResponseCode code = PdBerichtResponseCode.ONGELDIGE_VERSIE;
-				String codeOmschrijving = String.format(code.toString(), setId, versie);
+				var code = PdBerichtResponseCode.ONGELDIGE_VERSIE;
+				var codeOmschrijving = String.format(code.toString(), setId, versie);
 
 				meldFout(ontvangenCdaBericht, remoteAddr, orgInfo, result, bvo, code, codeOmschrijving, berichtType.getLbBerichtZelfdeSetIdEnVersie(), BerichtStatus.WAARSCHUWING);
 			}
 			else
 			{
-				Client clientByBsn = clientService.getClientByBsn(bsn);
+				var clientByBsn = clientService.getClientByBsn(bsn);
 				if (clientByBsn == null)
 				{
-					PdBerichtResponseCode code = PdBerichtResponseCode.CLIENT_UNK;
-					String codeOmschrijving = String.format(code.toString(), ontvangenCdaBericht.getBerichtId(), bsn);
+					var code = PdBerichtResponseCode.CLIENT_UNK;
+					var codeOmschrijving = String.format(code.toString(), ontvangenCdaBericht.getBerichtId(), bsn);
 
 					meldFout(ontvangenCdaBericht, remoteAddr, orgInfo, result, bvo, code, codeOmschrijving, berichtType.getLbOnbekendeBsn(), BerichtStatus.FOUT);
 				}
 				else if (bvo == Bevolkingsonderzoek.COLON && baseAfspraakService.heeftClientIntakeAfspraakMetConclusieBezwaar(bsn))
 				{
-					PdBerichtResponseCode code = PdBerichtResponseCode.CLIENT_BEZWAAR;
-					String codeOmschrijving = String.format(code.toString(), bsn);
+					var code = PdBerichtResponseCode.CLIENT_BEZWAAR;
+					var codeOmschrijving = String.format(code.toString(), bsn);
 
 					meldFout(ontvangenCdaBericht, remoteAddr, orgInfo, result, bvo, code, codeOmschrijving, berichtType.getLbOndanksBezwaar(), BerichtStatus.FOUT);
 				}
@@ -120,9 +118,9 @@ public class CdaVerslagServiceImpl implements CdaVerslagService
 
 		if (logGebeurtenis != null)
 		{
-			String logMelding = codeOmschrijving + " (van " + remoteAddr + ")" + orgInfo + "."
+			var logMelding = codeOmschrijving + " (van " + remoteAddr + ")" + orgInfo + "."
 				+ (berichtStatus == BerichtStatus.WAARSCHUWING ? " Wordt niet nog een keer verwerkt." : "");
-			BerichtOntvangenLogEvent logEvent = new BerichtOntvangenLogEvent();
+			var logEvent = new BerichtOntvangenLogEvent();
 			logEvent.setBericht(ontvangenCdaBericht);
 			logEvent.setMelding(logMelding);
 

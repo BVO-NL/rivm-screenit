@@ -55,7 +55,7 @@ public class ColoscopieCentrumColonCapaciteitVerdeling extends AbstractHibernate
 	@Override
 	protected boolean concreateEquals(AbstractHibernateObject obj)
 	{
-		ColoscopieCentrumColonCapaciteitVerdeling other = (ColoscopieCentrumColonCapaciteitVerdeling) obj;
+		var other = (ColoscopieCentrumColonCapaciteitVerdeling) obj;
 		if (getUitnodigingsGebied() == null)
 		{
 			if (other.getUitnodigingsGebied() != null)

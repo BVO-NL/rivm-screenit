@@ -34,7 +34,7 @@ public abstract class ScreenitIndicatingAjaxLinkPanel<T> extends GenericPanel<T>
 	{
 		super(id, model);
 
-		IndicatingAjaxLink<T> link = new IndicatingAjaxLink<T>("link", getModel())
+		var link = new IndicatingAjaxLink<T>("link", getModel())
 		{
 			private static final long serialVersionUID = 1L;
 

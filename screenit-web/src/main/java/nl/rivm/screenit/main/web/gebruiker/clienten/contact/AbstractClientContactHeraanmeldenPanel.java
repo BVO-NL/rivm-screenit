@@ -73,11 +73,11 @@ public abstract class AbstractClientContactHeraanmeldenPanel<D extends Dossier<?
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		D dossier = getDossier(clientModel.getObject());
+		var dossier = getDossier(clientModel.getObject());
 
 		A herAanTeMeldenAfmelding = null;
 
-		for (A afmelding : dossier.getAfmeldingen())
+		for (var afmelding : dossier.getAfmeldingen())
 		{
 
 			if (AanvraagBriefStatus.VERWERKT.equals(afmelding.getAfmeldingStatus()) && afmelding.getHeraanmeldStatus() == null)
@@ -88,7 +88,7 @@ public abstract class AbstractClientContactHeraanmeldenPanel<D extends Dossier<?
 		}
 		if (herAanTeMeldenAfmelding == null)
 		{
-			for (A afmelding : dossier.getLaatsteScreeningRonde().getAfmeldingen())
+			for (var afmelding : dossier.getLaatsteScreeningRonde().getAfmeldingen())
 			{
 
 				if (afmelding.getHeraanmeldStatus() == null &&
@@ -118,11 +118,11 @@ public abstract class AbstractClientContactHeraanmeldenPanel<D extends Dossier<?
 		nieuweUitnodigingRadio.setEnabled(!nieuweUitnodiging);
 		add(nieuweUitnodigingRadio);
 
-		boolean afspraakMaken = false;
+		var afspraakMaken = false;
 
 		if (dossier.getBevolkingsonderzoek() == Bevolkingsonderzoek.COLON)
 		{
-			ColonDossier colonDossier = (ColonDossier) dossier;
+			var colonDossier = (ColonDossier) dossier;
 			if (clientContactService.magNieuweIntakeAfspraakMakenNaHeraanmelding(colonDossier))
 			{
 				afspraakMaken = true;
@@ -151,12 +151,12 @@ public abstract class AbstractClientContactHeraanmeldenPanel<D extends Dossier<?
 	@Override
 	public Map<ExtraOpslaanKey, Object> getOpslaanObjecten()
 	{
-		Map<ExtraOpslaanKey, Object> opslaanObjecten = super.getOpslaanObjecten();
+		var opslaanObjecten = super.getOpslaanObjecten();
 		if (afspraakMakenPanel != null)
 		{
 			opslaanObjecten.putAll(afspraakMakenPanel.getOpslaanObjecten());
 		}
-		A herAanTeMeldenAfmelding = herAanTeMeldenAfmeldingModel.getObject();
+		var herAanTeMeldenAfmelding = herAanTeMeldenAfmeldingModel.getObject();
 		herAanTeMeldenAfmelding.setClientWilNieuweUitnodiging(nieuweUitnodiging);
 
 		opslaanObjecten.put(ExtraOpslaanKey.HERAANMELDING, herAanTeMeldenAfmelding);

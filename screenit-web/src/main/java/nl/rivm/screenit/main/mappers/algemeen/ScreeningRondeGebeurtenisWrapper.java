@@ -25,7 +25,6 @@ import nl.rivm.screenit.main.dto.algemeen.ScreeningRondeGebeurtenisDto;
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
 import nl.rivm.screenit.model.Brief;
-import nl.rivm.screenit.model.ClientBrief;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

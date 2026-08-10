@@ -30,8 +30,6 @@ import nl.rivm.screenit.dto.mamma.afspraken.MammaStandplaatsPeriodeMetAfstandDto
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.MammaUitstel;
 import nl.rivm.screenit.service.HibernateService;
@@ -80,12 +78,12 @@ public class MammaUitstelKiezenPanel extends AbstractClientContactActiePanel<Cli
 			@Override
 			protected void nieuwUitstel(AjaxRequestTarget target, IModel<MammaStandplaatsPeriodeMetAfstandDto> model, Date zoekDatum)
 			{
-				Client client = MammaUitstelKiezenPanel.this.getModelObject();
-				MammaScreeningRonde screeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
-				boolean isNieuweUitstel = true;
+				var client = MammaUitstelKiezenPanel.this.getModelObject();
+				var screeningRonde = client.getMammaDossier().getLaatsteScreeningRonde();
+				var isNieuweUitstel = true;
 				IModel<MammaUitstel> uitstelModel;
-				MammaStandplaatsPeriode standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, model.getObject().getStandplaatsPeriodeId());
-				MammaStandplaats standplaats = standplaatsPeriode.getStandplaatsRonde()
+				var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class, model.getObject().getStandplaatsPeriodeId());
+				var standplaats = standplaatsPeriode.getStandplaatsRonde()
 					.getStandplaats();
 
 				uitstelModel = ModelUtil.cModel(baseUitstelService.getOfMaakMammaUitstel(screeningRonde, standplaats, zoekDatum));
@@ -95,7 +93,7 @@ public class MammaUitstelKiezenPanel extends AbstractClientContactActiePanel<Cli
 					isNieuweUitstel = false;
 				}
 
-				MammaUitstelPanel uitstelPanel = new MammaUitstelPanel("nieuweUitstelPanel", uitstelModel, isNieuweUitstel, standplaatsPeriode)
+				var uitstelPanel = new MammaUitstelPanel("nieuweUitstelPanel", uitstelModel, isNieuweUitstel, standplaatsPeriode)
 				{
 					@Override
 					protected void wijzigMoment(AjaxRequestTarget target)
@@ -138,7 +136,7 @@ public class MammaUitstelKiezenPanel extends AbstractClientContactActiePanel<Cli
 	@Override
 	public List<String> getOpslaanMeldingen()
 	{
-		List<String> opslaanMeldingen = super.getOpslaanMeldingen();
+		var opslaanMeldingen = super.getOpslaanMeldingen();
 		if (nieuweUitstelPanel instanceof AbstractClientContactActiePanel)
 		{
 			opslaanMeldingen.addAll(((AbstractClientContactActiePanel) nieuweUitstelPanel).getOpslaanMeldingen());

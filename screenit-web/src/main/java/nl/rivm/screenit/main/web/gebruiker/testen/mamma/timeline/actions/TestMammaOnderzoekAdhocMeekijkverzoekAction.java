@@ -26,7 +26,6 @@ import java.util.List;
 import nl.rivm.screenit.main.service.mamma.MammaTestTimelineService;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.TestMammaVervolgKeuzeAction;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.service.mamma.MammaBaseTestTimelineService;
 
 import org.apache.wicket.model.IModel;
@@ -43,9 +42,9 @@ public class TestMammaOnderzoekAdhocMeekijkverzoekAction extends TestMammaVervol
 	@Override
 	public void execute()
 	{
-		for (Client client : clienten)
+		for (var client : clienten)
 		{
-			MammaOnderzoek onderzoek = client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak().getOnderzoek();
+			var onderzoek = client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak().getOnderzoek();
 			mammaTestTimelineService.doorvoerenAdhocMeekijkverzoek(onderzoek);
 		}
 	}

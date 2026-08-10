@@ -37,7 +37,6 @@ import nl.rivm.screenit.main.web.component.PercentageIntegerField;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.ScreenitIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.component.SimpleStringResourceModel;
-import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.ConfirmPanel;
 import nl.rivm.screenit.main.web.component.modal.DefaultConfirmCallback;
@@ -153,18 +152,18 @@ public class GebiedGegevens extends GebiedenBeheerPage
 
 		add(new GemeentePaspoortPanel("paspoort", new CompoundPropertyModel<>(new PropertyModel<>(model, UitnodigingsGebied_.GEMEENTE))));
 
-		Form<UitnodigingsGebied> form = new Form<>("form", model);
+		var form = new Form<UitnodigingsGebied>("form", model);
 		add(form);
 		form.add(new TextField<>("naam").setRequired(true).setEnabled(model.getObject().getPostcodeGebied() != null || StringUtils.isNotBlank(model.getObject().getWoonplaats())));
-		boolean magGebiedAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN, Actie.AANPASSEN);
-		boolean magRetourPercentageAanpassen = ScreenitSession.get().checkPermission(Recht.COLON_BEHEER_GEBIEDEN_FIT_RETOUR_PERC, Actie.AANPASSEN);
-		boolean magOngunstigPercentageAanpassen = ScreenitSession.get().checkPermission(Recht.COLON_BEHEER_GEBIEDEN_FIT_ONGUNSTIG_PERC, Actie.AANPASSEN);
+		var magGebiedAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN, Actie.AANPASSEN);
+		var magRetourPercentageAanpassen = ScreenitSession.get().checkPermission(Recht.COLON_BEHEER_GEBIEDEN_FIT_RETOUR_PERC, Actie.AANPASSEN);
+		var magOngunstigPercentageAanpassen = ScreenitSession.get().checkPermission(Recht.COLON_BEHEER_GEBIEDEN_FIT_ONGUNSTIG_PERC, Actie.AANPASSEN);
 
-		PercentageIntegerField percentageIFobtRetour = new PercentageIntegerField("percentageIFobtRetour", 1);
+		var percentageIFobtRetour = new PercentageIntegerField("percentageIFobtRetour", 1);
 		percentageIFobtRetour.setEnabled(magRetourPercentageAanpassen);
 		form.add(percentageIFobtRetour);
 
-		PercentageIntegerField percentageOngunstigeIfobt = new PercentageIntegerField("percentageOngunstigeIfobt", 1);
+		var percentageOngunstigeIfobt = new PercentageIntegerField("percentageOngunstigeIfobt", 1);
 		percentageOngunstigeIfobt.setEnabled(magOngunstigPercentageAanpassen);
 		form.add(percentageOngunstigeIfobt);
 
@@ -190,13 +189,13 @@ public class GebiedGegevens extends GebiedenBeheerPage
 
 		adherentieBeheer(model);
 
-		ScreenitIndicatingAjaxSubmitLink opslaan = new ScreenitIndicatingAjaxSubmitLink("opslaan", form)
+		var opslaan = new ScreenitIndicatingAjaxSubmitLink("opslaan", form)
 		{
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				UitnodigingsGebied uitnodigingsGebied = (UitnodigingsGebied) form.getDefaultModelObject();
+				var uitnodigingsGebied = (UitnodigingsGebied) form.getDefaultModelObject();
 				if (uitnodigingsGebied.getId() == null)
 				{
 					uitnodigingsGebied.getGemeente().getUitnodigingsGebieden().add(uitnodigingsGebied);
@@ -215,7 +214,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				UitnodigingsGebied uitnodigingsGebied = getPageModel().getObject();
+				var uitnodigingsGebied = getPageModel().getObject();
 				setResponsePage(new GemeenteGegevens(ModelUtil.cRModel(uitnodigingsGebied.getGemeente())));
 			}
 		});
@@ -234,13 +233,13 @@ public class GebiedGegevens extends GebiedenBeheerPage
 		adherentieForm.setOutputMarkupId(true);
 		add(adherentieForm);
 
-		List<ColonIntakelocatie> actieveIntakelocaties = organisatieService.getActieveIntakelocaties();
-		for (ColoscopieCentrumColonCapaciteitVerdeling verdeling : getPageModel().getObject().getVerdeling())
+		var actieveIntakelocaties = organisatieService.getActieveIntakelocaties();
+		for (var verdeling : getPageModel().getObject().getVerdeling())
 		{
 			actieveIntakelocaties.remove(verdeling.getIntakelocatie());
 		}
 		intakelocatiesModel = ModelUtil.listRModel(actieveIntakelocaties);
-		final ScreenitDropdown<ColonIntakelocatie> intakelocaties = ComponentHelper.newDropDownChoice("intakelocaties", intakelocatiesModel,
+		final var intakelocaties = ComponentHelper.newDropDownChoice("intakelocaties", intakelocatiesModel,
 			new ChoiceRenderer<>("naam"));
 		intakelocaties.setModel(new CompoundPropertyModel<>(new PropertyModel<>(GebiedGegevens.this, ColoscopieCentrumColonCapaciteitVerdeling_.INTAKELOCATIE)));
 		intakelocaties.setVisible(magAdherentieAanpassen);
@@ -296,19 +295,19 @@ public class GebiedGegevens extends GebiedenBeheerPage
 						@Override
 						protected void onClick(AjaxRequestTarget target)
 						{
-							ColoscopieCentrumColonCapaciteitVerdeling verdeling = rowModel.getObject();
-							ColonIntakelocatie intakelocatie = verdeling.getIntakelocatie();
+							var verdeling = rowModel.getObject();
+							var intakelocatie = verdeling.getIntakelocatie();
 							if (verdeling.getId() != null)
 							{
 								verwijderdeItemModels.put(intakelocatie.getId(), ModelUtil.sModel(verdeling));
 							}
 							else
 							{
-								UitnodigingsGebied uitnodigingsgebied = verdeling.getUitnodigingsGebied();
+								var uitnodigingsgebied = verdeling.getUitnodigingsGebied();
 								uitnodigingsgebied.getVerdeling().remove(verdeling);
 								intakelocatie.getCapaciteitVerdeling().remove(verdeling);
 							}
-							List<ColonIntakelocatie> locaties = intakelocatiesModel.getObject();
+							var locaties = intakelocatiesModel.getObject();
 							locaties.add(intakelocatie);
 							intakelocatiesModel.setObject(new ArrayList<>(locaties));
 							newAdherentiePercentages.remove(uitnodigingsGebiedService.getUniekIdOf(verdeling));
@@ -333,7 +332,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 				private List<ColoscopieCentrumColonCapaciteitVerdeling> getVerdeling()
 				{
 					List<ColoscopieCentrumColonCapaciteitVerdeling> verdeling = new ArrayList<>(getPageModel().getObject().getVerdeling());
-					for (ColoscopieCentrumColonCapaciteitVerdeling verwijderdeItem : getVerwijderdeItems())
+					for (var verwijderdeItem : getVerwijderdeItems())
 					{
 						verdeling.remove(verwijderdeItem);
 					}
@@ -356,30 +355,30 @@ public class GebiedGegevens extends GebiedenBeheerPage
 		adherentieTabel.setOutputMarkupId(true);
 		adherentieForm.add(adherentieTabel);
 
-		IndicatingAjaxButton intakeLocatieKoppelenKnop = new IndicatingAjaxButton("toevoegen")
+		var intakeLocatieKoppelenKnop = new IndicatingAjaxButton("toevoegen")
 		{
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				UitnodigingsGebied gebied = getPageModel().getObject();
+				var gebied = getPageModel().getObject();
 				if (ModelUtil.nullSafeGet(intakelocatieModel) != null)
 				{
-					ColonIntakelocatie intakelocatie = intakelocatieModel.getObject();
-					List<ColonIntakelocatie> locaties = intakelocatiesModel.getObject();
+					var intakelocatie = intakelocatieModel.getObject();
+					var locaties = intakelocatiesModel.getObject();
 					locaties.remove(intakelocatie);
 					intakelocatiesModel.setObject(new ArrayList<>(locaties));
-					IModel<ColoscopieCentrumColonCapaciteitVerdeling> verwijderdeItem = verwijderdeItemModels.get(intakelocatie.getId());
+					var verwijderdeItem = verwijderdeItemModels.get(intakelocatie.getId());
 					if (verwijderdeItem != null)
 					{
-						ColoscopieCentrumColonCapaciteitVerdeling verdeling = ModelUtil.nullSafeGet(verwijderdeItem);
+						var verdeling = ModelUtil.nullSafeGet(verwijderdeItem);
 						newAdherentiePercentages.put(uitnodigingsGebiedService.getUniekIdOf(verdeling), verdeling.getPercentageAdherentie());
 						verwijderdeItemModels.remove(intakelocatie.getId());
 					}
 					else
 					{
-						ColoscopieCentrumColonCapaciteitVerdeling nieuweVerdeling = new ColoscopieCentrumColonCapaciteitVerdeling();
-						List<ColoscopieCentrumColonCapaciteitVerdeling> verdeling = gebied.getVerdeling();
+						var nieuweVerdeling = new ColoscopieCentrumColonCapaciteitVerdeling();
+						var verdeling = gebied.getVerdeling();
 						verdeling.add(nieuweVerdeling);
 						nieuweVerdeling = verdeling.get(verdeling.size() - 1); 
 						nieuweVerdeling.setUitnodigingsGebied(gebied);
@@ -408,13 +407,13 @@ public class GebiedGegevens extends GebiedenBeheerPage
 		controleResultaatPanel.setOutputMarkupId(true);
 		adherentieForm.add(controleResultaatPanel);
 
-		IndicatingAjaxButton controlerenKnop = new IndicatingAjaxButton("controleren", adherentieForm)
+		var controlerenKnop = new IndicatingAjaxButton("controleren", adherentieForm)
 		{
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				UitnodigingsGebied uitnodigingsGebied = (UitnodigingsGebied) getForm().getDefaultModelObject();
+				var uitnodigingsGebied = (UitnodigingsGebied) getForm().getDefaultModelObject();
 				List<CapaciteitsPercWijziging> capaciteitsPercWijzigingen = new ArrayList<>();
 				try
 				{
@@ -427,7 +426,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 
 				if (!hasErrorMessage())
 				{
-					ControleResultaatFragment newControleResultaatPanel = new ControleResultaatFragment(controleResultaatPanel.getId(), capaciteitsPercWijzigingen);
+					var newControleResultaatPanel = new ControleResultaatFragment(controleResultaatPanel.getId(), capaciteitsPercWijzigingen);
 					controleResultaatPanel.replaceWith(newControleResultaatPanel);
 					controleResultaatPanel = newControleResultaatPanel;
 					target.add(controleResultaatPanel);
@@ -457,7 +456,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 					@Override
 					public void onClick(AjaxRequestTarget target)
 					{
-						Gemeente gemeente = getModelObject().getGemeente();
+						var gemeente = getModelObject().getGemeente();
 						gemeente = hibernateService.load(Gemeente.class, gemeente.getId());
 						setResponsePage(new GemeenteGegevens(ModelUtil.cRModel(gemeente)));
 					}
@@ -492,7 +491,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 	private List<ColoscopieCentrumColonCapaciteitVerdeling> getVerwijderdeItems()
 	{
 		List<ColoscopieCentrumColonCapaciteitVerdeling> verwijderdeItems = new ArrayList<>();
-		for (IModel<ColoscopieCentrumColonCapaciteitVerdeling> verwijderdeItem : verwijderdeItemModels.values())
+		for (var verwijderdeItem : verwijderdeItemModels.values())
 		{
 			verwijderdeItems.add(ModelUtil.nullSafeGet(verwijderdeItem));
 		}
@@ -502,7 +501,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 	private void initAdherentiePercentages()
 	{
 		newAdherentiePercentages = new HashMap<>();
-		for (ColoscopieCentrumColonCapaciteitVerdeling verdeling : getPageModel().getObject().getVerdeling())
+		for (var verdeling : getPageModel().getObject().getVerdeling())
 		{
 			newAdherentiePercentages.put(uitnodigingsGebiedService.getUniekIdOf(verdeling), verdeling.getPercentageAdherentie());
 		}
@@ -515,7 +514,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 		super.detachModels();
 		ModelUtil.nullSafeDetach(intakelocatieModel);
 		ModelUtil.nullSafeDetach(intakelocatiesModel);
-		for (IModel<ColoscopieCentrumColonCapaciteitVerdeling> verdeling : verwijderdeItemModels.values())
+		for (var verdeling : verwijderdeItemModels.values())
 		{
 			ModelUtil.nullSafeDetach(verdeling);
 		}
@@ -523,7 +522,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 
 	private static Boolean getGesplitsOpPostcode(IModel<UitnodigingsGebied> model)
 	{
-		UitnodigingsGebied gebied = model.getObject();
+		var gebied = model.getObject();
 		Boolean gesplitsOpPostcode = null;
 		if (gebied.getPostcodeGebied() != null)
 		{
@@ -543,7 +542,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 		{
 			super(id, "adherentieFragment", fragments, model);
 
-			PercentageIntegerField nieuweAdherentieInput = new PercentageIntegerField("nieuweAdherentie",
+			var nieuweAdherentieInput = new PercentageIntegerField("nieuweAdherentie",
 				new MapModel<>(newAdherentiePercentages, uitnodigingsGebiedService.getUniekIdOf(model.getObject())));
 			nieuweAdherentieInput.setEnabled(magAdherentieAanpassen);
 			add(nieuweAdherentieInput);
@@ -557,32 +556,32 @@ public class GebiedGegevens extends GebiedenBeheerPage
 		{
 			super(id, "controleResultaatFragment", fragments);
 
-			final WebMarkupContainer tooltipContainter = new WebMarkupContainer("tooltipContainter");
+			final var tooltipContainter = new WebMarkupContainer("tooltipContainter");
 			add(tooltipContainter);
 			tooltipContainter.setOutputMarkupId(true);
-			final RepeatingView tooltips = new RepeatingView("tooltip");
+			final var tooltips = new RepeatingView("tooltip");
 			tooltipContainter.add(tooltips);
 
 			final Set<String> intakelocaties = new HashSet<>();
 			Set<String> gebieden = new HashSet<>();
 			final Map<String, BigDecimal> totaalIntakelocaties = new HashMap<>();
 			final Map<String, BigDecimal> totaalGebieden = new HashMap<>();
-			BigDecimal totaalNieuw = BigDecimal.ZERO;
-			BigDecimal totaalOud = BigDecimal.ZERO;
-			for (CapaciteitsPercWijziging wijziging : capaciteitsPercWijzigingen)
+			var totaalNieuw = BigDecimal.ZERO;
+			var totaalOud = BigDecimal.ZERO;
+			for (var wijziging : capaciteitsPercWijzigingen)
 			{
 				intakelocaties.add(wijziging.getIlId() + "|" + wijziging.getIntakelocatie());
-				BigDecimal verschilOud = wijziging.getVerschilOud();
+				var verschilOud = wijziging.getVerschilOud();
 				if (verschilOud != null)
 				{
-					BigDecimal totaalIntakelocatie = totaalIntakelocaties.get("O" + wijziging.getIlId());
+					var totaalIntakelocatie = totaalIntakelocaties.get("O" + wijziging.getIlId());
 					if (totaalIntakelocatie == null)
 					{
 						totaalIntakelocatie = BigDecimal.ZERO;
 					}
 
 					totaalIntakelocaties.put("O" + wijziging.getIlId(), totaalIntakelocatie.add(verschilOud));
-					BigDecimal totaalGebied = totaalGebieden.get("O" + wijziging.getUgId());
+					var totaalGebied = totaalGebieden.get("O" + wijziging.getUgId());
 					if (totaalGebied == null)
 					{
 						totaalGebied = BigDecimal.ZERO;
@@ -591,17 +590,17 @@ public class GebiedGegevens extends GebiedenBeheerPage
 					totaalGebieden.put("O" + wijziging.getUgId(), totaalGebied.add(verschilOud));
 					totaalOud = totaalOud.add(verschilOud);
 				}
-				BigDecimal verschilNieuw = wijziging.getVerschilNieuw();
+				var verschilNieuw = wijziging.getVerschilNieuw();
 				if (verschilNieuw != null)
 				{
-					BigDecimal totaalIntakelocatie = totaalIntakelocaties.get("N" + wijziging.getIlId());
+					var totaalIntakelocatie = totaalIntakelocaties.get("N" + wijziging.getIlId());
 					if (totaalIntakelocatie == null)
 					{
 						totaalIntakelocatie = BigDecimal.ZERO;
 					}
 
 					totaalIntakelocaties.put("N" + wijziging.getIlId(), totaalIntakelocatie.add(verschilNieuw));
-					BigDecimal totaalGebied = totaalGebieden.get("N" + wijziging.getUgId());
+					var totaalGebied = totaalGebieden.get("N" + wijziging.getUgId());
 					if (totaalGebied == null)
 					{
 						totaalGebied = BigDecimal.ZERO;
@@ -619,7 +618,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 				@Override
 				protected void populateItem(ListItem<String> item)
 				{
-					String intakelocatie = item.getModelObject();
+					var intakelocatie = item.getModelObject();
 					item.add(new Label("naam", intakelocatie.split("\\|")[1]));
 				}
 
@@ -641,8 +640,8 @@ public class GebiedGegevens extends GebiedenBeheerPage
 				@Override
 				protected void populateItem(ListItem<String> item)
 				{
-					String intakelocatie = item.getModelObject();
-					Long intakelocatieId = Long.valueOf(intakelocatie.split("\\|")[0]);
+					var intakelocatie = item.getModelObject();
+					var intakelocatieId = Long.valueOf(intakelocatie.split("\\|")[0]);
 					item.add(new Label("totaalVerschilNieuw", BigDecimalUtil.roundCapaciteit(totaalIntakelocaties.get("N" + intakelocatieId))));
 					item.add(new Label("totaalVerschilOud", BigDecimalUtil.roundCapaciteit(totaalIntakelocaties.get("O" + intakelocatieId))));
 				}
@@ -654,19 +653,19 @@ public class GebiedGegevens extends GebiedenBeheerPage
 				@Override
 				protected void populateItem(ListItem<String> item)
 				{
-					String gebieden = item.getModelObject();
-					String[] splittedGebied = gebieden.split("\\|");
+					var gebieden = item.getModelObject();
+					var splittedGebied = gebieden.split("\\|");
 					item.add(new Label("naam", splittedGebied[1]));
-					final Long gebiedId = Long.valueOf(splittedGebied[0]);
+					final var gebiedId = Long.valueOf(splittedGebied[0]);
 					item.add(new ListView<String>("intakelocaties", new ArrayList<>(intakelocaties))
 					{
 						@Override
 						protected void populateItem(ListItem<String> item)
 						{
-							String intakelocatie = item.getModelObject();
-							Long intakelocatieId = Long.valueOf(intakelocatie.split("\\|")[0]);
+							var intakelocatie = item.getModelObject();
+							var intakelocatieId = Long.valueOf(intakelocatie.split("\\|")[0]);
 							CapaciteitsPercWijziging curWijziging = null;
-							for (CapaciteitsPercWijziging wijziging : capaciteitsPercWijzigingen)
+							for (var wijziging : capaciteitsPercWijzigingen)
 							{
 								if (wijziging.getIlId().equals(intakelocatieId) && wijziging.getUgId().equals(gebiedId))
 								{
@@ -674,12 +673,12 @@ public class GebiedGegevens extends GebiedenBeheerPage
 								}
 							}
 
-							String verschilNieuwTekst = "";
-							String verschilOudTekst = "";
+							var verschilNieuwTekst = "";
+							var verschilOudTekst = "";
 							String tooltipId = null;
 							if (curWijziging != null)
 							{
-								BigDecimal verschilNieuw = curWijziging.getVerschilNieuw();
+								var verschilNieuw = curWijziging.getVerschilNieuw();
 								if (verschilNieuw != null)
 								{
 									verschilNieuwTekst = BigDecimalUtil.roundCapaciteit(verschilNieuw).toString();
@@ -688,7 +687,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 								{
 									verschilNieuwTekst = "N/A";
 								}
-								BigDecimal verschilOud = curWijziging.getVerschilOud();
+								var verschilOud = curWijziging.getVerschilOud();
 								if (verschilOud != null)
 								{
 									verschilOudTekst = BigDecimalUtil.roundCapaciteit(verschilOud).toString();
@@ -701,9 +700,9 @@ public class GebiedGegevens extends GebiedenBeheerPage
 								tooltips.add(new Tooltip(tooltips.newChildId(), curWijziging));
 							}
 
-							Label labelVerschilNieuw = new Label("verschilNieuw", verschilNieuwTekst);
+							var labelVerschilNieuw = new Label("verschilNieuw", verschilNieuwTekst);
 							item.add(labelVerschilNieuw);
-							Label labelVerschilOud = new Label("verschilOud", verschilOudTekst);
+							var labelVerschilOud = new Label("verschilOud", verschilOudTekst);
 							item.add(labelVerschilOud);
 							if (tooltipId != null)
 							{
@@ -723,7 +722,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 			add(new Label("totaalOud", BigDecimalUtil.roundCapaciteit(totaalOud)));
 			add(new Label("totaalNieuw", BigDecimalUtil.roundCapaciteit(totaalNieuw)));
 
-			IndicatingAjaxButton doorvoeren = new IndicatingAjaxButton("doorvoeren")
+			var doorvoeren = new IndicatingAjaxButton("doorvoeren")
 			{
 
 				@Override
@@ -736,15 +735,15 @@ public class GebiedGegevens extends GebiedenBeheerPage
 						@Override
 						public void onYesClick(AjaxRequestTarget target)
 						{
-							IModel<UitnodigingsGebied> model = getPageModel();
-							UitnodigingsGebied uitnodiginsgebied = model.getObject();
+							var model = getPageModel();
+							var uitnodiginsgebied = model.getObject();
 							uitnodigingsGebiedService.wijzigingenDoorvoeren(uitnodiginsgebied, newAdherentiePercentages, getVerwijderdeItems(), capaciteitsPercWijzigingen,
 								ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
-							ControleResultaatFragment fragment = ControleResultaatFragment.this;
+							var fragment = ControleResultaatFragment.this;
 							fragment.setVisible(false);
 							target.add(fragment, adherentieTabel);
 							info(getString("wijzigingen.doorgevoerd"));
-							IModel<UitnodigingsGebied> nieuwModel = ModelUtil.cModel(hibernateService.load(UitnodigingsGebied.class, uitnodiginsgebied.getId()));
+							var nieuwModel = ModelUtil.cModel(hibernateService.load(UitnodigingsGebied.class, uitnodiginsgebied.getId()));
 							adherentieForm.setDefaultModel(nieuwModel);
 							initAdherentiePercentages();
 							markeerFormulierenOpgeslagen(target);
@@ -784,7 +783,7 @@ public class GebiedGegevens extends GebiedenBeheerPage
 				@Override
 				public void onClick(AjaxRequestTarget target)
 				{
-					ControleResultaatFragment fragment = ControleResultaatFragment.this;
+					var fragment = ControleResultaatFragment.this;
 					fragment.setVisible(false);
 					target.add(fragment);
 					target.appendJavaScript("$('.nieuweAdherentie').prop('disabled', false);");

@@ -100,7 +100,7 @@ public class LezingDtoMapper
 
 	private LezingSeDto createLezingDto(MammaLezing mammaLezing)
 	{
-		LezingSeDto lezing = new LezingSeDto();
+		var lezing = new LezingSeDto();
 		if (mammaLezing.getBeoordelaar() != null)
 		{
 			lezing.setRadioloogNaam(NaamUtil.getNaamMedewerker(mammaLezing.getBeoordelaar().getMedewerker()));

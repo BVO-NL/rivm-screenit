@@ -186,10 +186,10 @@ public class ScreeningRondeGebeurtenis implements IDetachable
 	{
 		if (extraOmschrijving != null)
 		{
-			int oldLength = extraOmschrijving.length;
+			var oldLength = extraOmschrijving.length;
 			extraOmschrijving = Arrays.copyOf(extraOmschrijving, oldLength + newValues.length);
 
-			for (int indexInNewValues = 0; indexInNewValues < newValues.length; indexInNewValues++)
+			for (var indexInNewValues = 0; indexInNewValues < newValues.length; indexInNewValues++)
 			{
 				extraOmschrijving[oldLength + indexInNewValues] = newValues[indexInNewValues];
 			}

@@ -42,15 +42,15 @@ public class RoosterSplitter
 	public void splitAfspraakslot(Object session, ColonAfspraakslot unsavedObject)
 	{
 		var startDate = unsavedObject.getVanaf();
-		int diffStartEndMinutes = Math.abs(DateUtil.getPeriodeTussenTweeDatums(startDate, unsavedObject.getTot(), ChronoUnit.MINUTES));
+		var diffStartEndMinutes = Math.abs(DateUtil.getPeriodeTussenTweeDatums(startDate, unsavedObject.getTot(), ChronoUnit.MINUTES));
 
 		var duurAfspraakInMinuten = organisatieParameterService.getOrganisatieParameter(unsavedObject.getKamer().getIntakelocatie(),
 			OrganisatieParameterKey.COLON_DUUR_AFSPRAAK_IN_MINUTEN, 15);
-		int berekendAantalBlokken = diffStartEndMinutes / duurAfspraakInMinuten;
+		var berekendAantalBlokken = diffStartEndMinutes / duurAfspraakInMinuten;
 		LocalDateTime tot;
-		for (int i = 0; i < berekendAantalBlokken; i++)
+		for (var i = 0; i < berekendAantalBlokken; i++)
 		{
-			ColonAfspraakslot splittedAfspraakslot = unsavedObject.transientClone();
+			var splittedAfspraakslot = unsavedObject.transientClone();
 			splittedAfspraakslot.setVanaf(startDate);
 			tot = startDate.plusMinutes(duurAfspraakInMinuten);
 			splittedAfspraakslot.setTot(tot);

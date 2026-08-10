@@ -43,8 +43,8 @@ public class MammaVerslagenWerklijstPage extends AbstractMammaBeWerklijstPage
 	public void openBeoordelingScherm(AjaxRequestTarget target, IModel<MammaBeoordeling> model, IModel<MammaBeWerklijstZoekObject> zoekObject, SortParam<String> sortParam)
 	{
 		ScreenitSession.get().setZoekObject(MammaVerslagenWerklijstPage.class, zoekObject); 
-		MammaBeoordeling beoordeling = model.getObject();
-		List<Long> beoordelingenIds = beWerklijstService.zoekBeoordelingenNummers(zoekObject.getObject(), toSpringSort(sortParam));
+		var beoordeling = model.getObject();
+		var beoordelingenIds = beWerklijstService.zoekBeoordelingenNummers(zoekObject.getObject(), toSpringSort(sortParam));
 		setResponsePage(new MammaVerslagPage(beoordeling.getId(), beoordelingenIds, this.getClass()));
 	}
 

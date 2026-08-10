@@ -110,7 +110,7 @@ public class ColonHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 			@Override
 			protected IModel<String> getContentStringModel()
 			{
-				String formatted = String.format(super.getContentStringModel().getObject(), getSelectedHuisarts().getPraktijknaam(), getHuisarts().getPraktijknaam());
+				var formatted = String.format(super.getContentStringModel().getObject(), getSelectedHuisarts().getPraktijknaam(), getHuisarts().getPraktijknaam());
 				return Model.of(formatted);
 			}
 
@@ -151,7 +151,7 @@ public class ColonHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 
 	private void refreshContainer(AjaxRequestTarget target, boolean visible)
 	{
-		WebMarkupContainer container = maakHuisartsBerichtContainer(visible);
+		var container = maakHuisartsBerichtContainer(visible);
 		huisartsBerichtContainer.replaceWith(container);
 		huisartsBerichtContainer = container;
 		target.add(huisartsBerichtContainer);
@@ -159,7 +159,7 @@ public class ColonHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 
 	private WebMarkupContainer maakHuisartsBerichtContainer(boolean visible)
 	{
-		WebMarkupContainer container = new WebMarkupContainer("huisartsBerichtContainer");
+		var container = new WebMarkupContainer("huisartsBerichtContainer");
 		container.setVisible(visible);
 		container.setOutputMarkupId(true);
 		container.setOutputMarkupPlaceholderTag(true);
@@ -167,9 +167,9 @@ public class ColonHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 		container.add(new Label("colonHuisartsBericht.aanmaakDatum"));
 		container.add(new EnumLabel<ColonHuisartsBerichtStatus>("colonHuisartsBericht.status"));
 
-		EnovationHuisarts huisarts = getSelectedHuisarts();
+		var huisarts = getSelectedHuisarts();
 		BaseHuisartsModel<?> huisartsModel = new EnovationHuisartsModel(huisarts);
-		HuisartsInfoPanel result = new HuisartsInfoPanel("huisartsInfo", huisartsModel);
+		var result = new HuisartsInfoPanel("huisartsInfo", huisartsModel);
 		result.setOutputMarkupId(true);
 		result.setOutputMarkupPlaceholderTag(true);
 		result.setVisible(huisarts != null);
@@ -195,7 +195,7 @@ public class ColonHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 
 	private HuisartsZoekenPanel maakHuisartsZoekenPanel()
 	{
-		HuisartsZoekenPanel result = new HuisartsZoekenPanel("huisartsZoeken", false)
+		var result = new HuisartsZoekenPanel("huisartsZoeken", false)
 		{
 			@Override
 			protected void onHuisartsGekozen(AjaxRequestTarget target, EnovationHuisarts huisarts)
@@ -241,8 +241,8 @@ public class ColonHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 
 	private void verstuurHuisartsBericht(ColonHuisartsBericht huidigBericht)
 	{
-		ColonHuisartsBericht verstuurdBericht = huisartsBerichtService.verstuurHuisartsBericht(huidigBericht, getSelectedHuisarts());
-		ColonHuisartsBerichtStatus status = verstuurdBericht.getStatus();
+		var verstuurdBericht = huisartsBerichtService.verstuurHuisartsBericht(huidigBericht, getSelectedHuisarts());
+		var status = verstuurdBericht.getStatus();
 		switch (status)
 		{
 		case VERZENDEN_GELUKT:
@@ -259,8 +259,8 @@ public class ColonHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 
 	private boolean heeftRechtOpnieuwVersturen()
 	{
-		boolean laatstVerstuurdeHuisartsbericht = HuisartsBerichtenUtil.isLaatstVerstuurdeHuisartsbericht(getHuisartsBericht());
-		boolean permission = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_HUISARTSBERICHT_OPNIEUW_VERZENDEN, Actie.AANPASSEN,
+		var laatstVerstuurdeHuisartsbericht = HuisartsBerichtenUtil.isLaatstVerstuurdeHuisartsbericht(getHuisartsBericht());
+		var permission = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_HUISARTSBERICHT_OPNIEUW_VERZENDEN, Actie.AANPASSEN,
 			getHuisartsBericht().getClient());
 		return laatstVerstuurdeHuisartsbericht && permission;
 	}

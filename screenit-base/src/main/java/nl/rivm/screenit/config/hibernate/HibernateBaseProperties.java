@@ -36,7 +36,7 @@ public final class HibernateBaseProperties
 {
 	public static Properties getProperties()
 	{
-		Properties properties = new Properties();
+		var properties = new Properties();
 
 		properties.put(AvailableSettings.SHOW_SQL, "false");
 		properties.put(AvailableSettings.FORMAT_SQL, "false");

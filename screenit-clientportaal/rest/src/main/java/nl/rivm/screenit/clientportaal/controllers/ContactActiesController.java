@@ -24,7 +24,6 @@ package nl.rivm.screenit.clientportaal.controllers;
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.clientportaal.model.colon.ContactActiesDto;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.service.ClientContactService;
 
 import org.springframework.http.ResponseEntity;
@@ -46,7 +45,7 @@ public class ContactActiesController extends AbstractController
 	@GetMapping("/beschikbaar")
 	public ResponseEntity<ContactActiesDto> getContactActies(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 		return ResponseEntity.ok(new ContactActiesDto(clientContactService.getAvailableActies(client, true)));
 	}
 }

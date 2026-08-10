@@ -49,10 +49,10 @@ public class MammaMammograafServiceImpl implements MammaMammograafService
 	@Override
 	public boolean saveOrUpdateMammograaf(MammaMammograaf mammograaf, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		String melding = "";
-		String diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(mammograaf, hibernateService.getHibernateSession());
+		var melding = "";
+		var diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(mammograaf, hibernateService.getHibernateSession());
 
-		boolean isNieuw = mammograaf.getId() == null;
+		var isNieuw = mammograaf.getId() == null;
 		if (isNieuw)
 		{
 			melding += mammograafAanduiding(mammograaf) + " aangemaakt met werkstation IP-adres " + mammograaf.getWerkstationIpAdres();

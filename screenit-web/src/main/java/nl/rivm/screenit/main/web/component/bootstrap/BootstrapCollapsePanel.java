@@ -47,7 +47,7 @@ public class BootstrapCollapsePanel extends Panel
 	public BootstrapCollapsePanel(String id, List<PanelCreator> panels)
 	{
 		super(id);
-		final WebMarkupContainer container = new WebMarkupContainer("container");
+		final var container = new WebMarkupContainer("container");
 		add(container);
 
 		container.add(new ListView<PanelCreator>("components", panels)
@@ -58,18 +58,18 @@ public class BootstrapCollapsePanel extends Panel
 			@Override
 			protected void populateItem(ListItem<PanelCreator> item)
 			{
-				Panel content = item.getModelObject().createPanel("content");
+				var content = item.getModelObject().createPanel("content");
 
 				if (item.getModelObject().isDefaultOpen())
 				{
 					content.add(new AttributeAppender("class", new Model<String>("in"), " "));
 				}
 
-				WebMarkupContainer collapseLink = new WebMarkupContainer("collapseLink");
+				var collapseLink = new WebMarkupContainer("collapseLink");
 				collapseLink.add(new AttributeAppender("data-parent", new Model<String>("#" + container.getMarkupId())));
 				collapseLink.add(new AttributeAppender("href", new Model<String>("#" + content.getMarkupId())));
-				final PanelCreator panel = item.getModelObject();
-				WebMarkupContainer status = new WebMarkupContainer("dahboardIcon")
+				final var panel = item.getModelObject();
+				var status = new WebMarkupContainer("dahboardIcon")
 				{
 
 					private static final long serialVersionUID = 1L;
@@ -78,7 +78,7 @@ public class BootstrapCollapsePanel extends Panel
 					protected void onComponentTag(ComponentTag tag)
 					{
 						super.onComponentTag(tag);
-						Level level = panel.getLevel();
+						var level = panel.getLevel();
 						if (Level.ERROR.equals(level))
 						{
 							tag.put("class", "dashboard-status red");

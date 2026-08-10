@@ -62,7 +62,7 @@ public class MammaAfspraakRedenVerzetFragment extends DocumentTemplateTestenFiel
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		List<String> literals = Arrays.asList(preferenceService.getString(PreferenceKey.MAMMA_BULK_VERZETTEN_VERLEDEN_AFSPRAAK_TEKST.toString(), ""),
+		var literals = Arrays.asList(preferenceService.getString(PreferenceKey.MAMMA_BULK_VERZETTEN_VERLEDEN_AFSPRAAK_TEKST.toString(), ""),
 			preferenceService.getString(PreferenceKey.MAMMA_BULK_VERZETTEN_TOEKOMST_AFSPRAAK_TEKST.toString(), ""));
 
 		add(getFormComponentDropDown(literals));

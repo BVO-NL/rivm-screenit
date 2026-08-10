@@ -30,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.batch.jobs.cervix.order.CervixOrderConstants;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.batch.service.CervixHL7BaseService;
-import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.Rivm;
@@ -63,7 +62,7 @@ public class CervixOrderVersturenWriter extends BaseWriter<CervixCytologieOrder>
 	{
 		LOG.info("Order bericht wordt verstuurd voor cytologieOrder:" + cytologieOrder.getId());
 
-		BMHKLaboratorium laboratorium = cytologieOrder.getUitstrijkje().getLaboratorium();
+		var laboratorium = cytologieOrder.getUitstrijkje().getLaboratorium();
 		var responseWrapper = hl7BaseService.sendHL7Message(cytologieOrder.getHl7Bericht(), laboratorium, OrganisatieParameterKey.CERVIX_CYTOLOGIE_ORDER_HOST,
 			OrganisatieParameterKey.CERVIX_CYTOLOGIE_ORDER_PORT);
 
@@ -73,7 +72,7 @@ public class CervixOrderVersturenWriter extends BaseWriter<CervixCytologieOrder>
 		}
 		else
 		{
-			String melding = "Bericht kon niet verzonden worden: " + responseWrapper.getMelding();
+			var melding = "Bericht kon niet verzonden worden: " + responseWrapper.getMelding();
 			LOG.error(melding, responseWrapper.getCrashException());
 			versturenMislukt(cytologieOrder, melding);
 		}

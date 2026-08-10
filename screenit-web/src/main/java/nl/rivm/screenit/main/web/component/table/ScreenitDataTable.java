@@ -55,7 +55,6 @@ import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.AbstractRepeater;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
@@ -95,7 +94,7 @@ public class ScreenitDataTable<T, S> extends IndicatingAjaxLinkDataTable<T, S>
 	{
 		super.onInitialize();
 
-		IDataProvider<T> dataProvider = getDataProvider();
+		var dataProvider = getDataProvider();
 		if (dataProvider instanceof SortableDataProvider)
 		{
 			ISortState<?> sortState = ScreenitSession.get().getCurrentSort(getClassRelativePath());
@@ -103,7 +102,7 @@ public class ScreenitDataTable<T, S> extends IndicatingAjaxLinkDataTable<T, S>
 			{
 				((SortableDataProvider<T, S>) dataProvider).setSort(((SingleSortState<S>) sortState).getSort());
 			}
-			Long pageNumber = ScreenitSession.get().getSavedPageNumber(getClassRelativePath());
+			var pageNumber = ScreenitSession.get().getSavedPageNumber(getClassRelativePath());
 			if (pageNumber != null && (pageNumber = berekenDeJuisteNummer(pageNumber)) > 0)
 			{
 				setCurrentPage(pageNumber);
@@ -113,7 +112,7 @@ public class ScreenitDataTable<T, S> extends IndicatingAjaxLinkDataTable<T, S>
 
 	private void addNavigation(IModel<String> totaalLabel, boolean pagingVisible)
 	{
-		WebMarkupContainer totaalContainer = new WebMarkupContainer("totaal");
+		var totaalContainer = new WebMarkupContainer("totaal");
 		totaalContainer.add(new Label("aantal", new IModel<String>()
 		{
 			private static final long serialVersionUID = 1L;
@@ -197,9 +196,9 @@ public class ScreenitDataTable<T, S> extends IndicatingAjaxLinkDataTable<T, S>
 			protected void populateItem(final LoopItem loopItem)
 			{
 
-				final long pageIndex = getStartIndex() + loopItem.getIndex();
+				final var pageIndex = getStartIndex() + loopItem.getIndex();
 
-				WebMarkupContainer container = new WebMarkupContainer("container");
+				var container = new WebMarkupContainer("container");
 				container.add(new AttributeAppender("class", new IModel<String>()
 				{
 					private static final long serialVersionUID = 1L;
@@ -219,7 +218,7 @@ public class ScreenitDataTable<T, S> extends IndicatingAjaxLinkDataTable<T, S>
 				container.add(link);
 				loopItem.add(container);
 
-				String label = "";
+				var label = "";
 				if (labelProvider != null)
 				{
 					label = labelProvider.getPageLabel(pageIndex);
@@ -275,7 +274,7 @@ public class ScreenitDataTable<T, S> extends IndicatingAjaxLinkDataTable<T, S>
 	{
 		Item<IColumn<T, S>> returnItem = null;
 
-		final IColumn<T, S> column = model.getObject();
+		final var column = model.getObject();
 
 		if (isRowClickable(getRowModel()) && !(column instanceof INotClickableColumn))
 		{
@@ -341,7 +340,7 @@ public class ScreenitDataTable<T, S> extends IndicatingAjaxLinkDataTable<T, S>
 	protected void onSortChanged()
 	{
 		super.onSortChanged();
-		IDataProvider<T> dataProvider = getDataProvider();
+		var dataProvider = getDataProvider();
 		if (dataProvider instanceof ISortableDataProvider)
 		{
 			ScreenitSession.get().setCurrentSort(getClassRelativePath(), ((ISortableDataProvider<T, S>) dataProvider).getSortState());

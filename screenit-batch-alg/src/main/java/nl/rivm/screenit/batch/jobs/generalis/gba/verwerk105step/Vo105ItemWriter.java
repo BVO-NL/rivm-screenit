@@ -25,8 +25,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo105Bericht;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.utils.VoxHelper;
+import nl.rivm.screenit.model.vertrouwdverbonden.Vo105Bericht;
+import nl.rivm.screenit.model.vertrouwdverbonden.utils.VoxHelper;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.batch.item.Chunk;

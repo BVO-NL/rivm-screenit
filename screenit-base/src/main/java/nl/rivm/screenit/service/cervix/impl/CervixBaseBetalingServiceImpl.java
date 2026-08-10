@@ -98,7 +98,7 @@ public class CervixBaseBetalingServiceImpl implements CervixBaseBetalingService
 	@Override
 	public String getTariefString(CervixTarief tarief)
 	{
-		String tariefTekst = "'";
+		var tariefTekst = "'";
 
 		if (CervixTariefType.isHuisartsTarief(tarief))
 		{

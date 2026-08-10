@@ -33,12 +33,12 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 
+import nl.rivm.screenit.repository.impl.EmptyScrollableResults;
 import nl.rivm.screenit.repository.impl.FluentJpaQueryImpl;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 
 import org.hibernate.ScrollableResults;
-import org.hibernate.internal.EmptyScrollableResults;
 import org.springframework.data.jpa.domain.Specification;
 
 public abstract class BaseSpecificationScrollableResultReader<T extends HibernateObject> extends BaseIdScrollableResultReader
@@ -57,7 +57,7 @@ public abstract class BaseSpecificationScrollableResultReader<T extends Hibernat
 		jpaQuery.projections((cb, r) ->
 		{
 			var orders = getOrders(r, cb);
-			jpaQuery.sortBy((r1, cb1) -> orders);
+			jpaQuery.sortBy((_, _) -> orders);
 			return getProjections(orders, r, cb);
 		});
 		if (isDistinct())
@@ -85,7 +85,7 @@ public abstract class BaseSpecificationScrollableResultReader<T extends Hibernat
 			selections.addAll(orders.stream()
 				.filter(Objects::nonNull)
 				.map(Order::getExpression)
-				.collect(Collectors.toList()));
+				.toList());
 			selections = selections.stream().distinct().collect(Collectors.toList());
 		}
 		return selections;

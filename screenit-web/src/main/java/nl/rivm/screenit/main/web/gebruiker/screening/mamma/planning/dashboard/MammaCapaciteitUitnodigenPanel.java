@@ -24,16 +24,13 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.dashboard;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
-import nl.rivm.screenit.dto.mamma.planning.PlanningConceptMeldingenDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
 import nl.rivm.screenit.main.service.mamma.MammaScreeningsEenheidService;
 import nl.rivm.screenit.main.service.mamma.MammaStandplaatsPeriodeService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
@@ -54,7 +51,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.DateValidator;
-import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
 public abstract class MammaCapaciteitUitnodigenPanel extends GenericPanel<MammaScreeningsEenheid>
 {
@@ -73,20 +69,20 @@ public abstract class MammaCapaciteitUitnodigenPanel extends GenericPanel<MammaS
 	public MammaCapaciteitUitnodigenPanel(String id, IModel<MammaScreeningsEenheid> screeningsEenheidModel)
 	{
 		super(id, screeningsEenheidModel);
-		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
-		boolean magAanpassen = ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
+		var ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
+		var magAanpassen = ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
 
-		MammaScreeningsEenheid screeningsEenheid = screeningsEenheidModel.getObject();
+		var screeningsEenheid = screeningsEenheidModel.getObject();
 		IModel<List<PlanningStandplaatsPeriodeDto>> standplaatsPeriodes = new ListModel<>(
 			standplaatsPeriodeService.getStandplaatsPeriodesSorted(screeningsEenheidModel.getObject()));
 
-		ScreenitForm<MammaScreeningsEenheid> form = new ScreenitForm<>("form");
+		var form = new ScreenitForm<MammaScreeningsEenheid>("form");
 		add(form);
 
 		form.add(new Label("naam"));
 		form.add(new Label("uitgenodigdTotEnMet"));
 
-		DatePicker<Date> uitnodigenTotEnMetKalender = ComponentHelper.newYearDatePicker("uitnodigenTotEnMet");
+		var uitnodigenTotEnMetKalender = ComponentHelper.newYearDatePicker("uitnodigenTotEnMet");
 		uitnodigenTotEnMetKalender.setDisabled(!magAanpassen);
 		form.add(uitnodigenTotEnMetKalender);
 		if (screeningsEenheid.getUitgenodigdTotEnMet() != null)
@@ -97,34 +93,34 @@ public abstract class MammaCapaciteitUitnodigenPanel extends GenericPanel<MammaS
 		uitnodigenTotEnMetKalender.add(new VrijgegevenTotEnMetUitnodigenTotEnMetDatumValidator(standplaatsPeriodes));
 		uitnodigenTotEnMetKalender.add(DateValidator.maximum(DateUtil.plusTijdseenheid(vandaag, 2, ChronoUnit.MONTHS)));
 
-		DatePicker<Date> vrijgegevenTotEnMetKalender = ComponentHelper.newYearDatePicker("vrijgegevenTotEnMet");
+		var vrijgegevenTotEnMetKalender = ComponentHelper.newYearDatePicker("vrijgegevenTotEnMet");
 		vrijgegevenTotEnMetKalender.setDisabled(!magAanpassen);
 		form.add(vrijgegevenTotEnMetKalender);
 		vrijgegevenTotEnMetKalender.add(new VrijgegevenTotEnMetUitnodigenTotEnMetDatumValidator(standplaatsPeriodes));
 		vrijgegevenTotEnMetKalender.add(DateValidator.range(DateUtil.minDagen(vandaag, 1), DateUtil.plusTijdseenheid(vandaag, 6, ChronoUnit.MONTHS)));
 
-		IndicatingAjaxButton opslaanknop = new IndicatingAjaxButton("opslaan")
+		var opslaanknop = new IndicatingAjaxButton("opslaan")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				PlanningConceptMeldingenDto meldingen = baseConceptPlanningsApplicatie.saveConcept(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), true);
+				var meldingen = baseConceptPlanningsApplicatie.saveConcept(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), true);
 				if (meldingen.seMeldingen.size() > 0)
 				{
 					error(getString("wijzigingDatums.conceptNietOpgeslagen"));
 				}
 				else
 				{
-					boolean isScreeningsEenheidGewijzigd = screeningsEenheidService.saveOrUpdateSE(MammaCapaciteitUitnodigenPanel.this.getModelObject(),
+					var isScreeningsEenheidGewijzigd = screeningsEenheidService.saveOrUpdateSE(MammaCapaciteitUitnodigenPanel.this.getModelObject(),
 						ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 
 					close(target);
 
 					if (!standplaatsPeriodes.getObject().isEmpty())
 					{
-						Date uitnodigenTotEnMet = MammaCapaciteitUitnodigenPanel.this.getModelObject().getUitnodigenTotEnMet();
+						var uitnodigenTotEnMet = MammaCapaciteitUitnodigenPanel.this.getModelObject().getUitnodigenTotEnMet();
 
-						boolean toonAchtervangMelding = uitnodigenTotEnMet != null
+						var toonAchtervangMelding = uitnodigenTotEnMet != null
 							&& standplaatsPeriodes.getObject().stream().anyMatch(standplaatsPeriode -> !uitnodigenTotEnMet.before(DateUtil.toUtilDate(standplaatsPeriode.totEnMet))
 							&& !standplaatsPeriode.gesplitst
 							&& standplaatsPeriode.meldingenDto.meldingen.size() > 1 
@@ -171,10 +167,10 @@ public abstract class MammaCapaciteitUitnodigenPanel extends GenericPanel<MammaS
 		@Override
 		public void validate(IValidatable<Date> iValidatable)
 		{
-			Date teValiderenDatum = iValidatable.getValue();
-			ValidationError error = new ValidationError();
+			var teValiderenDatum = iValidatable.getValue();
+			var error = new ValidationError();
 
-			Optional<PlanningStandplaatsPeriodeDto> eersteStandplaatsPeriodeMetPrognose = standplaatsPeriodes.getObject().stream()
+			var eersteStandplaatsPeriodeMetPrognose = standplaatsPeriodes.getObject().stream()
 				.filter(standplaatsPeriode -> standplaatsPeriode.prognose)
 				.findFirst();
 
@@ -190,7 +186,7 @@ public abstract class MammaCapaciteitUitnodigenPanel extends GenericPanel<MammaS
 			{
 				if (!standplaatsPeriodes.getObject().isEmpty())
 				{
-					PlanningStandplaatsPeriodeDto laatsteStandplaatsPeriode = standplaatsPeriodes.getObject().get(standplaatsPeriodes.getObject().size() - 1);
+					var laatsteStandplaatsPeriode = standplaatsPeriodes.getObject().get(standplaatsPeriodes.getObject().size() - 1);
 					if (teValiderenDatum.after(DateUtil.toUtilDate(laatsteStandplaatsPeriode.totEnMet)))
 					{
 						error.addKey("VijfDagenVoorEinddatumValidator.datumNaLaatsteStandplaatsperiode");

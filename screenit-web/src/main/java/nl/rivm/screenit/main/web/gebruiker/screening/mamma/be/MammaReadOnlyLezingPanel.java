@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.verslag.MammaVerslagRondePanel;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.enums.Recht;
@@ -32,7 +31,6 @@ import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
-import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -79,11 +77,11 @@ public class MammaReadOnlyLezingPanel extends GenericPanel<MammaBeoordeling>
 
 	private void addNevenbevindingen(MammaLezing lezing, boolean nevenbevindingenWeergeven)
 	{
-		WebMarkupContainer nevenbevindingenContainer = new WebMarkupContainer("nevenbevindingenContainer");
+		var nevenbevindingenContainer = new WebMarkupContainer("nevenbevindingenContainer");
 		nevenbevindingenContainer.add(new Label("nevenbevindingen", baseBeoordelingService.getMammaLezingEnumsTekst(MammaLezing::getNevenbevindingen, lezing)));
 
-		String nevenbevindingOpmerkingTekst = baseBeoordelingService.getNevenbevindingOpmerkingTekst("<br />", lezing);
-		Label nevenbevindingOpmerkingLabel = new Label("nevenbevindingenOpmerking", nevenbevindingOpmerkingTekst);
+		var nevenbevindingOpmerkingTekst = baseBeoordelingService.getNevenbevindingOpmerkingTekst("<br />", lezing);
+		var nevenbevindingOpmerkingLabel = new Label("nevenbevindingenOpmerking", nevenbevindingOpmerkingTekst);
 		nevenbevindingOpmerkingLabel.setEscapeModelStrings(false);
 		nevenbevindingOpmerkingLabel.setVisible(nevenbevindingOpmerkingTekst != null);
 		nevenbevindingenContainer.add(nevenbevindingOpmerkingLabel);
@@ -93,13 +91,13 @@ public class MammaReadOnlyLezingPanel extends GenericPanel<MammaBeoordeling>
 
 	private void addFotobesprekingRedenen(MammaLezing lezing, boolean redenenFotobesprekingWeergeven)
 	{
-		WebMarkupContainer redenenFotobesprekingRadioloogContainer = new WebMarkupContainer("redenenFotobesprekingRadioloogContainer");
+		var redenenFotobesprekingRadioloogContainer = new WebMarkupContainer("redenenFotobesprekingRadioloogContainer");
 		redenenFotobesprekingRadioloogContainer
 			.add(new Label("redenenFotobesprekingRadioloog", baseBeoordelingService.getMammaLezingEnumsTekst(MammaLezing::getRedenenFotobesprekingRadioloog, lezing)));
 		redenenFotobesprekingRadioloogContainer.setVisible(!lezing.getRedenenFotobesprekingRadioloog().isEmpty() && redenenFotobesprekingWeergeven);
 		add(redenenFotobesprekingRadioloogContainer);
 
-		WebMarkupContainer redenenFotobesprekingMbberContainer = new WebMarkupContainer("redenenFotobesprekingMbberContainer");
+		var redenenFotobesprekingMbberContainer = new WebMarkupContainer("redenenFotobesprekingMbberContainer");
 		redenenFotobesprekingMbberContainer
 			.add(new Label("redenenFotobesprekingMbber", baseBeoordelingService.getMammaLezingEnumsTekst(MammaLezing::getRedenenFotobesprekingMbber, lezing)));
 		redenenFotobesprekingMbberContainer.setVisible(!lezing.getRedenenFotobesprekingMbber().isEmpty() && redenenFotobesprekingWeergeven);
@@ -108,7 +106,7 @@ public class MammaReadOnlyLezingPanel extends GenericPanel<MammaBeoordeling>
 
 	public MammaVerslagRondePanel findMammaVerslagPanel()
 	{
-		MarkupContainer result = getParent();
+		var result = getParent();
 		while (!(result instanceof MammaVerslagRondePanel))
 		{
 			result = result.getParent();
@@ -118,8 +116,8 @@ public class MammaReadOnlyLezingPanel extends GenericPanel<MammaBeoordeling>
 
 	public IModel<MammaLezing> maakVerslagLezing()
 	{
-		OrganisatieMedewerker beoordelaar = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
-		MammaLezing verslagLezing = baseBeoordelingService.maakVerslagLezing(lezingModel.getObject(), beoordelaar, isOnervarenRadioloog());
+		var beoordelaar = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
+		var verslagLezing = baseBeoordelingService.maakVerslagLezing(lezingModel.getObject(), beoordelaar, isOnervarenRadioloog());
 		return ModelUtil.cModel(verslagLezing);
 	}
 

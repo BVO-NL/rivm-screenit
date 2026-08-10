@@ -104,10 +104,10 @@ public class ClientProjectGegevens extends ClientPage
 		gebeurtenissenContainer = getGebeurtenissenContainer();
 		add(gebeurtenissenContainer);
 
-		WebMarkupContainer attributenContainer = getAttributenContainer();
+		var attributenContainer = getAttributenContainer();
 		add(attributenContainer);
 
-		ProjectClient pc = projectClientModel.getObject();
+		var pc = projectClientModel.getObject();
 
 		add(new Label("title.project.naam", Model.of(pc.getProject().getNaam())));
 
@@ -119,7 +119,7 @@ public class ClientProjectGegevens extends ClientPage
 
 		add(new Label("client.status", Model.of(pc.getActief() ? "Actief" : "Inactief")));
 
-		WebMarkupContainer inactiveerContainer = new WebMarkupContainer("inactiveerContainer");
+		var inactiveerContainer = new WebMarkupContainer("inactiveerContainer");
 
 		String inactiveerReden = null;
 		if (pc.getProjectInactiefReden() != null)
@@ -145,10 +145,10 @@ public class ClientProjectGegevens extends ClientPage
 			@Override
 			public boolean isVisible()
 			{
-				ProjectClient pClient = projectClientModel.getObject();
+				var pClient = projectClientModel.getObject();
 				boolean pClientActief = pClient.getActief();
 				boolean groepActief = pClient.getGroep().getActief();
-				boolean projectActief = ProjectStatus.ACTIEF.equals(ProjectUtil.getStatus(pClient.getProject(), currentDateSupplier.getDate()));
+				var projectActief = ProjectStatus.ACTIEF.equals(ProjectUtil.getStatus(pClient.getProject(), currentDateSupplier.getDate()));
 				return pClientActief && groepActief && projectActief;
 			}
 		});
@@ -158,8 +158,8 @@ public class ClientProjectGegevens extends ClientPage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				ProjectClient pClient = projectClientModel.getObject();
-				String foutMelding = clientService.projectClientActiveren(pClient);
+				var pClient = projectClientModel.getObject();
+				var foutMelding = clientService.projectClientActiveren(pClient);
 				if (foutMelding != null)
 				{
 					error(getString(foutMelding));
@@ -173,10 +173,10 @@ public class ClientProjectGegevens extends ClientPage
 			@Override
 			public boolean isVisible()
 			{
-				ProjectClient pClient = projectClientModel.getObject();
-				boolean pClientNietActief = !pClient.getActief();
+				var pClient = projectClientModel.getObject();
+				var pClientNietActief = !pClient.getActief();
 				boolean groepActief = pClient.getGroep().getActief();
-				boolean projectActief = ProjectStatus.ACTIEF.equals(ProjectUtil.getStatus(pClient.getProject(), currentDateSupplier.getDate()));
+				var projectActief = ProjectStatus.ACTIEF.equals(ProjectUtil.getStatus(pClient.getProject(), currentDateSupplier.getDate()));
 				return pClientNietActief && groepActief && projectActief;
 			}
 		});
@@ -184,22 +184,22 @@ public class ClientProjectGegevens extends ClientPage
 
 	private WebMarkupContainer getGebeurtenissenContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("gebeurtenissenContainer");
+		var container = new WebMarkupContainer("gebeurtenissenContainer");
 		container.setOutputMarkupId(true);
 
-		ProjectClient pClient = projectClientModel.getObject();
+		var pClient = projectClientModel.getObject();
 
-		List<ScreeningRondeGebeurtenis> dg = dossierService.getProjectGebeurtenissen(pClient);
+		var dg = dossierService.getProjectGebeurtenissen(pClient);
 		IModel<List<ScreeningRondeGebeurtenis>> dossierModel = new DetachableListModel<>(dg);
 
-		PropertyListView<ScreeningRondeGebeurtenis> gebeurtenissen = new PropertyListView<ScreeningRondeGebeurtenis>("gebeurtenissen",
+		var gebeurtenissen = new PropertyListView<ScreeningRondeGebeurtenis>("gebeurtenissen",
 			new SortingListModel<>(dossierModel, new GebeurtenisComparator()))
 		{
 			@Override
 			protected void populateItem(final ListItem<ScreeningRondeGebeurtenis> item)
 			{
-				ScreeningRondeGebeurtenis screeningRondeGebeurtenis = item.getModelObject();
-				final TypeGebeurtenis gebeurtenis = screeningRondeGebeurtenis.getGebeurtenis();
+				var screeningRondeGebeurtenis = item.getModelObject();
+				final var gebeurtenis = screeningRondeGebeurtenis.getGebeurtenis();
 				item.add(DateLabel.forDatePattern("datum", "dd-MM-yyyy HH:mm:ss"));
 				item.add(new EnumLabel<TypeGebeurtenis>("gebeurtenis"));
 				item.add(new EnumLabel<GebeurtenisBron>("bron"));
@@ -215,8 +215,8 @@ public class ClientProjectGegevens extends ClientPage
 
 				item.add(new Label("extraOmschrijving", (IModel<String>) () ->
 				{
-					ScreeningRondeGebeurtenis gebeurtenis2 = item.getModelObject();
-					String[] extraOmschrijvingen = gebeurtenis2.getExtraOmschrijving();
+					var gebeurtenis2 = item.getModelObject();
+					var extraOmschrijvingen = gebeurtenis2.getExtraOmschrijving();
 					return BriefOmschrijvingUtil.verwerkExtraOmschrijvingen(extraOmschrijvingen, ClientProjectGegevens.this::getString);
 				})
 				{
@@ -241,7 +241,7 @@ public class ClientProjectGegevens extends ClientPage
 							{
 								dialog.setCloseCallback((IDialogCloseCallback) target1 ->
 								{
-									WebMarkupContainer nieuwGebCont = getGebeurtenissenContainer();
+									var nieuwGebCont = getGebeurtenissenContainer();
 									gebeurtenissenContainer.replaceWith(nieuwGebCont);
 									gebeurtenissenContainer = nieuwGebCont;
 									target1.add(gebeurtenissenContainer);
@@ -261,7 +261,7 @@ public class ClientProjectGegevens extends ClientPage
 
 	private WebMarkupContainer getAttributenContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("attributenContainer");
+		var container = new WebMarkupContainer("attributenContainer");
 		container.setOutputMarkupId(true);
 
 		List<IColumn<ProjectClientAttribuut, String>> columns = new ArrayList<IColumn<ProjectClientAttribuut, String>>();
@@ -271,7 +271,7 @@ public class ClientProjectGegevens extends ClientPage
 			@Override
 			public IModel<?> getDataModel(IModel<ProjectClientAttribuut> rowModel)
 			{
-				ProjectClientAttribuut projectClientAttribuut = rowModel.getObject();
+				var projectClientAttribuut = rowModel.getObject();
 				if (Boolean.TRUE.equals(projectClientAttribuut.getAttribuut().getNietZichtbaarInClientDossier()))
 				{
 					projectClientAttribuut.setValue("*****");
@@ -280,7 +280,7 @@ public class ClientProjectGegevens extends ClientPage
 			}
 		});
 
-		ScreenitDataTable<ProjectClientAttribuut, String> dataTable = new ScreenitDataTable<ProjectClientAttribuut, String>("attributen", columns,
+		var dataTable = new ScreenitDataTable<ProjectClientAttribuut, String>("attributen", columns,
 			new ClientProjectAttributenDataProvider(projectClientModel), 5, Model.of("Attributen"))
 		{
 			@Override

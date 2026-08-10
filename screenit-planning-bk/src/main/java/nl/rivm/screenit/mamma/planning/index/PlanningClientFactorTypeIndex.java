@@ -38,19 +38,19 @@ public enum PlanningClientFactorTypeIndex
 
 	public static Set<PlanningClient> get(PlanningScreeningsOrganisatie screeningsOrganisatie, MammaFactorType factorType)
 	{
-		Map<MammaFactorType, Set<PlanningClient>> clientenPerFactorType = screeningsOrganisatieClientenPerFactorTypeMap.get(screeningsOrganisatie);
+		var clientenPerFactorType = screeningsOrganisatieClientenPerFactorTypeMap.get(screeningsOrganisatie);
 		return clientenPerFactorType != null ? clientenPerFactorType.get(factorType) : null;
 	}
 
 	public static void put(PlanningClient client)
 	{
-		PlanningScreeningsOrganisatie screeningsOrganisatie = client.getScreeningsOrganisatie();
-		Map<MammaFactorType, Set<PlanningClient>> factorTypeClientMap = screeningsOrganisatieClientenPerFactorTypeMap.get(screeningsOrganisatie);
+		var screeningsOrganisatie = client.getScreeningsOrganisatie();
+		var factorTypeClientMap = screeningsOrganisatieClientenPerFactorTypeMap.get(screeningsOrganisatie);
 
 		if (factorTypeClientMap == null)
 		{
 			factorTypeClientMap = new HashMap<>();
-			for (MammaFactorType factorType : MammaFactorType.values())
+			for (var factorType : MammaFactorType.values())
 			{
 				factorTypeClientMap.put(factorType, new HashSet<>());
 			}
@@ -62,8 +62,8 @@ public enum PlanningClientFactorTypeIndex
 
 	private static void putInMap(PlanningClient client, Map<MammaFactorType, Set<PlanningClient>> factorTypeClientMap)
 	{
-		MammaFactorType factorType = client.getFactorType();
-		Set<PlanningClient> clientSet = factorTypeClientMap.get(factorType);
+		var factorType = client.getFactorType();
+		var clientSet = factorTypeClientMap.get(factorType);
 		clientSet.add(client);
 	}
 

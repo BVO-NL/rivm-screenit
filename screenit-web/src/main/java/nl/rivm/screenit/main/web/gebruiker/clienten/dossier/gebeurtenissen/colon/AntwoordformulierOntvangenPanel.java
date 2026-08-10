@@ -21,10 +21,8 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.colo
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.main.service.colon.ColonDossierService;
@@ -37,10 +35,7 @@ import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.Gebeu
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.OrionResourceLink;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.OrionViewerContainer;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.UploadDocument;
-import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.colon.SAFTransactionTrail;
 import nl.rivm.screenit.model.colon.ScannedAntwoordFormulier;
@@ -106,11 +101,11 @@ public class AntwoordformulierOntvangenPanel extends AbstractGebeurtenisDetailPa
 	public AntwoordformulierOntvangenPanel(String id, IModel<ScreeningRondeGebeurtenis> model)
 	{
 		super(id, model);
-		ColonUitnodiging uitnodiging = (ColonUitnodiging) model.getObject().getUitnodiging();
-		PropertyModel<ColonUitnodiging> uitnodigingModel = new PropertyModel<ColonUitnodiging>(model, "uitnodiging");
+		var uitnodiging = (ColonUitnodiging) model.getObject().getUitnodiging();
+		var uitnodigingModel = new PropertyModel<ColonUitnodiging>(model, "uitnodiging");
 
-		UploadDocument formulier = uitnodiging.getAntwoordFormulier().getFormulier();
-		File file = formulier != null ? uploadDocumentService.load(formulier) : null;
+		var formulier = uitnodiging.getAntwoordFormulier().getFormulier();
+		var file = formulier != null ? uploadDocumentService.load(formulier) : null;
 
 		if (file != null && file.exists())
 		{
@@ -122,7 +117,7 @@ public class AntwoordformulierOntvangenPanel extends AbstractGebeurtenisDetailPa
 		else
 		{
 
-			String objid = uitnodiging.getAntwoordFormulier().getObjid();
+			var objid = uitnodiging.getAntwoordFormulier().getObjid();
 			throw new IllegalStateException("Opgevraagde formulier met objid " + objid + " bestaat niet in de filestore.");
 		}
 
@@ -137,12 +132,12 @@ public class AntwoordformulierOntvangenPanel extends AbstractGebeurtenisDetailPa
 	@Override
 	protected void addButton(String id, GebeurtenisPopupBasePanel parent)
 	{
-		ConfirmingIndicatingAjaxLink<Void> button = new ConfirmingIndicatingAjaxLink<Void>(id, confirmDialog, "label.antwoordformulier.verwijderen")
+		var button = new ConfirmingIndicatingAjaxLink<Void>(id, confirmDialog, "label.antwoordformulier.verwijderen")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				ColonUitnodiging uitnodiging = (ColonUitnodiging) AntwoordformulierOntvangenPanel.this.getModelObject().getUitnodiging();
+				var uitnodiging = (ColonUitnodiging) AntwoordformulierOntvangenPanel.this.getModelObject().getUitnodiging();
 				colonDossierService.verwijderScannedAntwoordFormulier(uitnodiging, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				ScreenitSession.get().info(AntwoordformulierOntvangenPanel.this.getString("antwoordformulier.verwijderd"));
 				setResponsePage(new ClientDossierPage(ModelUtil.sModel(uitnodiging.getScreeningRonde().getDossier().getClient())));
@@ -150,12 +145,12 @@ public class AntwoordformulierOntvangenPanel extends AbstractGebeurtenisDetailPa
 		};
 		button.add(new Label("label", getString("label.verwijderen")));
 		button.add(new AttributeAppender("class", Model.of(" btn-danger")));
-		ScreeningRondeGebeurtenis screeningRondeGebeurtenis = getModelObject();
-		boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_AANVRAAGFORMULIER_ONTVANGEN, Actie.VERWIJDEREN);
-		ColonUitnodiging uitnodiging = (ColonUitnodiging) screeningRondeGebeurtenis.getUitnodiging();
+		var screeningRondeGebeurtenis = getModelObject();
+		var magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_AANVRAAGFORMULIER_ONTVANGEN, Actie.VERWIJDEREN);
+		var uitnodiging = (ColonUitnodiging) screeningRondeGebeurtenis.getUitnodiging();
 		if (uitnodiging != null)
 		{
-			ColonScreeningRonde colonScreeningRonde = uitnodiging.getScreeningRonde();
+			var colonScreeningRonde = uitnodiging.getScreeningRonde();
 			if (uitnodiging.getOnderzoeksVariant() != ColonOnderzoeksVariant.STANDAARD)
 			{
 
@@ -166,7 +161,7 @@ public class AntwoordformulierOntvangenPanel extends AbstractGebeurtenisDetailPa
 
 				magVerwijderen &= false;
 			}
-			ColonIntakeAfspraak laatsteAfspraak = colonScreeningRonde.getLaatsteAfspraak();
+			var laatsteAfspraak = colonScreeningRonde.getLaatsteAfspraak();
 			if (laatsteAfspraak != null && laatsteAfspraak.getConclusie() != null)
 			{
 
@@ -214,8 +209,8 @@ public class AntwoordformulierOntvangenPanel extends AbstractGebeurtenisDetailPa
 			add(new BooleanLabel("meedoenBVOenWO").setVisible(uitnodiging.getObject().getOnderzoeksVariant() != ColonOnderzoeksVariant.STANDAARD));
 			add(new BooleanLabel("toestemmingInzage"));
 			add(new BooleanLabel("toestemmingBewaren"));
-			ScannedAntwoordFormulier saf = (ScannedAntwoordFormulier) getDefaultModelObject();
-			Label statusLabel = new Label("statusLabel");
+			var saf = (ScannedAntwoordFormulier) getDefaultModelObject();
+			var statusLabel = new Label("statusLabel");
 
 			if (ScannedAntwoordFormulier.STATUS_VERWIJDERD_UIT_DOSSIER.equals(saf.getStatus()))
 			{
@@ -228,19 +223,19 @@ public class AntwoordformulierOntvangenPanel extends AbstractGebeurtenisDetailPa
 			add(statusLabel);
 			add(new Label("status", getString("OCR." + saf.getStatus(), null, "onbekende status")));
 			add(new Label("fitStatus", getFitStatus(uitnodiging.getObject())).setVisible(ScreenitSession.get().checkPermission(Recht.TESTEN, Actie.INZIEN)));
-			int indexAfmeldReden = saf.getIndexAfmeldReden();
+			var indexAfmeldReden = saf.getIndexAfmeldReden();
 			add(new Label("afmeldReden", getString(EnumStringUtil.getPropertyString(ColonAfmeldingReden.resolveEnum(indexAfmeldReden)))));
 
-			List<SAFTransactionTrail> trails = saf.getTransactionTrails();
+			var trails = saf.getTransactionTrails();
 			Comparator<SAFTransactionTrail> com = (o1, o2) -> o2.getDatumTijd().compareTo(o1.getDatumTijd());
 
 			trails.sort(com);
-			ListView<SAFTransactionTrail> listView = new ListView<>("transactionTrails", ModelUtil.listModel(trails))
+			var listView = new ListView<>("transactionTrails", ModelUtil.listModel(trails))
 			{
 				@Override
 				protected void populateItem(ListItem<SAFTransactionTrail> item)
 				{
-					IModel<SAFTransactionTrail> model = item.getModel();
+					var model = item.getModel();
 					item.add(DateLabel.forDatePattern("datum", new PropertyModel<Date>(model, "datumTijd"), "dd-MM-yyyy HH:mm"));
 					item.add(new Label("medewerker", new PropertyModel<String>(model, "medewerker")));
 					item.add(new Label("bericht", getString(model.getObject().getTransactionId(), model, model.getObject().getTransactionId())));

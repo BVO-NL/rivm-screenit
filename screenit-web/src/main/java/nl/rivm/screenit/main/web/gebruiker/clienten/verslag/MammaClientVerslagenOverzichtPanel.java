@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.verslag;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
@@ -62,8 +60,8 @@ public class MammaClientVerslagenOverzichtPanel extends ClientVerslagenOverzicht
 	@Override
 	protected boolean magOverzichtZien()
 	{
-		List<Bevolkingsonderzoek> bevolkingsonderzoeken = ScreenitSession.get().getOnderzoeken();
-		IModel<Client> clientModel = getModel();
+		var bevolkingsonderzoeken = ScreenitSession.get().getOnderzoeken();
+		var clientModel = getModel();
 		return bevolkingsonderzoeken.contains(Bevolkingsonderzoek.MAMMA)
 			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_MAMMA_FOLLOW_UP_VERSLAG, Actie.INZIEN, clientModel.getObject());
 	}

@@ -84,8 +84,8 @@ public class VrijSlot implements Comparable<VrijSlot>
 	@Override
 	public int hashCode()
 	{
-		final int prime = 31;
-		int result = 1;
+		final var prime = 31;
+		var result = 1;
 		result = prime * result + (eindTijd == null ? 0 : eindTijd.hashCode());
 		result = prime * result + (kamer == null ? 0 : kamer.hashCode());
 		result = prime * result + (kamerId == null ? 0 : kamerId.hashCode());
@@ -109,7 +109,7 @@ public class VrijSlot implements Comparable<VrijSlot>
 		{
 			return false;
 		}
-		VrijSlot other = (VrijSlot) obj;
+		var other = (VrijSlot) obj;
 		if (eindTijd == null)
 		{
 			if (other.eindTijd != null)
@@ -167,7 +167,7 @@ public class VrijSlot implements Comparable<VrijSlot>
 	@Override
 	public String toString()
 	{
-		String string = "VrijSlot [startDatum=" + getDatumAsString() + ", startTijd=" + getStartTijdAsString() + ", eindTijd=" + getEindTijdAsString();
+		var string = "VrijSlot [startDatum=" + getDatumAsString() + ", startTijd=" + getStartTijdAsString() + ", eindTijd=" + getEindTijdAsString();
 		if (kamer != null)
 		{
 			string += ", kamer=" + kamer.getNaam() + " van IL " + kamer.getIntakelocatie().getNaam();

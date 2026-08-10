@@ -113,7 +113,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 		dialog = new BootstrapDialog("dialog");
 		add(dialog);
 
-		CervixHuisarts huisarts = (CervixHuisarts) super.getCurrentSelectedOrganisatie();
+		var huisarts = (CervixHuisarts) super.getCurrentSelectedOrganisatie();
 
 		alleenInzien = autorisatieService.getActieVoorOrganisatie(getIngelogdeOrganisatieMedewerker(), huisarts,
 			Recht.MEDEWERKER_HUISARTSENPRAKTIJKEN_BEHEER) == Actie.INZIEN;
@@ -125,7 +125,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 
 		searchLocatieModel = Model.of(new SearchHuisartsLocatieDto());
 
-		Form<CervixHuisarts> form = new Form<>("form", huisartsIModel);
+		var form = new Form<CervixHuisarts>("form", huisartsIModel);
 		add(form);
 
 		form.add(new Label("agbcode"));
@@ -145,7 +145,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 		ComponentHelper.addTextField(form, "postadres.huisnummer", true, 10, Integer.class, alleenInzien).add(RangeValidator.minimum(0));
 		ComponentHelper.addTextField(form, "postadres.huisnummerToevoeging", false, 26, String.class, alleenInzien);
 		ComponentHelper.newPostcodeTextField(form, "postadres.postcode", true, alleenInzien);
-		List<Woonplaats> alleWoonplaatsen = hibernateService.loadAll(Woonplaats.class, "naam", true);
+		var alleWoonplaatsen = hibernateService.loadAll(Woonplaats.class, "naam", true);
 		form.add(new ScreenitDropdown<Woonplaats>("postadres.woonplaats", new SimpleListHibernateModel<Woonplaats>(alleWoonplaatsen), new IChoiceRenderer<Woonplaats>()
 		{
 			@Override
@@ -178,7 +178,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				CervixHuisarts huisarts = huisartsIModel.getObject();
+				var huisarts = huisartsIModel.getObject();
 				cervixHuisartsService.resetWachtwoord(huisarts, ScreenitSession.get().getIngelogdAccount());
 
 				info("Account in het huisartsenportaal wordt gereset.");
@@ -191,7 +191,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 
 	private WebMarkupContainer addButtonsContainer(Form<?> form)
 	{
-		WebMarkupContainer container = new WebMarkupContainer("buttonContainer");
+		var container = new WebMarkupContainer("buttonContainer");
 		container.setOutputMarkupId(true);
 
 		container.add(new AjaxSubmitLink("opslaan", form)
@@ -199,7 +199,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				CervixHuisarts huisarts = (CervixHuisarts) form.getModelObject();
+				var huisarts = (CervixHuisarts) form.getModelObject();
 				cervixHuisartsService.saveOrUpdateArts(huisarts, LogGebeurtenis.ORGANISATIE_WIJZIG, getIngelogdeOrganisatieMedewerker());
 				addOrReplacePaspoortPanel(huisarts, target);
 				info("Huisarts succesvol opgeslagen.");
@@ -211,13 +211,13 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				CervixHuisarts huisarts = huisartsIModel.getObject();
+				var huisarts = huisartsIModel.getObject();
 				cervixHuisartsService.inactiveerHuisarts(huisarts, getIngelogdeOrganisatieMedewerker());
 
 				addOrReplacePaspoortPanel(huisarts, target);
 				info("huisarts succesvol geinactiveerd.");
 
-				WebMarkupContainer container = addButtonsContainer(form);
+				var container = addButtonsContainer(form);
 				buttonContainer.replaceWith(container);
 				buttonContainer = container;
 				target.add(container);
@@ -232,7 +232,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 			@Override
 			public boolean isVisible()
 			{
-				boolean heeftRecht = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_HUISARTSENPRAKTIJKEN_BEHEER, Actie.VERWIJDEREN);
+				var heeftRecht = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_HUISARTSENPRAKTIJKEN_BEHEER, Actie.VERWIJDEREN);
 				boolean locatieActief = huisartsIModel.getObject().getActief();
 				return heeftRecht && locatieActief;
 			}
@@ -244,7 +244,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 	private void addOrReplacePaspoortPanel(CervixHuisarts huisarts, AjaxRequestTarget target)
 	{
 
-		WebMarkupContainer paspoortContainer = new WebMarkupContainer("paspoortContainer");
+		var paspoortContainer = new WebMarkupContainer("paspoortContainer");
 		paspoortContainer.setOutputMarkupId(true);
 		paspoortContainer.add(new CervixHuisartsPaspoortPanel("paspoort", ModelUtil.sModel(huisarts)));
 		if (paspoortPanel != null)
@@ -264,7 +264,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 
 	private WebMarkupContainer addLocatieDataTable(CervixHuisarts huisarts)
 	{
-		WebMarkupContainer container = new WebMarkupContainer("locatiesContainer");
+		var container = new WebMarkupContainer("locatiesContainer");
 		container.setOutputMarkupId(true);
 
 		List<IColumn<CervixHuisartsLocatie, String>> columns = new ArrayList<IColumn<CervixHuisartsLocatie, String>>();
@@ -279,10 +279,10 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 			@Override
 			public void populateItem(Item<ICellPopulator<CervixHuisartsLocatie>> cellItem, String componentId, IModel<CervixHuisartsLocatie> rowModel)
 			{
-				CervixHuisartsLocatie locatie = rowModel.getObject();
+				var locatie = rowModel.getObject();
 				if (locatie.getLocatieAdres() != null)
 				{
-					String tekst = locatie.getLocatieAdres().getHuisnummer().toString();
+					var tekst = locatie.getLocatieAdres().getHuisnummer().toString();
 					if (locatie.getLocatieAdres().getHuisnummerToevoeging() != null)
 					{
 						tekst += locatie.getLocatieAdres().getHuisnummerToevoeging();
@@ -301,7 +301,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 			propertyChain(CervixHuisartsLocatie_.LOCATIE_ADRES, CervixHuisartsAdres_.WOONPLAATS, Woonplaats_.NAAM)));
 		columns.add(new ActiefPropertyColumn<>(Model.of(""), Organisatie_.ACTIEF, container, searchLocatieModel));
 
-		ScreenitDataTable<CervixHuisartsLocatie, String> dataTable = new ScreenitDataTable<CervixHuisartsLocatie, String>("locaties", columns,
+		var dataTable = new ScreenitDataTable<CervixHuisartsLocatie, String>("locaties", columns,
 			new HuisartsLocatieDataProvider(huisartsIModel, searchLocatieModel), 10, Model.of("Locaties"))
 		{
 			@Override
@@ -318,7 +318,7 @@ public class AanvullendeHaGegevensPage extends OrganisatieBeheer
 					@Override
 					public void opslaan(AjaxRequestTarget target)
 					{
-						WebMarkupContainer container = addLocatieDataTable(huisartsIModel.getObject());
+						var container = addLocatieDataTable(huisartsIModel.getObject());
 						locatiesContainer.replaceWith(container);
 						locatiesContainer = container;
 						target.add(container);

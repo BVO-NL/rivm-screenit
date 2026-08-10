@@ -72,11 +72,11 @@ public class MammaStandplaatsPeriodeProvider extends SortableDataProvider<MammaS
 			standplaatsPeriodeMetAfstandDtos = baseStandplaatsService.getStandplaatsPeriodeMetAfstandDtos(clientModel.getObject(), filterModel.getObject());
 			standplaatsPeriodeMetAfstandDtos.sort((standplaatsPeriodeMetAfstandDto1, standplaatsPeriodeMetAfstandDto2) ->
 			{
-				int compareTo = standplaatsPeriodeMetAfstandDto1.getAfstand().compareTo(standplaatsPeriodeMetAfstandDto2.getAfstand());
+				var compareTo = standplaatsPeriodeMetAfstandDto1.getAfstand().compareTo(standplaatsPeriodeMetAfstandDto2.getAfstand());
 				if (compareTo == 0)
 				{
-					MammaStandplaatsPeriode standplaatsPeriode1 = hibernateService.load(MammaStandplaatsPeriode.class, standplaatsPeriodeMetAfstandDto1.getStandplaatsPeriodeId());
-					MammaStandplaatsPeriode standplaatsPeriode2 = hibernateService.load(MammaStandplaatsPeriode.class, standplaatsPeriodeMetAfstandDto2.getStandplaatsPeriodeId());
+					var standplaatsPeriode1 = hibernateService.load(MammaStandplaatsPeriode.class, standplaatsPeriodeMetAfstandDto1.getStandplaatsPeriodeId());
+					var standplaatsPeriode2 = hibernateService.load(MammaStandplaatsPeriode.class, standplaatsPeriodeMetAfstandDto2.getStandplaatsPeriodeId());
 					compareTo = standplaatsPeriode1.getVanaf().compareTo(standplaatsPeriode2.getVanaf());
 				}
 				return compareTo;

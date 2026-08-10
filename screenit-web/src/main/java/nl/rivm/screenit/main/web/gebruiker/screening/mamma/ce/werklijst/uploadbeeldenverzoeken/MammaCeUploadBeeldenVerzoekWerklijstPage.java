@@ -117,7 +117,7 @@ public class MammaCeUploadBeeldenVerzoekWerklijstPage extends MammaClientZoekenB
 	@Override
 	protected void updateContent()
 	{
-		AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
+		var target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
 		if (clientOpt != null)
 		{
 			if (clientOpt.getObject().getMammaDossier().getLaatsteScreeningRonde() == null)
@@ -160,7 +160,7 @@ public class MammaCeUploadBeeldenVerzoekWerklijstPage extends MammaClientZoekenB
 			public void onClick(AjaxRequestTarget target, IModel<MammaUploadBeeldenVerzoekDto> model)
 			{
 				super.onClick(target, model);
-				Organisatie organisatie = hibernateService.get(Organisatie.class, model.getObject().getZiekenhuisId());
+				var organisatie = hibernateService.get(Organisatie.class, model.getObject().getZiekenhuisId());
 				setResponsePage(new MammaCeUploadBeeldenVerzoekOrganisatieWerklijstPage(ModelUtil.sModel(organisatie)));
 			}
 		};
@@ -181,7 +181,7 @@ public class MammaCeUploadBeeldenVerzoekWerklijstPage extends MammaClientZoekenB
 			{
 				super.onSubmit(target);
 
-				MammaUploadBeeldenVerzoek uploadBeeldenVerzoek = form.getModelObject();
+				var uploadBeeldenVerzoek = form.getModelObject();
 
 				uploadBeeldenService.maakUploadVerzoek(uploadBeeldenVerzoek, clientOpt.getObject(), getIngelogdeOrganisatieMedewerker());
 
@@ -215,12 +215,12 @@ public class MammaCeUploadBeeldenVerzoekWerklijstPage extends MammaClientZoekenB
 
 	private void createContentContainer(IModel<Client> clientOpt, AjaxRequestTarget target)
 	{
-		List<Organisatie> organisaties = organisatieService
+		var organisaties = organisatieService
 			.getOrganisatieByOrganisatieTypes(Arrays.asList(OrganisatieType.MAMMAPOLI, OrganisatieType.RADIOLOGIEAFDELING, OrganisatieType.ZORGINSTELLING));
 		organisatiesModel.setObject(organisaties);
 
 		form.setVisible(true);
-		MammaUploadBeeldenVerzoek uploadBeeldenVerzoek = new MammaUploadBeeldenVerzoek();
+		var uploadBeeldenVerzoek = new MammaUploadBeeldenVerzoek();
 		form.setModelObject(uploadBeeldenVerzoek);
 		organisatieModel.setObject(uitwisselportaalService.getLaatstGedownloadDoorOrganisatie(clientOpt.getObject().getMammaDossier()));
 		target.add(form);

@@ -28,7 +28,6 @@ import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
-import nl.rivm.screenit.model.colon.ColoscopieCentrumColonCapaciteitVerdeling;
 import nl.rivm.screenit.model.colon.UitnodigingsGebied;
 import nl.rivm.screenit.repository.algemeen.BagAdresRepository;
 import nl.rivm.screenit.repository.algemeen.GemeenteRepository;
@@ -116,7 +115,7 @@ public class GemeenteServiceImpl implements GemeenteService
 	@Override
 	public Boolean getGesplitsOpPostcode(Gemeente gemeente)
 	{
-		int aantal = 0;
+		var aantal = 0;
 		if (gemeente.getUitnodigingsGebieden() != null)
 		{
 			aantal = gemeente.getUitnodigingsGebieden().size();
@@ -125,7 +124,7 @@ public class GemeenteServiceImpl implements GemeenteService
 		if (aantal > 1)
 		{
 
-			for (UitnodigingsGebied gebied : gemeente.getUitnodigingsGebieden())
+			for (var gebied : gemeente.getUitnodigingsGebieden())
 			{
 				if (gebied.getPostcodeGebied() != null)
 				{
@@ -192,7 +191,7 @@ public class GemeenteServiceImpl implements GemeenteService
 		{
 			if (gebied.getPostcodeGebied() != null || isNotBlank(gebied.getWoonplaats()))
 			{
-				for (ColoscopieCentrumColonCapaciteitVerdeling verdeling : gebied.getVerdeling())
+				for (var verdeling : gebied.getVerdeling())
 				{
 					if (verdeling.getPercentageAdherentie() != null && verdeling.getPercentageAdherentie() > 0)
 					{

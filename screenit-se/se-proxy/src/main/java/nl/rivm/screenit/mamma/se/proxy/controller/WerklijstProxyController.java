@@ -60,7 +60,7 @@ public class WerklijstProxyController
 	public ResponseEntity<KwaliteitsopnameScreenITWerklijstItem> startKwaliteitsopname(
 		@RequestBody KwaliteitsopnameScreenITWerklijstItem werklijstItem)
 	{
-		KwaliteitsopnameScreenITWerklijstItem actiefItem = store.getActiefKwaliteitsopnameWerklijstItemByAeTitle(werklijstItem.getAeTitle());
+		var actiefItem = store.getActiefKwaliteitsopnameWerklijstItemByAeTitle(werklijstItem.getAeTitle());
 		if (actiefItem != null)
 		{
 			LOG.warn("Station heeft al een actieve kwaliteitsopname. Geen nieuwe gestart.");
@@ -99,7 +99,7 @@ public class WerklijstProxyController
 	@ResponseBody
 	public KwaliteitsopnameScreenITWerklijstItem getActieveKwaliteitsopname(@PathVariable String aeTitle)
 	{
-		KwaliteitsopnameScreenITWerklijstItem werklijstItem = store.getActiefKwaliteitsopnameWerklijstItemByAeTitle(aeTitle);
+		var werklijstItem = store.getActiefKwaliteitsopnameWerklijstItemByAeTitle(aeTitle);
 		if (werklijstItem != null)
 		{
 			return werklijstItem;

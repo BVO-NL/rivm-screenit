@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactAfmeldenPanel;
 import nl.rivm.screenit.model.AfmeldingType;
 import nl.rivm.screenit.model.Client;
@@ -35,6 +34,7 @@ import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.ClientContactManier;
 import nl.rivm.screenit.model.cervix.CervixAfmelding;
 import nl.rivm.screenit.model.cervix.enums.CervixAfmeldingReden;
+import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -54,8 +54,8 @@ public class CervixClientContactAfmeldenPanel extends AbstractClientContactAfmel
 	@Override
 	protected IModel<CervixAfmelding> getAfmeldingModel(List<Object> extraPanelParams)
 	{
-		IModel<CervixAfmelding> afmeldingModel = ModelUtil.cModel(new CervixAfmelding());
-		CervixAfmelding afmelding = afmeldingModel.getObject();
+		var afmeldingModel = ModelUtil.cModel(new CervixAfmelding());
+		var afmelding = afmeldingModel.getObject();
 		afmelding.setReden(CervixAfmeldingReden.ANDERS);
 		return afmeldingModel;
 	}
@@ -70,7 +70,7 @@ public class CervixClientContactAfmeldenPanel extends AbstractClientContactAfmel
 	@Override
 	protected List<AfmeldingType> getAvailableAfmeldopties(IModel<Client> clientModel)
 	{
-		Client client = clientModel.getObject();
+		var client = clientModel.getObject();
 
 		return clientContactService.getAvailableAfmeldoptiesCervix(client, false);
 	}
@@ -78,7 +78,7 @@ public class CervixClientContactAfmeldenPanel extends AbstractClientContactAfmel
 	@Override
 	public Map<ExtraOpslaanKey, Object> getOpslaanObjecten()
 	{
-		CervixAfmelding afmelding = this.afmeldingModel.getObject();
+		var afmelding = this.afmeldingModel.getObject();
 		if (afmelding.getType() == AfmeldingType.EENMALIG)
 		{
 			afmelding.setReden(null);

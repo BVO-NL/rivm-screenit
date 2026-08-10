@@ -44,7 +44,7 @@ public abstract class AbstractTestBasePopupPanel extends GenericPanel<List<Clien
 
 	protected void getOpslaanButton(String id, final TestVervolgKeuzePopupBasePanel parent, Form<Void> form)
 	{
-		IndicatingAjaxSubmitLink link = new IndicatingAjaxSubmitLink(id, form)
+		var link = new IndicatingAjaxSubmitLink(id, form)
 		{
 
 			private static final long serialVersionUID = 1L;

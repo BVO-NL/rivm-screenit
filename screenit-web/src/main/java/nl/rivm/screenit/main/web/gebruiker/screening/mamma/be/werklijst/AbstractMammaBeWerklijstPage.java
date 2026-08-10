@@ -180,7 +180,7 @@ public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
 		zoekForm.add(screeningsEenhedenSelector);
 
 		var beoordelingStatussen = getBeschikbarePaginaStatussen();
-		ScreenitListMultipleChoice<MammaBeoordelingStatus> onderzoekStatusSelector = new ScreenitListMultipleChoice<>(
+		var onderzoekStatusSelector = new ScreenitListMultipleChoice<MammaBeoordelingStatus>(
 			"beoordelingStatussen",
 			new PropertyModel<>(zoekObjectModel, "beoordelingStatussen"), beoordelingStatussen,
 			new EnumChoiceRenderer<>());
@@ -189,7 +189,7 @@ public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
 		ComponentHelper.addDropDownChoice(zoekForm, "onderzoekType", true, Arrays.asList(MammaOnderzoekType.values()), false)
 			.setVisible(heeftToegangTotOnderzoektypeFilter);
 
-		IndicatingAjaxSubmitLink zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
+		var zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
 		{
 
 			@Override
@@ -240,9 +240,9 @@ public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
 			@Override
 			protected String getCssClass(int index, IModel<MammaBeoordeling> rowModel)
 			{
-				MammaBeoordeling beoordeling = rowModel.getObject();
+				var beoordeling = rowModel.getObject();
 				MammaLezing beoordeeldeLezing = null;
-				String cssClass = "";
+				var cssClass = "";
 				if (MammaBeoordelingStatus.EERSTE_LEZING_OPGESLAGEN.equals(beoordeling.getStatus()))
 				{
 					beoordeeldeLezing = beoordeling.getEersteLezing();
@@ -320,7 +320,7 @@ public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
 
 	private void resetZoekObject()
 	{
-		MammaBeWerklijstZoekObject zoekObject = zoekObjectModel.getObject();
+		var zoekObject = zoekObjectModel.getObject();
 		zoekObject.setOrganisatieMedewerker(getIngelogdeOrganisatieMedewerker());
 		zoekObject.setOnderzoekType(MammaOnderzoekType.MAMMOGRAFIE);
 		zoekObject.setBeoordelingStatussen(getDefaultStatussen());
@@ -366,19 +366,19 @@ public abstract class AbstractMammaBeWerklijstPage extends AbstractMammaBePage
 
 	private void resetSeKeuzelijst()
 	{
-		MammaBeWerklijstZoekObject zoekObject = zoekObjectModel.getObject();
-		List<MammaScreeningsEenheid> mogelijkeSEs = getMogelijkeScreeningsEenheden();
+		var zoekObject = zoekObjectModel.getObject();
+		var mogelijkeSEs = getMogelijkeScreeningsEenheden();
 		screeningsEenhedenSelector.setChoices(ModelUtil.listRModel(mogelijkeSEs));
 		zoekObject.setScreeningsEenheden(mogelijkeSEs);
 	}
 
 	private void logFilter()
 	{
-		String filter = "Filter: ";
-		MammaBeWerklijstZoekObject zoekObject = zoekObjectModel.getObject();
+		var filter = "Filter: ";
+		var zoekObject = zoekObjectModel.getObject();
 		if (zoekObject.getGeboortedatum() != null)
 		{
-			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+			var formatter = new SimpleDateFormat("dd-MM-yyyy");
 			filter += "geboortedatum: " + formatter.format(zoekObject.getGeboortedatum()) + ", ";
 		}
 		if (StringUtils.isNotBlank(zoekObject.getBsn()))

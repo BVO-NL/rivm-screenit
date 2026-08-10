@@ -76,7 +76,7 @@ public class ColonClientContactAfmeldenPanel extends AbstractClientContactAfmeld
 			gekozenJaartalTijdelijkAfmelden = beschikbareJaartallenTijdelijkAfmelden.get(0);
 		}
 
-		RadioChoice<Integer> tijdelijkAfmeldenJaartallen = new RadioChoice<>("tijdelijkAfmeldenJaartallen", new PropertyModel<>(this, "gekozenJaartalTijdelijkAfmelden"),
+		var tijdelijkAfmeldenJaartallen = new RadioChoice<Integer>("tijdelijkAfmeldenJaartallen", new PropertyModel<>(this, "gekozenJaartalTijdelijkAfmelden"),
 			beschikbareJaartallenTijdelijkAfmelden);
 		tijdelijkAfmeldenJaartallen.setPrefix("<label class=\"radio\">");
 		tijdelijkAfmeldenJaartallen.setSuffix("</label>");
@@ -89,7 +89,7 @@ public class ColonClientContactAfmeldenPanel extends AbstractClientContactAfmeld
 
 	private void setTijdelijkAfmeldenJaartallenContainerVisible(AjaxRequestTarget target, ColonAfmelding afmelding)
 	{
-		boolean voorwaardeBijTijdelijk = AfmeldingType.TIJDELIJK.equals(afmelding.getType()) && ClientContactManier.DIRECT.equals(afmelding.getManier());
+		var voorwaardeBijTijdelijk = AfmeldingType.TIJDELIJK.equals(afmelding.getType()) && ClientContactManier.DIRECT.equals(afmelding.getManier());
 		tijdelijkAfmeldenJaartallenContainer.setVisible(voorwaardeBijTijdelijk);
 		target.add(tijdelijkAfmeldenJaartallenContainer);
 	}
@@ -106,8 +106,8 @@ public class ColonClientContactAfmeldenPanel extends AbstractClientContactAfmeld
 	@Override
 	protected IModel<ColonAfmelding> getAfmeldingModel(List<Object> extraPanelParams)
 	{
-		IModel<ColonAfmelding> afmeldingModel = ModelUtil.ccModel(new ColonAfmelding());
-		ColonAfmelding afmelding = afmeldingModel.getObject();
+		var afmeldingModel = ModelUtil.ccModel(new ColonAfmelding());
+		var afmelding = afmeldingModel.getObject();
 		afmelding.setAfmeldingStatus((AanvraagBriefStatus) extraPanelParams.stream().filter(AanvraagBriefStatus.class::isInstance).findFirst().orElse(null));
 		return afmeldingModel;
 	}
@@ -133,7 +133,7 @@ public class ColonClientContactAfmeldenPanel extends AbstractClientContactAfmeld
 	@Override
 	public List<String> getOpslaanMeldingen()
 	{
-		List<String> meldingen = super.getOpslaanMeldingen();
+		var meldingen = super.getOpslaanMeldingen();
 		if (clientContactService.heeftOpenIntakeAfspraak(clientModel.getObject()))
 		{
 			meldingen.add("Cliënt heeft een coloscopie intake afspraak. Deze wordt geannuleerd.");

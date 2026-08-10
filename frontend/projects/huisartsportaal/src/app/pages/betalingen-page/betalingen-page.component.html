@@ -1,0 +1,73 @@
+<!--
+  ========================LICENSE_START=================================
+  huisartsportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<ds-card cardTitle="Overzicht betalingen" [config]="cardConfig">
+  <app-betalingen-filter (filterChanged)="onFilterChanged($event)"/>
+  <table [dataSource]="dataSource()" ds-table matSort class="w-100">
+    <ng-container dsColumnDef="huisartsLocatie">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="huisartsLocatie">Huisartslocatie</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.verrichting.huisartsLocatieNaam }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="clientNaam">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="naam">Naam cliënt</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.verrichting.clientNaam }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="monsterId">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="monsterId">Monster-id</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.verrichting.monsterId }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="bedrag">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="bedrag">Bedrag</th>
+      <td *dsCellDef="let row" ds-cell
+          [ngClass]="{'debet': row.debet, 'credit': !row.debet}">
+        {{ row.bedragString }}
+      </td>
+    </ng-container>
+
+    <ng-container dsColumnDef="betalingsdatum">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="betalingsdatum">Betalingsdatum</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.betalingsdatum | date: NL_DATE_FORMAT }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="betalingsKenmerk">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="betalingsKenmerk">Betalingskenmerk</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.betalingsKenmerk }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="regio">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="regio">Screeningsorganisatie</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.verrichting.regio }}</td>
+    </ng-container>
+
+    <tr *dsRowDef="let row; columns: displayedColumns" ds-row></tr>
+    <tr *dsHeaderRowDef="displayedColumns" ds-header-row></tr>
+  </table>
+  <ds-paginator [totalNumberOfItems]="paginering().totaal"
+                [pageSize]="paginering().paginaGrootte"
+                [pageSizeOptions]="[10, 20, 50]"
+                (pageChanged)="handlePageChange($event)"
+                resultTitle="betaalregels, Totaal bedrag: {{totaalBedrag() | currency: 'EUR'}}"/>
+  <ng-template ds-footer-actions-right>
+    <button (click)="exporteren()" ds-button-primary>Exporteren</button>
+  </ng-template>
+</ds-card>

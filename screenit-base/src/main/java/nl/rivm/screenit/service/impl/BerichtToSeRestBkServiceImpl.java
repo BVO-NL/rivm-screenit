@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,7 +33,6 @@ import jakarta.jms.Destination;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.helper.ActiveMQHelper;
-import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BerichtToSeRestBkService;
@@ -70,14 +68,14 @@ public class BerichtToSeRestBkServiceImpl implements BerichtToSeRestBkService
 	public void notificeerScreeningsEenhedenVerversenDaglijst(Client client)
 	{
 		Map<MammaScreeningsEenheid, HashSet<LocalDate>> updateEenheden = new HashMap<>();
-		List<MammaAfspraak> afspraken = client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getAfspraken();
-		for (MammaAfspraak afspraak : afspraken)
+		var afspraken = client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getAfspraken();
+		for (var afspraak : afspraken)
 		{
-			LocalDate afspraakDatum = DateUtil.toLocalDate(afspraak.getVanaf());
-			HashSet<LocalDate> updateDates = updateEenheden.computeIfAbsent(afspraak.getStandplaatsPeriode().getScreeningsEenheid(), k -> new HashSet<>());
+			var afspraakDatum = DateUtil.toLocalDate(afspraak.getVanaf());
+			var updateDates = updateEenheden.computeIfAbsent(afspraak.getStandplaatsPeriode().getScreeningsEenheid(), k -> new HashSet<>());
 			updateDates.add(afspraakDatum);
 		}
-		LocalDate daglijstNotificerenTotEnMet = getDaglijstNotificerenTotEnMet();
+		var daglijstNotificerenTotEnMet = getDaglijstNotificerenTotEnMet();
 		updateEenheden.forEach((se, datums) -> notificeerScreeningsEenheidVerversenDaglijst(se, datums, daglijstNotificerenTotEnMet));
 	}
 
@@ -90,7 +88,7 @@ public class BerichtToSeRestBkServiceImpl implements BerichtToSeRestBkService
 	@Override
 	public void notificeerScreeningsEenheidVerversenDaglijst(MammaScreeningsEenheid se, Set<LocalDate> updateDatums, LocalDate daglijstNotificerenTotEnMet)
 	{
-		LocalDate vandaag = currentDateSupplier.getLocalDate();
+		var vandaag = currentDateSupplier.getLocalDate();
 		updateDatums.stream()
 			.filter(ud -> Range.closed(vandaag, daglijstNotificerenTotEnMet).contains(ud))
 			.forEach(ud -> queueBericht(mammaSeRestDestination, se.getCode() + ":" + ud.format(DateTimeFormatter.ISO_DATE)));
@@ -105,7 +103,7 @@ public class BerichtToSeRestBkServiceImpl implements BerichtToSeRestBkService
 	private LocalDate getDaglijstNotificerenTotEnMet()
 	{
 		int aantalDagenDaglijst = preferenceService.getInteger(PreferenceKey.MAMMA_SE_DAGLIJST_OPHALEN_DAGEN.name(), 0);
-		LocalDate vandaag = currentDateSupplier.getLocalDate();
+		var vandaag = currentDateSupplier.getLocalDate();
 		return vandaag.plusDays(aantalDagenDaglijst + 1);
 	}
 

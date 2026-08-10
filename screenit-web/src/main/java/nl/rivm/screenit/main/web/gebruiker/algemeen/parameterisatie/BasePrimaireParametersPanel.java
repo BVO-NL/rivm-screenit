@@ -58,14 +58,14 @@ public abstract class BasePrimaireParametersPanel extends GenericPanel<Parameter
 		super(id, new ParameterisatiePropertyModel<>(model));
 		setOudParametersObject(model.getObject());
 
-		boolean magAanpassen = magAanpassen();
+		var magAanpassen = magAanpassen();
 
-		ToegangLevel level = getToegangsLevel();
+		var level = getToegangsLevel();
 
-		Form<Parameterisatie> form = createAndGetForm();
+		var form = createAndGetForm();
 		form.setEnabled(magAanpassen);
 
-		Component opslaanLink = createAndGetOpslaanLink();
+		var opslaanLink = createAndGetOpslaanLink();
 		opslaanLink.setVisible(magAanpassen && ToegangLevel.LANDELIJK.equals(level));
 		form.add(opslaanLink);
 		add(form);
@@ -108,7 +108,7 @@ public abstract class BasePrimaireParametersPanel extends GenericPanel<Parameter
 
 	protected void opslaan(AjaxRequestTarget target, Bevolkingsonderzoek... bvo)
 	{
-		Parameterisatie parameterisatie = getModelObject();
+		var parameterisatie = getModelObject();
 		parameterisatieService.saveParameters(ScreenitSession.get().getIngelogdAccount(), parameterisatie, oudParameterObject, bvo);
 		setOudParametersObject(parameterisatie);
 		markeerFormulierenOpgeslagen(target);

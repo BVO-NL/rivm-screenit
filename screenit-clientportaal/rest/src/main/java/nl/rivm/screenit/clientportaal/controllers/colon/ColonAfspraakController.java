@@ -36,9 +36,7 @@ import nl.rivm.screenit.clientportaal.model.colon.ColonVrijSlotZonderKamerDto;
 import nl.rivm.screenit.clientportaal.services.colon.ColonAfspraakService;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
-import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamer;
-import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamerFilter;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
@@ -111,14 +109,14 @@ public class ColonAfspraakController extends AbstractController
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<List<ColonVrijSlotZonderKamerDto>> zoekKanditaatAfspraken(Authentication authentication, @RequestBody ColonAfspraakZoekFilterDto filter)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN))
 		{
 			if (controleerFilterWaarde(filter))
 			{
 				int resultsSearchIteration;
-				VrijSlotZonderKamerFilter zoekOpFilter = afspraakZoekFilterMapper.vrijSlotToColonVrijSlotZonderKamerDto(filter);
+				var zoekOpFilter = afspraakZoekFilterMapper.vrijSlotToColonVrijSlotZonderKamerDto(filter);
 
 				if (filter.getMaxResultsPerSearchInteration() != null)
 				{
@@ -136,7 +134,7 @@ public class ColonAfspraakController extends AbstractController
 					Math.min(maxCount, maxPerPageTotal), zoekOpFilter, client);
 				List<ColonVrijSlotZonderKamerDto> resultVrijeSloten = new ArrayList<>();
 
-				for (VrijSlotZonderKamer vrijSlot : filterResults)
+				for (var vrijSlot : filterResults)
 				{
 					resultVrijeSloten.add(afspraakService.vanVrijSlotNaarColonVrijSlot(vrijSlot));
 				}
@@ -167,7 +165,7 @@ public class ColonAfspraakController extends AbstractController
 
 	public ResponseEntity<Void> zegIntakeAfspraakAf(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN))
 		{
 			afspraakService.intakeAfspraakAfzeggen(client);
@@ -180,7 +178,7 @@ public class ColonAfspraakController extends AbstractController
 
 	public ResponseEntity<String> verplaatsIntakeAfspraak(Authentication authentication, @RequestBody ColonVrijSlotZonderKamerDto verplaatsAfspraak)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN))
 		{
@@ -193,7 +191,7 @@ public class ColonAfspraakController extends AbstractController
 
 	public ResponseEntity<String> maakIntakeAfspraak(Authentication authentication, @RequestBody ColonVrijSlotZonderKamerDto maakAfspraak)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN))
 		{
@@ -208,7 +206,7 @@ public class ColonAfspraakController extends AbstractController
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN))
 		{
-			ColonIntakeAfspraak vorigeAfspraak = afspraakService.getHuidigeIntakeAfspraak(client);
+			var vorigeAfspraak = afspraakService.getHuidigeIntakeAfspraak(client);
 
 			if (vorigeAfspraak == null)
 			{
@@ -218,7 +216,7 @@ public class ColonAfspraakController extends AbstractController
 
 			try
 			{
-				ColonIntakeAfspraak nieuweIntakeAfspraak = afspraakService.initNieuweAfspraak(vorigeAfspraak, verplaatsAfspraak);
+				var nieuweIntakeAfspraak = afspraakService.initNieuweAfspraak(vorigeAfspraak, verplaatsAfspraak);
 				if (nieuweIntakeAfspraak != null)
 				{
 					if (ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN.equals(contactActieType))

@@ -77,10 +77,10 @@ public class MammaBaseTehuisServiceImpl implements MammaBaseTehuisService
 	@Override
 	public boolean saveOrUpdateTehuis(MammaTehuis tehuis, MammaStandplaats origineleStandplaats, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		String melding = StringUtils.EMPTY;
-		String diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(tehuis, hibernateService.getHibernateSession());
+		var melding = StringUtils.EMPTY;
+		var diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(tehuis, hibernateService.getHibernateSession());
 
-		boolean isNieuw = tehuis.getId() == null;
+		var isNieuw = tehuis.getId() == null;
 		if (isNieuw)
 		{
 			melding += "Tehuis '" + tehuis.getNaam() + "' aangemaakt.";
@@ -90,7 +90,7 @@ public class MammaBaseTehuisServiceImpl implements MammaBaseTehuisService
 			melding += "Tehuis '" + tehuis.getNaam() + "' gewijzigd (" + diffToLatestVersion + ").";
 		}
 
-		boolean hasDiffText = StringUtils.isNotEmpty(melding);
+		var hasDiffText = StringUtils.isNotEmpty(melding);
 
 		if (hasDiffText)
 		{

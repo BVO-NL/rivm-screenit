@@ -34,7 +34,6 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.service.CervixBepaalHpvBeoordelingService;
 import nl.rivm.screenit.model.cervix.berichten.CervixHpvAnalyseresultaat;
 import nl.rivm.screenit.model.cervix.berichten.CervixHpvMonsterWrapper;
-import nl.rivm.screenit.model.cervix.berichten.CervixHpvOrderCode;
 import nl.rivm.screenit.model.cervix.berichten.CervixHpvResultCode;
 import nl.rivm.screenit.model.cervix.berichten.CervixHpvResultValue;
 import nl.rivm.screenit.model.cervix.enums.CervixHpvBeoordelingWaarde;
@@ -66,14 +65,14 @@ public class CervixBepaalHpvBeoordelingServiceImpl implements CervixBepaalHpvBeo
 	{
 		CervixHpvBeoordelingWaarde beoordeling;
 
-		List<CervixHpvAnalyseresultaat> completeAnalyseresultaten = CervixHpvMonsterWrapper.getCompleteAnalyseresultaten(analyseresultaten);
+		var completeAnalyseresultaten = CervixHpvMonsterWrapper.getCompleteAnalyseresultaten(analyseresultaten);
 
-		Set<CervixHpvResultValue> resultValues = completeAnalyseresultaten.stream().map(CervixHpvAnalyseresultaat::getResultValue).collect(Collectors.toSet());
-		Set<CervixHpvResultCode> resultCodes = completeAnalyseresultaten.stream().map(CervixHpvAnalyseresultaat::getResultCode).collect(Collectors.toSet());
-		Set<CervixHpvOrderCode> orderCodes = resultCodes.stream().map(CervixHpvResultCode::getOrderCode).collect(Collectors.toSet());
+		var resultValues = completeAnalyseresultaten.stream().map(CervixHpvAnalyseresultaat::getResultValue).collect(Collectors.toSet());
+		var resultCodes = completeAnalyseresultaten.stream().map(CervixHpvAnalyseresultaat::getResultCode).collect(Collectors.toSet());
+		var orderCodes = resultCodes.stream().map(CervixHpvResultCode::getOrderCode).collect(Collectors.toSet());
 		if (orderCodes.size() == 1)
 		{
-			CervixHpvOrderCode orderCode = orderCodes.iterator().next();
+			var orderCode = orderCodes.iterator().next();
 			switch (orderCode)
 			{
 			case GEN:
@@ -153,7 +152,7 @@ public class CervixBepaalHpvBeoordelingServiceImpl implements CervixBepaalHpvBeo
 		CervixHpvBeoordelingWaarde beoordeling = null;
 		if (resultCodes.size() == 1)
 		{
-			CervixHpvResultValue analyseresultaat = resultValues.iterator().next();
+			var analyseresultaat = resultValues.iterator().next();
 			switch (analyseresultaat)
 			{
 			case INVALID_HR_HPV:
@@ -179,8 +178,8 @@ public class CervixBepaalHpvBeoordelingServiceImpl implements CervixBepaalHpvBeo
 	{
 		if (isGenotyperingAnalyseGestart == null || refreshTime.plusMinutes(1).isBefore(LocalDateTime.now()))
 		{
-			String startdatumAanleveringGenotyperingString = preferenceService.getString(PreferenceKey.CERVIX_START_AANLEVERING_GENOTYPERING_EN_INVOERING_TRIAGE.name());
-			LocalDate startdatumAanleveringGenotypering = LocalDate.parse(startdatumAanleveringGenotyperingString, DateTimeFormatter.ofPattern("yyyyMMdd"));
+			var startdatumAanleveringGenotyperingString = preferenceService.getString(PreferenceKey.CERVIX_START_AANLEVERING_GENOTYPERING_EN_INVOERING_TRIAGE.name());
+			var startdatumAanleveringGenotypering = LocalDate.parse(startdatumAanleveringGenotyperingString, DateTimeFormatter.ofPattern("yyyyMMdd"));
 
 			isGenotyperingAnalyseGestart = !currentDateSupplier.getLocalDate().isBefore(startdatumAanleveringGenotypering);
 			refreshTime = LocalDateTime.now();

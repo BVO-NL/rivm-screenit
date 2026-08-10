@@ -59,7 +59,7 @@ public class MammaGemiddeldenTasklet extends MammaAbstractKansberekeningTasklet
 			sqlQuery.setParameter("deelnamekansberekening_na_weken", Constants.DEELNAMEKANSBEREKENING_NA_WEKEN);
 
 			List<Object[]> list = sqlQuery.getResultList();
-			for (Object[] result : list)
+			for (var result : list)
 			{
 				context.putLong(MammaKansberekeningConstants.REGIO_DEELNAME_GEMIDDELDEN_KEY, (Long) result[0]);
 				context.putLong(MammaKansberekeningConstants.STANDPLAATS_RONDE_DEELNAME_GEMIDDELDEN_KEY, (Long) result[1]);
@@ -70,7 +70,7 @@ public class MammaGemiddeldenTasklet extends MammaAbstractKansberekeningTasklet
 			sqlQuery.setParameter("nu", nu);
 
 			list = sqlQuery.getResultList();
-			for (Object[] result : list)
+			for (var result : list)
 			{
 				context.putLong(MammaKansberekeningConstants.REGIO_OPKOMST_GEMIDDELDEN__KEY, (Long) result[0]);
 				context.putLong(MammaKansberekeningConstants.STANDPLAATS_RONDE_OPKOMST_GEMIDDELDEN_KEY, (Long) result[1]);

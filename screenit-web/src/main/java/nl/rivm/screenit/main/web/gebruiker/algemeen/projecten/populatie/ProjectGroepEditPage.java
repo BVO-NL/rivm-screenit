@@ -66,7 +66,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.IModel;
@@ -118,15 +117,15 @@ public class ProjectGroepEditPage extends ProjectBasePage
 	public ProjectGroepEditPage(IModel<ProjectGroep> model, IModel<Project> projectModel)
 	{
 		super(projectModel);
-		Project project = projectModel.getObject();
-		ProjectGroep groep = model.getObject();
+		var project = projectModel.getObject();
+		var groep = model.getObject();
 		if (groep.getProject() == null)
 		{
 			groep.setProject(project);
 		}
 		isPushDatumAlGezet = groep.getUitnodigingenPushenNa();
-		boolean isNieuweGroep = groep.getId() == null;
-		String projectTitel = "Groep aanpassen";
+		var isNieuweGroep = groep.getId() == null;
+		var projectTitel = "Groep aanpassen";
 		if (isNieuweGroep)
 		{
 			projectTitel = "Groep toevoegen";
@@ -138,25 +137,25 @@ public class ProjectGroepEditPage extends ProjectBasePage
 
 		add(new Label("projecttitel", Model.of(projectTitel)));
 
-		Form<ProjectGroep> form = new Form<>("form", model);
+		var form = new Form<ProjectGroep>("form", model);
 		add(form);
 
 		form.add(ComponentHelper.addTextField(form, "naam", true, 24, false));
 
-		Date nu = currentDateSupplier.getDate();
+		var nu = currentDateSupplier.getDate();
 		form.add(ComponentHelper.addTextField(form, "uitnodigenVoorDKvoor", false, 24, Date.class, false).add(DateValidator.minimum(nu))
 			.setVisible(ProjectUtil.hasParameterSet(project, ProjectParameterKey.COLON_UITNODIGEN_PRIORITEIT)));
 
 		form.add(new ScreenitDropdown<>("groepInvoer", GroepInvoer.getGroepinvoerVanSelectieType(project.getGroepSelectieType()), new NaamChoiceRenderer<INaam>())
 			.setRequired(true).setEnabled(isNieuweGroep));
 
-		FormComponent<List<FileUpload>> clientenBestand = new FileUploadField("clientenBestand", clientenBestanden)
+		var clientenBestand = new FileUploadField("clientenBestand", clientenBestanden)
 			.add(new FileValidator(FileType.CSV));
 		form.add(clientenBestand);
 		clientenBestand.setRequired(isNieuweGroep);
 		clientenBestand.setOutputMarkupId(true);
 
-		boolean uitnodigingenPushenInzien = groep.getUitnodigingenPushenNa() != null && nu.after(groep.getUitnodigingenPushenNa()) || nu.after(project.getEindDatum());
+		var uitnodigingenPushenInzien = groep.getUitnodigingenPushenNa() != null && nu.after(groep.getUitnodigingenPushenNa()) || nu.after(project.getEindDatum());
 		form.add(ComponentHelper.addTextField(form, "uitnodigingenPushenNa", false, 24, Date.class, uitnodigingenPushenInzien)
 			.add(RangeValidator.range(currentDateSupplier.getDateMidnight(), project.getEindDatum()))
 			.setVisible(!isNieuweGroep && ProjectType.PROJECT.equals(project.getType())));
@@ -164,7 +163,7 @@ public class ProjectGroepEditPage extends ProjectBasePage
 		IModel<Boolean> skipFouten = new Model<>(Boolean.FALSE);
 		form.add(ComponentHelper.newCheckBox("skipFouten", skipFouten).setVisible(isNieuweGroep));
 
-		MultiLineLabel meldingen = new MultiLineLabel("meldingen", meldingenModel);
+		var meldingen = new MultiLineLabel("meldingen", meldingenModel);
 		meldingen.setEscapeModelStrings(false);
 		meldingen.setOutputMarkupId(true);
 		form.add(meldingen);
@@ -184,7 +183,7 @@ public class ProjectGroepEditPage extends ProjectBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				ProjectGroep groep = form.getModelObject();
+				var groep = form.getModelObject();
 				if (getPushDatumVeranderd(groep))
 				{
 					dialog.openWith(target, new ConfirmPanel(IDialog.CONTENT_ID, Model.of(getString("confirm.uitnodigingen.pushen")), null, new DefaultConfirmCallback()
@@ -212,8 +211,8 @@ public class ProjectGroepEditPage extends ProjectBasePage
 
 	private void opslaan(Form<ProjectGroep> form)
 	{
-		ProjectGroep groep = form.getModelObject();
-		Project project = groep.getProject();
+		var groep = form.getModelObject();
+		var project = groep.getProject();
 		if (groep.getUitnodigenVoorDKvoor() != null && project.getEindDatum().before(groep.getUitnodigenVoorDKvoor()))
 		{
 			error("'Uitnodigen voor DK v\u00F3\u00F3r' mag niet na de 'Einddatum' van het project liggen.");
@@ -235,7 +234,7 @@ public class ProjectGroepEditPage extends ProjectBasePage
 						{
 							ScreenitSession.get().warn(String.format(getString("einde.groep.na.einde.instroom"), groep.getNaam()));
 						}
-						FileUpload clientenBestand = clientenBestanden.getObject().get(0);
+						var clientenBestand = clientenBestanden.getObject().get(0);
 						projectService.queueProjectBestandVoorPopulatie(ModelProxyHelper.deproxy(groep), clientenBestand.getContentType(), clientenBestand.getClientFileName(),
 							clientenBestand.writeToTempFile(), ScreenitSession.get().getIngelogdAccount());
 
@@ -256,8 +255,8 @@ public class ProjectGroepEditPage extends ProjectBasePage
 			{
 				if (getPushDatumVeranderd(groep))
 				{
-					DateFormatter formatter = new DateFormatter("dd-MM-yyyy");
-					String melding = "Project: " + project.getNaam() + ", Groep: " + groep.getNaam() + ", Pushdatum: "
+					var formatter = new DateFormatter("dd-MM-yyyy");
+					var melding = "Project: " + project.getNaam() + ", Groep: " + groep.getNaam() + ", Pushdatum: "
 						+ formatter.print(groep.getUitnodigingenPushenNa(), Constants.LOCALE_NL);
 					logService.logGebeurtenis(LogGebeurtenis.PROJECT_GROEP_GEPUSHT, ScreenitSession.get().getIngelogdAccount(), melding);
 				}

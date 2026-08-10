@@ -24,8 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.dashboard;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.rivm.screenit.dto.mamma.planning.PlanningConceptMeldingenDto;
-import nl.rivm.screenit.dto.mamma.planning.PlanningScreeningsEenheidMetaDataDto;
 import nl.rivm.screenit.main.service.mamma.MammaScreeningsEenheidService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
@@ -129,7 +127,7 @@ public class MammaPlanningDashboardPage extends MammaPlanningBasePage
 			public void populateItem(Item<ICellPopulator<MammaScreeningsEenheid>> cell, String id, IModel<MammaScreeningsEenheid> model)
 			{
 				super.populateItem(cell, id, model);
-				MammaScreeningsEenheid screeningsEenheid = model.getObject();
+				var screeningsEenheid = model.getObject();
 				if (screeningsEenheid.getUitnodigenTotEnMet() != null && !screeningsEenheid.getUitnodigenTotEnMet().equals(screeningsEenheid.getUitgenodigdTotEnMet()))
 				{
 					cell.add(new AttributeAppender("class", Model.of("font-bold")));
@@ -150,12 +148,12 @@ public class MammaPlanningDashboardPage extends MammaPlanningBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<MammaScreeningsEenheid>> cell, String id, IModel<MammaScreeningsEenheid> model)
 			{
-				PlanningScreeningsEenheidMetaDataDto metaDataDto = model.getObject().getMetaDataDto();
+				var metaDataDto = model.getObject().getMetaDataDto();
 				cell.add(new ImageIconCellPanel<>(id, model, "icon-warning-sign " + metaDataDto.niveau.getCssClass(), null));
 			}
 		});
 
-		ExportToXslLink exportLink = new ExportToXslLink("export", "Overzicht_planning_dashboard_" + currentDateSupplier.getLocalDateTime().format(DateUtil.LOCAL_DATE_TIME_FORMAT))
+		var exportLink = new ExportToXslLink("export", "Overzicht_planning_dashboard_" + currentDateSupplier.getLocalDateTime().format(DateUtil.LOCAL_DATE_TIME_FORMAT))
 		{
 			@Override
 			protected String getCsv() throws NullPointerException
@@ -179,7 +177,7 @@ public class MammaPlanningDashboardPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				PlanningConceptMeldingenDto meldingenDto = baseConceptPlanningsApplicatie.saveConcept(getIngelogdeOrganisatieMedewerker(), true);
+				var meldingenDto = baseConceptPlanningsApplicatie.saveConcept(getIngelogdeOrganisatieMedewerker(), true);
 				dialog.openWith(target, new MammaRouteConceptWijzigingMeldingenDialogPanel(IDialog.CONTENT_ID, Model.of(meldingenDto))
 				{
 					@Override
@@ -198,7 +196,7 @@ public class MammaPlanningDashboardPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				PlanningConceptMeldingenDto meldingenDto = baseConceptPlanningsApplicatie.saveConcept(getIngelogdeOrganisatieMedewerker(), true);
+				var meldingenDto = baseConceptPlanningsApplicatie.saveConcept(getIngelogdeOrganisatieMedewerker(), true);
 				dialog.openWith(target, new MammaRouteConceptAnnulerenMeldingenDialogPanel(IDialog.CONTENT_ID, Model.of(meldingenDto))
 				{
 					@Override

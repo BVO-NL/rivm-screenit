@@ -64,7 +64,7 @@ public class ColonHuisartsServiceImpl implements ColonHuisartsService
 		if (ronde != null)
 		{
 			String melding;
-			Client client = ronde.getDossier().getClient();
+			var client = ronde.getDossier().getClient();
 			if (huisarts != null)
 			{
 				melding = "Huisarts: " + NaamUtil.getNaamHuisarts(huisarts);
@@ -75,7 +75,7 @@ public class ColonHuisartsServiceImpl implements ColonHuisartsService
 			}
 
 			ronde.setHuisarts(huisarts);
-			boolean diffColonHuisarts = StringUtils
+			var diffColonHuisarts = StringUtils
 				.isNotBlank(EntityAuditUtil.getDiffFieldsToLatestVersion(ronde, hibernateService.getHibernateSession(), "huisarts"));
 
 			if (diffColonHuisarts)
@@ -106,7 +106,7 @@ public class ColonHuisartsServiceImpl implements ColonHuisartsService
 	{
 		if (ronde != null)
 		{
-			ColonScreeningRonde vorigeRonde = rondeNummerService.getVorigeRonde(ronde);
+			var vorigeRonde = rondeNummerService.getVorigeRonde(ronde);
 			if (vorigeRonde != null)
 			{
 				return getActieveHuisartsVanRonde(vorigeRonde);
@@ -121,7 +121,7 @@ public class ColonHuisartsServiceImpl implements ColonHuisartsService
 	{
 		if (ronde != null)
 		{
-			EnovationHuisarts huisarts = ronde.getHuisarts();
+			var huisarts = ronde.getHuisarts();
 			if (huisarts != null && !huisarts.isVerwijderd())
 			{
 				return huisarts;
@@ -136,7 +136,7 @@ public class ColonHuisartsServiceImpl implements ColonHuisartsService
 	{
 		if (ronde != null)
 		{
-			EnovationHuisarts vorigeHuisarts = getActieveHuisartsVanVorigeRonde(ronde);
+			var vorigeHuisarts = getActieveHuisartsVanVorigeRonde(ronde);
 			if (vorigeHuisarts != null)
 			{
 				return koppelHuisarts(vorigeHuisarts, ronde, client);

@@ -66,7 +66,7 @@ public class DefaultCurrentDateSupplier implements ICurrentDateSupplier
 	@Override
 	public LocalDateTime getLocalDateTime()
 	{
-		Duration javaTimeOffset = getOffset();
+		var javaTimeOffset = getOffset();
 		return LocalDateTime.now().plus(javaTimeOffset);
 	}
 

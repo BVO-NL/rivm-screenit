@@ -138,7 +138,7 @@ public class RetourzendingLogEvent extends LogEvent
 	{
 		setLevel(Level.WARNING);
 		skippedRegels++;
-		String melding = "Aantal overgeslagen: " + skippedRegels;
+		var melding = "Aantal overgeslagen: " + skippedRegels;
 		setMelding(melding);
 	}
 

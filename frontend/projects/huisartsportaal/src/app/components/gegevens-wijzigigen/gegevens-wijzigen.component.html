@@ -1,0 +1,98 @@
+<!--
+  ========================LICENSE_START=================================
+  huisartsportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<section>
+  <h3 class="mt-2">1. AGB-code en NAW gegevens</h3>
+  <form [formGroup]="gegevensForm">
+    <div class="row">
+      <div class="col-md-6">
+        <ds-input label="AGB-code" formControlName="agbcode" required/>
+        <ds-input label="E-mail" formControlName="email" required/>
+        <ds-input label="E-mails (extra)" formControlName="extraEmails"/>
+      </div>
+      <div class="col-md-6">
+        <ds-input label="Gebruikersnaam" formControlName="username" required [errorMessage]="{minlength: 'Gebruikersnaam moet minstens 6 karakters bevatten'}"/>
+        @if (registreren()) {
+          <app-wachtwoord-form-input label="Wachtwoord"
+                                     formControlName="wachtwoord"
+                                     [required]="true"
+                                     [validators]="wachtwoordValidators()"/>
+          <app-wachtwoord-form-input label="Wachtwoord controle"
+                                     formControlName="wachtwoordControle"
+                                     [required]="true"
+                                     [validators]="wachtwoordControleValidators()"
+                                     [errorMessage]="{waardenOngelijk: 'Het nieuwe wachtwoord moet overeenkomen met het nieuwe controle wachtwoord.'}"/>
+        } @else {
+          <button ds-button-primary (click)="openWachtwoordDialog()" data-testid="wachtwoord_dialog_button" class="wachtwoordWijzigen">Wachtwoord wijzigen
+          </button>
+        }
+      </div>
+    </div>
+    <hr/>
+    <div class="row">
+      <div class="col-md-6">
+        <ds-dropdown label="Aanhef" formControlName="aanhef" [items]="aanhefOpties"/>
+        <ds-input label="Achternaam" formControlName="achternaam" required/>
+        <ds-input label="Tussenvoegsel" formControlName="tussenvoegsel"/>
+        <ds-input label="Voorletters" formControlName="voorletters"/>
+        <ds-input label="Telefoonnummer" type="tel" formControlName="telefoonnummer"
+                  [errorMessage]="{'pattern': 'Het telefoonnummer is niet correct.'}"/>
+      </div>
+      <div class="col-md-6" formGroupName="postadres">
+        <ds-input label="Straat" formControlName="straat" required/>
+        <ds-input label="Huisnummer" type="number" formControlName="huisnummer" required/>
+        <ds-input label="Toevoeging" formControlName="huisnummertoevoeging"/>
+        <ds-input label="Postcode" formControlName="postcode" required
+                  [errorMessage]="{'pattern': 'De postcode is niet correct.'}"/>
+        <app-woonplaats-selector label="Woonplaats" formControlName="woonplaats" [required]="true"/>
+      </div>
+    </div>
+  </form>
+</section>
+
+<hr/>
+
+<section>
+  <h3>2. Locaties</h3>
+  <app-locatie-tabel [registreren]="registreren()" [controleren]="controleren()" [postAdres]="postAdresCtrl.value"/>
+</section>
+
+<hr/>
+
+<section>
+  <h3>3. Zakelijke voorwaarden</h3>
+  <ds-checkbox [formControl]="voorwaardenCheckboxCtrl">
+    Ik ga akkoord met de <span role="button" tabindex="0"
+                               class="overeenkomstLink"
+                               data-testid="voorwaarden_link"
+                               (click)="downloadVoorwaarden()"
+                               (keydown)="downloadVoorwaarden()">zakelijke voorwaarden</span>
+  </ds-checkbox>
+</section>
+
+<hr/>
+
+<div class="display-flex justify-content-end gap-2 mt-2 w-100">
+  @if (controleren()) {
+    <button ds-button-secondary (click)="controleren.set(false)" data-testid="terug_button">Terug</button>
+  }
+  <button ds-button-primary (click)="opslaan()" data-testid="opslaan_button">{{ opslaanTekst() }}</button>
+
+</div>

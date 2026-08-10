@@ -63,12 +63,12 @@ public class AjaxButtonGroup<T> extends RepeatingView
 	{
 		super.onInitialize();
 
-		List<T> items = optionsModel.getObject();
+		var items = optionsModel.getObject();
 
-		for (int ix = 0; ix < items.size(); ix++)
+		for (var ix = 0; ix < items.size(); ix++)
 		{
-			final int index = ix;
-			AjaxLink<String> button = createButton(newChildId(), new LoadableDetachableModel<T>()
+			final var index = ix;
+			var button = createButton(newChildId(), new LoadableDetachableModel<T>()
 			{
 				@Override
 				protected T load()
@@ -110,7 +110,9 @@ public class AjaxButtonGroup<T> extends RepeatingView
 					public boolean isEnabled(Component component)
 					{
 						return Objects.equal(AjaxButtonGroup.this.getDefaultModelObject(), model.getObject());
-					};
+					}
+
+					;
 				});
 
 				{

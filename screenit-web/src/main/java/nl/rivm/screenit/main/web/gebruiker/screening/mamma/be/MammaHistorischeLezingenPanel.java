@@ -40,19 +40,19 @@ public class MammaHistorischeLezingenPanel extends AbstractBEAccordionPanel<Mamm
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		final MammaBeoordeling beoordeling = getModelObject();
-		boolean nevenbevindingenWeergeven = false;
-		boolean redenenFotobesprekingWeergeven = false;
-		boolean tweeLezingenIngevoerd = beoordeling.getTweedeLezing() != null;
+		final var beoordeling = getModelObject();
+		var nevenbevindingenWeergeven = false;
+		var redenenFotobesprekingWeergeven = false;
+		var tweeLezingenIngevoerd = beoordeling.getTweedeLezing() != null;
 
 		if (tweeLezingenIngevoerd)
 		{
 			panelContainer
-					.add(new MammaReadOnlyLezingPanel("eersteLezing", beoordeling, beoordeling.getEersteLezing(), nevenbevindingenWeergeven,
-							redenenFotobesprekingWeergeven));
+				.add(new MammaReadOnlyLezingPanel("eersteLezing", beoordeling, beoordeling.getEersteLezing(), nevenbevindingenWeergeven,
+					redenenFotobesprekingWeergeven));
 			panelContainer
-					.add(new MammaReadOnlyLezingPanel("tweedeLezing", beoordeling, beoordeling.getTweedeLezing(), nevenbevindingenWeergeven,
-							redenenFotobesprekingWeergeven));
+				.add(new MammaReadOnlyLezingPanel("tweedeLezing", beoordeling, beoordeling.getTweedeLezing(), nevenbevindingenWeergeven,
+					redenenFotobesprekingWeergeven));
 		}
 		else
 		{

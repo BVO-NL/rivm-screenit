@@ -56,7 +56,7 @@ public class EnovationHuisartsModel extends BaseHuisartsModel<EnovationHuisarts>
 	@Override
 	public String getHuisartsAgb()
 	{
-		String agbCode = getHuisarts().getHuisartsAgb();
+		var agbCode = getHuisarts().getHuisartsAgb();
 		if (StringUtils.isBlank(agbCode))
 		{
 			agbCode = getHuisarts().getPraktijkAgb();

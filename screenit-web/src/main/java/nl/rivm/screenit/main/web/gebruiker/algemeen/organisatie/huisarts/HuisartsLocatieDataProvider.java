@@ -63,7 +63,7 @@ public class HuisartsLocatieDataProvider extends SortableDataProvider<CervixHuis
 
 	private CervixHuisartsLocatie getZoekObject()
 	{
-		CervixHuisartsLocatie zoekObject = new CervixHuisartsLocatie();
+		var zoekObject = new CervixHuisartsLocatie();
 		zoekObject.setStatus(getStatusFromActief(searchLocatieModel.getObject().getActief()));
 		zoekObject.setHuisarts(huisartsIModel.getObject());
 		return zoekObject;

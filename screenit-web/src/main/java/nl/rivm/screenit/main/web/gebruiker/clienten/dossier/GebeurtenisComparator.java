@@ -32,8 +32,8 @@ public class GebeurtenisComparator implements Comparator<ScreeningRondeGebeurten
 	@Override
 	public int compare(ScreeningRondeGebeurtenis o1, ScreeningRondeGebeurtenis o2)
 	{
-		Date datum = o2.getDatum();
-		Date datum2 = o1.getDatum();
+		var datum = o2.getDatum();
+		var datum2 = o1.getDatum();
 		if (datum == null)
 		{
 			datum = new Date();

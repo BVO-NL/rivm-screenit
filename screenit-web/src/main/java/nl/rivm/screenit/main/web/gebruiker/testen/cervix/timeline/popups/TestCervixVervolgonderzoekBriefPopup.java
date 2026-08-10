@@ -38,7 +38,7 @@ public class TestCervixVervolgonderzoekBriefPopup extends TestCervixAbstractPopu
 	@Override
 	protected void opslaan()
 	{
-		for (Client client : getModelObject())
+		for (var client : getModelObject())
 		{
 			baseTestTimelineService.vervolgonderzoekBrief(client.getCervixDossier().getLaatsteScreeningRonde());
 		}

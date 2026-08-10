@@ -21,10 +21,7 @@ package nl.rivm.screenit.main.web.gebruiker.login;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +41,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebPage;
@@ -59,7 +55,6 @@ import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.ContentDisposition;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-import com.aspose.words.Document;
 import com.aspose.words.PdfSaveOptions;
 
 @Slf4j
@@ -85,7 +80,7 @@ public class OvereenkomstAccoderenPage extends LoginBasePage
 
 	public OvereenkomstAccoderenPage(IModel<OrganisatieMedewerker> organisatieMedewerker)
 	{
-		List<AbstractAfgeslotenOvereenkomst> accoLijst = overeenkomstService.getTeAccoderenOvereenkomsten(organisatieMedewerker.getObject());
+		var accoLijst = overeenkomstService.getTeAccoderenOvereenkomsten(organisatieMedewerker.getObject());
 		if (CollectionUtils.isNotEmpty(accoLijst) && OvereenkomstType.KWALITEITSOVEREENKOMST == accoLijst.get(0).getOvereenkomst().getOvereenkomst())
 		{
 			add(new Label("accoderenTekst", getString("label.accoderentekst.kwaliteitsovereenkomst")));
@@ -112,7 +107,7 @@ public class OvereenkomstAccoderenPage extends LoginBasePage
 						@Override
 						protected ResourceResponse newResourceResponse(Attributes attributes)
 						{
-							ResourceResponse response = new ResourceResponse();
+							var response = new ResourceResponse();
 							response.setFileName(item.getModelObject().getCode().replace(" ", "_") + ".pdf");
 							response.setContentType("application/pdf");
 							response.getHeaders().addHeader("Cache-Control", "no-cache");
@@ -123,12 +118,12 @@ public class OvereenkomstAccoderenPage extends LoginBasePage
 								@Override
 								public void writeData(Attributes attributes)
 								{
-									try (OutputStream outputStream = attributes.getResponse().getOutputStream())
+									try (var outputStream = attributes.getResponse().getOutputStream())
 									{
-										File file = uploadDocumentService.load(item.getModelObject().getOvereenkomst().getDocument());
-										MailMergeContext mailMergeContext = new MailMergeContext();
+										var file = uploadDocumentService.load(item.getModelObject().getOvereenkomst().getDocument());
+										var mailMergeContext = new MailMergeContext();
 										mailMergeContext.setOvereenkomst(item.getModelObject());
-										Document document = asposeService.processDocument(FileUtils.readFileToByteArray(file), mailMergeContext);
+										var document = asposeService.processDocument(FileUtils.readFileToByteArray(file), mailMergeContext);
 
 										document.save(outputStream, new PdfSaveOptions());
 									}
@@ -153,7 +148,7 @@ public class OvereenkomstAccoderenPage extends LoginBasePage
 			@Override
 			public void onClick()
 			{
-				Class<? extends Page> homePage = Application.get().getHomePage();
+				var homePage = Application.get().getHomePage();
 				ScreenitSession.get().logout();
 				setResponsePage(homePage);
 			}
@@ -163,7 +158,7 @@ public class OvereenkomstAccoderenPage extends LoginBasePage
 			@Override
 			public void onClick()
 			{
-				OrganisatieMedewerker organisatieMedewerker = getModelObject();
+				var organisatieMedewerker = getModelObject();
 				overeenkomstService.accodeerOvereenkomsten(organisatieMedewerker, ScreenitSession.get().getIngelogdAccount());
 				Component pageForOrganisatieMedewerker = ScreenitSession.get().getPageForOrganisatieMedewerker(organisatieMedewerker);
 				if (pageForOrganisatieMedewerker != null)

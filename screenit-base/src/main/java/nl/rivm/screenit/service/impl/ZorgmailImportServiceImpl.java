@@ -26,20 +26,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.HuisartsGeslacht;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.model.vertrouwdverbonden.enums.Land;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.EnovationHuisartsService;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.ZorgmailImportMapping;
 import nl.rivm.screenit.service.ZorgmailImportService;
 import nl.rivm.screenit.service.ZorgmailImportVoortgang;
-import nl.topicuszorg.gba.model.Land;
 import nl.topicuszorg.organisatie.model.Adres;
 
 import org.apache.commons.lang3.CharUtils;
@@ -77,8 +76,8 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 	public void importHandmatigAdresboek(InputStream csvStream, Boolean ediAdresOverschrijven)
 	{
 		LOG.info("Zorgmail adresboek import is gestart. (EDI-adres overschrijven: " + ediAdresOverschrijven + ")");
-		CSVReader reader = new CSVReader(new InputStreamReader(csvStream), ',');
-		ZorgmailImportVoortgang voortgang = verwerkCsv(reader, ediAdresOverschrijven);
+		var reader = new CSVReader(new InputStreamReader(csvStream), ',');
+		var voortgang = verwerkCsv(reader, ediAdresOverschrijven);
 		enovationHuisartsService.verwijderdeHuisartsenOntkoppelen();
 
 		logService.logGebeurtenis(LogGebeurtenis.HUISARTS_IMPORT_AFGEROND,
@@ -93,13 +92,13 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 
 	private ZorgmailImportVoortgang verwerkCsv(CSVReader reader, Boolean ediAdresOverschrijven)
 	{
-		ZorgmailImportVoortgang voortgang = new ZorgmailImportVoortgang();
+		var voortgang = new ZorgmailImportVoortgang();
 
 		try
 		{
-			int lineNumber = 0;
+			var lineNumber = 0;
 			ZorgmailImportMapping mapping = null;
-			for (String[] line : reader.readAll())
+			for (var line : reader.readAll())
 			{
 				lineNumber++;
 				try
@@ -129,12 +128,12 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 	@Override
 	public void verwerkLine(String[] line, int lineNumber, ZorgmailImportMapping mapping, ZorgmailImportVoortgang voortgang, Boolean ediAdresOverschrijven) throws ParseException
 	{
-		String klantnummer = StringUtils.defaultIfBlank(line[mapping.getKlantnummer()], "");
+		var klantnummer = StringUtils.defaultIfBlank(line[mapping.getKlantnummer()], "");
 		if (StringUtils.isNotBlank(klantnummer))
 		{
-			EnovationHuisarts bestaandeHuisarts = enovationHuisartsService.getHuisartsByKlantnummer(klantnummer);
-			boolean verwijderd = isVerwijderd(line, mapping);
-			boolean huisartsOfHuisartsPraktijk = isHuisartsOfHuisartsPraktijk(line, mapping);
+			var bestaandeHuisarts = enovationHuisartsService.getHuisartsByKlantnummer(klantnummer);
+			var verwijderd = isVerwijderd(line, mapping);
+			var huisartsOfHuisartsPraktijk = isHuisartsOfHuisartsPraktijk(line, mapping);
 			if (bestaandeHuisarts != null && !bestaandeHuisarts.isVerwijderd() && !verwijderd && !huisartsOfHuisartsPraktijk)
 			{
 
@@ -145,15 +144,15 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 				voortgang.incrTotaalAantalRijen();
 				voortgang.addKlantnummer(klantnummer);
 
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-				Date gewijzigd = format.parse(line[mapping.getGewijzigd()]);
+				var format = new SimpleDateFormat("yyyy-MM-dd");
+				var gewijzigd = format.parse(line[mapping.getGewijzigd()]);
 
 				if (gewijzigd != null)
 				{
 					if (bestaandeHuisarts == null)
 					{
-						EnovationHuisarts nieuweHuisarts = new EnovationHuisarts();
-						boolean verwerkt = verwerkLineTotHuisarts(line, lineNumber, mapping, nieuweHuisarts, voortgang, ediAdresOverschrijven);
+						var nieuweHuisarts = new EnovationHuisarts();
+						var verwerkt = verwerkLineTotHuisarts(line, lineNumber, mapping, nieuweHuisarts, voortgang, ediAdresOverschrijven);
 
 						if (verwerkt && !verwijderd)
 						{
@@ -166,7 +165,7 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 					}
 					else if (bestaandeHuisarts != null && bestaandeHuisarts.getGewijzigd().before(gewijzigd))
 					{
-						boolean verwerkt = verwerkLineTotHuisarts(line, lineNumber, mapping, bestaandeHuisarts, voortgang, ediAdresOverschrijven);
+						var verwerkt = verwerkLineTotHuisarts(line, lineNumber, mapping, bestaandeHuisarts, voortgang, ediAdresOverschrijven);
 
 						if (verwerkt && !verwijderd)
 						{
@@ -199,8 +198,8 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 	{
 		try
 		{
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-			boolean verwijderd = isVerwijderd(line, mapping) || !isHuisartsOfHuisartsPraktijk(line, mapping); 
+			var format = new SimpleDateFormat("yyyy-MM-dd");
+			var verwijderd = isVerwijderd(line, mapping) || !isHuisartsOfHuisartsPraktijk(line, mapping); 
 			if (!verwijderd)
 			{
 				if (mapping.getGeslacht() > -1)
@@ -213,7 +212,7 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 				}
 				if (mapping.getEdiAdres() > -1)
 				{
-					String ediParameter = simplePreferenceService.getString(PreferenceKey.EDIFACTADRES.name());
+					var ediParameter = simplePreferenceService.getString(PreferenceKey.EDIFACTADRES.name());
 					if (ediAdresOverschrijven && StringUtils.isNotEmpty(ediParameter))
 					{
 						huisarts.setEdiadres(ediParameter);
@@ -280,13 +279,13 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 	{
 		if (mapping.getStraat() > -1 && mapping.getHuisnummer() > -1 && mapping.getPostcode() > -1 && mapping.getLand() > -1)
 		{
-			Adres enovationAdres = new Adres();
+			var enovationAdres = new Adres();
 
-			String straat = line[mapping.getStraat()];
-			String huisnummer = line[mapping.getHuisnummer()];
-			String postcode = line[mapping.getPostcode()];
-			String plaats = line[mapping.getPlaats()];
-			String land = line[mapping.getLand()];
+			var straat = line[mapping.getStraat()];
+			var huisnummer = line[mapping.getHuisnummer()];
+			var postcode = line[mapping.getPostcode()];
+			var plaats = line[mapping.getPlaats()];
+			var land = line[mapping.getLand()];
 
 			plaats = StringUtils.lowerCase(plaats);
 			plaats = StringUtils.capitalize(plaats);
@@ -299,10 +298,10 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 
 			if (!StringUtils.isNumeric(huisnummer))
 			{
-				char[] huisnummerChars = huisnummer.toCharArray();
+				var huisnummerChars = huisnummer.toCharArray();
 				huisnummer = "";
 				huisnummerToevoeging = "";
-				for (char huisChar : huisnummerChars)
+				for (var huisChar : huisnummerChars)
 				{
 					if (StringUtils.isBlank(huisnummerToevoeging) && CharUtils.isAsciiNumeric(huisChar))
 					{
@@ -388,9 +387,9 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 	public ZorgmailImportMapping maakMapping(String[] row)
 	{
 		LOG.debug("Begonnen met aanmaken mappings object.");
-		ZorgmailImportMapping mapping = new ZorgmailImportMapping();
-		int column = 0;
-		for (String mappingString : row)
+		var mapping = new ZorgmailImportMapping();
+		var column = 0;
+		for (var mappingString : row)
 		{
 			if (StringUtils.isNotBlank(mappingString))
 			{
@@ -516,8 +515,8 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 
 	private boolean isHuisartsOfHuisartsPraktijk(String[] line, ZorgmailImportMapping mapping)
 	{
-		boolean isHuisarts = isHuisarts(line, mapping);
-		boolean isHuisartspraktijk = isHuisartspraktijk(line, mapping);
+		var isHuisarts = isHuisarts(line, mapping);
+		var isHuisartspraktijk = isHuisartspraktijk(line, mapping);
 		return mapping.getRole() > -1 && (isHuisarts || isHuisartspraktijk);
 	}
 

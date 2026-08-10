@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.f
 import nl.rivm.screenit.main.service.mamma.MammaKwaliteitscontroleService;
 import nl.rivm.screenit.main.web.component.ScreenitDateTextField;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.mamma.MammaFotobespreking;
 import nl.rivm.screenit.service.ClientService;
@@ -52,7 +51,7 @@ public abstract class MammaFotobesprekingOnderzoekToevoegenPopupPanel extends Ge
 	public MammaFotobesprekingOnderzoekToevoegenPopupPanel(String id, IModel<MammaFotobespreking> fotobesprekingModel)
 	{
 		super(id, fotobesprekingModel);
-		Persoon zoekPersoon = new Persoon();
+		var zoekPersoon = new Persoon();
 		Form<Persoon> form = new ScreenitForm<>("form", new CompoundPropertyModel<>(zoekPersoon));
 		form.add(new TextField<>("bsn").setRequired(true).setOutputMarkupId(true).add(new BSNValidator()));
 		form.add(new ScreenitDateTextField("geboortedatum").setRequired(true).setOutputMarkupId(true));
@@ -67,11 +66,11 @@ public abstract class MammaFotobesprekingOnderzoekToevoegenPopupPanel extends Ge
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Persoon zoekPersoon = (Persoon) getForm().getModelObject();
-				Client client = clientService.getClientByBsn(zoekPersoon.getBsn());
+				var zoekPersoon = (Persoon) getForm().getModelObject();
+				var client = clientService.getClientByBsn(zoekPersoon.getBsn());
 				if (client != null && DateUtil.isGeboortedatumGelijk(DateUtil.toLocalDate(zoekPersoon.getGeboortedatum()), client))
 				{
-					String melding = kwaliteitscontroleService.addFotobesprekingOnderzoek(getModelObject(), client);
+					var melding = kwaliteitscontroleService.addFotobesprekingOnderzoek(getModelObject(), client);
 					if (StringUtils.isNotBlank(melding))
 					{
 						warn(melding);

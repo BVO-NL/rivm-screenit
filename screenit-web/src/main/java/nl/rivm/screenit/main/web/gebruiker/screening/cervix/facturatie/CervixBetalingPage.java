@@ -48,7 +48,6 @@ import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
@@ -79,7 +78,7 @@ public class CervixBetalingPage extends CervixScreeningBasePage
 
 	public CervixBetalingPage()
 	{
-		CervixBetalingsZoekObject zoekObject = new CervixBetalingsZoekObject();
+		var zoekObject = new CervixBetalingsZoekObject();
 		zoekObject.setVerrichtingenHuisarts(true);
 		zoekObject.setVerrichtingenLaboratorium(true);
 		zoekObjectModel = new CompoundPropertyModel<>(zoekObject);
@@ -89,15 +88,15 @@ public class CervixBetalingPage extends CervixScreeningBasePage
 
 	private ScreenitForm<CervixBetalingsZoekObject> getFilterForm()
 	{
-		ScreenitForm<CervixBetalingsZoekObject> form = new ScreenitForm<>("form", zoekObjectModel);
+		var form = new ScreenitForm<CervixBetalingsZoekObject>("form", zoekObjectModel);
 
 		form.add(new CervixHerindexeringWaarschuwingPanel("waarschuwing"));
 
 		form.add(ComponentHelper.newDatePicker("verrichtingsdatumTotEnMet"));
 
-		CheckBox verrichtingenLaboratoriumCheckbox = ComponentHelper.newCheckBox("verrichtingenLaboratorium");
+		var verrichtingenLaboratoriumCheckbox = ComponentHelper.newCheckBox("verrichtingenLaboratorium");
 		form.add(verrichtingenLaboratoriumCheckbox);
-		CheckBox verrichtingenHuisartsCheckbox = ComponentHelper.newCheckBox("verrichtingenHuisarts");
+		var verrichtingenHuisartsCheckbox = ComponentHelper.newCheckBox("verrichtingenHuisarts");
 		form.add(verrichtingenHuisartsCheckbox);
 
 		var betalenButton = new IndicatingAjaxSubmitLink("betalen")
@@ -145,8 +144,8 @@ public class CervixBetalingPage extends CervixScreeningBasePage
 			@Override
 			public void validate(Form<?> form)
 			{
-				Boolean toonVerrichtingenLaboratorium = verrichtingenLaboratoriumCheckbox.getConvertedInput();
-				Boolean toonVerrichtingenHuisarts = verrichtingenHuisartsCheckbox.getConvertedInput();
+				var toonVerrichtingenLaboratorium = verrichtingenLaboratoriumCheckbox.getConvertedInput();
+				var toonVerrichtingenHuisarts = verrichtingenHuisartsCheckbox.getConvertedInput();
 				if (BooleanUtils.isNotTrue(toonVerrichtingenLaboratorium) && BooleanUtils.isNotTrue(toonVerrichtingenHuisarts))
 				{
 					form.error("Er zijn geen verrichtingen om te betalen, kies huisartsverrichtingen en/of laboratoriumverrichtingen.");

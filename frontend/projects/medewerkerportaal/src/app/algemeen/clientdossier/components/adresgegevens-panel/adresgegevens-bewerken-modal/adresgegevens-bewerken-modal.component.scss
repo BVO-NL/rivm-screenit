@@ -1,0 +1,81 @@
+/*-
+ * ========================LICENSE_START=================================
+ * medewerkerportaal
+ * %%
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+.huidig-adres-blok {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacer-4);
+  padding: var(--spacer-4) var(--spacer-2);
+  margin: 0;
+  border-radius: 5px;
+  background: var(--clientdossier-background-color);
+
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ruimte-middel);
+  }
+}
+
+.adresgegevens-tijdelijk-adres {
+  margin-top: var(--spacer-3);
+  display: flex;
+  flex-direction: column;
+}
+
+.adresgegevens-sectie-titel {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 var(--spacer-1);
+}
+
+.adresgegevens-huisnummer-rij {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacer-3);
+
+  ds-input {
+    flex: 2 1 calc(33% - var(--spacer-3));
+
+    &[formcontrolname="huisnummer"],
+    &[formcontrolname="huisletter"],
+    &[formcontrolname="huisnummerAanduiding"] {
+      flex: 1 1 calc(15% - var(--spacer-3));
+    }
+  }
+}
+
+.adresgegevens-postcode-rij {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--spacer-3);
+}
+
+.adresgegevens-datum-rij {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacer-3);
+}
+
+.adresgegevens-ondertitel {
+  font-size: var(--spacer-3);
+  font-family: var(--ds-font-family), serif;
+  margin-bottom: var(--plaats-group-ondertitel-ruimte);
+}

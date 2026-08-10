@@ -107,7 +107,7 @@ public class LogischeSessie
 
 	private String[] getCredentialArray()
 	{
-		String base64Credentials = Base64.decodeToString(getCredentials().substring(6));
+		var base64Credentials = Base64.decodeToString(getCredentials().substring(6));
 		return StringUtils.split(base64Credentials, ":", 2);
 	}
 }

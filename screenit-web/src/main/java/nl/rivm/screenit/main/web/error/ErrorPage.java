@@ -27,7 +27,6 @@ import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.base.BasePage;
 import nl.rivm.screenit.main.web.base.ScreenitContext;
 import nl.rivm.screenit.main.web.component.panels.ApplicatieInfoPanel;
-import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
@@ -105,18 +104,18 @@ public class ErrorPage extends BasePage
 
 		final IModel<String> feedback = Model.of("");
 
-		Form<Void> form = new Form<Void>("feedbackForm")
+		var form = new Form<Void>("feedbackForm")
 		{
 			@Override
 			protected void onSubmit()
 			{
-				String feedbackObject = feedback.getObject();
+				var feedbackObject = feedback.getObject();
 				if (StringUtils.isNotBlank(feedbackObject))
 				{
 					logFeedback(feedbackObject);
 				}
 
-				Account ingelogdAccount = ScreenitSession.get().getIngelogdAccount();
+				var ingelogdAccount = ScreenitSession.get().getIngelogdAccount();
 				if (ingelogdAccount != null)
 				{
 					setResponsePage(Application.get().getHomePage());

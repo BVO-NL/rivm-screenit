@@ -23,9 +23,7 @@ package nl.rivm.screenit.batch.service.impl.dicom;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import nl.rivm.screenit.model.mamma.dicom.CMoveConfig;
 import nl.rivm.screenit.model.mamma.dicom.SCPConfig;
@@ -68,12 +66,12 @@ public class CMoveSCU extends Device
 
 	public boolean retrieve(CMoveConfig moveConfig, long accessionNumber)
 	{
-		ApplicationEntity ae = new ApplicationEntity(OWN_AE_TITLE);
-		Connection conn = new Connection();
-		Connection remote = new Connection();
-		AAssociateRQ rq = new AAssociateRQ();
+		var ae = new ApplicationEntity(OWN_AE_TITLE);
+		var conn = new Connection();
+		var remote = new Connection();
+		var rq = new AAssociateRQ();
 		Association as = null;
-		Attributes searchKeys = new Attributes();
+		var searchKeys = new Attributes();
 
 		addConnection(conn);
 		addApplicationEntity(ae);
@@ -84,8 +82,8 @@ public class CMoveSCU extends Device
 		configureServiceClass(rq);
 		addLevel(searchKeys, "STUDY");
 		configureKeys(searchKeys, accessionNumber);
-		ExecutorService executorService = Executors.newSingleThreadExecutor();
-		ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+		var executorService = Executors.newSingleThreadExecutor();
+		var scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 		setExecutor(executorService);
 		setScheduledExecutor(scheduledExecutorService);
 
@@ -167,7 +165,7 @@ public class CMoveSCU extends Device
 
 	private void addKey(Attributes searchKeys, int tag, String... ss)
 	{
-		VR vr = ElementDictionary.vrOf(tag, searchKeys.getPrivateCreator(tag));
+		var vr = ElementDictionary.vrOf(tag, searchKeys.getPrivateCreator(tag));
 		searchKeys.setString(tag, vr, ss);
 	}
 

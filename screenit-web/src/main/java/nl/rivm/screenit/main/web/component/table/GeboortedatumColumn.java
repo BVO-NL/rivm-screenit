@@ -48,7 +48,7 @@ public class GeboortedatumColumn<T extends HibernateObject> extends PropertyColu
 	@Override
 	public IModel<Object> getDataModel(IModel<T> rowModel)
 	{
-		Persoon persoon = (Persoon) super.getDataModel(rowModel).getObject();
+		var persoon = (Persoon) super.getDataModel(rowModel).getObject();
 		if (persoon != null)
 		{
 			return new Model(DateUtil.getGeboortedatum(persoon));

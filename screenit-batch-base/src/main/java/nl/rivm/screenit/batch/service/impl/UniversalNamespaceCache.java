@@ -30,9 +30,7 @@ import javax.xml.namespace.NamespaceContext;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class UniversalNamespaceCache implements NamespaceContext
 {
@@ -51,19 +49,19 @@ public class UniversalNamespaceCache implements NamespaceContext
 
 	private void examineNode(Node node)
 	{
-		NamedNodeMap attributes = node.getAttributes();
+		var attributes = node.getAttributes();
 		if (attributes != null)
 		{
-			for (int i = 0; i < attributes.getLength(); i++)
+			for (var i = 0; i < attributes.getLength(); i++)
 			{
-				Node attribute = attributes.item(i);
+				var attribute = attributes.item(i);
 				storeAttribute((Attr) attribute);
 			}
 		}
-		NodeList chields = node.getChildNodes();
-		for (int i = 0; i < chields.getLength(); i++)
+		var chields = node.getChildNodes();
+		for (var i = 0; i < chields.getLength(); i++)
 		{
-			Node chield = chields.item(i);
+			var chield = chields.item(i);
 			if (chield.getNodeType() == Node.ELEMENT_NODE)
 			{
 				examineNode(chield);

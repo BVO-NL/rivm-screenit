@@ -41,7 +41,7 @@ public class TestMammaDeelnamewensAction extends TestMammaVervolgKeuzeAction
 	@Override
 	public void execute()
 	{
-		for (Client client : clienten)
+		for (var client : clienten)
 		{
 			mammaTestTimelineService.registreerDeelnamewens(client);
 		}

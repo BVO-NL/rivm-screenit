@@ -23,7 +23,6 @@ package nl.rivm.screenit.util;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
@@ -53,7 +52,7 @@ public class StringUtil
 			return "";
 		}
 		String result = "", separator = "";
-		for (Object literal : literals)
+		for (var literal : literals)
 		{
 			result += separator + literal2string(literal);
 			separator = ", ";
@@ -63,21 +62,21 @@ public class StringUtil
 
 	public static String toString(Collection<?> collection, int maxLen)
 	{
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		builder.append("[");
-		int i = 0;
-		for (Iterator<?> iterator = collection.iterator(); iterator.hasNext() && i < maxLen; i++)
+		var i = 0;
+		for (var iterator = collection.iterator(); iterator.hasNext() && i < maxLen; i++)
 		{
 			if (i > 0)
 			{
 				builder.append(", ");
 			}
-			Object next = iterator.next();
+			var next = iterator.next();
 			if (next instanceof Entry entry)
 			{
 				builder.append(entry.getKey());
 				builder.append("=");
-				Object value = entry.getValue();
+				var value = entry.getValue();
 				if (value instanceof BigDecimal decimal)
 				{
 					builder.append(BigDecimalUtil.decimalToString(decimal));

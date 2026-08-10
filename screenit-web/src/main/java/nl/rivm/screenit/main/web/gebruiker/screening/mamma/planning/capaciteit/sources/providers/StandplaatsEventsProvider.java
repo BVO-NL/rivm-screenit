@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
 import nl.rivm.screenit.main.util.StandplaatsPeriodeUtil;
 import nl.rivm.screenit.main.web.component.fullcalendar.event.Event;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.MammaCapaciteitOverviewPanel;
@@ -58,14 +57,14 @@ public class StandplaatsEventsProvider extends AbstractScreenITEventProvider
 	@Override
 	void createEvents(Date start, Date end)
 	{
-		for (PlanningStandplaatsPeriodeDto standplaatsPeriodeDto : screenITEventSourceFactory.getWeekDto().standplaatsPeriodes)
+		for (var standplaatsPeriodeDto : screenITEventSourceFactory.getWeekDto().standplaatsPeriodes)
 		{
-			MammaStandplaats standplaats = hibernateService.get(MammaStandplaats.class, standplaatsPeriodeDto.standplaatsId);
+			var standplaats = hibernateService.get(MammaStandplaats.class, standplaatsPeriodeDto.standplaatsId);
 
-			Event event = new Event();
+			var event = new Event();
 
 			capaciteitOverviewPanel.addMeldingTooltip(Model.of(standplaatsPeriodeDto));
-			String tooltipId = "tooltip-m" + standplaatsPeriodeDto.conceptId;
+			var tooltipId = "tooltip-m" + standplaatsPeriodeDto.conceptId;
 			event.setTitle(
 				StandplaatsPeriodeUtil.getStandplaatsPeriodeNaam(standplaatsPeriodeDto, standplaats) +
 					maakMeldingIcoon(tooltipId, standplaatsPeriodeDto.meldingenDto.niveau.getCssClass()) +

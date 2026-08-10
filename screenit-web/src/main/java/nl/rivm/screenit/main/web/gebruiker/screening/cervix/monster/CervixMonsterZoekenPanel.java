@@ -29,7 +29,6 @@ import nl.rivm.screenit.main.exception.CervixMonsterZoekenExceptie;
 import nl.rivm.screenit.main.service.cervix.CervixUitnodigingService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -101,7 +100,7 @@ public abstract class CervixMonsterZoekenPanel extends Panel
 		};
 		add(uitnodigingenPanel);
 
-		AjaxSubmitLink zoekenButton = new AjaxSubmitLink("zoeken")
+		var zoekenButton = new AjaxSubmitLink("zoeken")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -141,7 +140,7 @@ public abstract class CervixMonsterZoekenPanel extends Panel
 		uitnodigingenPanel.replaceUitnodigingenPanel(target, uitnodigingen);
 		if (!uitnodigingen.isEmpty())
 		{
-			Client client = uitnodigingen.get(0).getScreeningRonde().getDossier().getClient();
+			var client = uitnodigingen.get(0).getScreeningRonde().getDossier().getClient();
 			logService.logGebeurtenis(LogGebeurtenis.CERVIX_UITNODIGINGEN_INGEZIEN, ScreenitSession.get().getIngelogdAccount(), client, getString("titel"),
 				Bevolkingsonderzoek.CERVIX);
 		}

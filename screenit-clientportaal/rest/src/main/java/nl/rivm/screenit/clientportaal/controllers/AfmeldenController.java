@@ -30,13 +30,10 @@ import nl.rivm.screenit.clientportaal.services.AfmeldenService;
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
-import nl.rivm.screenit.model.cervix.CervixAfmelding;
 import nl.rivm.screenit.model.cervix.enums.CervixAfmeldingReden;
-import nl.rivm.screenit.model.colon.ColonAfmelding;
 import nl.rivm.screenit.model.colon.enums.ColonAfmeldingReden;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
-import nl.rivm.screenit.model.mamma.MammaAfmelding;
 import nl.rivm.screenit.model.mamma.enums.MammaAfmeldingReden;
 import nl.rivm.screenit.service.BaseAfmeldService;
 import nl.rivm.screenit.service.ClientContactService;
@@ -81,11 +78,11 @@ public class AfmeldenController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> saveCervixAfmelding(@RequestBody AfmeldingDto<CervixAfmeldingReden> afmeldingDto, Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.CERVIX_AFMELDEN))
 		{
-			CervixAfmelding cervixAfmelding = afmeldenService.valideerEnGetCervixAfmelding(afmeldingDto, client);
+			var cervixAfmelding = afmeldenService.valideerEnGetCervixAfmelding(afmeldingDto, client);
 			handleAfmelding(client, cervixAfmelding);
 			return ResponseEntity.ok().build();
 		}
@@ -97,11 +94,11 @@ public class AfmeldenController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> saveColonAfmelding(@RequestBody AfmeldingDto<ColonAfmeldingReden> afmeldingDto, Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_AFMELDEN))
 		{
-			ColonAfmelding colonAfmelding = afmeldenService.valideerEnGetColonAfmelding(afmeldingDto, client);
+			var colonAfmelding = afmeldenService.valideerEnGetColonAfmelding(afmeldingDto, client);
 			handleAfmelding(client, colonAfmelding);
 			return ResponseEntity.ok().build();
 		}
@@ -113,11 +110,11 @@ public class AfmeldenController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> saveMammaAfmelding(@RequestBody AfmeldingDto<MammaAfmeldingReden> afmeldingDto, Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFMELDEN))
 		{
-			MammaAfmelding mammaAfmelding = afmeldenService.valideerEnGetMammaAfmelding(afmeldingDto, client);
+			var mammaAfmelding = afmeldenService.valideerEnGetMammaAfmelding(afmeldingDto, client);
 			handleAfmelding(client, mammaAfmelding);
 			return ResponseEntity.ok().build();
 		}

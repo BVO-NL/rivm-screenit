@@ -79,7 +79,7 @@ public class RolServiceImpl implements RolService
 	@Override
 	public void setRolActiefOfInactief(Rol rol, Account ingelogdAccount)
 	{
-		boolean nieuwInActief = !rol.getActief();
+		var nieuwInActief = !rol.getActief();
 		long rolId = rol.getId();
 
 		var melding = "Rol: " + rol.getNaam();
@@ -112,11 +112,11 @@ public class RolServiceImpl implements RolService
 	{
 		List<Rol> toeTeVoegenRollen = new ArrayList<>();
 
-		List<Rol> rollen = getActieveRollen();
-		for (Rol rol : rollen)
+		var rollen = getActieveRollen();
+		for (var rol : rollen)
 		{
-			boolean hasRol = false;
-			for (OrganisatieMedewerkerRol organisatieMedewerkerRol : organisatieMedewerkerRolToevoegen.getRollen())
+			var hasRol = false;
+			for (var organisatieMedewerkerRol : organisatieMedewerkerRolToevoegen.getRollen())
 			{
 				if (organisatieMedewerkerRol.isRolActief() && rol.equals(organisatieMedewerkerRol.getRol()) && organisatieMedewerkerRol.getId() != null)
 				{
@@ -135,7 +135,7 @@ public class RolServiceImpl implements RolService
 
 	private boolean authorizedRol(Rol rol, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		Set<Rol> actieveRollenOrganisatieMedewerker = ingelogdeOrganisatieMedewerker.getRollen().stream().filter(OrganisatieMedewerkerRol::getActief)
+		var actieveRollenOrganisatieMedewerker = ingelogdeOrganisatieMedewerker.getRollen().stream().filter(OrganisatieMedewerkerRol::getActief)
 			.map(OrganisatieMedewerkerRol::getRol)
 			.collect(Collectors.toSet());
 
@@ -158,7 +158,7 @@ public class RolServiceImpl implements RolService
 	{
 		Set<Rol> parentRollen = new HashSet<>();
 
-		for (Rol beschikbareRol : getRollen())
+		for (var beschikbareRol : getRollen())
 		{
 			if (!beschikbareRol.getId().equals(rol.getId()) && Boolean.TRUE.equals(beschikbareRol.getActief()))
 			{
@@ -195,9 +195,9 @@ public class RolServiceImpl implements RolService
 	{
 		if (rollen != null && !verwijderdeBevolkingsonderzoek.isEmpty())
 		{
-			for (OrganisatieMedewerkerRol omRol : rollen)
+			for (var omRol : rollen)
 			{
-				for (Bevolkingsonderzoek onderzoek : verwijderdeBevolkingsonderzoek)
+				for (var onderzoek : verwijderdeBevolkingsonderzoek)
 				{
 					omRol.getBevolkingsonderzoeken().remove(onderzoek);
 				}
@@ -351,7 +351,7 @@ public class RolServiceImpl implements RolService
 
 	private void verwijderPermissieMetBvo(Rol rol)
 	{
-		List<Bevolkingsonderzoek> goedeOnderzoeken = rol.getBevolkingsonderzoeken();
+		var goedeOnderzoeken = rol.getBevolkingsonderzoeken();
 		rol.getPermissies().stream()
 			.filter(permissie -> permissie.getRecht() == null || Collections.disjoint(goedeOnderzoeken, Arrays.asList(permissie.getRecht().getBevolkingsonderzoeken())))
 			.forEach(permissie -> permissie.setActief(Boolean.FALSE));
@@ -359,8 +359,8 @@ public class RolServiceImpl implements RolService
 
 	private boolean zijnErActivePermissies(Rol rol)
 	{
-		boolean actief = false;
-		for (Permissie permissie : rol.getPermissies())
+		var actief = false;
+		for (var permissie : rol.getPermissies())
 		{
 			if (Boolean.TRUE.equals(permissie.getActief()))
 			{

@@ -141,7 +141,7 @@ public class HL7TestMessageServiceImpl implements HL7TestMessageService
 	public ScreenITResponseV24MessageWrapper verstuurORMTestBericht(String message) throws LLPException, IOException, HL7Exception
 	{
 		verversIMSConfiguratie();
-		Connection connection = getImsOrmConnection();
+		var connection = getImsOrmConnection();
 		return sendHL7v24Message(message, connection);
 	}
 
@@ -149,7 +149,7 @@ public class HL7TestMessageServiceImpl implements HL7TestMessageService
 	public ScreenITResponseV24MessageWrapper verstuurADTTestBericht(String message) throws LLPException, IOException, HL7Exception
 	{
 		verversIMSConfiguratie();
-		Connection connection = getImsAdtConnection();
+		var connection = getImsAdtConnection();
 		return sendHL7v24Message(message, connection);
 	}
 
@@ -157,7 +157,7 @@ public class HL7TestMessageServiceImpl implements HL7TestMessageService
 	public ScreenITResponseV24MessageWrapper verstuurORMTestBerichtNaarScreenIT(String message) throws LLPException, IOException, HL7Exception
 	{
 		verversIMSConfiguratie();
-		Connection connection = getScreenITOrmConnection();
+		var connection = getScreenITOrmConnection();
 		return sendHL7v24Message(message, connection);
 	}
 
@@ -165,18 +165,18 @@ public class HL7TestMessageServiceImpl implements HL7TestMessageService
 	public ScreenITResponseV24MessageWrapper verstuurILMTestBerichtNaarScreenIT(String message) throws LLPException, IOException, HL7Exception
 	{
 		verversIMSConfiguratie();
-		Connection connection = getScreenITOrmIlmConnection();
+		var connection = getScreenITOrmIlmConnection();
 		return sendHL7v24Message(message, connection);
 	}
 
 	private ScreenITResponseV24MessageWrapper sendHL7v24Message(String message, Connection connection) throws LLPException, IOException, HL7Exception
 	{
 		ScreenITResponseV24MessageWrapper wrapper = null;
-		Message hapiMsg = parseMessage(message);
+		var hapiMsg = parseMessage(message);
 		if (connection != null)
 		{
 			LOG.info("HL7v24 bericht versturen naar {}:{}", connection.getRemoteAddress().getHostName(), connection.getRemotePort());
-			Message response = connection.getInitiator().sendAndReceive(hapiMsg);
+			var response = connection.getInitiator().sendAndReceive(hapiMsg);
 			wrapper = new ScreenITResponseV24MessageWrapper(response);
 			LOG.info("Message verstuurd. Response was: {}", wrapper.getAcknowledgmentCode());
 		}

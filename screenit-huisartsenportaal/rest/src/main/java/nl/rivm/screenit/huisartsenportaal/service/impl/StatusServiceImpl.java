@@ -21,6 +21,8 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.jms.ConnectionFactory;
+
 import nl.rivm.screenit.huisartsenportaal.dto.StatusDto;
 import nl.rivm.screenit.huisartsenportaal.repository.HuisartsRepository;
 import nl.rivm.screenit.huisartsenportaal.service.StatusService;
@@ -30,9 +32,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.jms.Connection;
-import jakarta.jms.ConnectionFactory;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)
@@ -55,7 +54,7 @@ public class StatusServiceImpl implements StatusService
 	@Override
 	public StatusDto getStatusObject()
 	{
-		StatusDto status = new StatusDto();
+		var status = new StatusDto();
 		status.setEnvironment(applicationEnvironment);
 		status.setActiveMQStatus(getStatusFromActiveMQ());
 		status.setDatabaseStatus(getStatusFromDatabase());
@@ -67,7 +66,7 @@ public class StatusServiceImpl implements StatusService
 	{
 		try
 		{
-			Connection connection = connectionFactory.createConnection();
+			var connection = connectionFactory.createConnection();
 			connection.close();
 			return OK;
 		}
@@ -82,7 +81,7 @@ public class StatusServiceImpl implements StatusService
 	{
 		try
 		{
-			Long aantal = huisartsRepository.countByHuisartsportaalId(1L);
+			var aantal = huisartsRepository.countByHuisartsportaalId(1L);
 			return OK;
 		}
 		catch (Exception e)

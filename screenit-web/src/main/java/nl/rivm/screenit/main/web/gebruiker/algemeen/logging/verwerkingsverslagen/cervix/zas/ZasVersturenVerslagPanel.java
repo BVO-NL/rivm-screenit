@@ -58,7 +58,7 @@ public class ZasVersturenVerslagPanel extends GenericPanel<CervixUitnodigingVers
 			@Override
 			public List<CervixZasVersturenRapportage> getObject()
 			{
-				List<CervixZasVersturenRapportage> selectieRapportageEntries = model.getObject().getRapportage();
+				var selectieRapportageEntries = model.getObject().getRapportage();
 
 				selectieRapportageEntries = new ArrayList<>(selectieRapportageEntries);
 				Collections.sort(selectieRapportageEntries, new Comparator<CervixZasVersturenRapportage>()
@@ -94,7 +94,7 @@ public class ZasVersturenVerslagPanel extends GenericPanel<CervixUitnodigingVers
 			@Override
 			public List<CervixZasVersturenRapportageProjectEntry> getObject()
 			{
-				List<CervixZasVersturenRapportageProjectEntry> selectieRapportageEntries = model.getObject().getProjectGroepen();
+				var selectieRapportageEntries = model.getObject().getProjectGroepen();
 				selectieRapportageEntries = new ArrayList<>(selectieRapportageEntries);
 
 				Collections.sort(selectieRapportageEntries, new Comparator<CervixZasVersturenRapportageProjectEntry>()

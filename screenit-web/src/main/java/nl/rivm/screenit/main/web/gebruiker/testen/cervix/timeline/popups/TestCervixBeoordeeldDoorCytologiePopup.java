@@ -63,7 +63,7 @@ public class TestCervixBeoordeeldDoorCytologiePopup extends TestCervixUitnodigin
 	@Override
 	protected void opslaan()
 	{
-		for (CervixUitnodiging uitnodiging : getCurrentUitnodigingen())
+		for (var uitnodiging : getCurrentUitnodigingen())
 		{
 			baseTestTimelineService.beoordeeldDoorCytologie(uitnodiging, cytologieUitslagModel.getObject(), laboratoriumModel.getObject());
 		}

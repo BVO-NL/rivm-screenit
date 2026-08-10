@@ -211,7 +211,7 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 
 	private void waitForAvailableEndpoint()
 	{
-		int i = 0;
+		var i = 0;
 		var format = new SimpleDateFormat(Constants.DEFAULT_DATE_TIME_FORMAT);
 		var message = new StringBuilder();
 		message.append("\n<br>Poging 1 (").append(format.format(currentDateSupplier.getDate())).append("): ");
@@ -311,8 +311,8 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 	{
 		if (!checkBrieven())
 		{
-			String message = "Niet alle brieven hebben een template geupload. Upload de bijbehorende templates.";
-			IllegalStateException exception = new IllegalStateException(message);
+			var message = "Niet alle brieven hebben een template geupload. Upload de bijbehorende templates.";
+			var exception = new IllegalStateException(message);
 			crashMelding(message, exception);
 			throw exception;
 		}
@@ -511,7 +511,7 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 
 	private void genereerDtoUitnodiging(Long uitnodigingId)
 	{
-		U uitnodiging = getUitnodigingById(uitnodigingId);
+		var uitnodiging = getUitnodigingById(uitnodigingId);
 		try
 		{
 			if (uitzonderingGevonden(uitnodiging))
@@ -581,7 +581,7 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 			}
 			else
 			{
-				nl.rivm.screenit.model.Client client = uitnodiging.getScreeningRonde().getDossier().getClient();
+				var client = uitnodiging.getScreeningRonde().getDossier().getClient();
 				LOG.warn("Client (id: '{}') overgeslagen door een exception", client.getId(), e);
 				logMislukt(client);
 			}
@@ -595,7 +595,7 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 		var mergeFields = inpakcentrumUitnodigingDto.getMergeFields();
 		Stream.of(MergeField.CLIENT_ADRES, MergeField.CLIENT_POSTCODE, MergeField.CLIENT_WOONPLAATS).filter(MergeField::naarInpakcentrum).forEach(mergeField ->
 		{
-			Object value = mergeField.getValue(mailMergeContext);
+			var value = mergeField.getValue(mailMergeContext);
 			addMergeField(mergeFields, mergeField.getFieldName(), value != null ? value.toString() : "");
 		});
 

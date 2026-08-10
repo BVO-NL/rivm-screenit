@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.login;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.model.Medewerker;
@@ -61,10 +59,10 @@ public class OrganisatieSelectiePage extends LoginBasePage
 
 	public OrganisatieSelectiePage(Medewerker medewerker)
 	{
-		Form<Organisatie> selectOrganisatieForm = new Form<Organisatie>("selectOrganisatieForm");
+		var selectOrganisatieForm = new Form<Organisatie>("selectOrganisatieForm");
 
-		List<OrganisatieMedewerker> organisatieMedewerkers = this.authenticatieService.getActieveOrganisatieMedewerkers(medewerker);
-		final ScreenitDropdown<OrganisatieMedewerker> organisatie = new ScreenitDropdown<>("organisatie",
+		var organisatieMedewerkers = this.authenticatieService.getActieveOrganisatieMedewerkers(medewerker);
+		final var organisatie = new ScreenitDropdown<OrganisatieMedewerker>("organisatie",
 			new PropertyModel<>(this, "gekozenOrganisatieMedewerker"),
 			ModelUtil.listRModel(organisatieMedewerkers), new ChoiceRenderer<>("organisatie.naam"));
 
@@ -81,7 +79,7 @@ public class OrganisatieSelectiePage extends LoginBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				OrganisatieMedewerker organisatieMedewerker = getGekozenOrganisatieMedewerker();
+				var organisatieMedewerker = getGekozenOrganisatieMedewerker();
 				Component pageForOrganisatieMedewerker = ScreenitSession.get().getPageForOrganisatieMedewerker(organisatieMedewerker);
 				if (pageForOrganisatieMedewerker != null)
 				{

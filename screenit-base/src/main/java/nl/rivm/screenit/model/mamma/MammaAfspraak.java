@@ -49,8 +49,6 @@ import nl.rivm.screenit.util.DiffSpecs;
 import nl.rivm.screenit.util.SkipFieldForDiff;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -65,11 +63,6 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 		@Index(name = "idx_mamma_afspraak_status", columnList = "status")
 	})
 @Audited
-@FetchProfile(
-	name = "kansberekening",
-	fetchOverrides = {
-		@FetchProfile.FetchOverride(entity = MammaAfspraak.class, association = "onderzoek", mode = FetchMode.JOIN)
-	})
 @Getter
 @Setter
 public class MammaAfspraak extends AbstractHibernateObject

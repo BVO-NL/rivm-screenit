@@ -23,7 +23,6 @@ package nl.rivm.screenit.service.mamma.impl;
 
 import lombok.RequiredArgsConstructor;
 
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.mamma.MammaBasePaVerslagService;
@@ -46,7 +45,7 @@ public class MammaBasePaVerslagServiceImpl implements MammaBasePaVerslagService
 	@Override
 	public boolean verwachtGegevensVoor(String bsn)
 	{
-		Client client = clientService.getClientZonderBezwaar(bsn);
+		var client = clientService.getClientZonderBezwaar(bsn);
 		if (client != null)
 		{
 			client = screeningrondeService.getLaatsteScreeningRondeMetUitslag(client) != null ? client : null;

@@ -57,8 +57,8 @@ public class MaximalePeriodeLengteValidator extends AbstractFormValidator
 	@Override
 	public void validate(Form<?> form)
 	{
-		Date beginDatum = beginDatumInput.getConvertedInput();
-		Date eindDatum = eindDatumInput.getConvertedInput();
+		var beginDatum = beginDatumInput.getConvertedInput();
+		var eindDatum = eindDatumInput.getConvertedInput();
 
 		if (beginDatum != null && eindDatum != null)
 		{

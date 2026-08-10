@@ -34,16 +34,14 @@ import org.apache.cxf.binding.soap.interceptor.SoapHeaderInterceptor;
 import org.apache.cxf.configuration.security.AuthorizationPolicy;
 import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.interceptor.Fault;
-import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.transport.Conduit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Slf4j
 public class BasicAuthAuthorizationInterceptor extends SoapHeaderInterceptor
 {
 	private String username;
+
 	private String password;
 
 	@Override
@@ -51,7 +49,7 @@ public class BasicAuthAuthorizationInterceptor extends SoapHeaderInterceptor
 	{
 		super.handleMessage(message);
 
-		AuthorizationPolicy policy = message.get(AuthorizationPolicy.class);
+		var policy = message.get(AuthorizationPolicy.class);
 
 		if (policy == null)
 		{
@@ -71,10 +69,10 @@ public class BasicAuthAuthorizationInterceptor extends SoapHeaderInterceptor
 
 	private void sendErrorResponse(Message message, int responseCode)
 	{
-		Message outMessage = getOutMessage(message);
+		var outMessage = getOutMessage(message);
 		outMessage.put(Message.RESPONSE_CODE, responseCode);
 
-		Map<String, List<String>> responseHeaders = (Map<String, List<String>>) message.get(Message.PROTOCOL_HEADERS);
+		var responseHeaders = (Map<String, List<String>>) message.get(Message.PROTOCOL_HEADERS);
 		if (responseHeaders != null)
 		{
 			responseHeaders.put("WWW-Authenticate", Arrays.asList(new String[] { "Basic realm=realm" }));
@@ -94,11 +92,11 @@ public class BasicAuthAuthorizationInterceptor extends SoapHeaderInterceptor
 
 	private Message getOutMessage(Message inMessage)
 	{
-		Exchange exchange = inMessage.getExchange();
-		Message outMessage = exchange.getOutMessage();
+		var exchange = inMessage.getExchange();
+		var outMessage = exchange.getOutMessage();
 		if (outMessage == null)
 		{
-			Endpoint endpoint = exchange.get(Endpoint.class);
+			var endpoint = exchange.get(Endpoint.class);
 			outMessage = endpoint.getBinding().createMessage();
 			exchange.setOutMessage(outMessage);
 		}
@@ -108,15 +106,15 @@ public class BasicAuthAuthorizationInterceptor extends SoapHeaderInterceptor
 
 	private Conduit getConduit(Message inMessage) throws IOException
 	{
-		Exchange exchange = inMessage.getExchange();
-		Conduit conduit = exchange.getDestination().getBackChannel(inMessage);
+		var exchange = inMessage.getExchange();
+		var conduit = exchange.getDestination().getBackChannel(inMessage);
 		exchange.setConduit(conduit);
 		return conduit;
 	}
 
 	private void close(Message outMessage) throws IOException
 	{
-		OutputStream os = outMessage.getContent(OutputStream.class);
+		var os = outMessage.getContent(OutputStream.class);
 		os.flush();
 		os.close();
 	}

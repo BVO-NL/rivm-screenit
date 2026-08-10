@@ -27,9 +27,7 @@ import nl.rivm.screenit.main.model.GeenHuisartsModel;
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.huisarts.HuisartsInfoPanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.AbstractGebeurtenisDetailPanel;
-import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.enums.MammaGeenHuisartsOption;
 
 import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.model.IModel;
@@ -46,8 +44,8 @@ public class MammaHuisartsInzienPanel extends AbstractGebeurtenisDetailPanel
 	{
 		super.onInitialize();
 		MammaScreeningRonde ronde = getModelObject().getScreeningsRonde();
-		EnovationHuisarts enovationHuisarts = ronde.getHuisarts();
-		MammaGeenHuisartsOption geenHuisartsOptie = ronde.getGeenHuisartsOptie();
+		var enovationHuisarts = ronde.getHuisarts();
+		var geenHuisartsOptie = ronde.getGeenHuisartsOptie();
 
 		BaseHuisartsModel<?> huisartsModel = null;
 		if (enovationHuisarts != null)

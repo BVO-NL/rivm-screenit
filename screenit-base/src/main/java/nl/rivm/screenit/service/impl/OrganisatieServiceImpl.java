@@ -49,7 +49,6 @@ import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.UploadDocument;
-import nl.rivm.screenit.model.ZASRetouradres;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.ColoscopieLocatie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -150,7 +149,7 @@ public class OrganisatieServiceImpl implements OrganisatieService
 		{
 			return Collections.emptyList();
 		}
-		OrganisatieType organisatieType = organisatie.getOrganisatieType();
+		var organisatieType = organisatie.getOrganisatieType();
 		return switch (organisatieType)
 		{
 			case RIVM, KWALITEITSPLATFORM -> getActieveOrganisaties(CentraleEenheid.class);
@@ -219,13 +218,13 @@ public class OrganisatieServiceImpl implements OrganisatieService
 	@Transactional
 	public void saveOrUpdateScreeningOrganisatie(ScreeningOrganisatie screeningOrganisatie, List<Gemeente> choices, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		List<Gemeente> gekoppeldeGemeentes = screeningOrganisatie.getGemeentes();
-		for (Gemeente gemeente : gekoppeldeGemeentes)
+		var gekoppeldeGemeentes = screeningOrganisatie.getGemeentes();
+		for (var gemeente : gekoppeldeGemeentes)
 		{
 			gemeente.setScreeningOrganisatie(screeningOrganisatie);
 			hibernateService.saveOrUpdate(gemeente);
 		}
-		for (Gemeente gemeente : choices)
+		for (var gemeente : choices)
 		{
 			if (!gekoppeldeGemeentes.contains(gemeente) && screeningOrganisatie.equals(gemeente.getScreeningOrganisatie()))
 			{
@@ -235,7 +234,7 @@ public class OrganisatieServiceImpl implements OrganisatieService
 			}
 		}
 
-		for (ZASRetouradres retouradres : screeningOrganisatie.getRetouradressen())
+		for (var retouradres : screeningOrganisatie.getRetouradressen())
 		{
 			hibernateService.saveOrUpdateAll(retouradres.getAdres(), retouradres);
 		}
@@ -248,7 +247,7 @@ public class OrganisatieServiceImpl implements OrganisatieService
 	@Transactional
 	public void saveOrUpdateSoPlanningBk(ScreeningOrganisatie screeningOrganisatie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		PlanningScreeningsOrganisatieDto screeningsOrganisatieDto = new PlanningScreeningsOrganisatieDto();
+		var screeningsOrganisatieDto = new PlanningScreeningsOrganisatieDto();
 		screeningsOrganisatieDto.id = screeningOrganisatie.getId();
 		screeningsOrganisatieDto.factorMindervalideBk = screeningOrganisatie.getFactorMindervalideBk();
 		screeningsOrganisatieDto.factorDubbeleTijdBk = screeningOrganisatie.getFactorDubbeleTijdBk();
@@ -257,7 +256,7 @@ public class OrganisatieServiceImpl implements OrganisatieService
 		screeningsOrganisatieDto.vervallenCapaciteitsreserveringDagenBk = screeningOrganisatie.getVervallenCapaciteitsreserveringDagenBk();
 		baseConceptPlanningsApplicatie.updateScreeningsOrganisatie(screeningsOrganisatieDto);
 
-		String oudeAfspraakDrempelBk = EntityAuditUtil.getDiffFieldsToLatestVersion(screeningOrganisatie, hibernateService.getHibernateSession(), "afspraakDrempelBk");
+		var oudeAfspraakDrempelBk = EntityAuditUtil.getDiffFieldsToLatestVersion(screeningOrganisatie, hibernateService.getHibernateSession(), "afspraakDrempelBk");
 		if (!oudeAfspraakDrempelBk.equals(""))
 		{
 			oudeAfspraakDrempelBk = oudeAfspraakDrempelBk.split(" -> ")[0].split(": ")[1];
@@ -278,7 +277,7 @@ public class OrganisatieServiceImpl implements OrganisatieService
 
 			if (!oudeAfspraakDrempelBk.equals(nieuweAfspraakDrempelBk))
 			{
-				String logMeldingAfspraakDrempelBk = "De afspraakdrempel is voor " + screeningOrganisatie.getNaam() + " gezet van "
+				var logMeldingAfspraakDrempelBk = "De afspraakdrempel is voor " + screeningOrganisatie.getNaam() + " gezet van "
 					+ oudeAfspraakDrempelBk + " naar " + nieuweAfspraakDrempelBk + ".";
 				logService.logGebeurtenis(LogGebeurtenis.MAMMA_AFSPRAAK_DREMPEL_GEWIJZIGD, ingelogdeOrganisatieMedewerker, logMeldingAfspraakDrempelBk, Bevolkingsonderzoek.MAMMA);
 			}
@@ -357,9 +356,9 @@ public class OrganisatieServiceImpl implements OrganisatieService
 
 		if (organisatie.getOrganisatieMedewerkers() != null)
 		{
-			for (OrganisatieMedewerker organisatieMedewerker : organisatie.getOrganisatieMedewerkers())
+			for (var organisatieMedewerker : organisatie.getOrganisatieMedewerkers())
 			{
-				final Medewerker medewerker = organisatieMedewerker.getMedewerker();
+				final var medewerker = organisatieMedewerker.getMedewerker();
 				if (BooleanUtils.isNotFalse(organisatieMedewerker.getActief()) && MedewerkerUtil.isMedewerkerActief(medewerker, currentDateSupplier.getDateMidnight())
 					&& !medewerkers.contains(medewerker))
 				{
@@ -403,7 +402,7 @@ public class OrganisatieServiceImpl implements OrganisatieService
 	@Transactional
 	public void saveDocumentForOrganisatie(UploadDocument uploadDocument, Organisatie organisatie)
 	{
-		List<UploadDocument> documents = organisatie.getDocuments();
+		var documents = organisatie.getDocuments();
 		try
 		{
 			uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.ORGANISATIE_DOCUMENTEN, organisatie.getId());

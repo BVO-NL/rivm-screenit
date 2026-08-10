@@ -82,7 +82,7 @@ public class MammaStandplaatsZoekenPage extends MammaPlanningBasePage
 	public MammaStandplaatsZoekenPage()
 	{
 
-		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
+		var ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
 		IModel<MammaStandplaats> criteriaModel;
 		if (ScreenitSession.get().isZoekObjectGezetForComponent(MammaStandplaatsZoekenPage.class))
 		{
@@ -90,7 +90,7 @@ public class MammaStandplaatsZoekenPage extends MammaPlanningBasePage
 		}
 		else
 		{
-			MammaStandplaats zoekObject = new MammaStandplaats();
+			var zoekObject = new MammaStandplaats();
 			criteriaModel = ModelUtil.cModel(zoekObject);
 			zoekObject = criteriaModel.getObject();
 			zoekObject.setLocatie(new MammaStandplaatsLocatie());
@@ -99,9 +99,9 @@ public class MammaStandplaatsZoekenPage extends MammaPlanningBasePage
 			zoekObject.setActief(true);
 		}
 
-		MammaStandplaatsDataProvider standplaatsDataProvider = new MammaStandplaatsDataProvider("naam", criteriaModel);
+		var standplaatsDataProvider = new MammaStandplaatsDataProvider("naam", criteriaModel);
 
-		final WebMarkupContainer refreshContainer = new WebMarkupContainer("refreshContainer");
+		final var refreshContainer = new WebMarkupContainer("refreshContainer");
 		refreshContainer.setOutputMarkupId(Boolean.TRUE);
 		add(refreshContainer);
 
@@ -124,7 +124,7 @@ public class MammaStandplaatsZoekenPage extends MammaPlanningBasePage
 			@Override
 			public IModel<String> getDataModel(IModel<MammaStandplaats> rowModel)
 			{
-				String locatieAdres = "";
+				var locatieAdres = "";
 				if (rowModel.getObject().getLocatie() != null)
 				{
 					locatieAdres = rowModel.getObject().getLocatie().getAdres();
@@ -140,12 +140,12 @@ public class MammaStandplaatsZoekenPage extends MammaPlanningBasePage
 			@Override
 			public IModel<String> getDataModel(IModel<MammaStandplaats> rowModel)
 			{
-				String postcode = rowModel.getObject().getLocatie().getPostcode();
+				var postcode = rowModel.getObject().getLocatie().getPostcode();
 				if (StringUtils.isBlank(postcode))
 				{
 					postcode = "";
 				}
-				String plaats = rowModel.getObject().getLocatie().getPlaats();
+				var plaats = rowModel.getObject().getLocatie().getPlaats();
 				if (StringUtils.isBlank(plaats))
 				{
 					plaats = "";
@@ -164,7 +164,7 @@ public class MammaStandplaatsZoekenPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<MammaStandplaats> model)
 			{
-				MammaStandplaats standplaats = model.getObject();
+				var standplaats = model.getObject();
 				setResponsePage(new MammaStandplaatsEditPage(ModelUtil.cModel(standplaats)));
 			}
 
@@ -178,7 +178,7 @@ public class MammaStandplaatsZoekenPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaStandplaats standplaats = new MammaStandplaats();
+				var standplaats = new MammaStandplaats();
 				standplaats.setActief(true);
 				standplaats.setRegio(ScreenitSession.get().getScreeningOrganisatie());
 				setResponsePage(new MammaStandplaatsEditPage(ModelUtil.cModel(standplaats)));
@@ -193,12 +193,12 @@ public class MammaStandplaatsZoekenPage extends MammaPlanningBasePage
 
 		zoekForm.add(new TextField<>("naam"));
 		zoekForm.add(new TextField<>("locatie.plaats"));
-		ScreenitDropdown<ScreeningOrganisatie> regioComponent = new ScreenitDropdown<>("regio",
+		var regioComponent = new ScreenitDropdown<ScreeningOrganisatie>("regio",
 			ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class), false), new ChoiceRenderer<ScreeningOrganisatie>("naam"));
 		regioComponent.setVisible(ingelogdNamensRegio == null);
 		regioComponent.setNullValid(true);
 		zoekForm.add(regioComponent);
-		IndicatingAjaxSubmitLink zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
+		var zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
 		{
 
 			private static final long serialVersionUID = 1L;

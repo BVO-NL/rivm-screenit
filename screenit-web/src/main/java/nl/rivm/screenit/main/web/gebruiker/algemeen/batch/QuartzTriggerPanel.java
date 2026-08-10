@@ -75,7 +75,7 @@ public class QuartzTriggerPanel extends BatchBvoFilterPanel
 		addOrReplace(container);
 
 		triggers = null;
-		boolean error = false;
+		var error = false;
 
 		try
 		{
@@ -93,7 +93,7 @@ public class QuartzTriggerPanel extends BatchBvoFilterPanel
 			error("Ophalen van triggers mislukt");
 		}
 
-		ListView<Trigger> triggerListView = new ListView<Trigger>("triggers", new IModel<List<Trigger>>()
+		var triggerListView = new ListView<Trigger>("triggers", new IModel<List<Trigger>>()
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -112,7 +112,7 @@ public class QuartzTriggerPanel extends BatchBvoFilterPanel
 			@Override
 			protected void populateItem(ListItem<Trigger> item)
 			{
-				Trigger trigger = item.getModelObject();
+				var trigger = item.getModelObject();
 				item.add(new Label("bvoLabel", Bevolkingsonderzoek.getAfkortingen(trigger.getJobType().getBevolkingsOnderzoeken())));
 				item.add(new EnumLabel<JobType>("job", trigger.getJobType()));
 				item.add(new Label("cron", trigger.getCronExpressie()));
@@ -126,7 +126,7 @@ public class QuartzTriggerPanel extends BatchBvoFilterPanel
 					@Override
 					public void onClick(AjaxRequestTarget target)
 					{
-						Boolean result = batchService.removeTrigger(getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+						var result = batchService.removeTrigger(getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 						if (BooleanUtils.isTrue(result))
 						{
 							Session.get().info("Trigger is verwijderd");
@@ -149,10 +149,10 @@ public class QuartzTriggerPanel extends BatchBvoFilterPanel
 		List<Trigger> visibleTriggers = new ArrayList<>();
 		if (triggers != null)
 		{
-			for (Trigger trigger : triggers)
+			for (var trigger : triggers)
 			{
-				boolean heeftBVO = false;
-				for (Bevolkingsonderzoek bvo : Arrays.asList(trigger.getJobType().getBevolkingsOnderzoeken()))
+				var heeftBVO = false;
+				for (var bvo : Arrays.asList(trigger.getJobType().getBevolkingsOnderzoeken()))
 				{
 					if (getBatchJobZoekCriteria().getBevolkingsonderzoeken().contains(bvo) || getBatchJobZoekCriteria().getBevolkingsonderzoeken().isEmpty())
 					{

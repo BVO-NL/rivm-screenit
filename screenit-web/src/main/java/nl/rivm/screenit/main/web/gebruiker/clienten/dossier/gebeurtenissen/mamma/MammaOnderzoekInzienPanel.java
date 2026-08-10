@@ -31,7 +31,6 @@ import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.markup.html.basic.EnumLabel;
@@ -55,8 +54,8 @@ public class MammaOnderzoekInzienPanel extends AbstractGebeurtenisDetailPanel
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		final MammaOnderzoekGebeurtenis onderzoekGebeurtenis = (MammaOnderzoekGebeurtenis) getModelObject();
-		final IModel<MammaOnderzoek> onderzoekModel = ModelUtil.csModel(onderzoekGebeurtenis.getOnderzoek());
+		final var onderzoekGebeurtenis = (MammaOnderzoekGebeurtenis) getModelObject();
+		final var onderzoekModel = ModelUtil.csModel(onderzoekGebeurtenis.getOnderzoek());
 		add(new EnumLabel<>("onderzoek.mammografie.ilmStatus"));
 		add(new MammaVisueleInspectiePanel("visueleInspectiePanel", onderzoekModel));
 		add(new MammaOnderzoekPanel("onderzoekPanel", onderzoekModel));

@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.envers;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
@@ -33,8 +32,8 @@ public class ScreenitRevisionListener implements RevisionListener
 	@Override
 	public void newRevision(Object revisionEntity)
 	{
-		ScreenitRevisionEntity screenitRevisionEntity = (ScreenitRevisionEntity) revisionEntity;
-		Account account = RevisionInformationResolver.getAccount();
+		var screenitRevisionEntity = (ScreenitRevisionEntity) revisionEntity;
+		var account = RevisionInformationResolver.getAccount();
 		if (account != null)
 		{
 			if (account instanceof Medewerker medewerker)

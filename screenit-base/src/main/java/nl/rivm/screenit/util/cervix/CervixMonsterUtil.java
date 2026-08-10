@@ -70,10 +70,10 @@ public class CervixMonsterUtil
 
 	public static String getMonsterControleLetters(CervixDossier cervixDossier)
 	{
-		CervixScreeningRonde laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
-		CervixUitnodiging laatsteUitnodiging = laatsteScreeningRonde.getLaatsteUitnodiging();
-		String bsn = cervixDossier.getClient().getPersoon().getBsn();
-		int bsnModulo = Integer.valueOf(bsn.charAt(bsn.length() - 1)) % 4;
+		var laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
+		var laatsteUitnodiging = laatsteScreeningRonde.getLaatsteUitnodiging();
+		var bsn = cervixDossier.getClient().getPersoon().getBsn();
+		var bsnModulo = Integer.valueOf(bsn.charAt(bsn.length() - 1)) % 4;
 		return getAlphaNumericCharacterVanHetAantalScreeningRondes(cervixDossier.getScreeningRondes(), bsnModulo)
 			+ getAlphaNumericCharacterVanHetAantalUitnodigingen(laatsteScreeningRonde.getUitnodigingen(), bsnModulo)
 			+ getAlphaNumericCharactorVanLaatste3MonsterIdDigits(laatsteUitnodiging.getMonster().getMonsterId());

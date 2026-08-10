@@ -45,8 +45,8 @@ public class OrganisatieMedewerkerRolComparator implements Comparator<Organisati
 			return -1;
 		}
 
-		String naamVanDezeMedewerker = "";
-		String naamVanAndereMedewerker = "";
+		var naamVanDezeMedewerker = "";
+		var naamVanAndereMedewerker = "";
 		if (rolVanDezeMedewerker.getRol() != null)
 		{
 			naamVanDezeMedewerker = rolVanDezeMedewerker.getRol().getNaam();

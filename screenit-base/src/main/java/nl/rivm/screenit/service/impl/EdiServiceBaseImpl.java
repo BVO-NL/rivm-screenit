@@ -31,7 +31,6 @@ import nl.rivm.screenit.edi.model.OutboundMessageData;
 import nl.rivm.screenit.edi.service.EdiMessageService;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.HuisartsBericht;
-import nl.rivm.screenit.model.HuisartsBerichtTemplate;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.MailVerzenden;
 import nl.rivm.screenit.model.Medewerker;
@@ -85,7 +84,7 @@ public abstract class EdiServiceBaseImpl
 	protected MedVryOut maakMedVry(HuisartsBericht huisartsBericht)
 	{
 		LOG.debug("Er wordt een EDI bericht gemaakt voor HuisartsBericht met ID: " + huisartsBericht.getId());
-		MedVryOut medVryOut = new MedVryOut();
+		var medVryOut = new MedVryOut();
 		medVryOut.setDatum(currentDateSupplier.getDate());
 		medVryOut.setMagBsnGebruiken(true);
 		return medVryOut;
@@ -95,7 +94,7 @@ public abstract class EdiServiceBaseImpl
 	{
 		var persoon = huisartsBericht.getClient().getPersoon();
 		var transientPersoon = copyPersoon(persoon);
-		NaamGebruik naamGebruik = transientPersoon.getNaamGebruik();
+		var naamGebruik = transientPersoon.getNaamGebruik();
 		if (NaamGebruik.EIGEN == naamGebruik)
 		{
 			transientPersoon.setPartnerAchternaam(null);
@@ -144,8 +143,8 @@ public abstract class EdiServiceBaseImpl
 
 	protected OrganisatieMedewerker zetZender(HuisartsBericht huisartsBericht, MedVryOut medVry)
 	{
-		OrganisatieMedewerker sender = new OrganisatieMedewerker();
-		ScreeningOrganisatie so = huisartsBericht.getScreeningsOrganisatie();
+		var sender = new OrganisatieMedewerker();
+		var so = huisartsBericht.getScreeningsOrganisatie();
 		sender.setMedewerker(new Medewerker());
 		sender.getMedewerker().setAchternaam(so.getNaam());
 		sender.getMedewerker().setVoornaam("SO");
@@ -157,7 +156,7 @@ public abstract class EdiServiceBaseImpl
 	protected void zetInhoud(String berichtInhoud, HuisartsBerichtType berichtType, MedVryOut medVryOut, String transactionId)
 	{
 		medVryOut.setSubject("[" + transactionId + "] " + berichtType.getNaam());
-		String tekstString = "";
+		var tekstString = "";
 		if (StringUtils.isNotEmpty(berichtInhoud))
 		{
 			tekstString = berichtInhoud;
@@ -196,7 +195,7 @@ public abstract class EdiServiceBaseImpl
 
 	protected String verzendCheck(MedVryOut medVryOut, ScreeningOrganisatie so)
 	{
-		String foutmelding = "";
+		var foutmelding = "";
 		if (StringUtils.isBlank(medVryOut.getVrijetekst()))
 		{
 			foutmelding += "Er is geen bericht inhoud, dit betekend dat er geen bericht template gedefineerd is. ";
@@ -234,8 +233,8 @@ public abstract class EdiServiceBaseImpl
 
 	protected String merge(MailMergeContext context, HuisartsBerichtType berichtType)
 	{
-		String berichtInhoud = "";
-		HuisartsBerichtTemplate template = huisartsBerichtTemplateRepository.findByBerichtType(berichtType);
+		var berichtInhoud = "";
+		var template = huisartsBerichtTemplateRepository.findByBerichtType(berichtType);
 		if (template != null)
 		{
 			berichtInhoud = template.getBerichtInhoud();
@@ -244,15 +243,15 @@ public abstract class EdiServiceBaseImpl
 		{
 			throw new IllegalStateException("Er is geen template beschikbaar voor HuisartsBerichtType: " + berichtType.getNaam());
 		}
-		for (MergeField mergeField : MergeField.values())
+		for (var mergeField : MergeField.values())
 		{
-			String searchString = "{" + mergeField.getFieldName() + "}";
+			var searchString = "{" + mergeField.getFieldName() + "}";
 			if (StringUtils.indexOf(berichtInhoud, searchString) > -1)
 			{
-				String replacement = "";
+				var replacement = "";
 				if (mergeField.inHuisartsenbericht())
 				{
-					Object value = mergeField.getValue(context);
+					var value = mergeField.getValue(context);
 					if (value != null)
 					{
 						replacement = value.toString();

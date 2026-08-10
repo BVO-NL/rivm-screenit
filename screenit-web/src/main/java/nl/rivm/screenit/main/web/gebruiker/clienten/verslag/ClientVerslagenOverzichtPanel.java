@@ -89,7 +89,7 @@ public abstract class ClientVerslagenOverzichtPanel<V extends Verslag<?, ?>> ext
 			@Override
 			public IModel<?> getDataModel(IModel<V> rowModel)
 			{
-				IModel<?> dataModel = super.getDataModel(rowModel);
+				var dataModel = super.getDataModel(rowModel);
 				if (dataModel instanceof Model && rowModel.getObject().getType() == VerslagType.CERVIX_CYTOLOGIE
 					&& ((CervixCytologieVerslag) Hibernate.unproxy(rowModel.getObject())).getUitstrijkje().getVerwijderdDatum() != null)
 				{
@@ -100,10 +100,10 @@ public abstract class ClientVerslagenOverzichtPanel<V extends Verslag<?, ?>> ext
 
 		});
 
-		final WebMarkupContainer tooltipContainter = new WebMarkupContainer("tooltipContainter");
+		final var tooltipContainter = new WebMarkupContainer("tooltipContainter");
 		add(tooltipContainter);
 		tooltipContainter.setOutputMarkupId(true);
-		final RepeatingView tooltips = new RepeatingView("tooltip");
+		final var tooltips = new RepeatingView("tooltip");
 		tooltipContainter.add(tooltips);
 
 		IModel<? extends V> verslagenFilterModel = getVerslagFilter();
@@ -116,7 +116,7 @@ public abstract class ClientVerslagenOverzichtPanel<V extends Verslag<?, ?>> ext
 			public void onClick(AjaxRequestTarget target, IModel<V> model)
 			{
 
-				IModel<Client> clientModel = ClientVerslagenOverzichtPanel.this.getModel();
+				var clientModel = ClientVerslagenOverzichtPanel.this.getModel();
 				boolean inzien;
 				switch (model.getObject().getType())
 				{
@@ -145,8 +145,8 @@ public abstract class ClientVerslagenOverzichtPanel<V extends Verslag<?, ?>> ext
 			@Override
 			protected Item<V> newRowItem(final String id, final int index, final IModel<V> model)
 			{
-				Item<V> item = super.newRowItem(id, index, model);
-				String tooltipId = "tooltip-" + getRowModel().getObject().getId();
+				var item = super.newRowItem(id, index, model);
+				var tooltipId = "tooltip-" + getRowModel().getObject().getId();
 				item.add(new AttributeAppender("data-tooltip", Model.of(tooltipId)));
 				item.add(new AttributeAppender("class", Model.of(" status-" + model.getObject().getStatus().name().toLowerCase())));
 				if (!addedTooltips.contains(tooltipId))
@@ -171,7 +171,7 @@ public abstract class ClientVerslagenOverzichtPanel<V extends Verslag<?, ?>> ext
 		public VerslagTooltip(String id, IModel<V> model)
 		{
 			super(id, "tooltipFragment", ClientVerslagenOverzichtPanel.this, new CompoundPropertyModel<>(model));
-			V verslag = model.getObject();
+			var verslag = model.getObject();
 			add(new AttributeAppender("class", Model.of(" tooltip-" + verslag.getId())));
 			add(new Label("uitvoerderMedewerker.naamVolledig").setVisible(verslag.getUitvoerderMedewerker() != null));
 			add(new Label("uitvoerderOrganisatie.naam"));

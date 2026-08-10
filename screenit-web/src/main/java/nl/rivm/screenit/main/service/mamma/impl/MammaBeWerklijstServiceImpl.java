@@ -86,26 +86,26 @@ public class MammaBeWerklijstServiceImpl implements MammaBeWerklijstService
 
 	private boolean heeftDiscrepantieInWerklijst(OrganisatieMedewerker organisatieMedewerker, BeoordelingsEenheid beoordelingsEenheid)
 	{
-		MammaBeWerklijstZoekObject zoekObject = maakZoekObject(organisatieMedewerker, beoordelingsEenheid, Collections.singletonList(MammaBeoordelingStatus.DISCREPANTIE));
+		var zoekObject = maakZoekObject(organisatieMedewerker, beoordelingsEenheid, Collections.singletonList(MammaBeoordelingStatus.DISCREPANTIE));
 		return countBeoordelingen(zoekObject) != 0L;
 	}
 
 	private boolean heeftArbitrageInWerklijst(OrganisatieMedewerker organisatieMedewerker, BeoordelingsEenheid beoordelingsEenheid)
 	{
-		MammaBeWerklijstZoekObject zoekObject = maakZoekObject(organisatieMedewerker, beoordelingsEenheid, Collections.singletonList(MammaBeoordelingStatus.ARBITRAGE));
+		var zoekObject = maakZoekObject(organisatieMedewerker, beoordelingsEenheid, Collections.singletonList(MammaBeoordelingStatus.ARBITRAGE));
 		return countBeoordelingen(zoekObject) != 0L;
 	}
 
 	private boolean heeftVerslagInWerklijst(OrganisatieMedewerker organisatieMedewerker, BeoordelingsEenheid beoordelingsEenheid)
 	{
-		MammaBeWerklijstZoekObject zoekObject = maakZoekObject(organisatieMedewerker, beoordelingsEenheid,
+		var zoekObject = maakZoekObject(organisatieMedewerker, beoordelingsEenheid,
 			Arrays.asList(MammaBeoordelingStatus.VERSLAG_MAKEN, MammaBeoordelingStatus.VERSLAG_AFGEKEURD));
 		return countBeoordelingen(zoekObject) != 0L;
 	}
 
 	private MammaBeWerklijstZoekObject maakZoekObject(OrganisatieMedewerker organisatieMedewerker, BeoordelingsEenheid beoordelingsEenheid, List<MammaBeoordelingStatus> stutussen)
 	{
-		MammaBeWerklijstZoekObject zoekObject = new MammaBeWerklijstZoekObject();
+		var zoekObject = new MammaBeWerklijstZoekObject();
 
 		if (autorisatieService.getToegangLevel(organisatieMedewerker, Actie.INZIEN, true, Recht.MEDEWERKER_SCREENING_MAMMA_BE_ONDERZOEKTYPE_FILTER) == null)
 		{

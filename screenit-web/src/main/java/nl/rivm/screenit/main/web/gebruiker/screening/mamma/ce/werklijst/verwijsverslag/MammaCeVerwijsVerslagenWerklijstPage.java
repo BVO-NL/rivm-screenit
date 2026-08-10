@@ -59,7 +59,7 @@ public class MammaCeVerwijsVerslagenWerklijstPage extends AbstractMammaCeWerklij
 	{
 		super();
 		createResultTable();
-		MammaCeZoekPanel zoekPanel = new MammaCeZoekPanel("zoekContainer", zoekObjectModel, this, resultatenContainer)
+		var zoekPanel = new MammaCeZoekPanel("zoekContainer", zoekObjectModel, this, resultatenContainer)
 		{
 			@Override
 			protected List<MammaBeoordelingStatus> getRemoveFromDefaultFilter()

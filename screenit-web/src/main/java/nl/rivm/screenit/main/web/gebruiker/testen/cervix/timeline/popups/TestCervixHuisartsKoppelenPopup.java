@@ -27,8 +27,6 @@ import nl.rivm.screenit.main.service.cervix.CervixHuisartsService;
 import nl.rivm.screenit.main.service.cervix.CervixTestTimelineService;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.cervix.CervixHuisarts;
-import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.service.HibernateService;
@@ -37,7 +35,6 @@ import nl.rivm.screenit.service.cervix.CervixBaseTestTimelineHuisartsService;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -70,7 +67,7 @@ public class TestCervixHuisartsKoppelenPopup extends TestCervixUitnodigingenPopu
 		super(id, clientModel);
 
 		eersteHuisartsCheckModel = Model.of(Boolean.TRUE);
-		CheckBox eersteHuisartsCheckbox = ComponentHelper.newCheckBox("eersteHuisartsCheck", eersteHuisartsCheckModel);
+		var eersteHuisartsCheckbox = ComponentHelper.newCheckBox("eersteHuisartsCheck", eersteHuisartsCheckModel);
 		add(eersteHuisartsCheckbox);
 
 		eersteHuisartsCheckbox.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -90,12 +87,12 @@ public class TestCervixHuisartsKoppelenPopup extends TestCervixUitnodigingenPopu
 
 	private WebMarkupContainer agbCodeContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("agbCodeContainer");
+		var container = new WebMarkupContainer("agbCodeContainer");
 		container.setOutputMarkupPlaceholderTag(true);
 		container.setVisible(false);
 
 		agbCodeModel = Model.of("");
-		TextField<String> textField = new TextField<String>("agbcode", agbCodeModel);
+		var textField = new TextField<String>("agbcode", agbCodeModel);
 		textField.setOutputMarkupId(true);
 		textField.setRequired(true);
 		container.add(textField);
@@ -112,10 +109,10 @@ public class TestCervixHuisartsKoppelenPopup extends TestCervixUitnodigingenPopu
 	@Override
 	protected void opslaan()
 	{
-		for (CervixUitnodiging uitnodiging : getCurrentUitnodigingen())
+		for (var uitnodiging : getCurrentUitnodigingen())
 		{
-			CervixUitstrijkje uitstrijkje = (CervixUitstrijkje) uitnodiging.getMonster();
-			CervixLabformulier formulier = uitstrijkje.getLabformulier();
+			var uitstrijkje = (CervixUitstrijkje) uitnodiging.getMonster();
+			var formulier = uitstrijkje.getLabformulier();
 			if (eersteHuisartsCheckModel.getObject())
 			{
 				var locaties = testTimelineHuisartsService.findFirstHuisartsLocatie();
@@ -129,7 +126,7 @@ public class TestCervixHuisartsKoppelenPopup extends TestCervixUitnodigingenPopu
 			}
 			else
 			{
-				CervixHuisarts huisarts = huisartsService.getHuisartsMetAgbCode(agbCodeModel.getObject());
+				var huisarts = huisartsService.getHuisartsMetAgbCode(agbCodeModel.getObject());
 				if (huisarts == null)
 				{
 					error("Geen huisarts gevonden met deze agbcode.");

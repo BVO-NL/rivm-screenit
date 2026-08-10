@@ -47,7 +47,7 @@ public class MammaLezingInzienPanel extends AbstractGebeurtenisDetailPanel
 	public MammaLezingInzienPanel(String id, IModel<ScreeningRondeGebeurtenis> model)
 	{
 		super(id, model);
-		MammaLezingGebeurtenis gebeurtenis = (MammaLezingGebeurtenis) model.getObject();
+		var gebeurtenis = (MammaLezingGebeurtenis) model.getObject();
 		add(new MammaReadOnlyLezingPanel("mammaReadOnlyLezingPanel", gebeurtenis.getMammaBeoordeling(), gebeurtenis.getLezing(), true, true));
 	}
 
@@ -56,7 +56,7 @@ public class MammaLezingInzienPanel extends AbstractGebeurtenisDetailPanel
 	{
 		super.renderHead(response);
 
-		JsStatement jsStatement = new JsStatement();
+		var jsStatement = new JsStatement();
 		jsStatement.append(
 			String.format("new MutationObserver(calcLaesiePositions).observe($('#%1$s')[0], { attributes: true })", getParent().getParent().getParent().getMarkupId()));
 		response.render(OnDomReadyHeaderItem.forScript(jsStatement.render()));

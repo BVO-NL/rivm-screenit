@@ -105,7 +105,7 @@ public class ClientPaspoortHorizontaal extends GenericPanel<Client>
 
 		add(new Label("gbaLocatiebeschrijving", (IModel<Object>) () ->
 		{
-			String locatiebeschrijving = "";
+			var locatiebeschrijving = "";
 			if (getModelObject().getPersoon().getGbaAdres() != null)
 			{
 				locatiebeschrijving = AdresUtil.getAdres(getModelObject().getPersoon().getGbaAdres());

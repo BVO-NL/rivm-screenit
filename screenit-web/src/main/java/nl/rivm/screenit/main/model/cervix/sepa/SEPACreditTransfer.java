@@ -30,6 +30,10 @@ import java.util.GregorianCalendar;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -59,10 +63,6 @@ import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.commons.lang3.StringUtils;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-
 import static com.google.common.base.Preconditions.checkArgument;
 
 public class SEPACreditTransfer
@@ -84,8 +84,8 @@ public class SEPACreditTransfer
 
 	public void write(OutputStream os) throws JAXBException
 	{
-		JAXBContext jc = JAXBContext.newInstance(Document.class);
-		Marshaller marshaller = jc.createMarshaller();
+		var jc = JAXBContext.newInstance(Document.class);
+		var marshaller = jc.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
 		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
@@ -123,7 +123,7 @@ public class SEPACreditTransfer
 		checkArgument(pmtInfId.length() <= 35, "length of pmtInfId is more than 35");
 		checkArgument(pmtInfId.length() > 1, "length of pmtInfId is less than 1");
 
-		PaymentInstructionInformation3 paymentInstructionInformation = new PaymentInstructionInformation3();
+		var paymentInstructionInformation = new PaymentInstructionInformation3();
 
 		paymentInstructionInformation.setPmtInfId(pmtInfId);
 
@@ -133,8 +133,8 @@ public class SEPACreditTransfer
 
 		paymentInstructionInformation.setCtrlSum(BigDecimal.ZERO);
 
-		PaymentTypeInformation19 paymentTypeInformation = new PaymentTypeInformation19();
-		ServiceLevel8Choice serviceLevel8Choice = new ServiceLevel8Choice();
+		var paymentTypeInformation = new PaymentTypeInformation19();
+		var serviceLevel8Choice = new ServiceLevel8Choice();
 		serviceLevel8Choice.setCd("SEPA");
 		paymentTypeInformation.setSvcLvl(serviceLevel8Choice);
 		paymentInstructionInformation.setPmtTpInf(paymentTypeInformation);
@@ -170,9 +170,9 @@ public class SEPACreditTransfer
 			String text)
 		{
 
-			CreditTransferTransactionInformation10 creditTransferTransactionInformation = new CreditTransferTransactionInformation10();
+			var creditTransferTransactionInformation = new CreditTransferTransactionInformation10();
 
-			PaymentIdentification1 paymentIdentification = new PaymentIdentification1();
+			var paymentIdentification = new PaymentIdentification1();
 			paymentIdentification.setEndToEndId(endToEndId);
 			creditTransferTransactionInformation.setPmtId(paymentIdentification);
 
@@ -203,14 +203,14 @@ public class SEPACreditTransfer
 
 	public static PartyIdentification32 createParty(String nm)
 	{
-		PartyIdentification32 party = new PartyIdentification32();
+		var party = new PartyIdentification32();
 		party.setNm(nm);
 		return party;
 	}
 
 	public static XMLGregorianCalendar createXMLGregorianCalendar(Date currentDateTime)
 	{
-		GregorianCalendar calendar = new GregorianCalendar();
+		var calendar = new GregorianCalendar();
 		calendar.setTime(currentDateTime);
 
 		XMLGregorianCalendar createDate;
@@ -230,7 +230,7 @@ public class SEPACreditTransfer
 
 	public static XMLGregorianCalendar createXMLGregorianCalendarDate(Date currentDateTime)
 	{
-		GregorianCalendar calendar = new GregorianCalendar();
+		var calendar = new GregorianCalendar();
 		calendar.setTime(currentDateTime);
 
 		XMLGregorianCalendar createDate;
@@ -251,8 +251,8 @@ public class SEPACreditTransfer
 	public static CashAccount16 createAccount(String iban)
 	{
 
-		CashAccount16 account = new CashAccount16();
-		AccountIdentification4Choice creditorAccountId = new AccountIdentification4Choice();
+		var account = new CashAccount16();
+		var creditorAccountId = new AccountIdentification4Choice();
 
 		creditorAccountId.setIBAN(iban);
 		account.setId(creditorAccountId);
@@ -261,12 +261,12 @@ public class SEPACreditTransfer
 
 	public static BranchAndFinancialInstitutionIdentification4 createFinInstnId(String bic)
 	{
-		BranchAndFinancialInstitutionIdentification4 creditorAgent = new BranchAndFinancialInstitutionIdentification4();
-		FinancialInstitutionIdentification7 creditorfinancialInstitutionIdentification = new FinancialInstitutionIdentification7();
+		var creditorAgent = new BranchAndFinancialInstitutionIdentification4();
+		var creditorfinancialInstitutionIdentification = new FinancialInstitutionIdentification7();
 
 		if (bic == null)
 		{
-			GenericFinancialIdentification1 othrId = new GenericFinancialIdentification1();
+			var othrId = new GenericFinancialIdentification1();
 			othrId.setId("NOTPROVIDED");
 			creditorfinancialInstitutionIdentification.setOthr(othrId);
 		}
@@ -281,8 +281,8 @@ public class SEPACreditTransfer
 
 	public static AmountType3Choice createAmount(BigDecimal amount)
 	{
-		AmountType3Choice amt = new AmountType3Choice();
-		ActiveOrHistoricCurrencyAndAmount instdAmt = new ActiveOrHistoricCurrencyAndAmount();
+		var amt = new AmountType3Choice();
+		var instdAmt = new ActiveOrHistoricCurrencyAndAmount();
 		instdAmt.setValue(amount);
 		instdAmt.setCcy("EUR");
 		amt.setInstdAmt(instdAmt);
@@ -294,7 +294,7 @@ public class SEPACreditTransfer
 		checkArgument(info.length() <= 140); 
 		checkArgument(info.length() >= 1); 
 
-		RemittanceInformation5 remittanceInformation = new RemittanceInformation5();
+		var remittanceInformation = new RemittanceInformation5();
 		remittanceInformation.getUstrd().add(info);
 		return remittanceInformation;
 	}

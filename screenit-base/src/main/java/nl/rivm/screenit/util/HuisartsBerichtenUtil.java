@@ -24,7 +24,6 @@ package nl.rivm.screenit.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import nl.rivm.screenit.model.HuisartsBericht;
@@ -35,13 +34,13 @@ public class HuisartsBerichtenUtil
 {
 	public static boolean isLaatstVerstuurdeHuisartsbericht(HuisartsBericht huisartsBericht)
 	{
-		final HuisartsBericht deproxiedhuisartsBericht = (HuisartsBericht) Hibernate.unproxy(huisartsBericht);
-		List<HuisartsBericht> huisartsBerichten = new ArrayList<>(deproxiedhuisartsBericht.getClient().getHuisartsBerichten()).stream()
+		final var deproxiedhuisartsBericht = (HuisartsBericht) Hibernate.unproxy(huisartsBericht);
+		var huisartsBerichten = new ArrayList<>(deproxiedhuisartsBericht.getClient().getHuisartsBerichten()).stream()
 			.map(Hibernate::unproxy)
 			.filter(bericht -> bericht.getClass().equals(deproxiedhuisartsBericht.getClass()))
 			.map(HuisartsBericht.class::cast)
 			.collect(Collectors.toList());
-		HuisartsBericht laatsteHuisartsbericht = Collections.max(huisartsBerichten, Comparator.comparing(HuisartsBericht::getAanmaakDatum));
+		var laatsteHuisartsbericht = Collections.max(huisartsBerichten, Comparator.comparing(HuisartsBericht::getAanmaakDatum));
 		return deproxiedhuisartsBericht.equals(laatsteHuisartsbericht);
 	}
 }

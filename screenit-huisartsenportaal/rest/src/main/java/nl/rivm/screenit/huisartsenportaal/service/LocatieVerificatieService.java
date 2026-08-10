@@ -21,13 +21,12 @@ package nl.rivm.screenit.huisartsenportaal.service;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.huisartsenportaal.dto.LocatieDto;
+import java.util.List;
+
 import nl.rivm.screenit.huisartsenportaal.dto.VerificatieLocatieDto;
 import nl.rivm.screenit.huisartsenportaal.dto.VerificatieStatusDto;
 import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.model.Locatie;
-
-import java.util.List;
 
 public interface LocatieVerificatieService
 {

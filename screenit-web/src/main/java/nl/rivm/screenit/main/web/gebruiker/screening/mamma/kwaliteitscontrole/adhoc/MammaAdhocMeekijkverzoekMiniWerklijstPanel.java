@@ -56,7 +56,7 @@ public class MammaAdhocMeekijkverzoekMiniWerklijstPanel extends Panel
 	{
 		super(id);
 
-		MammaOnderzoekMiniWerklijstDataProvider<MammaAdhocMeekijkverzoek> miniWerklijstDataProvider = new MammaOnderzoekMiniWerklijstDataProvider<>(
+		var miniWerklijstDataProvider = new MammaOnderzoekMiniWerklijstDataProvider<MammaAdhocMeekijkverzoek>(
 			huidigeOnderzoekId, onderzoekenIds, MammaAdhocMeekijkverzoek.class);
 
 		List<IColumn<MammaAdhocMeekijkverzoek, String>> columns = new ArrayList<>();
@@ -77,7 +77,7 @@ public class MammaAdhocMeekijkverzoekMiniWerklijstPanel extends Panel
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<MammaAdhocMeekijkverzoek> model)
 			{
-				MammaAdhocMeekijkverzoek verzoek = model.getObject();
+				var verzoek = model.getObject();
 				parent.gaNaarBeoordeling(verzoek.getOnderzoek().getId(), target);
 			}
 
@@ -86,7 +86,7 @@ public class MammaAdhocMeekijkverzoekMiniWerklijstPanel extends Panel
 			{
 				if (getDataProvider() instanceof MammaOnderzoekMiniWerklijstDataProvider)
 				{
-					int openVerslag = ((MammaOnderzoekMiniWerklijstDataProvider) getDataProvider()).getOpenVerslag();
+					var openVerslag = ((MammaOnderzoekMiniWerklijstDataProvider) getDataProvider()).getOpenVerslag();
 
 					if (index == openVerslag)
 					{
@@ -99,7 +99,7 @@ public class MammaAdhocMeekijkverzoekMiniWerklijstPanel extends Panel
 			@Override
 			public Panel getCustomPanel(String id)
 			{
-				IModel<Integer> aantalGezienModel = new IModel<Integer>()
+				var aantalGezienModel = new IModel<Integer>()
 				{
 					@Override
 					public Integer getObject()
@@ -108,7 +108,7 @@ public class MammaAdhocMeekijkverzoekMiniWerklijstPanel extends Panel
 					}
 				};
 
-				IModel<Integer> nogTeGaanModel = new IModel<Integer>()
+				var nogTeGaanModel = new IModel<Integer>()
 				{
 					@Override
 					public Integer getObject()

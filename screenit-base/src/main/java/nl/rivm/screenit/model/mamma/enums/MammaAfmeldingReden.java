@@ -55,7 +55,7 @@ public enum MammaAfmeldingReden
 	public static final List<MammaAfmeldingReden> eenmaligeRedenen()
 	{
 		List<MammaAfmeldingReden> redenen = new ArrayList<>();
-		for (MammaAfmeldingReden reden : values())
+		for (var reden : values())
 		{
 			if (reden.eenmalig)
 			{
@@ -68,7 +68,7 @@ public enum MammaAfmeldingReden
 	public static final List<MammaAfmeldingReden> definitieveRedenen()
 	{
 		List<MammaAfmeldingReden> redenen = new ArrayList<>();
-		for (MammaAfmeldingReden reden : values())
+		for (var reden : values())
 		{
 			if (reden.definitief)
 			{

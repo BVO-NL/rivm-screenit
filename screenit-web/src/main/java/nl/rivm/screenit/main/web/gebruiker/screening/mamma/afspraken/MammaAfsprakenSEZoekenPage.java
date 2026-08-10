@@ -80,7 +80,7 @@ public class MammaAfsprakenSEZoekenPage extends MammaAfsprakenBasePage
 		magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAAK_WIJZIGEN, Actie.AANPASSEN) && ingelogdNamensRegio;
 
 		IModel<MammaScreeningsEenheidFilter> criteriaModel;
-		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
+		var ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
 
 		if (ScreenitSession.get().isZoekObjectGezetForComponent(MammaAfsprakenSEZoekenPage.class))
 		{
@@ -88,14 +88,14 @@ public class MammaAfsprakenSEZoekenPage extends MammaAfsprakenBasePage
 		}
 		else
 		{
-			MammaScreeningsEenheidFilter zoekObject = new MammaScreeningsEenheidFilter();
+			var zoekObject = new MammaScreeningsEenheidFilter();
 			zoekObject.setRegio(ingelogdNamensRegio);
 			zoekObject.setActief(true);
 			criteriaModel = new CompoundPropertyModel<>(zoekObject);
 		}
-		MammaAfsprakenDataProvider seDataProvider = new MammaAfsprakenDataProvider(criteriaModel);
+		var seDataProvider = new MammaAfsprakenDataProvider(criteriaModel);
 
-		final WebMarkupContainer refreshContainer = new WebMarkupContainer("refreshContainer");
+		final var refreshContainer = new WebMarkupContainer("refreshContainer");
 		refreshContainer.setOutputMarkupId(Boolean.TRUE);
 		add(refreshContainer);
 
@@ -121,7 +121,7 @@ public class MammaAfsprakenSEZoekenPage extends MammaAfsprakenBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<MammaScreeningsEenheid> model)
 			{
-				MammaScreeningsEenheid screeningsEenheid = model.getObject();
+				var screeningsEenheid = model.getObject();
 				setResponsePage(new MammaAfsprakenDagOverzichtPage(ModelUtil.csModel(screeningsEenheid), currentDateSupplier.getDate()));
 			}
 
@@ -132,13 +132,13 @@ public class MammaAfsprakenSEZoekenPage extends MammaAfsprakenBasePage
 		add(zoekForm);
 
 		zoekForm.add(new TextField<>("screeningsEenheid.naam"));
-		ScreenitDropdown<ScreeningOrganisatie> regioComponent = new ScreenitDropdown<>("regio",
+		var regioComponent = new ScreenitDropdown<ScreeningOrganisatie>("regio",
 			ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class), false),
 			new ChoiceRenderer<>("naam"));
 		regioComponent.setVisible(ingelogdNamensRegio == null);
 		regioComponent.setNullValid(true);
 		zoekForm.add(regioComponent);
-		IndicatingAjaxSubmitLink zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
+		var zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)

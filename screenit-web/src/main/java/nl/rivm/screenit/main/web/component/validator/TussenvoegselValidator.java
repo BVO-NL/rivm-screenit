@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.component.validator;
  */
 
 import java.io.Serializable;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +43,7 @@ public class TussenvoegselValidator implements IValidator<String>
 		if (validatable != null && StringUtils.isNotBlank(validatable.getValue()))
 		{
 
-			String tussenvoegsel = validatable.getValue();
+			var tussenvoegsel = validatable.getValue();
 
 			if (StringUtils.length(tussenvoegsel) > 20)
 			{
@@ -79,7 +78,7 @@ public class TussenvoegselValidator implements IValidator<String>
 
 	public static boolean isValid(String input)
 	{
-		Matcher matcher = PATTERN.matcher(input);
+		var matcher = PATTERN.matcher(input);
 		return matcher.matches();
 	}
 

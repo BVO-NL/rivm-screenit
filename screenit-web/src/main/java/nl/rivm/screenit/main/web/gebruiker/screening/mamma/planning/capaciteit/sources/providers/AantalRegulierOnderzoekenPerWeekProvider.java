@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.
 
 import java.util.Date;
 
-import nl.rivm.screenit.dto.mamma.planning.PlanningWeekDto;
 import nl.rivm.screenit.main.web.component.fullcalendar.event.Event;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.sources.ScreenITEventSourceFactory;
 
@@ -40,9 +39,9 @@ public class AantalRegulierOnderzoekenPerWeekProvider extends AbstractScreenITEv
 	@Override
 	void createEvents(Date start, Date end)
 	{
-		PlanningWeekDto weekDto = screenITEventSourceFactory.getWeekDto();
-		Event event = new Event();
-		final int[] totaalVanWeek = { 0 };
+		var weekDto = screenITEventSourceFactory.getWeekDto();
+		var event = new Event();
+		final var totaalVanWeek = new int[] { 0 };
 		weekDto.dagen.forEach(planningDagDto -> totaalVanWeek[0] += planningDagDto.totaalAantalOnderzoeken);
 
 		event.setTitle("<span class=\"label pull-right background-paars\">" + totaalVanWeek[0] + "</span>");

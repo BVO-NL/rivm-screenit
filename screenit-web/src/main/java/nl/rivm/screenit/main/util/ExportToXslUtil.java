@@ -21,13 +21,13 @@ package nl.rivm.screenit.main.util;
  * =========================LICENSE_END==================================
  */
 
+import java.math.BigDecimal;
+
 import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
-import nl.rivm.screenit.model.mamma.enums.MammaMeldingNiveau;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.BigDecimalUtil;
-import org.apache.commons.lang.StringEscapeUtils;
 
-import java.math.BigDecimal;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class ExportToXslUtil
 {

@@ -36,48 +36,50 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface MammaOnderzoekRepository extends BaseJpaRepository<MammaOnderzoek>
 {
-	@Query("SELECT m.afgerondDoor.id as id, COUNT(m) as count " +
-		"FROM MammaAfspraak a " +
-		"JOIN a.onderzoek o " +
-		"JOIN o.mammografie m " +
-		"JOIN a.standplaatsPeriode sp " +
-		"JOIN sp.screeningsEenheid se " +
-		"WHERE se.code = :seCode " +
-		"AND a.vanaf BETWEEN :beginDatum AND :eindDatum " +
-		"AND m.afgerondDoor IS NOT NULL " +
-		"GROUP BY m.afgerondDoor.id")
+	@Query("""
+		SELECT om.id as id, COUNT(m) as count
+		FROM MammaAfspraak a
+		JOIN MammaOnderzoek o ON o = a.onderzoek
+		JOIN MammaMammografie m ON m = o.mammografie
+		JOIN OrganisatieMedewerker om ON om = m.afgerondDoor
+		JOIN MammaStandplaatsPeriode sp ON sp = a.standplaatsPeriode
+		JOIN MammaScreeningsEenheid se ON se = sp.screeningsEenheid
+		WHERE se.code = :seCode
+		AND a.vanaf BETWEEN :beginDatum AND :eindDatum
+		GROUP BY om.id""")
 	Stream<Tuple> readOnderzochtVanSeOpWerkdag(Date beginDatum,
 		Date eindDatum,
 		String seCode);
 
-	@Query("SELECT m.afgerondDoor.id as id, COUNT(m) as count " +
-		"FROM MammaAfspraak a " +
-		"JOIN a.onderzoek o " +
-		"JOIN o.mammografie m " +
-		"JOIN a.standplaatsPeriode sp " +
-		"JOIN sp.screeningsEenheid se " +
-		"WHERE se.code = :seCode " +
-		"AND a.vanaf BETWEEN :beginDatum AND :eindDatum " +
-		"AND o.status = :status " +
-		"AND m.afgerondDoor IS NOT NULL " +
-		"GROUP BY m.afgerondDoor.id")
+	@Query("""
+		SELECT om.id as id, COUNT(m) as count
+		FROM MammaAfspraak a
+		JOIN MammaOnderzoek o ON o = a.onderzoek
+		JOIN MammaMammografie m ON m = o.mammografie
+		JOIN OrganisatieMedewerker om ON om = m.afgerondDoor
+		JOIN MammaStandplaatsPeriode sp ON sp = a.standplaatsPeriode
+		JOIN MammaScreeningsEenheid se ON se = sp.screeningsEenheid
+		WHERE se.code = :seCode
+		AND a.vanaf BETWEEN :beginDatum AND :eindDatum
+		AND o.status = :status
+		GROUP BY om.id""")
 	Stream<Tuple> readOnderzoekStatusCountVanSeOpWerkdag(Date beginDatum,
 		Date eindDatum,
 		String seCode,
 		MammaOnderzoekStatus status);
 
-	@Query("SELECT s.afgerondDoor.id as id, COUNT(s) as count " +
-		"FROM MammaAfspraak a " +
-		"JOIN a.onderzoek o " +
-		"LEFT JOIN o.signaleren s " +
-		"JOIN a.standplaatsPeriode sp " +
-		"JOIN sp.screeningsEenheid se " +
-		"WHERE se.code = :seCode " +
-		"AND a.vanaf BETWEEN :beginDatum AND :eindDatum " +
-		"AND o.signaleren IS NOT NULL " +
-		"AND s.afgerondDoor IS NOT NULL " +
-		"AND s.heeftAfwijkingen = true " +
-		"GROUP BY s.afgerondDoor.id")
+	@Query("""
+		SELECT om.id as id, COUNT(s) as count
+		FROM MammaAfspraak a
+		JOIN MammaOnderzoek o ON o = a.onderzoek
+		JOIN MammaSignaleren s ON s = o.signaleren
+		JOIN OrganisatieMedewerker om ON om = s.afgerondDoor
+		JOIN MammaStandplaatsPeriode sp ON sp = a.standplaatsPeriode
+		JOIN MammaScreeningsEenheid se ON se = sp.screeningsEenheid
+		WHERE se.code = :seCode
+		AND a.vanaf BETWEEN :beginDatum AND :eindDatum
+		AND s.heeftAfwijkingen = true
+		GROUP BY om.id""")
 	Stream<Tuple> readAfwijkingenVanSeOpWerkdag(Date beginDatum,
 		Date eindDatum,
 		String seCode);

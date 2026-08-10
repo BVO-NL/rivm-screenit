@@ -30,10 +30,8 @@ import java.security.cert.X509Certificate;
 
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
-import javax.naming.ldap.Rdn;
 
 import org.apache.commons.lang.StringUtils;
-import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,11 +56,11 @@ public class CertTools
 
 	public static String getFQDNFromCert(String pem) throws IOException, CertificateException
 	{
-		try (final PemReader certReader = new PemReader(new StringReader(pem)))
+		try (final var certReader = new PemReader(new StringReader(pem)))
 		{
-			final PemObject certPem = certReader.readPemObject();
-			final ByteArrayInputStream inputStream = new ByteArrayInputStream(certPem.getContent());
-			final X509Certificate certificate = (X509Certificate) CERTIFICATE_FACTORY.generateCertificate(inputStream);
+			final var certPem = certReader.readPemObject();
+			final var inputStream = new ByteArrayInputStream(certPem.getContent());
+			final var certificate = (X509Certificate) CERTIFICATE_FACTORY.generateCertificate(inputStream);
 			var subject = certificate.getSubjectX500Principal().getName();
 			var subjectParts = StringUtils.split(subject, ',');
 			var fqdn = "";
@@ -83,7 +81,7 @@ public class CertTools
 	public static String getFQDNFromSubjectDn(String subjectDn) throws InvalidNameException
 	{
 		var fqdn = (String) null;
-		LdapName ldapName = new LdapName(subjectDn);
+		var ldapName = new LdapName(subjectDn);
 		for (var rdn : ldapName.getRdns())
 		{
 			if ("CN".equalsIgnoreCase(rdn.getType()))

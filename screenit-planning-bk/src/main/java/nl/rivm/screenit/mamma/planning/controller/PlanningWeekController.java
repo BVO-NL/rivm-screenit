@@ -32,13 +32,9 @@ import nl.rivm.screenit.dto.mamma.planning.PlanningHerhalenDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningRestConstants;
 import nl.rivm.screenit.dto.mamma.planning.PlanningWeekDto;
 import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsEenheidIndex;
-import nl.rivm.screenit.mamma.planning.model.PlanningBlok;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlokkade;
 import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
-import nl.rivm.screenit.mamma.planning.model.PlanningDag;
-import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
-import nl.rivm.screenit.mamma.planning.model.PlanningWeek;
 import nl.rivm.screenit.mamma.planning.service.PlanningCapaciteitAgendaService;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningDoorrekenenManager;
 import nl.rivm.screenit.util.DateUtil;
@@ -62,25 +58,25 @@ public class PlanningWeekController
 	@ResponseBody
 	public PlanningWeekDto getBeschikbareCapaciteit(@PathVariable Long screeningsEenheidId, @PathVariable Long maandag)
 	{
-		PlanningScreeningsEenheid screeningsEenheid = PlanningScreeningsEenheidIndex.get(screeningsEenheidId);
-		PlanningWeek week = screeningsEenheid.getWeek(new Date(maandag).toLocalDate());
+		var screeningsEenheid = PlanningScreeningsEenheidIndex.get(screeningsEenheidId);
+		var week = screeningsEenheid.getWeek(new Date(maandag).toLocalDate());
 
-		PlanningWeekDto weekDto = new PlanningWeekDto();
+		var weekDto = new PlanningWeekDto();
 		Set<PlanningBlokkade> blokkadeSet = new HashSet<>();
 		Set<PlanningStandplaatsPeriode> standplaatsPeriodeSet = new HashSet<>();
 
-		for (PlanningDag dag : week.getDagList())
+		for (var dag : week.getDagList())
 		{
-			PlanningDagDto dagDto = new PlanningDagDto();
+			var dagDto = new PlanningDagDto();
 			dagDto.datum = dag.getDatum();
 			dagDto.totaalAantalOnderzoeken = dag.getBeschikbaar().getTotaal().longValue();
 
-			for (PlanningBlok blok : dag.getBlokSet())
+			for (var blok : dag.getBlokSet())
 			{
 				weekDto.blokken.add(PlanningMapper.from(blok));
 			}
 
-			for (PlanningBlokkade blokkade : dag.getBlokkadeSet())
+			for (var blokkade : dag.getBlokkadeSet())
 			{
 				blokkadeSet.add(blokkade);
 			}
@@ -101,7 +97,7 @@ public class PlanningWeekController
 	@PutMapping
 	public void herhalen(@RequestBody PlanningHerhalenDto herhalenDto)
 	{
-		PlanningScreeningsEenheid screeningsEenheidVan = PlanningScreeningsEenheidIndex.get(herhalenDto.screeningsEenheidIdVan);
+		var screeningsEenheidVan = PlanningScreeningsEenheidIndex.get(herhalenDto.screeningsEenheidIdVan);
 		capaciteitAgendaService.herhalen(screeningsEenheidVan,
 			PlanningScreeningsEenheidIndex.get(herhalenDto.screeningsEenheidIdNaar),
 			screeningsEenheidVan.getWeek(herhalenDto.teHerhalenWeek),

@@ -81,7 +81,7 @@ public class CervixOudeNietIngestuurdeZasWriter extends BaseWriter<Client>
 		var context = getExecutionContext();
 		if (!context.containsKey(CervixOudeNietIngestuurdeZasConstants.PROJECT_GROEP_ID))
 		{
-			String groepsNaam = "Populatie van run " + DateUtil.formatShortDate(currentDateSupplier.getDate());
+			var groepsNaam = "Populatie van run " + DateUtil.formatShortDate(currentDateSupplier.getDate());
 			Long projectId = context.getLong(CervixOudeNietIngestuurdeZasConstants.PROJECT_ID);
 			var project = hibernateService.load(Project.class, projectId);
 			LOG.info("Maak project groep '" + groepsNaam + "' voor project '" + project.getNaam() + "'");

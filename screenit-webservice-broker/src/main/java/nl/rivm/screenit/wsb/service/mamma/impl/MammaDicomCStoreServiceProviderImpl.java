@@ -158,7 +158,7 @@ public class MammaDicomCStoreServiceProviderImpl implements ApplicationListener<
 
 	private DicomServiceRegistry createServiceRegistry()
 	{
-		DicomServiceRegistry serviceRegistry = new DicomServiceRegistry();
+		var serviceRegistry = new DicomServiceRegistry();
 		serviceRegistry.addDicomService(new BasicCEchoSCP());
 		serviceRegistry.addDicomService(new BasicCStoreSCP("*")
 		{
@@ -289,7 +289,7 @@ public class MammaDicomCStoreServiceProviderImpl implements ApplicationListener<
 		}
 
 		var uids = StringUtils.split(s, ',');
-		for (int i = 0; i < uids.length; i++)
+		for (var i = 0; i < uids.length; i++)
 		{
 			uids[i] = toUID(uids[i]);
 		}

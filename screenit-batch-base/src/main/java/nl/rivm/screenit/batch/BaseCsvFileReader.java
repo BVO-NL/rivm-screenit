@@ -75,7 +75,7 @@ public abstract class BaseCsvFileReader<T> implements ItemReader<T>, ItemStream
 	@Override
 	public T read() throws IOException, ParseException
 	{
-		String bestandsNaam = "";
+		var bestandsNaam = "";
 		try
 		{
 			if (readers.hasNext() && (current == null || current != null && !currentResults.hasNext()))
@@ -91,7 +91,7 @@ public abstract class BaseCsvFileReader<T> implements ItemReader<T>, ItemStream
 			}
 			if (currentResults != null && currentResults.hasNext())
 			{
-				T result = currentResults.next();
+				var result = currentResults.next();
 				getExecutionContext().put(RAPPORTAGEKEYHASMOREFILES, readers.hasNext());
 				getExecutionContext().put(RAPPORTAGEKEYHASMORERESULTS, currentResults.hasNext());
 				return result;
@@ -140,7 +140,7 @@ public abstract class BaseCsvFileReader<T> implements ItemReader<T>, ItemStream
 
 	private String setNextReaderToCurrentAndReturnBestandsNaam() throws IOException
 	{
-		String bestandsNaam = "";
+		var bestandsNaam = "";
 		if (readers.hasNext())
 		{
 			if (current != null)
@@ -150,7 +150,7 @@ public abstract class BaseCsvFileReader<T> implements ItemReader<T>, ItemStream
 			current = readers.next();
 			if (current instanceof CsvFileProvider.CSVFileReader)
 			{
-				CsvFileProvider.CSVFileReader currentReader = (CsvFileProvider.CSVFileReader) current;
+				var currentReader = (CsvFileProvider.CSVFileReader) current;
 				bestandsNaam = currentReader.getFileNaam();
 			}
 		}
@@ -159,8 +159,8 @@ public abstract class BaseCsvFileReader<T> implements ItemReader<T>, ItemStream
 
 	private Iterator<T> getResultsFromCurrent(String bestandsNaam) throws IllegalStateException, IOException
 	{
-		int regelnummer = 0;
-		boolean eersteError = true;
+		var regelnummer = 0;
+		var eersteError = true;
 		List<T> resultaten = new ArrayList<>();
 		if (current != null)
 		{
@@ -170,7 +170,7 @@ public abstract class BaseCsvFileReader<T> implements ItemReader<T>, ItemStream
 				regelnummer++;
 				try
 				{
-					T result = parseLine(line, regelnummer, bestandsNaam);
+					var result = parseLine(line, regelnummer, bestandsNaam);
 					if (result == null)
 					{
 						break;
@@ -180,8 +180,8 @@ public abstract class BaseCsvFileReader<T> implements ItemReader<T>, ItemStream
 				catch (IllegalStateException | ParseException e)
 				{
 					LOG.warn("Foutive formaat " + bestandsNaam + " regel " + regelnummer, e);
-					String foutiveFormat = "";
-					ExecutionContext context = getExecutionContext();
+					var foutiveFormat = "";
+					var context = getExecutionContext();
 					if (context.containsKey(RAPPORTAGEKEYFOUTINBESTAND))
 					{
 						foutiveFormat = context.getString(RAPPORTAGEKEYFOUTINBESTAND);
@@ -247,7 +247,7 @@ public abstract class BaseCsvFileReader<T> implements ItemReader<T>, ItemStream
 		{
 			if (readers instanceof Closeable)
 			{
-				Closeable closeable = (Closeable) readers;
+				var closeable = (Closeable) readers;
 				closeable.close();
 			}
 		}

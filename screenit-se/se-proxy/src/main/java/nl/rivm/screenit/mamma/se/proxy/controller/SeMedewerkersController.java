@@ -21,8 +21,6 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Map;
-
 import nl.rivm.screenit.mamma.se.proxy.services.LogischeSessieService;
 import nl.rivm.screenit.mamma.se.proxy.services.MedewerkerStoreService;
 
@@ -63,7 +61,7 @@ public class SeMedewerkersController
 
 		try
 		{
-			Map<Long, String> organisatieMedewerkers = medewerkerStoreService.getSeOrganisatieMedewerkers();
+			var organisatieMedewerkers = medewerkerStoreService.getSeOrganisatieMedewerkers();
 			return ResponseEntity.ok(objectMapper.writeValueAsString(organisatieMedewerkers));
 		}
 		catch (JsonProcessingException e)

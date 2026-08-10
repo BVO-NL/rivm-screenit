@@ -52,11 +52,11 @@ public class LocatieVerificatieServiceImpl implements LocatieVerificatieService
 	@Override
 	public List<VerificatieLocatieDto> getTeVerifierenLocaties(Huisarts huisarts)
 	{
-		List<Locatie> locaties = locatieRepository.findByStatusAndHuisarts(CervixLocatieStatus.KLANTNUMMER_NIET_GEVERIFIEERD, huisarts);
+		var locaties = locatieRepository.findByStatusAndHuisarts(CervixLocatieStatus.KLANTNUMMER_NIET_GEVERIFIEERD, huisarts);
 
 		List<VerificatieLocatieDto> teVerifierenLocaties = new ArrayList<>();
 
-		for (Locatie locatie : locaties)
+		for (var locatie : locaties)
 		{
 			var locatieDto = new VerificatieLocatieDto();
 			locatieDto.setLocatieNaam(locatie.getNaam());
@@ -72,9 +72,9 @@ public class LocatieVerificatieServiceImpl implements LocatieVerificatieService
 	@Override
 	public VerificatieStatusDto verifieerLocatie(VerificatieLocatieDto locatieDto)
 	{
-		Locatie locatie = locatieRepository.findByHuisartsportaalId(Long.valueOf(locatieDto.getHuisartsportaalId()));
+		var locatie = locatieRepository.findByHuisartsportaalId(Long.valueOf(locatieDto.getHuisartsportaalId()));
 
-		VerificatieStatusDto statusDto = new VerificatieStatusDto();
+		var statusDto = new VerificatieStatusDto();
 		if (locatie != null && locatie.getVerificatieCode().equals(locatieDto.getVerificatieCode()))
 		{
 			statusDto.setSucces(true);
@@ -102,11 +102,11 @@ public class LocatieVerificatieServiceImpl implements LocatieVerificatieService
 	@Override
 	public Locatie setVerificatiePincode(Huisarts huisarts, Locatie teVerifierenLocatie)
 	{
-		SecureRandom random = new SecureRandom();
-		int randomNumber = random.nextInt(10000);
-		String pincode = String.format("%04d", randomNumber);
+		var random = new SecureRandom();
+		var randomNumber = random.nextInt(10000);
+		var pincode = String.format("%04d", randomNumber);
 		teVerifierenLocatie.setVerificatieCode(pincode);
-		for (Locatie locatie : huisarts.getLocaties())
+		for (var locatie : huisarts.getLocaties())
 		{
 			if (!locatie.equals(teVerifierenLocatie) && locatie.getVerificatieCode() != null && teVerifierenLocatie.getVerificatieCode().equals(locatie.getVerificatieCode()))
 			{

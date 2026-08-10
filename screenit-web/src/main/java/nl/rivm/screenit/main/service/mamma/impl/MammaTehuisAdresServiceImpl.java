@@ -72,7 +72,7 @@ public class MammaTehuisAdresServiceImpl implements MammaTehuisAdresService
 	@Override
 	public void adresToevoegen(MammaTehuisAdres adres, OrganisatieMedewerker organisatieMedewerker)
 	{
-		MammaTehuis tehuis = adres.getTehuis();
+		var tehuis = adres.getTehuis();
 		logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_BEHEER, organisatieMedewerker, String.format("Adres voor tehuis '%s' aangemaakt.", tehuis.getNaam()),
 			Bevolkingsonderzoek.MAMMA);
 		hibernateService.saveOrUpdate(adres);
@@ -83,7 +83,7 @@ public class MammaTehuisAdresServiceImpl implements MammaTehuisAdresService
 	@Override
 	public void adresVerwijderen(MammaTehuisAdres adres, OrganisatieMedewerker organisatieMedewerker)
 	{
-		MammaTehuis tehuis = adres.getTehuis();
+		var tehuis = adres.getTehuis();
 		tehuis.getAdressen().remove(adres);
 		baseTehuisService.saveOrUpdateTehuis(tehuis, organisatieMedewerker);
 		logService.logGebeurtenis(LogGebeurtenis.MAMMA_TEHUIS_BEHEER, organisatieMedewerker,
@@ -94,9 +94,9 @@ public class MammaTehuisAdresServiceImpl implements MammaTehuisAdresService
 	@Override
 	public boolean isAdresAlGekoppeld(MammaTehuisAdres tehuisAdres)
 	{
-		MammaTehuis tehuis = tehuisAdres.getTehuis();
-		boolean isAlGekoppeld = false;
-		for (MammaTehuisAdres adres : tehuis.getAdressen())
+		var tehuis = tehuisAdres.getTehuis();
+		var isAlGekoppeld = false;
+		for (var adres : tehuis.getAdressen())
 		{
 			isAlGekoppeld = tehuisAdres.getHuisnummer().equals(adres.getHuisnummer()) && StringUtils.equals(adres.getHuisletter(), tehuisAdres.getHuisletter())
 				&& StringUtils.equals(adres.getHuisnummerToevoeging(), tehuisAdres.getHuisnummerToevoeging())
@@ -127,10 +127,10 @@ public class MammaTehuisAdresServiceImpl implements MammaTehuisAdresService
 			tehuisAdresClienten = baseTehuisClientenDao.getClienten(tehuis, MammaTehuisSelectie.TEHUIS_ADRES, zoekAdres, first, count, sortProperty, isAscending);
 		}
 
-		List<Client> uitTeNodigenClienten = baseTehuisClientenDao.getClienten(tehuis, MammaTehuisSelectie.UIT_TE_NODIGEN, zoekAdres);
-		for (Client client : tehuisAdresClienten)
+		var uitTeNodigenClienten = baseTehuisClientenDao.getClienten(tehuis, MammaTehuisSelectie.UIT_TE_NODIGEN, zoekAdres);
+		for (var client : tehuisAdresClienten)
 		{
-			MammaDossier dossier = client.getMammaDossier();
+			var dossier = client.getMammaDossier();
 			if (dossier.getTehuis() != null)
 			{
 				dossier.setUitTeNodigen(uitTeNodigenClienten.contains(client));
@@ -139,7 +139,7 @@ public class MammaTehuisAdresServiceImpl implements MammaTehuisAdresService
 
 		if (sortProperty.equals("uitTeNodigen"))
 		{
-			Comparator<MammaDossier> uitTeNodigenComparator = Comparator.comparing(MammaDossier::getUitTeNodigen, Comparator.nullsLast(Comparator.naturalOrder()));
+			var uitTeNodigenComparator = Comparator.comparing(MammaDossier::getUitTeNodigen, Comparator.nullsLast(Comparator.naturalOrder()));
 			tehuisAdresClienten = tehuisAdresClienten.stream()
 				.map(Client::getMammaDossier)
 				.sorted(isAscending ? uitTeNodigenComparator.reversed() : uitTeNodigenComparator)

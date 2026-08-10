@@ -71,7 +71,7 @@ public class GegevensOphaalJob implements SchedulingConfigurer
 		LOG.info("GegevensOphaalJob draait met maxMinutenWachttijd: {}", maxMinutenWachttijd);
 		scheduledTaskRegistrar.addTriggerTask(() ->
 			{
-				int delay = berekenWachttijd(seStatusService.getSeCode(), maxMinutenWachttijd);
+				var delay = berekenWachttijd(seStatusService.getSeCode(), maxMinutenWachttijd);
 				LOG.debug("Start: {} met maxMinutenWachttijd: {} op na {} ms {}", JOB_OMSCHRIJVING, maxMinutenWachttijd, delay, LocalDateTime.now().plus(delay, ChronoUnit.MILLIS));
 				try
 				{
@@ -91,15 +91,15 @@ public class GegevensOphaalJob implements SchedulingConfigurer
 
 	private Instant bepaalVolgendeExecution(TriggerContext triggerContext)
 	{
-		String cron = configuratieService.getConfiguratieValue(SeConfiguratieKey.SE_INFORMATIE_OPHALEN_CRON);
+		var cron = configuratieService.getConfiguratieValue(SeConfiguratieKey.SE_INFORMATIE_OPHALEN_CRON);
 
 		if (cron == null)
 		{
 			cron = "0 0 2 * * ?";
 		}
 
-		CronTrigger trigger = new CronTrigger(cron);
-		Instant nextExec = trigger.nextExecution(triggerContext);
+		var trigger = new CronTrigger(cron);
+		var nextExec = trigger.nextExecution(triggerContext);
 
 		LOG.debug("Volgende job execution om {}. Gebruikte cron: {}", Date.from(nextExec), cron);
 
@@ -119,8 +119,8 @@ public class GegevensOphaalJob implements SchedulingConfigurer
 			return 0;
 
 		}
-		int beschikbareMs = maxMinutenWachttijd * 60 * 1000;
-		int msPerSlo = beschikbareMs / MAX_SE_AANTAL;
+		var beschikbareMs = maxMinutenWachttijd * 60 * 1000;
+		var msPerSlo = beschikbareMs / MAX_SE_AANTAL;
 		return beschikbareMs > 0 ? (seNr * msPerSlo) % beschikbareMs : 0;
 	}
 }

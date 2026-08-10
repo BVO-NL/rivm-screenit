@@ -53,7 +53,7 @@ public class ColonBlokkade extends ColonTijdslot implements Comparable<ColonBlok
 	@Transient
 	public ColonBlokkade transientClone()
 	{
-		ColonBlokkade item = (ColonBlokkade) super.transientClone();
+		var item = (ColonBlokkade) super.transientClone();
 		item.setOmschrijving(omschrijving);
 		return item;
 	}
@@ -61,7 +61,7 @@ public class ColonBlokkade extends ColonTijdslot implements Comparable<ColonBlok
 	@Override
 	public int compareTo(ColonBlokkade o)
 	{
-		int cmp = 0;
+		var cmp = 0;
 		if (o != null)
 		{
 			if (getVanaf() != null && o.getVanaf() != null)

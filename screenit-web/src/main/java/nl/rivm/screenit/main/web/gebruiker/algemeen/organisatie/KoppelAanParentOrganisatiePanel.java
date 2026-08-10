@@ -21,12 +21,9 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.model.Organisatie;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.service.OrganisatieZoekService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -49,10 +46,10 @@ public class KoppelAanParentOrganisatiePanel<T extends Organisatie> extends Gene
 	{
 		super.onInitialize();
 
-		OrganisatieMedewerker ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
+		var ingelogdeOrganisatieMedewerker = ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
 
-		List<Organisatie> mogelijkeParents = organisatieZoekService.getMogelijkeParents(getModelObject(), ingelogdeOrganisatieMedewerker);
-		Organisatie parent = getModelObject().getParent();
+		var mogelijkeParents = organisatieZoekService.getMogelijkeParents(getModelObject(), ingelogdeOrganisatieMedewerker);
+		var parent = getModelObject().getParent();
 		if (parent != null && !mogelijkeParents.contains(parent))
 		{
 			mogelijkeParents.add(parent);

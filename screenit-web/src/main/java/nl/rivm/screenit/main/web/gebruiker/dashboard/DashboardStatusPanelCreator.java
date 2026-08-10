@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.dashboard;
  */
 
 import nl.rivm.screenit.main.web.component.bootstrap.BootstrapCollapsePanel.PanelCreator;
-import nl.rivm.screenit.model.dashboard.DashboardType;
 import nl.rivm.screenit.model.dashboard.DashboardStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Level;
@@ -48,9 +47,9 @@ public class DashboardStatusPanelCreator implements PanelCreator, IDetachable
 	@Override
 	public IModel<String> getPanelName()
 	{
-		DashboardType dItem = ModelUtil.nullSafeGet(model).getType();
-		String bvoString = Bevolkingsonderzoek.getAfkortingen(dItem.getBevolkingsOnderzoek());
-		String naamDasboardItem = " - " + dItem.getNaam();
+		var dItem = ModelUtil.nullSafeGet(model).getType();
+		var bvoString = Bevolkingsonderzoek.getAfkortingen(dItem.getBevolkingsOnderzoek());
+		var naamDasboardItem = " - " + dItem.getNaam();
 		return Model.of(bvoString + naamDasboardItem);
 	}
 

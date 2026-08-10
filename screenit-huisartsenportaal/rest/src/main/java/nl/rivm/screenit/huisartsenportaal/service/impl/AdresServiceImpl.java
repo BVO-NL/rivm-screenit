@@ -35,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 @Slf4j
 @Service
@@ -84,7 +83,7 @@ public class AdresServiceImpl implements AdresService
 		{
 			try
 			{
-				ObjectWriter writer = objectMapper.writer();
+				var writer = objectMapper.writer();
 				LOG.error("Geen woonplaats gevonden met {}", writer.writeValueAsString(adresDto.getWoonplaats()));
 			}
 			catch (JsonProcessingException e)

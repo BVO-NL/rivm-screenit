@@ -26,7 +26,6 @@ import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
-import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixLabformulierStatus;
 import nl.rivm.screenit.model.cervix.enums.CervixUitstrijkjeStatus;
 import nl.rivm.screenit.model.enums.Actie;
@@ -69,7 +68,7 @@ public class CervixLabformulierControlerenPanel extends CervixLabformulierBasePa
 		{
 			return false;
 		}
-		CervixUitstrijkje uitstrijkje = labformulier.getUitstrijkje();
+		var uitstrijkje = labformulier.getUitstrijkje();
 		return uitstrijkje == null || uitstrijkje.getUitstrijkjeStatus() == CervixUitstrijkjeStatus.NIET_ONTVANGEN;
 	}
 

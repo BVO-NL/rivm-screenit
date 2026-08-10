@@ -21,8 +21,6 @@ package nl.rivm.screenit.mamma.se.proxy.dao.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -55,13 +53,13 @@ public class AuthenticatieDaoImpl extends BaseDaoImpl implements AuthenticatieDa
 			"AND wachtwoord=? " +
 			"AND yubikey_public=?;";
 
-		try (Connection dbConnection = getConnection();
-			PreparedStatement statement = dbConnection.prepareStatement(query))
+		try (var dbConnection = getConnection();
+			var statement = dbConnection.prepareStatement(query))
 		{
 			statement.setString(1, loginContext.getGebruikersnaam());
 			statement.setString(2, loginContext.getEncryptedWachtwoord());
 			statement.setString(3, loginContext.getYubikeyIdentificatie());
-			ResultSet resultSet = statement.executeQuery();
+			var resultSet = statement.executeQuery();
 			if (resultSet.next())
 			{
 				return getIngelogdeMedewerkerFromResultSet(resultSet);
@@ -82,8 +80,8 @@ public class AuthenticatieDaoImpl extends BaseDaoImpl implements AuthenticatieDa
 			" VALUES (?, ?, ?, ? ,?, ?)" +
 			" ON CONFLICT(account_id)" +
 			" DO UPDATE SET gebruikersnaam = ?, wachtwoord = ?, laatste_inlog = ?, yubikey_public = ?, login_response = ?, account_id = ?;";
-		try (Connection connection = getConnection();
-			PreparedStatement insertStatement = connection.prepareStatement(sql))
+		try (var connection = getConnection();
+			var insertStatement = connection.prepareStatement(sql))
 		{
 			insertStatement.setString(1, ingelogdeMedewerkerDto.getGebruikersnaam());
 			insertStatement.setString(2, ingelogdeMedewerkerDto.getWachtwoord());
@@ -114,8 +112,8 @@ public class AuthenticatieDaoImpl extends BaseDaoImpl implements AuthenticatieDa
 		var sql = "UPDATE INGELOGDE_MEDEWERKER " +
 			"SET gebruikersnaam = ?, wachtwoord = ?, laatste_inlog = ?, yubikey_public = ?, login_response = ?, account_id = ? " +
 			"WHERE gebruikersnaam = ? ;";
-		try (Connection connection = getConnection();
-			PreparedStatement insertStatement = connection.prepareStatement(sql))
+		try (var connection = getConnection();
+			var insertStatement = connection.prepareStatement(sql))
 		{
 			insertStatement.setString(1, ingelogdeMedewerkerDto.getGebruikersnaam());
 			insertStatement.setString(2, ingelogdeMedewerkerDto.getWachtwoord());
@@ -140,11 +138,11 @@ public class AuthenticatieDaoImpl extends BaseDaoImpl implements AuthenticatieDa
 			"FROM INGELOGDE_MEDEWERKER IM " +
 			"WHERE IM.gebruikersnaam=?;";
 
-		try (Connection dbConnection = getConnection();
-			PreparedStatement statement = dbConnection.prepareStatement(query))
+		try (var dbConnection = getConnection();
+			var statement = dbConnection.prepareStatement(query))
 		{
 			statement.setString(1, gebruikersnaam);
-			ResultSet resultSet = statement.executeQuery();
+			var resultSet = statement.executeQuery();
 			if (resultSet.next())
 			{
 				return resultSet.getLong(1);
@@ -162,9 +160,9 @@ public class AuthenticatieDaoImpl extends BaseDaoImpl implements AuthenticatieDa
 	{
 		int termijn = configuratieService.getConfiguratieIntegerValue(SeConfiguratieKey.SE_MAX_OFFLINE_INLOG_PERIODE);
 
-		String sql = "DELETE FROM INGELOGDE_MEDEWERKER WHERE laatste_inlog < ?;";
-		try (Connection connection = getConnection();
-			PreparedStatement removeTransactie = connection.prepareStatement(sql))
+		var sql = "DELETE FROM INGELOGDE_MEDEWERKER WHERE laatste_inlog < ?;";
+		try (var connection = getConnection();
+			var removeTransactie = connection.prepareStatement(sql))
 		{
 			removeTransactie.setString(1, DateUtil.getCurrentDateTime().toLocalDate().minusDays(termijn).toString());
 			removeTransactie.execute();

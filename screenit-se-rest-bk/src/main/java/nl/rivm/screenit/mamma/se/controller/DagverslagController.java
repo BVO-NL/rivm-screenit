@@ -54,7 +54,7 @@ public class DagverslagController extends AuthorizedController
 	@RequestMapping(value = "/{seCode}/{datum}", method = RequestMethod.GET)
 	public ResponseEntity getDagverslag(@PathVariable String seCode, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate datum)
 	{
-		DagverslagOphaler dagverslagOphaler = new DagverslagOphaler(datum, seCode);
+		var dagverslagOphaler = new DagverslagOphaler(datum, seCode);
 		Future future = executorService.submit(dagverslagOphaler);
 		try
 		{

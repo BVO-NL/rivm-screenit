@@ -65,7 +65,7 @@ public class ColonHl7BerichtToFitAnalyseResultaatSetWrapper
 		}
 		labId = header.getMsh4_SendingFacility().getHd1_NamespaceID().getValue();
 
-		for (int i = 0; i < message.getSPECIMENReps(); i++)
+		for (var i = 0; i < message.getSPECIMENReps(); i++)
 		{
 			var specimen = message.getSPECIMEN(i);
 			var resultOBX = specimen.getORDER().getRESULT().getOBX();
@@ -80,7 +80,7 @@ public class ColonHl7BerichtToFitAnalyseResultaatSetWrapper
 			analyseResultaatDto.setBarcode(barcode);
 			analyseResultaatDto.setLabID(labId);
 
-			boolean isQC = barcode.startsWith("QC");
+			var isQC = barcode.startsWith("QC");
 
 			if (isQC)
 			{

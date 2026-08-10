@@ -78,7 +78,7 @@ public class CervixTestTimelineTimeServiceImpl implements CervixTestTimelineTime
 	@Override
 	public boolean rekenDossierTerug(CervixDossier dossier, CervixTestTimeLineDossierTijdstip tijdstip)
 	{
-		int dagen = aantalDagenCalculator(tijdstip);
+		var dagen = aantalDagenCalculator(tijdstip);
 		rekenDossierTerug(dossier, dagen);
 		return true;
 	}
@@ -90,11 +90,11 @@ public class CervixTestTimelineTimeServiceImpl implements CervixTestTimelineTime
 		baseTestTimelineService.rekenObjectTerug(dossier, aantalDagen);
 		hibernateService.saveOrUpdate(dossier);
 
-		for (CervixScreeningRonde ronde : dossier.getScreeningRondes())
+		for (var ronde : dossier.getScreeningRondes())
 		{
 			rekenRondeTerug(ronde, aantalDagen);
 		}
-		for (CervixAfmelding afmelding : dossier.getAfmeldingen())
+		for (var afmelding : dossier.getAfmeldingen())
 		{
 			rekenAfmeldingTerug(afmelding, aantalDagen);
 		}
@@ -108,28 +108,28 @@ public class CervixTestTimelineTimeServiceImpl implements CervixTestTimelineTime
 		baseTestTimelineService.rekenObjectTerug(ronde, aantalDagen);
 		hibernateService.saveOrUpdate(ronde);
 
-		for (CervixUitnodiging uitnodiging : ronde.getUitnodigingen())
+		for (var uitnodiging : ronde.getUitnodigingen())
 		{
 			rekenUitnodigingTerug(uitnodiging, aantalDagen);
 		}
-		for (CervixBrief brief : ronde.getBrieven())
+		for (var brief : ronde.getBrieven())
 		{
 			rekenBriefTerug(brief, aantalDagen);
 		}
-		for (CervixVerslag verslag : ronde.getVerslagen())
+		for (var verslag : ronde.getVerslagen())
 		{
 			rekenVerslagTerug(verslag, aantalDagen);
 		}
-		for (CervixHuisartsBericht huisartsBericht : ronde.getHuisartsBerichten())
+		for (var huisartsBericht : ronde.getHuisartsBerichten())
 		{
 			rekenHuisartsberichtTerug(huisartsBericht, aantalDagen);
 		}
-		for (CervixAfmelding afmelding : ronde.getAfmeldingen())
+		for (var afmelding : ronde.getAfmeldingen())
 		{
 			rekenAfmeldingTerug(afmelding, aantalDagen);
 		}
 
-		CervixUitstel uitstel = ronde.getUitstel();
+		var uitstel = ronde.getUitstel();
 		if (uitstel != null)
 		{
 			rekenUitstelTerug(uitstel, aantalDagen);
@@ -149,7 +149,7 @@ public class CervixTestTimelineTimeServiceImpl implements CervixTestTimelineTime
 		baseTestTimelineService.rekenObjectTerug(brief, aantalDagen);
 		hibernateService.saveOrUpdate(brief);
 
-		CervixMergedBrieven mergedBrieven = brief.getMergedBrieven();
+		var mergedBrieven = brief.getMergedBrieven();
 		if (mergedBrieven != null)
 		{
 			rekenMergedBrievenTerug(mergedBrieven, aantalDagen);
@@ -215,12 +215,12 @@ public class CervixTestTimelineTimeServiceImpl implements CervixTestTimelineTime
 		baseTestTimelineService.rekenObjectTerug(uitstrijkje, aantalDagen);
 		hibernateService.saveOrUpdate(uitstrijkje);
 
-		CervixLabformulier labformulier = uitstrijkje.getLabformulier();
+		var labformulier = uitstrijkje.getLabformulier();
 		if (labformulier != null)
 		{
 			rekenLabformulierTerug(labformulier, aantalDagen);
 		}
-		CervixCytologieOrder cytologieOrder = uitstrijkje.getCytologieOrder();
+		var cytologieOrder = uitstrijkje.getCytologieOrder();
 		if (cytologieOrder != null)
 		{
 			rekenCytologieOrderTerug(cytologieOrder, aantalDagen);

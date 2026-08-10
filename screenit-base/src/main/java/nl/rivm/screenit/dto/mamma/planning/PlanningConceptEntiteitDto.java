@@ -30,8 +30,8 @@ public class PlanningConceptEntiteitDto extends PlanningDto
 	@Override
 	public int hashCode()
 	{
-		final int prime = 31;
-		int result = 1;
+		final var prime = 31;
+		var result = 1;
 		result = prime * result + ((conceptId == null) ? 0 : conceptId.hashCode());
 		return result;
 	}
@@ -51,7 +51,7 @@ public class PlanningConceptEntiteitDto extends PlanningDto
 		{
 			return false;
 		}
-		PlanningConceptEntiteitDto other = (PlanningConceptEntiteitDto) obj;
+		var other = (PlanningConceptEntiteitDto) obj;
 		if (conceptId == null)
 		{
 			if (other.conceptId != null)

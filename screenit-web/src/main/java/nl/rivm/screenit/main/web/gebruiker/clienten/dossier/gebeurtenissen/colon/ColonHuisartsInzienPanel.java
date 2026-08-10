@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.colo
 
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.AbstractGebeurtenisDetailPanel;
-import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.NaamUtil;
@@ -45,14 +44,14 @@ public class ColonHuisartsInzienPanel extends AbstractGebeurtenisDetailPanel
 	{
 		super.onInitialize();
 		ColonScreeningRonde ronde = getModelObject().getScreeningsRonde();
-		EnovationHuisarts enovationHuisarts = ronde.getHuisarts();
+		var enovationHuisarts = ronde.getHuisarts();
 
 		if (enovationHuisarts != null)
 		{
 			add(new Label("huisartsNaam", NaamUtil.getNaamHuisarts(enovationHuisarts)));
 			add(new Label("praktijkNaam", enovationHuisarts.getPraktijknaam()));
 			add(new Label("praktijkAdres", AdresUtil.getVolledigeAdresString(enovationHuisarts.getAdres())));
-			String agbCode = enovationHuisarts.getHuisartsAgb();
+			var agbCode = enovationHuisarts.getHuisartsAgb();
 			if (StringUtils.isBlank(agbCode))
 			{
 				agbCode = enovationHuisarts.getPraktijkAgb();

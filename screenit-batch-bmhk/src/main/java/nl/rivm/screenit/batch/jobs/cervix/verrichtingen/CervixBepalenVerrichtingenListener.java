@@ -62,13 +62,13 @@ public class CervixBepalenVerrichtingenListener extends CervixBaseLogListener
 	protected LogEvent eindLogging(JobExecution jobExecution)
 	{
 		var context = jobExecution.getExecutionContext();
-		long hpvUitstrijkjeAantal = context.getLong(CervixBepalenVerrichtingenConstants.VERRICHTINGEN_LAB_HPV_UITSTRIJKJE_AANTAL_KEY, 0L);
-		long hpvZasAantal = context.getLong(CervixBepalenVerrichtingenConstants.VERRICHTINGEN_LAB_HPV_ZAS_AANTAL_KEY, 0L);
-		long cytologieUitstrijkjeAantal = context.getLong(CervixBepalenVerrichtingenConstants.VERRICHTINGEN_LAB_CYTOLOGIE_UITSTRIJKJE_AANTAL_KEY, 0L);
-		long cytologieZasAantal = context.getLong(CervixBepalenVerrichtingenConstants.VERRICHTINGEN_LAB_CYTOLOGIE_ZAS_AANTAL_KEY, 0L);
-		long cytologieVervolgUitstrijkjeAantal = context.getLong(CervixBepalenVerrichtingenConstants.VERRICHTINGEN_LAB_CYTOLOGIE_VERVOLGUITSTRIJKJE_AANTAL_KEY, 0L);
-		long huisartsUitstrijkjeAantal = context.getLong(CervixBepalenVerrichtingenConstants.VERRICHTINGEN_HUISARTS_UITSTRIJKJE_AANTAL_KEY, 0L);
-		long totaal = hpvUitstrijkjeAantal + hpvZasAantal + cytologieUitstrijkjeAantal + cytologieZasAantal + cytologieVervolgUitstrijkjeAantal + huisartsUitstrijkjeAantal;
+		var hpvUitstrijkjeAantal = context.getLong(CervixBepalenVerrichtingenConstants.VERRICHTINGEN_LAB_HPV_UITSTRIJKJE_AANTAL_KEY, 0L);
+		var hpvZasAantal = context.getLong(CervixBepalenVerrichtingenConstants.VERRICHTINGEN_LAB_HPV_ZAS_AANTAL_KEY, 0L);
+		var cytologieUitstrijkjeAantal = context.getLong(CervixBepalenVerrichtingenConstants.VERRICHTINGEN_LAB_CYTOLOGIE_UITSTRIJKJE_AANTAL_KEY, 0L);
+		var cytologieZasAantal = context.getLong(CervixBepalenVerrichtingenConstants.VERRICHTINGEN_LAB_CYTOLOGIE_ZAS_AANTAL_KEY, 0L);
+		var cytologieVervolgUitstrijkjeAantal = context.getLong(CervixBepalenVerrichtingenConstants.VERRICHTINGEN_LAB_CYTOLOGIE_VERVOLGUITSTRIJKJE_AANTAL_KEY, 0L);
+		var huisartsUitstrijkjeAantal = context.getLong(CervixBepalenVerrichtingenConstants.VERRICHTINGEN_HUISARTS_UITSTRIJKJE_AANTAL_KEY, 0L);
+		var totaal = hpvUitstrijkjeAantal + hpvZasAantal + cytologieUitstrijkjeAantal + cytologieZasAantal + cytologieVervolgUitstrijkjeAantal + huisartsUitstrijkjeAantal;
 		LOG.info("Aantal hpv analyse uitstrijkje verrichtingen aangemaakt: {}", hpvUitstrijkjeAantal);
 		LOG.info("Aantal hpv analyse zas verrichtingen aangemaakt: {}", hpvZasAantal);
 		LOG.info("Aantal cytologie na uitstrijkje verrichtingen aangemaakt: {}", cytologieUitstrijkjeAantal);

@@ -22,14 +22,11 @@ package nl.rivm.screenit.batch.jobs.generalis.huisarts.importstep;
  */
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import lombok.extern.slf4j.Slf4j;
@@ -56,25 +53,25 @@ public class EnovationHuisartsCsvFileProvider implements CsvFileProvider
 	{
 		List<CSVReader> readers = new ArrayList<>();
 
-		String enovationUrl = preferenceService.getString(PreferenceKey.INTERNAL_ZORGMAIL_BESTAND_URL.name());
+		var enovationUrl = preferenceService.getString(PreferenceKey.INTERNAL_ZORGMAIL_BESTAND_URL.name());
 
 		if (StringUtils.isNotBlank(enovationUrl))
 		{
-			URL url = new URL(enovationUrl);
-			URLConnection uc = url.openConnection();
+			var url = new URL(enovationUrl);
+			var uc = url.openConnection();
 
 			if (url.getUserInfo() != null)
 			{
-				String basicAuth = "Basic " + jakarta.xml.bind.DatatypeConverter.printBase64Binary(url.getUserInfo().getBytes());
+				var basicAuth = "Basic " + jakarta.xml.bind.DatatypeConverter.printBase64Binary(url.getUserInfo().getBytes());
 				uc.setRequestProperty("Authorization", basicAuth);
 			}
 
-			InputStream in = uc.getInputStream();
+			var in = uc.getInputStream();
 
-			ZipInputStream zipInputStream = new ZipInputStream(in);
-			ZipEntry nextEntry = zipInputStream.getNextEntry();
-			String sourceFileNaam = nextEntry.getName() + " (" + enovationUrl + ")";
-			CSVFileReader reader = new CSVFileReader(new InputStreamReader(zipInputStream), ',', sourceFileNaam);
+			var zipInputStream = new ZipInputStream(in);
+			var nextEntry = zipInputStream.getNextEntry();
+			var sourceFileNaam = nextEntry.getName() + " (" + enovationUrl + ")";
+			var reader = new CSVFileReader(new InputStreamReader(zipInputStream), ',', sourceFileNaam);
 
 			readers.add(reader);
 

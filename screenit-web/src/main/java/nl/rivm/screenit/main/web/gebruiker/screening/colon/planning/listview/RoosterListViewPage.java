@@ -55,7 +55,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColu
 import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
@@ -96,13 +95,13 @@ public class RoosterListViewPage extends PlanningBasePage
 
 		final IModel<RoosterListViewFilter> zoekModel = new Model<>(filter);
 
-		final Label totaalBlokken = new Label("totaalBlokken", 0)
+		final var totaalBlokken = new Label("totaalBlokken", 0)
 		{
 			@Override
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				RoosterListViewFilter zoekObject = zoekModel.getObject();
+				var zoekObject = zoekModel.getObject();
 				var startDatum = DateUtil.toLocalDate(zoekObject.getStartDatum());
 				var eindDatum = DateUtil.toLocalDate(zoekObject.getEindDatum());
 				if (startDatum.isAfter(eindDatum))
@@ -126,7 +125,7 @@ public class RoosterListViewPage extends PlanningBasePage
 			{
 				IModel<?> labelModel = super.getDataModel(embeddedModel);
 
-				String label = labelModel.getObject().toString();
+				var label = labelModel.getObject().toString();
 				label += " - " + new SimpleDateFormat("HH:mm").format(embeddedModel.getObject().getEindDatum());
 				return new Model(label);
 			}
@@ -137,7 +136,7 @@ public class RoosterListViewPage extends PlanningBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<ColonAfspraakslotListViewWrapper>> cellItem, String componentId, IModel<ColonAfspraakslotListViewWrapper> rowModel)
 			{
-				ColonAfspraakslotListViewWrapper wrapper = rowModel.getObject();
+				var wrapper = rowModel.getObject();
 
 				var afspraakslot = hibernateService.load(ColonAfspraakslot.class, wrapper.getAfspraakslotId());
 				cellItem.add(new EnumLabel<>(componentId, afspraakslotService.getAfspraakslotStatus(afspraakslot)));
@@ -160,7 +159,7 @@ public class RoosterListViewPage extends PlanningBasePage
 		};
 		add(table);
 
-		Form<RoosterListViewFilter> form = new Form<>("form", new CompoundPropertyModel<>(zoekModel));
+		var form = new Form<RoosterListViewFilter>("form", new CompoundPropertyModel<>(zoekModel));
 		add(form);
 
 		var statusOpties = new ArrayList<>(Arrays.asList(null, ColonAfspraakslotStatus.BLOKKADE,
@@ -194,7 +193,7 @@ public class RoosterListViewPage extends PlanningBasePage
 			}
 		});
 
-		FormComponent<Date> startDatum = ComponentHelper.addTextField(form, "startDatum", true, 10, Date.class, false);
+		var startDatum = ComponentHelper.addTextField(form, "startDatum", true, 10, Date.class, false);
 		startDatum.setType(Date.class);
 		startDatum.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
@@ -206,7 +205,7 @@ public class RoosterListViewPage extends PlanningBasePage
 			}
 		});
 
-		FormComponent<Date> eindDatum = ComponentHelper.addTextField(form, "eindDatum", true, 10, Date.class, false);
+		var eindDatum = ComponentHelper.addTextField(form, "eindDatum", true, 10, Date.class, false);
 		eindDatum.setType(Date.class);
 		eindDatum.add(new AjaxFormComponentUpdatingBehavior("change")
 		{

@@ -48,7 +48,7 @@ public abstract class TestAbstractVerzetDatumPopup extends AbstractTestBasePopup
 	{
 		super(id, clientModel);
 
-		TextField<Integer> numberField = new TextField<>("number", numberModel, Integer.class);
+		var numberField = new TextField<Integer>("number", numberModel, Integer.class);
 		numberField.setRequired(true);
 		numberField.setLabel(Model.of("Aantal"));
 		add(numberField);
@@ -63,8 +63,8 @@ public abstract class TestAbstractVerzetDatumPopup extends AbstractTestBasePopup
 
 	protected int getAantalDagen()
 	{
-		Integer aantal = numberModel.getObject();
-		TijdType tijdType = tijdTypeModel.getObject();
+		var aantal = numberModel.getObject();
+		var tijdType = tijdTypeModel.getObject();
 		switch (tijdType)
 		{
 		case MONTH:

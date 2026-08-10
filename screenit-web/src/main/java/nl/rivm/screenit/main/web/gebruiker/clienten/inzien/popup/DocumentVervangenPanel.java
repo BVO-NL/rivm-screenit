@@ -57,12 +57,12 @@ public abstract class DocumentVervangenPanel extends Panel
 
 	private void createVervangenPanel()
 	{
-		final BootstrapDialog dialog = new BootstrapDialog("dialog");
+		final var dialog = new BootstrapDialog("dialog");
 		add(dialog);
 
 		Form uploadForm = new Form<>("uploadForm");
 
-		FileUploadField upload = new FileUploadField("fileUpload", files);
+		var upload = new FileUploadField("fileUpload", files);
 		upload.add(new FileValidator(FileType.PDF));
 		upload.setRequired(true);
 		uploadForm.add(upload);
@@ -74,7 +74,7 @@ public abstract class DocumentVervangenPanel extends Panel
 			{
 				if (files.getObject().size() == 1)
 				{
-					FileUpload fileUpload = files.getObject().get(0);
+					var fileUpload = files.getObject().get(0);
 					try
 					{
 						maakUploadDocument(fileUpload);

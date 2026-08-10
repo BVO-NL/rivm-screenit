@@ -44,7 +44,7 @@ public class MammaPlanningUtil
 
 	public static boolean datumIsMeerDanVijfWerkdagenVoorDatum(LocalDate teCheckenDatum, LocalDate grensDatum)
 	{
-		int werkdagenTussenData = DateUtil.getDaysBetweenIgnoreWeekends(teCheckenDatum.atStartOfDay(), grensDatum.atStartOfDay(), true);
+		var werkdagenTussenData = DateUtil.getDaysBetweenIgnoreWeekends(teCheckenDatum.atStartOfDay(), grensDatum.atStartOfDay(), true);
 		return !teCheckenDatum.isAfter(grensDatum) && werkdagenTussenData > AANTAL_WERKDAGEN_TUSSEN_DATA_GRENS;
 	}
 

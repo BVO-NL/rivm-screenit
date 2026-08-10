@@ -28,8 +28,6 @@ import nl.rivm.screenit.mamma.se.dto.SeAutorisatieDto;
 import nl.rivm.screenit.mamma.se.security.SERealm;
 import nl.rivm.screenit.mamma.se.service.SeAutorisatieService;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
-import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
-import nl.rivm.screenit.model.Permissie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.security.Constraint;
@@ -82,10 +80,10 @@ public class SeAutorisatieServiceImpl implements SeAutorisatieService
 	@Override
 	public SeAutorisatieDto getSeRechten(Long accountId)
 	{
-		SeAutorisatieDto dto = new SeAutorisatieDto();
-		OrganisatieMedewerker organisatieMedewerker = hibernateService.get(OrganisatieMedewerker.class, accountId);
+		var dto = new SeAutorisatieDto();
+		var organisatieMedewerker = hibernateService.get(OrganisatieMedewerker.class, accountId);
 		PrincipalCollection principals = createSimplePrincipalCollection(accountId);
-		SecurityManager securityManager = ThreadContext.getSecurityManager();
+		var securityManager = ThreadContext.getSecurityManager();
 
 		dto.setInschrijvenRecht(getSeRechtDto(organisatieMedewerker, securityManager, principals, Recht.MEDEWERKER_SCREENING_MAMMA_SE_INSCHRIJVEN));
 		dto.setOnderzoekenRecht(getSeRechtDto(organisatieMedewerker, securityManager, principals, Recht.MEDEWERKER_SCREENING_MAMMA_SE_ONDERZOEK));
@@ -98,12 +96,12 @@ public class SeAutorisatieServiceImpl implements SeAutorisatieService
 
 	private SERechtDto getSeRechtDto(OrganisatieMedewerker organisatieMedewerker, SecurityManager securityManager, PrincipalCollection principalCollection, Recht recht)
 	{
-		SERechtDto seRechtDto = new SERechtDto();
-		Actie benodigdeActie = getBenodigdeActie(recht);
+		var seRechtDto = new SERechtDto();
+		var benodigdeActie = getBenodigdeActie(recht);
 		seRechtDto.setAuthorized(securityManager.isPermitted(principalCollection, buildConstraint(recht, benodigdeActie)));
 		setEinddatumOpBasisVanRollen(seRechtDto, organisatieMedewerker, recht, benodigdeActie);
 
-		LocalDate gebruikerActiefTotEnMet = DateUtil.toLocalDate(organisatieMedewerker.getMedewerker().getActiefTotEnMet());
+		var gebruikerActiefTotEnMet = DateUtil.toLocalDate(organisatieMedewerker.getMedewerker().getActiefTotEnMet());
 		if (gebruikerActiefTotEnMet != null && (seRechtDto.getEindDatum() == null || gebruikerActiefTotEnMet.isBefore(seRechtDto.getEindDatum())))
 		{
 			seRechtDto.setEindDatum(gebruikerActiefTotEnMet);
@@ -115,15 +113,15 @@ public class SeAutorisatieServiceImpl implements SeAutorisatieService
 	{
 		LocalDate maxEindDatum = null;
 
-		for (OrganisatieMedewerkerRol organisatieMedewerkerRol : organisatieMedewerker.getRollen())
+		for (var organisatieMedewerkerRol : organisatieMedewerker.getRollen())
 		{
 			if (organisatieMedewerkerRol.isRolActief())
 			{
-				for (Permissie permissie : organisatieMedewerkerRol.getRol().getPermissies())
+				for (var permissie : organisatieMedewerkerRol.getRol().getPermissies())
 				{
 					if (permissie.getRecht().equals(recht) && ArrayUtils.contains(permissie.getRecht().getActie(), benodigdeActie))
 					{
-						LocalDate eindDatum = DateUtil.toLocalDate(organisatieMedewerkerRol.getEindDatum());
+						var eindDatum = DateUtil.toLocalDate(organisatieMedewerkerRol.getEindDatum());
 						if (eindDatum == null)
 						{
 							seRechtDto.setEindDatum(null);
@@ -163,7 +161,7 @@ public class SeAutorisatieServiceImpl implements SeAutorisatieService
 
 	private Constraint buildConstraint(Recht recht, Actie actie)
 	{
-		Constraint constraintToCheck = new Constraint();
+		var constraintToCheck = new Constraint();
 		constraintToCheck.setRecht(recht);
 		constraintToCheck.setActie(actie);
 		constraintToCheck.setCheckScope(false);

@@ -36,8 +36,6 @@ import nl.rivm.screenit.main.web.component.table.NavigeerNaarCellPanel;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Medewerker;
-import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.OrganisatieType;
@@ -95,7 +93,7 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 
 	public OrganisatieMedewerkerKoppelPage(final boolean showMedewerkers)
 	{
-		Actie actie = getActie(Recht.MEDEWERKER_ORGANISATIE_KOPPELING_BEHEER);
+		var actie = getActie(Recht.MEDEWERKER_ORGANISATIE_KOPPELING_BEHEER);
 
 		if (actie == null)
 		{
@@ -106,15 +104,15 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 
 		magKoppelingenBeheren = actie.getNiveau() >= Actie.TOEVOEGEN.getNiveau();
 
-		final BootstrapDialog dialog = new BootstrapDialog("dialog");
+		final var dialog = new BootstrapDialog("dialog");
 		add(dialog);
-		final WebMarkupContainer medewerkerContainer = new WebMarkupContainer("medewerkerContainer");
+		final var medewerkerContainer = new WebMarkupContainer("medewerkerContainer");
 		medewerkerContainer.setOutputMarkupId(true);
 
 		medewerkerContainer.add(getPaspoortPanel("paspoort"));
 
-		String organisatieMedewerkerSort = "medewerker.achternaam";
-		String organisatieMedewerkerProperty = "medewerker.naamVolledigMetVoornaam";
+		var organisatieMedewerkerSort = "medewerker.achternaam";
+		var organisatieMedewerkerProperty = "medewerker.naamVolledigMetVoornaam";
 		if (!showMedewerkers)
 		{
 			organisatieMedewerkerSort = "organisatie.naam";
@@ -131,16 +129,16 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 			public void populateItem(Item<ICellPopulator<OrganisatieMedewerker>> item, String componentId, IModel<OrganisatieMedewerker> rowModel)
 			{
 
-				OrganisatieMedewerker organisatieMedewerker = rowModel.getObject();
+				var organisatieMedewerker = rowModel.getObject();
 
-				String rollen = "";
-				boolean first = true;
+				var rollen = "";
+				var first = true;
 
 				var rollenLijst = organisatieMedewerker.getRollen();
-				OrganisatieMedewerkerRolComparator comparator = new OrganisatieMedewerkerRolComparator();
+				var comparator = new OrganisatieMedewerkerRolComparator();
 				Collections.sort(rollenLijst, comparator);
 
-				for (OrganisatieMedewerkerRol organisatieMedewerkerRol : rollenLijst)
+				for (var organisatieMedewerkerRol : rollenLijst)
 				{
 					if (isRolActief(organisatieMedewerkerRol))
 					{
@@ -161,7 +159,7 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 
 			private boolean isRolActief(OrganisatieMedewerkerRol organisatieMedewerkerRol)
 			{
-				Calendar today = Calendar.getInstance();
+				var today = Calendar.getInstance();
 				today.add(Calendar.DATE, -1);
 				return !Boolean.FALSE.equals(organisatieMedewerkerRol.getActief())
 					&& (organisatieMedewerkerRol.getEindDatum() == null || !today.getTime().after(organisatieMedewerkerRol.getEindDatum()) || !Boolean.TRUE.equals(actiefFilter));
@@ -182,10 +180,10 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 			@Override
 			public void populateItem(Item<ICellPopulator<OrganisatieMedewerker>> item, String componentId, IModel<OrganisatieMedewerker> rowModel)
 			{
-				OrganisatieMedewerker organisatieMedewerker = rowModel.getObject();
+				var organisatieMedewerker = rowModel.getObject();
 
 				Date inDienst = null;
-				for (OrganisatieMedewerkerRol organisatieMedewerkerRol : organisatieMedewerker.getRollen())
+				for (var organisatieMedewerkerRol : organisatieMedewerker.getRollen())
 				{
 					if (!Boolean.FALSE.equals(organisatieMedewerkerRol.getActief()))
 					{
@@ -199,7 +197,7 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 						}
 					}
 				}
-				String inDienstDatum = "";
+				var inDienstDatum = "";
 				if (inDienst != null)
 				{
 					inDienstDatum = new SimpleDateFormat("dd-MM-yyyy").format(inDienst);
@@ -216,11 +214,11 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 			@Override
 			public void populateItem(Item<ICellPopulator<OrganisatieMedewerker>> item, String componentId, IModel<OrganisatieMedewerker> rowModel)
 			{
-				OrganisatieMedewerker organisatieMedewerker = rowModel.getObject();
+				var organisatieMedewerker = rowModel.getObject();
 
 				Date uitDienst = null;
-				boolean isNull = false;
-				for (OrganisatieMedewerkerRol organisatieMedewerkerRol : organisatieMedewerker.getRollen())
+				var isNull = false;
+				for (var organisatieMedewerkerRol : organisatieMedewerker.getRollen())
 				{
 					if (!Boolean.FALSE.equals(organisatieMedewerkerRol.getActief()))
 					{
@@ -240,7 +238,7 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 
 					}
 				}
-				String uitDienstDatum = "";
+				var uitDienstDatum = "";
 				if (uitDienst != null && !isNull)
 				{
 					uitDienstDatum = new SimpleDateFormat("dd-MM-yyyy").format(uitDienst);
@@ -278,7 +276,7 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 			}
 		});
 
-		OrganisatieMedewerker organisatieMedewerker = createSearchObject();
+		var organisatieMedewerker = createSearchObject();
 		OrganisatieType type = null;
 		if (organisatieMedewerker.getOrganisatie() != null)
 		{
@@ -308,8 +306,8 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 			protected void onAfterToggleActief(AjaxRequestTarget target, OrganisatieMedewerker organisatieMedewerker)
 			{
 				super.onAfterToggleActief(target, organisatieMedewerker);
-				Medewerker medewerker = organisatieMedewerker.getMedewerker();
-				Organisatie organisatie = organisatieMedewerker.getOrganisatie();
+				var medewerker = organisatieMedewerker.getMedewerker();
+				var organisatie = organisatieMedewerker.getOrganisatie();
 				if (organisatieMedewerker.getId() == null)
 				{
 					medewerker.getOrganisatieMedewerkers().remove(organisatieMedewerker);
@@ -344,7 +342,7 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 			totaalLabel = new Model<>("medewerkers");
 		}
 
-		ScreenitDataTable<OrganisatieMedewerker, String> dataTable = new ScreenitDataTable<OrganisatieMedewerker, String>("organisaties", columns,
+		var dataTable = new ScreenitDataTable<OrganisatieMedewerker, String>("organisaties", columns,
 			new OrganisatieMedewerkerDataProvider(searchObjectModel, organisatieMedewerkerSort), totaalLabel)
 		{
 
@@ -364,7 +362,7 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 
 		medewerkerContainer.add(dataTable);
 
-		AjaxLink<Void> link = new AjaxLink<Void>("toevoegen")
+		var link = new AjaxLink<Void>("toevoegen")
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -390,10 +388,10 @@ public abstract class OrganisatieMedewerkerKoppelPage extends AlgemeenPage
 
 	protected OrganisatieMedewerker createSearchObject()
 	{
-		OrganisatieMedewerker organisatieMedewerker = new OrganisatieMedewerker();
+		var organisatieMedewerker = new OrganisatieMedewerker();
 		organisatieMedewerker.setActief(Boolean.TRUE);
-		OrganisatieMedewerkerRol rol = new OrganisatieMedewerkerRol();
-		Calendar today = Calendar.getInstance();
+		var rol = new OrganisatieMedewerkerRol();
+		var today = Calendar.getInstance();
 		today.add(Calendar.DATE, -1);
 		rol.setEindDatum(today.getTime());
 

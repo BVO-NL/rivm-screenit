@@ -36,11 +36,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ca.uhn.hl7v2.AcknowledgmentCode;
-import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Connection;
-import ca.uhn.hl7v2.app.Initiator;
 import ca.uhn.hl7v2.llp.LLPException;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.parser.Parser;
@@ -64,14 +61,14 @@ public class HL7BaseSendMessageServiceImpl implements HL7BaseSendMessageService
 	public void openConnection(String connectieNaam, int pogingen, ScreenITHL7MessageContext messageContext) throws HL7Exception
 	{
 		Connection connection = null;
-		for (int t = 0; t < pogingen; t++)
+		for (var t = 0; t < pogingen; t++)
 		{
 			try
 			{
 				LOG.info("Verbinding met {}, adres {}:{}, wordt geprobeerd op te zetten (poging {}).", connectieNaam, messageContext.getHost(), messageContext.getPort(), t + 1);
 				connection = ScreenitHapiContext.getHapiContext(messageContext.getType()).newClient(messageContext.getHost(), messageContext.getPort(), false);
 				messageContext.setConnection(connection);
-				Initiator init = connection.getInitiator();
+				var init = connection.getInitiator();
 				init.setTimeout(30L, TimeUnit.SECONDS);
 				LOG.info("Verbinding met HL7v2 endpoint {} is opgezet", connectieNaam);
 				break;
@@ -84,7 +81,7 @@ public class HL7BaseSendMessageServiceImpl implements HL7BaseSendMessageService
 		}
 		if (connection == null)
 		{
-			String melding =
+			var melding =
 				"Er kon geen connectie worden gemaakt met HL7v2 endpoint van " + connectieNaam + " (" + messageContext.getHost() + ":" + messageContext.getPort() + ")";
 			messageContext.getResponseWrapper().setMelding(melding);
 			throw new HL7Exception(melding);
@@ -94,7 +91,7 @@ public class HL7BaseSendMessageServiceImpl implements HL7BaseSendMessageService
 	@Override
 	public HL7v24ResponseWrapper sendHL7Message(String hl7Bericht, ScreenITHL7MessageContext messageContext) throws HL7Exception, LLPException, IOException
 	{
-		DefaultHapiContext hapiContext = ScreenitHapiContext.getHapiContext(messageContext.getType());
+		var hapiContext = ScreenitHapiContext.getHapiContext(messageContext.getType());
 
 		Parser parser = hapiContext.getPipeParser();
 		Message hapiMsg;
@@ -109,18 +106,18 @@ public class HL7BaseSendMessageServiceImpl implements HL7BaseSendMessageService
 	public HL7v24ResponseWrapper sendHL7Message(Message hl7Bericht, ScreenITHL7MessageContext messageContext) throws HL7Exception, LLPException, IOException
 	{
 
-		long exchangeId = technischeBerichtenLoggingSaverService.logRequest("HL7V2_REQ_OUT", hl7Bericht.getClass().getSimpleName(), hl7Bericht.toString());
+		var exchangeId = technischeBerichtenLoggingSaverService.logRequest("HL7V2_REQ_OUT", hl7Bericht.getClass().getSimpleName(), hl7Bericht.toString());
 
-		HL7v24ResponseWrapper responseWrapper = messageContext.getResponseWrapper();
+		var responseWrapper = messageContext.getResponseWrapper();
 
-		String responseType = "HL7V2_RESP_IN";
+		var responseType = "HL7V2_RESP_IN";
 		String rawResponse = null;
 		try
 		{
-			Message response = messageContext.getConnection().getInitiator().sendAndReceive(hl7Bericht);
-			ScreenITResponseV24MessageWrapper responseV24MessageWrapper = new ScreenITResponseV24MessageWrapper(response);
+			var response = messageContext.getConnection().getInitiator().sendAndReceive(hl7Bericht);
+			var responseV24MessageWrapper = new ScreenITResponseV24MessageWrapper(response);
 			responseWrapper.setResponseV24MessageWrapper(responseV24MessageWrapper);
-			AcknowledgmentCode acknowledgmentCode = responseV24MessageWrapper.getAcknowledgmentCode();
+			var acknowledgmentCode = responseV24MessageWrapper.getAcknowledgmentCode();
 			if (!responseWrapper.isSuccess())
 			{
 				responseWrapper.setMelding(

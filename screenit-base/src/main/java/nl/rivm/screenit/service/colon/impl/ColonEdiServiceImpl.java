@@ -25,12 +25,10 @@ import nl.rivm.screenit.edi.model.MedVryOut;
 import nl.rivm.screenit.edi.model.OutboundMessageData;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.EnovationHuisarts;
-import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.MailMergeContext;
 import nl.rivm.screenit.model.MailVerzenden;
 import nl.rivm.screenit.model.MedVryOntvanger;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.colon.ColonHuisartsBericht;
 import nl.rivm.screenit.model.colon.ColonHuisartsBerichtStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -58,13 +56,13 @@ public class ColonEdiServiceImpl extends EdiServiceBaseImpl implements ColonEdiS
 	{
 		if (huisartsBericht != null)
 		{
-			String transactionId = Long.toString(currentDateSupplier.getDate().getTime());
+			var transactionId = Long.toString(currentDateSupplier.getDate().getTime());
 
-			MedVryOut medVry = maakMedVry(huisartsBericht);
+			var medVry = maakMedVry(huisartsBericht);
 			zetPatient(huisartsBericht, medVry);
 			zetOntvanger(huisartsBericht, medVry);
 			zetInhoud(huisartsBericht.getBerichtInhoud(), huisartsBericht.getBerichtType(), medVry, transactionId);
-			OrganisatieMedewerker sender = zetZender(huisartsBericht, medVry);
+			var sender = zetZender(huisartsBericht, medVry);
 			verstuur(huisartsBericht, transactionId, medVry, sender);
 		}
 	}
@@ -83,15 +81,15 @@ public class ColonEdiServiceImpl extends EdiServiceBaseImpl implements ColonEdiS
 			+ ", voor Client: " + client.getId());
 		var date = currentDateSupplier.getDate();
 
-		ColonHuisartsBericht haBericht = new ColonHuisartsBericht();
+		var haBericht = new ColonHuisartsBericht();
 		haBericht.setBerichtType(berichtType);
 		haBericht.setAanmaakDatum(date);
 		haBericht.setStatus(status);
 		haBericht.setHuisarts(huisarts);
 		haBericht.setClient(client);
 		haBericht.setEenOpnieuwVerzondenBericht(opnieuwVerzonden);
-		Gemeente gbaGemeente = client.getPersoon().getGbaAdres().getGbaGemeente();
-		ScreeningOrganisatie screeningOrganisatie = gbaGemeente.getScreeningOrganisatie();
+		var gbaGemeente = client.getPersoon().getGbaAdres().getGbaGemeente();
+		var screeningOrganisatie = gbaGemeente.getScreeningOrganisatie();
 		if (screeningOrganisatie == null)
 		{
 			throw new IllegalStateException(
@@ -101,7 +99,7 @@ public class ColonEdiServiceImpl extends EdiServiceBaseImpl implements ColonEdiS
 		haBericht.setScreeningsOrganisatie(screeningOrganisatie);
 		haBericht.setScreeningsRonde(client.getColonDossier().getLaatsteScreeningRonde());
 
-		String berichtInhoud = merge(context, berichtType);
+		var berichtInhoud = merge(context, berichtType);
 		haBericht.setBerichtInhoud(berichtInhoud);
 
 		client.getHuisartsBerichten().add(haBericht);
@@ -113,17 +111,17 @@ public class ColonEdiServiceImpl extends EdiServiceBaseImpl implements ColonEdiS
 
 	private void verstuur(ColonHuisartsBericht huisartsBericht, String transactionId, MedVryOut medVry, OrganisatieMedewerker sender)
 	{
-		OutboundMessageData<MedVryOut> outboundMessageData = new OutboundMessageData<>(medVry);
+		var outboundMessageData = new OutboundMessageData<MedVryOut>(medVry);
 		outboundMessageData.setSubject(medVry.getSubject());
 		outboundMessageData.setAddress(medVry.getMail());
 
-		String foutmelding = verzendCheck(medVry, huisartsBericht.getScreeningsOrganisatie());
+		var foutmelding = verzendCheck(medVry, huisartsBericht.getScreeningsOrganisatie());
 
-		boolean wasMisluktHuisartsbericht = ColonHuisartsBerichtStatus.VERZENDEN_MISLUKT.equals(huisartsBericht.getStatus());
+		var wasMisluktHuisartsbericht = ColonHuisartsBerichtStatus.VERZENDEN_MISLUKT.equals(huisartsBericht.getStatus());
 
 		try
 		{
-			MailVerzenden mailVerzenden = manipulateEmailadressen(sender, outboundMessageData);
+			var mailVerzenden = manipulateEmailadressen(sender, outboundMessageData);
 			if (StringUtils.isBlank(foutmelding)
 				&& (MailVerzenden.UIT.equals(mailVerzenden)
 				|| ediMessageService.sendMedVry(sender, sender.getMedewerker().getEmailextra(), outboundMessageData, transactionId)))
@@ -148,7 +146,7 @@ public class ColonEdiServiceImpl extends EdiServiceBaseImpl implements ColonEdiS
 		{
 			hibernateService.save(huisartsBericht);
 
-			LogGebeurtenis logGebeurtenis = LogGebeurtenis.HUISARTS_BERICHT_VERZONDEN;
+			var logGebeurtenis = LogGebeurtenis.HUISARTS_BERICHT_VERZONDEN;
 
 			if (ColonHuisartsBerichtStatus.VERZENDEN_GELUKT == huisartsBericht.getStatus())
 			{
@@ -171,7 +169,7 @@ public class ColonEdiServiceImpl extends EdiServiceBaseImpl implements ColonEdiS
 
 	private void zetOntvanger(ColonHuisartsBericht huisartsBericht, MedVryOut medVryOut)
 	{
-		MedVryOntvanger ontvanger = new MedVryOntvanger(huisartsBericht);
+		var ontvanger = new MedVryOntvanger(huisartsBericht);
 		medVryOut.setOntvanger(ontvanger);
 		if (huisartsBericht.getHuisarts() != null)
 		{
@@ -182,7 +180,7 @@ public class ColonEdiServiceImpl extends EdiServiceBaseImpl implements ColonEdiS
 
 	private String getLoggingTekst(ColonHuisartsBericht haBericht, String foutmelding, String afzender, String ontvanger)
 	{
-		StringBuilder logtekst = new StringBuilder();
+		var logtekst = new StringBuilder();
 		if (haBericht.getHuisarts() != null)
 		{
 			logtekst.append("Huisarts: ");

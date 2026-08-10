@@ -86,10 +86,10 @@ public class MammaExchangeUploadPanel extends GenericPanel<MammaUploadBeeldenVer
 		dialog = new BootstrapDialog("dialog");
 		add(dialog);
 
-		Form<MammaUploadBeeldenVerzoek> form = new Form<>("form");
+		var form = new Form<MammaUploadBeeldenVerzoek>("form");
 		form.add(new ScreenitDropdown<>("conclusieBirads", Arrays.asList(MammaFollowUpBIRADSWaarde.values()), new EnumChoiceRenderer<>()).setNullValid(false).setRequired(true));
 
-		TextArea<String> conclusieEersteUitslagRadiologie = new TextArea<>("conclusieEersteUitslagRadiologie");
+		var conclusieEersteUitslagRadiologie = new TextArea<String>("conclusieEersteUitslagRadiologie");
 		conclusieEersteUitslagRadiologie.add(StringValidator.maximumLength(HibernateMagicNumber.L1024));
 		conclusieEersteUitslagRadiologie.setRequired(true);
 		form.add(conclusieEersteUitslagRadiologie);
@@ -115,19 +115,19 @@ public class MammaExchangeUploadPanel extends GenericPanel<MammaUploadBeeldenVer
 			}
 		});
 
-		IndicatingAjaxSubmitLink opslaanButton = new IndicatingAjaxSubmitLink("opslaan", form)
+		var opslaanButton = new IndicatingAjaxSubmitLink("opslaan", form)
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				super.onSubmit(target);
 
-				MammaUploadBeeldenVerzoek uploadBeeldenVerzoek = MammaExchangeUploadPanel.this.getModelObject();
+				var uploadBeeldenVerzoek = MammaExchangeUploadPanel.this.getModelObject();
 				List<UploadDocument> uploadDocumenten = new ArrayList<>();
 
 				try
 				{
-					for (FileUpload fileUpload : files.getObject())
+					for (var fileUpload : files.getObject())
 					{
 						uploadDocumenten.add(ScreenitSession.get().fileUploadToUploadDocument(fileUpload));
 					}
@@ -139,7 +139,7 @@ public class MammaExchangeUploadPanel extends GenericPanel<MammaUploadBeeldenVer
 					return;
 				}
 
-				String errorMelding = uploadBeeldenService.uploadBeelden(uploadBeeldenVerzoek, uploadDocumenten, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+				var errorMelding = uploadBeeldenService.uploadBeelden(uploadBeeldenVerzoek, uploadDocumenten, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				berichtToBatchService.queueMammaUploadBeeldenVerzoekBericht();
 				if (StringUtils.isNotBlank(errorMelding))
 				{
@@ -168,15 +168,15 @@ public class MammaExchangeUploadPanel extends GenericPanel<MammaUploadBeeldenVer
 
 	private void createFileUploadField(Form form, IndicatingAjaxSubmitLink opslaanButton)
 	{
-		Integer maxTotalUploadSize = preferenceService.getInteger(PreferenceKey.INTERNAL_MAMMA_UPLOADLIMIET_UPLOADPORTAAL.name());
+		var maxTotalUploadSize = preferenceService.getInteger(PreferenceKey.INTERNAL_MAMMA_UPLOADLIMIET_UPLOADPORTAAL.name());
 		form.setMaxSize(Bytes.megabytes(maxTotalUploadSize));
 
 		files = new ListModel<>();
 
-		ScreenitFileUploadField fileUploadField = new ScreenitFileUploadField("fileUpload", files, Bytes.megabytes(maxTotalUploadSize));
+		var fileUploadField = new ScreenitFileUploadField("fileUpload", files, Bytes.megabytes(maxTotalUploadSize));
 		form.add(fileUploadField.setRequired(true).add(new FileValidator(FileType.DICOM)));
 
-		ScreenitUploadProgressBar uploadProgressBar = new ScreenitUploadProgressBar("fileUploadProgress", form, opslaanButton, fileUploadField);
+		var uploadProgressBar = new ScreenitUploadProgressBar("fileUploadProgress", form, opslaanButton, fileUploadField);
 		form.add(uploadProgressBar);
 	}
 

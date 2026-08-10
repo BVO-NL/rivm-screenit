@@ -21,15 +21,9 @@ package nl.rivm.screenit.huisartsenportaal.repository;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.huisartsenportaal.model.Overeenkomst;
-
-import org.springframework.data.repository.CrudRepository;
 
 public interface OvereenkomstRepository extends BaseRepository<Overeenkomst>
 {
-
 	Overeenkomst findFirstByOrderByLaatsteWijzigDatumDesc();
-
 }

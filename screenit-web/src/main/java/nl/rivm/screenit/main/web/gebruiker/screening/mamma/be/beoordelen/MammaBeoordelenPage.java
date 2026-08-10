@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.mamma.MammaImsService;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoordelenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaRondePanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.AbstractMammaBeWerklijstPage;
@@ -61,7 +60,7 @@ public class MammaBeoordelenPage extends AbstractMammaBeoordelenPage
 	protected void maakRondesContainer(IModel<MammaBeoordeling> beoordelingModel)
 	{
 		List<AbstractMammaRondePanel> rondePanels = new ArrayList<>();
-		Integer jaarLaatsteVerwijzing = baseScreeningrondeService.getJaarLaatsteVerwijzing(baseBeoordelingService.getClientVanBeoordeling(beoordelingModel.getObject()));
+		var jaarLaatsteVerwijzing = baseScreeningrondeService.getJaarLaatsteVerwijzing(baseBeoordelingService.getClientVanBeoordeling(beoordelingModel.getObject()));
 
 		huidigeRondePanel = new MammaBeoordelenHuidigeRondePanel("rondeItem", beoordelingModel, jaarLaatsteVerwijzing);
 		rondePanels.add(huidigeRondePanel);

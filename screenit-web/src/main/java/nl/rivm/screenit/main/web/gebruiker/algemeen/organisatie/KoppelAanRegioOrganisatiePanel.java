@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
@@ -48,7 +46,7 @@ public class KoppelAanRegioOrganisatiePanel<T extends Organisatie> extends Gener
 	{
 		super.onInitialize();
 
-		List<Organisatie> screeningOrganisaties = organisatieZoekService.getAllActieveOrganisatiesWithType(ScreeningOrganisatie.class);
+		var screeningOrganisaties = organisatieZoekService.getAllActieveOrganisatiesWithType(ScreeningOrganisatie.class);
 
 		add(new ScreenitDropdown<>("regio", ModelUtil.listRModel(screeningOrganisaties), Organisatie::getNaam));
 

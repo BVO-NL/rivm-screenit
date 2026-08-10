@@ -21,16 +21,16 @@ package nl.rivm.screenit.comparator;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.mamma.MammaLaesie;
-
 import java.util.Comparator;
+
+import nl.rivm.screenit.model.mamma.MammaLaesie;
 
 public class MammaLaesieComparator implements Comparator<MammaLaesie>
 {
 	@Override
 	public int compare(MammaLaesie o1, MammaLaesie o2)
 	{
-		int compare = o2.getMammaZijde().compareTo(o1.getMammaZijde());
+		var compare = o2.getMammaZijde().compareTo(o1.getMammaZijde());
 
 		if (compare != 0)
 		{

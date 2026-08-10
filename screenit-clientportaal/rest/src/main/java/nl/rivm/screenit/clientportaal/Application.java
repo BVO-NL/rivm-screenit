@@ -27,7 +27,6 @@ import nl.rivm.screenit.repository.impl.BaseJpaRepositoryImpl;
 import nl.rivm.screenit.service.DistributedLockService;
 import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 
-import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardHost;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -68,10 +67,10 @@ public class Application
 			{
 				factory.addContextCustomizers(context ->
 				{
-					Container parent = context.getParent();
+					var parent = context.getParent();
 					if (parent instanceof StandardHost)
 					{
-						StandardHost standardHost = (StandardHost) parent;
+						var standardHost = (StandardHost) parent;
 						standardHost.setErrorReportValveClass("nl.rivm.screenit.clientportaal.filter.CustomTomcatErrorValve");
 					}
 				});

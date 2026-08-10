@@ -55,7 +55,7 @@ public class ProjectUtil
 		}
 		boolean clientActief = client.getActief();
 		boolean groepActief = client.getGroep().getActief();
-		boolean projectActief = ProjectStatus.ACTIEF.equals(ProjectUtil.getStatus(client.getProject(), date));
+		var projectActief = ProjectStatus.ACTIEF.equals(ProjectUtil.getStatus(client.getProject(), date));
 		return clientActief && groepActief && projectActief;
 	}
 
@@ -76,9 +76,9 @@ public class ProjectUtil
 	{
 		if (client != null)
 		{
-			String projectType = ProjectType.PROJECT.equals(client.getProject().getType()) ? "project" : "briefproject";
-			String projectNaam = " voor " + projectType + ": " + client.getProject().getNaam();
-			Boolean isActief = isClientActiefInProject(client, date);
+			var projectType = ProjectType.PROJECT.equals(client.getProject().getType()) ? "project" : "briefproject";
+			var projectNaam = " voor " + projectType + ": " + client.getProject().getNaam();
+			var isActief = isClientActiefInProject(client, date);
 			if (Boolean.TRUE.equals(isActief))
 			{
 				return "Actief" + projectNaam;
@@ -98,12 +98,12 @@ public class ProjectUtil
 	public static List<ProjectClient> getProjectClientenForBVO(Client client, Bevolkingsonderzoek onderzoek, Date date)
 	{
 		List<ProjectClient> resultProjectClienten = new ArrayList<>();
-		for (ProjectClient projectClient : getHuidigeProjectClienten(client, date, true))
+		for (var projectClient : getHuidigeProjectClienten(client, date, true))
 		{
 			if (projectClient != null && projectClient.getProject() != null && projectClient.getProject().getBevolkingsonderzoeken() != null
 				&& ProjectStatus.ACTIEF.equals(getStatus(projectClient.getProject(), date)))
 			{
-				for (Bevolkingsonderzoek bvo : projectClient.getProject().getBevolkingsonderzoeken())
+				for (var bvo : projectClient.getProject().getBevolkingsonderzoeken())
 				{
 					if (onderzoek.equals(bvo))
 					{
@@ -137,9 +137,9 @@ public class ProjectUtil
 		List<ProjectClient> projectClienten = new ArrayList<>();
 		if (date != null && client != null && client.getProjecten() != null)
 		{
-			for (ProjectClient pClient : client.getProjecten())
+			for (var pClient : client.getProjecten())
 			{
-				Project project = pClient.getProject();
+				var project = pClient.getProject();
 				if (pClient.getActief() && (pClient.getGroep().getActief() && groepActiefCheck || !groepActiefCheck)
 					&& !ProjectStatus.BEEINDIGD.equals(getStatus(project, date)))
 				{
@@ -154,8 +154,8 @@ public class ProjectUtil
 	{
 		if (client != null && client.getProject() != null && type != null)
 		{
-			Project project = client.getProject();
-			for (ProjectBriefActie actie : project.getProjectBriefActies())
+			var project = client.getProject();
+			for (var actie : project.getProjectBriefActies())
 			{
 				if (ProjectBriefActieType.VERVANGENDEBRIEF.equals(actie.getType()) && actie.getBriefType().equals(type) && actie.getActief())
 				{
@@ -169,7 +169,7 @@ public class ProjectUtil
 	public static List<BriefType> getBriefTypesWithVervanging(List<ProjectBriefActieType> types)
 	{
 		List<BriefType> juisteBriefTypes = new ArrayList<BriefType>();
-		for (BriefType type : BriefType.values())
+		for (var type : BriefType.values())
 		{
 			if (types != null && !types.isEmpty() && type.isActief() && type.getBriefActieTypes().containsAll(types))
 			{
@@ -212,7 +212,7 @@ public class ProjectUtil
 	{
 		if (StringUtils.isNotBlank(printomschrijving))
 		{
-			boolean overruleBriefcode = printomschrijving.contains("_");
+			var overruleBriefcode = printomschrijving.contains("_");
 			if (overruleBriefcode)
 			{
 

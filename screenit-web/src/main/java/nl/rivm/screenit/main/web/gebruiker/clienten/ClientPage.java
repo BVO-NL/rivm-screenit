@@ -131,7 +131,7 @@ public abstract class ClientPage extends MedewerkerBasePage
 
 	private void clientDossierTabsMaken(List<MedewerkerMenuItem> contextMenuItems)
 	{
-		for (Object[] menuItem : getClientDossierTabs(getClientModel().getObject()))
+		for (var menuItem : getClientDossierTabs(getClientModel().getObject()))
 		{
 			contextMenuItems.add(new ClientMedewerkerMenuItem((String) menuItem[0], (Class<ClientPage>) menuItem[1])
 			{
@@ -206,7 +206,7 @@ public abstract class ClientPage extends MedewerkerBasePage
 
 	private <MBP extends ClientContact> Component getAantalPostfixLabel(String id, Long clientId)
 	{
-		Label label = new Label(id, new LoadableDetachableModel<String>()
+		var label = new Label(id, new LoadableDetachableModel<String>()
 		{
 			@Override
 			protected String load()

@@ -82,7 +82,7 @@ public abstract class ColonAfspraakPanel extends GenericPanel<Client>
 				String locatieBeschrijving = organisatieParameterService.getOrganisatieParameter(afspraak.getKamer().getIntakelocatie(),
 					OrganisatieParameterKey.COLON_INTAKELOCATIE_BESCHRIJVING);
 				item.add(new Label("locatieBeschrijving", locatieBeschrijving));
-				boolean heeftOnafgerondeVerwijzingOmMedischeRedenen = afspraakService.heeftOnafgerondeVerwijzingOmMedischeRedenen(afspraak);
+				var heeftOnafgerondeVerwijzingOmMedischeRedenen = afspraakService.heeftOnafgerondeVerwijzingOmMedischeRedenen(afspraak);
 				item.setVisible(afspraakService.magWijzigenAfzeggen(afspraak) || heeftOnafgerondeVerwijzingOmMedischeRedenen);
 				AjaxLink<ColonIntakeAfspraak> afzeggen = new IndicatingAjaxLink<>("afzeggen", item.getModel())
 				{

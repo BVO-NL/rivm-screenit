@@ -22,7 +22,6 @@ package nl.rivm.screenit.batch.jobs.cervix.verlatedeelnamecovid;
  */
 
 import java.util.Collections;
-import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -82,7 +81,7 @@ public class CervixVerlateDeelnameCovidJobListener extends BaseLogListener
 			zoekObject.setGroepSelectieType(GroepSelectieType.DYNAMISCH);
 			zoekObject.getBevolkingsonderzoeken().add(Bevolkingsonderzoek.CERVIX);
 
-			List<Project> projecten = projectService.getProjecten(zoekObject, Collections.emptyList(), Collections.emptyList(), -1, -1, new SortState<>("naam", true));
+			var projecten = projectService.getProjecten(zoekObject, Collections.emptyList(), Collections.emptyList(), -1, -1, new SortState<>("naam", true));
 			Project project = null;
 			if (!projecten.isEmpty())
 			{
@@ -133,8 +132,8 @@ public class CervixVerlateDeelnameCovidJobListener extends BaseLogListener
 				event.setLevel(Level.WARNING);
 				if (executionContext.containsKey(CervixVerlateDeelnameCovidConstants.PROJECT_GROEP_ID))
 				{
-					long groepId = executionContext.getLong(CervixVerlateDeelnameCovidConstants.PROJECT_GROEP_ID);
-					ProjectGroep groep = hibernateService.get(ProjectGroep.class, groepId);
+					var groepId = executionContext.getLong(CervixVerlateDeelnameCovidConstants.PROJECT_GROEP_ID);
+					var groep = hibernateService.get(ProjectGroep.class, groepId);
 					if (groep != null)
 					{
 						if (groep.getPopulatie() > 0)

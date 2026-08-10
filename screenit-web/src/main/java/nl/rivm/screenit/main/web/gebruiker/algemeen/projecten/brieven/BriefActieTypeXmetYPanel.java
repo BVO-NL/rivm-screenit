@@ -48,7 +48,7 @@ public class BriefActieTypeXmetYPanel extends GenericPanel<ProjectBriefActie>
 		List<ProjectBriefActieType> types = new ArrayList<ProjectBriefActieType>();
 		types.add(ProjectBriefActieType.XDAGENNAY);
 
-		ScreenitDropdown<BriefType> moment = new ScreenitDropdown<BriefType>("briefType", new ListModel<BriefType>(ProjectUtil.getBriefTypesWithVervanging(types)),
+		var moment = new ScreenitDropdown<BriefType>("briefType", new ListModel<BriefType>(ProjectUtil.getBriefTypesWithVervanging(types)),
 			new BriefTypeChoiceRenderer());
 		moment.setRequired(true);
 		moment.setLabel(Model.of("Brieftype"));

@@ -1,0 +1,109 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog size="lg" titel="BRP Status">
+  <div body>
+    <h2 class="brp-ondertitel">Tijdelijk BRP-adres</h2>
+
+    <form [formGroup]="brpGegevensForm" class="form-in-modal" novalidate>
+      <ds-input
+        label="Straatnaam"
+        formControlName="straatnaam"
+        placeholder="Straatnaam"
+        [errorMessage]="{maxlength: 'Straatnaam mag maximaal 56 tekens zijn'}"
+      />
+      <div class="huisnummer-groep">
+        <ds-input
+          label="Huisnummer"
+          formControlName="huisnummer"
+          type="number"
+          placeholder="Nummer"
+          id="huisnummer"
+          maxlength="10"
+          [errorMessage]="{ maxlength: 'Huisnummer mag maximaal 10 tekens zijn', pattern: 'Huisnummer mag alleen cijfers bevatten' }"
+          [required]="true"
+        />
+        <ds-input
+          label="Huisletter"
+          formControlName="huisletter"
+          placeholder="A"
+          id="huisletter"
+          [errorMessage]="{ maxlength: 'Huisletter mag maximaal 1 teken zijn'}"
+          maxlength="1"
+        />
+        <ds-input
+          label="Toevoeging"
+          formControlName="huisnummerToevoeging"
+          placeholder="Toevoeging"
+          id="huisnummerToevoeging"
+          [errorMessage]="{ maxlength: 'Toevoeging mag maximaal 26 tekens zijn'}"
+          maxlength="26"
+        />
+        <ds-input
+          label="Aanduiding"
+          formControlName="aanduidingBijHuisnummer"
+          id="aanduidingBijHuisnummer"
+          [errorMessage]="{ maxlength: 'Aanduiding mag maximaal 2 tekens zijn'}"
+          maxlength="2"
+        />
+      </div>
+      <div class="postcode-plaats-groep">
+        <ds-input
+          label="Postcode"
+          formControlName="postcode"
+          id="postcode"
+          placeholder="Postcode"
+          [errorMessage]="'Postcode is niet correct'"
+          [required]="true"
+        />
+        <ds-input
+          label="Plaats"
+          formControlName="plaats"
+          placeholder="Plaats"
+          id="plaats"
+          maxlength="200"
+          [errorMessage]="{ maxlength: 'Plaats mag maximaal 200 tekens zijn'}"
+          [required]="true"
+        />
+      </div>
+    </form>
+  </div>
+  @if (tijdelijkAdres()) {
+    <ng-container verwijder-button>
+      <button
+        *appAutorisatie="verwijderConstraint"
+        (click)="deleteBrpTijdelijkAdres()"
+        data-testid="btn-verwijderen"
+        type="button"
+        ds-button-delete>
+        Adres verwijderen
+      </button>
+    </ng-container>
+  }
+  <ng-container buttons>
+    <button (click)="cancel()" data-testid="btn_annuleren" ds-button-tertiary type="button">Annuleren</button>
+    <button (click)="save()"
+            data-testid="btn_opslaan"
+            [disabled]="brpGegevensForm.invalid"
+            ds-button-primary>
+      Opslaan
+    </button>
+  </ng-container>
+</app-base-dialog>

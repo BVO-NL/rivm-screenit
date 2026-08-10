@@ -22,7 +22,6 @@ package nl.rivm.screenit.mamma.planning.service.impl;
  */
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,7 +32,6 @@ import nl.rivm.screenit.mamma.planning.model.PlanningClient;
 import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
 import nl.rivm.screenit.mamma.planning.model.PlanningDag;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsOrganisatie;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaats;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsRonde;
 import nl.rivm.screenit.mamma.planning.model.PopulatieMetStreefDatum;
 
@@ -75,8 +73,8 @@ public class UitnodigenCapaciteitCalculator
 
 	private void initialiseerBeschikbareCapaciteit()
 	{
-		PlanningBeschikbaar beschikbaar = new PlanningBeschikbaar();
-		for (PlanningDag dag : uitTeNodigenDagen)
+		var beschikbaar = new PlanningBeschikbaar();
+		for (var dag : uitTeNodigenDagen)
 		{
 			if (dag.getDatum().isBefore(PlanningConstanten.prognoseVanafDatum))
 			{
@@ -95,7 +93,7 @@ public class UitnodigenCapaciteitCalculator
 
 	private void reserveerWijkSelectieEnUitstel()
 	{
-		AtomicInteger aantalUitstel = new AtomicInteger();
+		var aantalUitstel = new AtomicInteger();
 		standplaatsPopulatie.forEach(wijkPopulatie -> wijkPopulatie.getClienten().forEach(client ->
 		{
 			if (wijkPopulatie.isVoorUitstelClient())
@@ -132,7 +130,7 @@ public class UitnodigenCapaciteitCalculator
 	{
 		if (client.getLaatsteUitnodigingDatum() != null)
 		{
-			LocalDate reserveringVerlooptOp = client.getLaatsteUitnodigingDatum().plusDays(screeningsOrganisatieStandplaats.getVervallenCapaciteitsreserveringDagen());
+			var reserveringVerlooptOp = client.getLaatsteUitnodigingDatum().plusDays(screeningsOrganisatieStandplaats.getVervallenCapaciteitsreserveringDagen());
 			return !PlanningConstanten.prognoseVanafDatum.isAfter(reserveringVerlooptOp);
 		}
 		return false;
@@ -154,8 +152,8 @@ public class UitnodigenCapaciteitCalculator
 
 	private void reserveerGeplandeAfspraken()
 	{
-		PlanningStandplaats standplaats = standplaatsRonde.getStandplaats();
-		Set<PlanningClient> afspraken = standplaats.getAfspraakSet(); 
+		var standplaats = standplaatsRonde.getStandplaats();
+		var afspraken = standplaats.getAfspraakSet(); 
 		afspraken.forEach(client ->
 		{
 			if (!client.isNoShow())
@@ -169,7 +167,7 @@ public class UitnodigenCapaciteitCalculator
 	private void reserveerUitverhuizers()
 	{
 
-		Set<PlanningClient> uitverhuizers = standplaatsRonde.getScreeningRondeTransportSet();
+		var uitverhuizers = standplaatsRonde.getScreeningRondeTransportSet();
 		uitverhuizers.forEach(this::reserveerIndienReserveringZonderAfspraakNogGeldig);
 		LOG.info("{}: na reserveringen uitverhuizers: {}. Aantal uitverhuizers: {}", logPrefix(), capaciteitVoorUitnodigen, uitverhuizers.size());
 	}

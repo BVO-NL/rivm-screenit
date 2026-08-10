@@ -25,7 +25,6 @@ import nl.rivm.screenit.model.Brief;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.model.Model;
 
 public class GebeurtenisUtil
 {

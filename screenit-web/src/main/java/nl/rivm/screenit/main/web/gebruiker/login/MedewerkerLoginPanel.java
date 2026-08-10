@@ -70,7 +70,7 @@ public class MedewerkerLoginPanel extends Panel
 			add(new TextField<>("gebruikersnaam", new PropertyModel<>(this, "gebruikersnaam")).add(new FocusBehavior()));
 			add(new ScreenitWachtwoordField("wachtwoordField", new PropertyModel<>(this, "wachtwoord"), false, null));
 
-			Boolean aanvragenwachtwoordVisible = preferenceService.getBoolean(PreferenceKey.WACHTWOORDAANVRAGEN.name());
+			var aanvragenwachtwoordVisible = preferenceService.getBoolean(PreferenceKey.WACHTWOORDAANVRAGEN.name());
 			if (aanvragenwachtwoordVisible == null)
 			{
 				aanvragenwachtwoordVisible = Boolean.FALSE;
@@ -82,7 +82,7 @@ public class MedewerkerLoginPanel extends Panel
 				@Override
 				public void onClick()
 				{
-					PageParameters parameters = new PageParameters();
+					var parameters = new PageParameters();
 					if (StringUtils.isNotBlank(gebruikersnaam))
 					{
 						parameters.add("naam", gebruikersnaam);
@@ -101,7 +101,7 @@ public class MedewerkerLoginPanel extends Panel
 				public void onSubmit()
 				{
 
-					ScreenitSession session = ScreenitSession.get();
+					var session = ScreenitSession.get();
 					session.replaceSession();
 					Component loginResult = session.login(gebruikersnaam, wachtwoord);
 

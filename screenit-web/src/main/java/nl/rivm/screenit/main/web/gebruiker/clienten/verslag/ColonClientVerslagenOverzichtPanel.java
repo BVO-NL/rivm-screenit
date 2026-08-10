@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.verslag;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.colon.ColonDossier;
@@ -60,8 +58,8 @@ public class ColonClientVerslagenOverzichtPanel extends ClientVerslagenOverzicht
 	protected boolean magOverzichtZien()
 	{
 
-		List<Bevolkingsonderzoek> bevolkingsonderzoeken = ScreenitSession.get().getOnderzoeken();
-		IModel<Client> clientModel = getModel();
+		var bevolkingsonderzoeken = ScreenitSession.get().getOnderzoeken();
+		var clientModel = getModel();
 		return (bevolkingsonderzoeken.contains(Bevolkingsonderzoek.COLON)
 			&& (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGCOLOSCOPIEONTVANGEN, Actie.INZIEN, clientModel.getObject())
 			|| ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_UITSLAGPATHOLOGIEONTVANGEN, Actie.INZIEN, clientModel.getObject())));

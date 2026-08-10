@@ -57,7 +57,7 @@ public class MammaLaesieLocatieServiceImpl implements MammaLaesieLocatieService
 
 	public String laesie2diepte(MammaLaesie laesie)
 	{
-		MammaLaesieIcoon horizontaleDoorsnedeIcoon = laesie.getHorizontaleDoorsnedeIcoon();
+		var horizontaleDoorsnedeIcoon = laesie.getHorizontaleDoorsnedeIcoon();
 		if (horizontaleDoorsnedeIcoon != null)
 		{
 			return icoon2diepte(laesie, horizontaleDoorsnedeIcoon.getPositieX().intValue(), horizontaleDoorsnedeVoorsteEenderde, horizontaleDoorsnedeAchtersteEenderde);
@@ -97,13 +97,13 @@ public class MammaLaesieLocatieServiceImpl implements MammaLaesieLocatieService
 
 	public String laesie2kwadrant(MammaLaesie laesie)
 	{
-		MammaLaesieIcoon verticaleDoorsnedeIcoon = laesie.getVerticaleDoorsnedeIcoon();
-		MammaLaesieIcoon horizontaleDoorsnedeIcoon = laesie.getHorizontaleDoorsnedeIcoon();
+		var verticaleDoorsnedeIcoon = laesie.getVerticaleDoorsnedeIcoon();
+		var horizontaleDoorsnedeIcoon = laesie.getHorizontaleDoorsnedeIcoon();
 		if (isRetroMamillair(laesie, verticaleDoorsnedeIcoon, horizontaleDoorsnedeIcoon))
 		{
 			return "retromamillair";
 		}
-		String result = "kwadrant";
+		var result = "kwadrant";
 		if (verticaleDoorsnedeIcoon != null)
 		{
 			result = (verticaleDoorsnedeIcoon.getPositieY().intValue() < verticaleDoorsnedeHorizontaleLijn ? "boven" : "onder") + result;
@@ -123,8 +123,8 @@ public class MammaLaesieLocatieServiceImpl implements MammaLaesieLocatieService
 
 	private boolean inTepelvakVerticaleDoorsnede(MammaLaesie laesie, MammaLaesieIcoon verticaleDoorsnedeIcoon)
 	{
-		int x = verticaleDoorsnedeIcoon.getPositieX().intValue();
-		int y = verticaleDoorsnedeIcoon.getPositieY().intValue();
+		var x = verticaleDoorsnedeIcoon.getPositieX().intValue();
+		var y = verticaleDoorsnedeIcoon.getPositieY().intValue();
 		if (laesie.getMammaZijde() == MammaZijde.RECHTER_BORST)
 		{
 			return x < (100 - verticaleDoorsnedeVoorsteEenderde) && y > verticaleDoorsnedeBovenkantTepelvak && y < verticaleDoorsnedeOnderkantTepelvak;
@@ -137,8 +137,8 @@ public class MammaLaesieLocatieServiceImpl implements MammaLaesieLocatieService
 
 	private boolean inTepelvakHorizontaleDoorsnede(MammaLaesie laesie, MammaLaesieIcoon horizontaleDoorsnedeIcoon)
 	{
-		int x = horizontaleDoorsnedeIcoon.getPositieX().intValue();
-		int y = horizontaleDoorsnedeIcoon.getPositieY().intValue();
+		var x = horizontaleDoorsnedeIcoon.getPositieX().intValue();
+		var y = horizontaleDoorsnedeIcoon.getPositieY().intValue();
 		if (laesie.getMammaZijde() == MammaZijde.RECHTER_BORST)
 		{
 			return x < (100 - horizontaleDoorsnedeVoorsteEenderde) && y > horizontaleDoorsnedeBovenkantTepelvak && y < horizontaleDoorsnedeOnderkantTepelvak;

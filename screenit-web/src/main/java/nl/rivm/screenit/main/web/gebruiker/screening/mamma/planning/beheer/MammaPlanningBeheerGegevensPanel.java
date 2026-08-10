@@ -55,14 +55,14 @@ public class MammaPlanningBeheerGegevensPanel extends GenericPanel<ScreeningOrga
 	{
 		super(id, model);
 
-		boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING_BEHEER, Actie.AANPASSEN)
+		var magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING_BEHEER, Actie.AANPASSEN)
 			&& ScreenitSession.get().getScreeningOrganisatie() != null;
 
 		setOutputMarkupId(true);
 
-		ScreenitForm<ScreeningOrganisatie> form = new ScreenitForm<>("form", model);
+		var form = new ScreenitForm<ScreeningOrganisatie>("form", model);
 
-		TextField<Integer> afspraakDrempelBk = new TextField<>("afspraakDrempelBk");
+		var afspraakDrempelBk = new TextField<Integer>("afspraakDrempelBk");
 		afspraakDrempelBk.setType(Integer.class);
 		afspraakDrempelBk.add(RangeValidator.range(0, 100));
 		afspraakDrempelBk.setRequired(true);
@@ -76,12 +76,12 @@ public class MammaPlanningBeheerGegevensPanel extends GenericPanel<ScreeningOrga
 		form.add(new HiddenField<>("applicationUrl", Model.of(applicationUrl)));
 		form.add(new HiddenField<>("subUrl", Model.of("/api/getAfspraakDrempelOverzichtScreeningsOrganisatie?screeningsOrganisatieId=" + model.getObject().getId() + "&")));
 
-		AjaxSubmitLink submitButton = new AjaxSubmitLink("submit")
+		var submitButton = new AjaxSubmitLink("submit")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				ScreeningOrganisatie screeningOrganisatie = model.getObject();
+				var screeningOrganisatie = model.getObject();
 				organisatieService.saveOrUpdateSoPlanningBk(screeningOrganisatie, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				BasePage.markeerFormulierenOpgeslagen(target);
 				this.info("Gegevens zijn succesvol opgeslagen");

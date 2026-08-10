@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact.mamma.huisarts;
 import java.util.Arrays;
 
 import nl.rivm.screenit.main.web.component.ComponentHelper;
-import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.colon.huisarts.HuisartsZoekenPanel;
 import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.mamma.enums.MammaGeenHuisartsOption;
@@ -62,7 +61,7 @@ public abstract class MammaHuisartsZoekenPopupPanel extends GenericPanel<Enovati
 		super.onInitialize();
 
 		IModel<MammaGeenHuisartsOption> optie = Model.of();
-		ScreenitDropdown<MammaGeenHuisartsOption> andersOptiesDropDown = ComponentHelper.addDropDownChoice(this, "andersOptie", false,
+		var andersOptiesDropDown = ComponentHelper.addDropDownChoice(this, "andersOptie", false,
 			Arrays.asList(MammaGeenHuisartsOption.values()), false);
 		andersOptiesDropDown.add(new AjaxFormComponentUpdatingBehavior("change")
 		{

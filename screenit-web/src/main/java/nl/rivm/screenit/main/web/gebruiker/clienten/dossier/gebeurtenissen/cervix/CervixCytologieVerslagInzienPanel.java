@@ -39,7 +39,6 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixCytologieVerslag;
 import nl.rivm.screenit.model.cervix.CervixMonster;
-import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -130,7 +129,7 @@ public class CervixCytologieVerslagInzienPanel extends AbstractGebeurtenisDetail
 			{
 				if (file.getObject().size() == 1)
 				{
-					FileUpload fileUpload = file.getObject().get(0);
+					var fileUpload = file.getObject().get(0);
 					try
 					{
 						maakUploadDocument(fileUpload);
@@ -162,7 +161,7 @@ public class CervixCytologieVerslagInzienPanel extends AbstractGebeurtenisDetail
 		uploadField = new FileUploadField("fileUpload", file);
 		uploadField.add(new FileValidator(FileType.PDF));
 		uploadField.setRequired(true);
-		boolean isUitstrijkjeVerwijderd = getVerslag().getUitstrijkje().getVerwijderdDatum() == null;
+		var isUitstrijkjeVerwijderd = getVerslag().getUitstrijkje().getVerwijderdDatum() == null;
 		uploadField.setVisible(isUitstrijkjeVerwijderd && magVerwijderen());
 		uploadForm.add(uploadField);
 	}
@@ -177,7 +176,7 @@ public class CervixCytologieVerslagInzienPanel extends AbstractGebeurtenisDetail
 			{
 				if (file.getObject().size() == 1)
 				{
-					FileUpload fileUpload = file.getObject().get(0);
+					var fileUpload = file.getObject().get(0);
 					try
 					{
 						maakUploadDocument(fileUpload);
@@ -201,7 +200,7 @@ public class CervixCytologieVerslagInzienPanel extends AbstractGebeurtenisDetail
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				CervixUitnodiging uitnodiging = (CervixUitnodiging) CervixCytologieVerslagInzienPanel.this.getModelObject().getUitnodiging();
+				var uitnodiging = (CervixUitnodiging) CervixCytologieVerslagInzienPanel.this.getModelObject().getUitnodiging();
 				try
 				{
 					uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.CERVIX_UITSLAG_VERWIJDEREN_CLIENT_BRIEF, getClientVanVerslag().getId());
@@ -226,7 +225,7 @@ public class CervixCytologieVerslagInzienPanel extends AbstractGebeurtenisDetail
 	private boolean magVerwijderen()
 	{
 		CervixMonster monster = getVerslag().getUitstrijkje();
-		CervixScreeningRonde ontvangstRonde = monster.getOntvangstScreeningRonde();
+		var ontvangstRonde = monster.getOntvangstScreeningRonde();
 		return ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN, getClientVanVerslag())
 			&& monster.equals(cervixUitnodigingService.getUitnodigingMagVerwijderdWorden(ontvangstRonde));
 	}
@@ -258,7 +257,7 @@ public class CervixCytologieVerslagInzienPanel extends AbstractGebeurtenisDetail
 	@Override
 	protected void addDocumentDownloadenButton(String id, GebeurtenisPopupBasePanel parent)
 	{
-		UploadDocumentLink briefDownloadBtn = new UploadDocumentLink(id, new PropertyModel<>(getModel(), "verslag.uitstrijkje.verwijderdBrief"), true);
+		var briefDownloadBtn = new UploadDocumentLink(id, new PropertyModel<>(getModel(), "verslag.uitstrijkje.verwijderdBrief"), true);
 		briefDownloadBtn.setVisible(getVerslag().getUitstrijkje().getVerwijderdDatum() != null);
 		parent.add(briefDownloadBtn);
 	}

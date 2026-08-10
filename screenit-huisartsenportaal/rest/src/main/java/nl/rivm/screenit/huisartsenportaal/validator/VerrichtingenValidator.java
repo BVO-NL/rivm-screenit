@@ -21,9 +21,6 @@ package nl.rivm.screenit.huisartsenportaal.validator;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Date;
-
-import nl.rivm.screenit.huisartsenportaal.dto.VerrichtingFilterDto;
 import nl.rivm.screenit.huisartsenportaal.dto.VerrichtingZoekObjectDto;
 
 import org.springframework.stereotype.Component;
@@ -35,14 +32,14 @@ public class VerrichtingenValidator extends BaseValidator<VerrichtingZoekObjectD
 	@Override
 	public void validateTarget(VerrichtingZoekObjectDto target, Errors errors)
 	{
-		VerrichtingFilterDto verrichtingFilterDto = target.getVerrichtingenZoekObject();
+		var verrichtingFilterDto = target.getVerrichtingenZoekObject();
 		if (verrichtingFilterDto != null)
 		{
-			Date vanafDatum = verrichtingFilterDto.getVerrichtingsDatumVanaf();
-			Date totenmetDatum = verrichtingFilterDto.getVerrichtingsDatumTotenmet();
+			var vanafDatum = verrichtingFilterDto.getVerrichtingsdatumVanaf();
+			var totenmetDatum = verrichtingFilterDto.getVerrichtingsdatumTotEnMet();
 			if (vanafDatum != null && totenmetDatum != null)
 			{
-				int compare = vanafDatum.compareTo(totenmetDatum);
+				var compare = vanafDatum.compareTo(totenmetDatum);
 				if (compare > 0)
 				{
 					errors.reject("error.verrichting.geldigetotenmetdatum", "De tot en met datum moet gelijk zijn of na de vanaf datum liggen.");

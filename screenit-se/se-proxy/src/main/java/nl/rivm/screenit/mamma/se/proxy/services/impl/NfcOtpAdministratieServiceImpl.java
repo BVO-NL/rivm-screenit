@@ -48,7 +48,7 @@ public class NfcOtpAdministratieServiceImpl implements NfcOtpAdministratieServic
 	@Override
 	public boolean zelfdeOtpAlsLaatsteSuccesvolle(String publicId, String otp)
 	{
-		OtpEntry laatsteSuccesvolleOtpEntry = laatsteSuccesvolleOtpPerPublicId.get(publicId);
+		var laatsteSuccesvolleOtpEntry = laatsteSuccesvolleOtpPerPublicId.get(publicId);
 		return laatsteSuccesvolleOtpEntry != null && laatsteSuccesvolleOtpEntry.getOtp().equals(otp);
 	}
 

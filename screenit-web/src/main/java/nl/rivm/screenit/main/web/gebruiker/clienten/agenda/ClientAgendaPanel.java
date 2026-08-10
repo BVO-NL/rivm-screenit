@@ -66,7 +66,7 @@ public class ClientAgendaPanel extends GenericPanel<Client>
 		dialog = new BootstrapDialog("dialog");
 		add(dialog);
 
-		IndicatingAjaxLink<Void> contactAanmaken = new IndicatingAjaxLink<Void>("contactAanmaken")
+		var contactAanmaken = new IndicatingAjaxLink<Void>("contactAanmaken")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)
@@ -75,12 +75,12 @@ public class ClientAgendaPanel extends GenericPanel<Client>
 			}
 
 		};
-		Client client = model.getObject();
+		var client = model.getObject();
 		contactAanmaken
 			.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_CONTACT, null, client) && !clientService.isClientOverleden(client));
 		add(contactAanmaken);
 
-		ColonAfspraakPanel colonAfspraakPanel = new ColonAfspraakPanel("dkAfspraak", ModelUtil.sModel(client))
+		var colonAfspraakPanel = new ColonAfspraakPanel("dkAfspraak", ModelUtil.sModel(client))
 		{
 
 			@Override
@@ -88,7 +88,7 @@ public class ClientAgendaPanel extends GenericPanel<Client>
 			{
 				List<Object> extraParameters = new ArrayList<>();
 				extraParameters.add(intakeAfspraak);
-				ClientContactActieTypeWrapper actieTypeWrapper = ClientContactActieTypeWrapper.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN;
+				var actieTypeWrapper = ClientContactActieTypeWrapper.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN;
 				if (afspraakService.heeftOnafgerondeVerwijzingOmMedischeRedenen(intakeAfspraak))
 				{
 					actieTypeWrapper = ClientContactActieTypeWrapper.COLON_NIEUWE_AFSPRAAK_AANMAKEN;
@@ -112,7 +112,7 @@ public class ClientAgendaPanel extends GenericPanel<Client>
 		};
 		add(colonAfspraakPanel);
 
-		MammaAfspraakPanel mammaAfspraakPanel = new MammaAfspraakPanel("bkAfspraak", ModelUtil.sModel(client))
+		var mammaAfspraakPanel = new MammaAfspraakPanel("bkAfspraak", ModelUtil.sModel(client))
 		{
 			private static final long serialVersionUID = 1L;
 

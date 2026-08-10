@@ -50,7 +50,7 @@ import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.FileType;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.AutorisatieService;
-import nl.rivm.screenit.service.BezwaarService;
+import nl.rivm.screenit.service.BaseBezwaarService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -76,7 +76,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 public class ClientContactBezwaarPanel extends AbstractClientContactActiePanel<ClientContactActie>
 {
 	@SpringBean
-	private BezwaarService bezwaarService;
+	private BaseBezwaarService bezwaarService;
 
 	@SpringBean
 	private AutorisatieService autorisatieService;

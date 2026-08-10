@@ -21,19 +21,12 @@ package nl.rivm.screenit.mamma.planning.controller;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-import java.util.NavigableSet;
-
 import nl.rivm.screenit.dto.mamma.planning.PlanningAfspraakDrempelOverzichtDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningRestConstants;
 import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsDto;
 import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsOrganisatieIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningStandplaatsIndex;
-import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
-import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsOrganisatie;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaats;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsRonde;
 import nl.rivm.screenit.mamma.planning.service.PlanningAfspraakDrempelOverzichtService;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningDoorrekenenManager;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingen;
@@ -76,34 +69,34 @@ public class PlanningStandplaatsController
 	@GetMapping("/zonderRoute/{screeningsOrganisatieId}")
 	public ResponseEntity<Long[]> getZonderRoute(@PathVariable Long screeningsOrganisatieId)
 	{
-		List<Long> standplaatsenZonderRonde = PlanningStandplaatsIndex.getStandplaatsenZonderRoute(screeningsOrganisatieId);
-		ResponseEntity<Long[]> response = new ResponseEntity<>(standplaatsenZonderRonde.toArray(new Long[] {}), HttpStatus.OK);
+		var standplaatsenZonderRonde = PlanningStandplaatsIndex.getStandplaatsenZonderRoute(screeningsOrganisatieId);
+		var response = new ResponseEntity<Long[]>(standplaatsenZonderRonde.toArray(new Long[] {}), HttpStatus.OK);
 		return response;
 	}
 
 	@GetMapping("/metRoute/{screeningsOrganisatieId}")
 	public ResponseEntity<Long[]> getMetRoute(@PathVariable Long screeningsOrganisatieId)
 	{
-		List<Long> standplaatsenMetRonde = PlanningStandplaatsIndex.getStandplaatsenMetRoute(screeningsOrganisatieId);
-		ResponseEntity<Long[]> response = new ResponseEntity<>(standplaatsenMetRonde.toArray(new Long[] {}), HttpStatus.OK);
+		var standplaatsenMetRonde = PlanningStandplaatsIndex.getStandplaatsenMetRoute(screeningsOrganisatieId);
+		var response = new ResponseEntity<Long[]>(standplaatsenMetRonde.toArray(new Long[] {}), HttpStatus.OK);
 		return response;
 	}
 
 	@DeleteMapping("/{standplaatsId}")
 	public void delete(@PathVariable Long standplaatsId)
 	{
-		PlanningStandplaats knownStandplaats = PlanningStandplaatsIndex.get(standplaatsId);
+		var knownStandplaats = PlanningStandplaatsIndex.get(standplaatsId);
 		if (knownStandplaats != null)
 		{
 			knownStandplaats.getScreeningsOrganisatie().getStandplaatsSet().remove(knownStandplaats);
 
-			for (PlanningStandplaatsRonde standplaatsRonde : knownStandplaats.getStandplaatsRondeNavigableSet())
+			for (var standplaatsRonde : knownStandplaats.getStandplaatsRondeNavigableSet())
 			{
-				for (PlanningStandplaatsPeriode standplaatsPeriode : standplaatsRonde.getStandplaatsPeriodeNavigableSet())
+				for (var standplaatsPeriode : standplaatsRonde.getStandplaatsPeriodeNavigableSet())
 				{
-					PlanningScreeningsEenheid screeningsEenheid = standplaatsPeriode.getScreeningsEenheid();
-					NavigableSet<PlanningStandplaatsPeriode> standplaatsPeriodeNavigableSet = screeningsEenheid.getStandplaatsPeriodeNavigableSet();
-					PlanningStandplaatsPeriode volgendeStandplaatsPeriode = standplaatsPeriodeNavigableSet.higher(standplaatsPeriode);
+					var screeningsEenheid = standplaatsPeriode.getScreeningsEenheid();
+					var standplaatsPeriodeNavigableSet = screeningsEenheid.getStandplaatsPeriodeNavigableSet();
+					var volgendeStandplaatsPeriode = standplaatsPeriodeNavigableSet.higher(standplaatsPeriode);
 					standplaatsPeriodeNavigableSet.remove(standplaatsPeriode);
 					if (volgendeStandplaatsPeriode != null)
 					{
@@ -124,8 +117,8 @@ public class PlanningStandplaatsController
 
 	private void addOrChangeStandplaats(PlanningStandplaatsDto standplaatsDto)
 	{
-		PlanningScreeningsOrganisatie screeningsOrganisatie = PlanningScreeningsOrganisatieIndex.get(standplaatsDto.screeningsOrganisatieId);
-		PlanningStandplaats knownStandplaats = PlanningStandplaatsIndex.get(standplaatsDto.id);
+		var screeningsOrganisatie = PlanningScreeningsOrganisatieIndex.get(standplaatsDto.screeningsOrganisatieId);
+		var knownStandplaats = PlanningStandplaatsIndex.get(standplaatsDto.id);
 		if (knownStandplaats == null)
 		{
 			knownStandplaats = new PlanningStandplaats(standplaatsDto.id);
@@ -145,7 +138,7 @@ public class PlanningStandplaatsController
 	@GetMapping("/getAfspraakDrempelOverzicht/{standplaatsId}")
 	public ResponseEntity<PlanningAfspraakDrempelOverzichtDto> getAfspraakDrempelOverzicht(@PathVariable long standplaatsId)
 	{
-		PlanningStandplaats standplaats = PlanningStandplaatsIndex.get(standplaatsId);
+		var standplaats = PlanningStandplaatsIndex.get(standplaatsId);
 		return new ResponseEntity<>(afspraakDrempelOverzichtService.getAfspraakDrempelOverzicht(standplaats), HttpStatus.OK);
 	}
 }

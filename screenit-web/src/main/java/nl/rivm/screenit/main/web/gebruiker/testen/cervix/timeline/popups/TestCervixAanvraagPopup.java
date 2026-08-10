@@ -44,7 +44,7 @@ public class TestCervixAanvraagPopup extends TestCervixUitnodigingenLaboratoriaP
 	@Override
 	protected void opslaan()
 	{
-		for (CervixUitnodiging uitnodiging : getCurrentUitnodigingen())
+		for (var uitnodiging : getCurrentUitnodigingen())
 		{
 			baseTestTimelineService.maakAanvraag(uitnodiging, laboratoriumModel.getObject());
 		}

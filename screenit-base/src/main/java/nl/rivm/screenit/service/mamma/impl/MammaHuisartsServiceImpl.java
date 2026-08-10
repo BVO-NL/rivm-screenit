@@ -78,7 +78,7 @@ public class MammaHuisartsServiceImpl implements MammaHuisartsService
 		if (ronde != null)
 		{
 			String melding;
-			Client client = ronde.getDossier().getClient();
+			var client = ronde.getDossier().getClient();
 			if (huisarts != null)
 			{
 				ronde.setGeenHuisartsOptie(null);
@@ -115,7 +115,7 @@ public class MammaHuisartsServiceImpl implements MammaHuisartsService
 	{
 		if (ronde != null)
 		{
-			MammaScreeningRonde vorigeRonde = rondeNummerService.getVorigeRonde(ronde);
+			var vorigeRonde = rondeNummerService.getVorigeRonde(ronde);
 			if (vorigeRonde != null)
 			{
 				return getActieveHuisartsVanRonde(vorigeRonde);
@@ -130,7 +130,7 @@ public class MammaHuisartsServiceImpl implements MammaHuisartsService
 	{
 		if (ronde != null)
 		{
-			EnovationHuisarts huisarts = ronde.getHuisarts();
+			var huisarts = ronde.getHuisarts();
 			if (huisarts != null && !huisarts.isVerwijderd())
 			{
 				return huisarts;
@@ -156,7 +156,7 @@ public class MammaHuisartsServiceImpl implements MammaHuisartsService
 	{
 		if (ronde != null)
 		{
-			MammaScreeningRonde vorigeRonde = rondeNummerService.getVorigeRonde(ronde);
+			var vorigeRonde = rondeNummerService.getVorigeRonde(ronde);
 			if (vorigeRonde != null)
 			{
 				return getMammaGeenHuisartsOptieVanRonde(vorigeRonde);
@@ -191,8 +191,8 @@ public class MammaHuisartsServiceImpl implements MammaHuisartsService
 	{
 		if (ronde != null)
 		{
-			EnovationHuisarts vorigeHuisarts = getActieveHuisartsVanVorigeRonde(ronde);
-			MammaGeenHuisartsOption vorigeGeenHuisartsOptie = getMammaGeenHuisartsOptieVorigeRonde(ronde);
+			var vorigeHuisarts = getActieveHuisartsVanVorigeRonde(ronde);
+			var vorigeGeenHuisartsOptie = getMammaGeenHuisartsOptieVorigeRonde(ronde);
 			if (vorigeGeenHuisartsOptie != null && vorigeHuisarts == null)
 			{
 				return setMammaGeenHuisartsOption(ronde, vorigeGeenHuisartsOptie, client);

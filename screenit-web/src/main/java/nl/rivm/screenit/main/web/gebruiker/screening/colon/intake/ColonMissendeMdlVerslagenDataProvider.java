@@ -61,8 +61,9 @@ public class ColonMissendeMdlVerslagenDataProvider extends SortableDataProvider<
 	@Override
 	public Iterator<? extends ColonIntakeAfspraak> iterator(long first, long count)
 	{
+		var aantalOpTeHalen = count < 0 ? count : count > aantalPerPagina ? count : aantalPerPagina;
 		return intakeAfspraakService.getAfsprakenZonderVerslag(ModelUtil.nullSafeGet(zoekModel), ModelUtil.nullSafeGet(intakeLocatie), first,
-			count > aantalPerPagina ? count : aantalPerPagina,
+			aantalOpTeHalen,
 			toSpringSort(getSort())).iterator();
 	}
 

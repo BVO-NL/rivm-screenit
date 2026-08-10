@@ -40,7 +40,7 @@ public abstract class AfgeslotenOvereenkomstActiefCellPanel<T> extends GenericPa
 	{
 		super(id, rowModel);
 		setOutputMarkupId(true);
-		final WebMarkupContainer toggleActief = new WebMarkupContainer("toggleActief");
+		final var toggleActief = new WebMarkupContainer("toggleActief");
 
 		toggleActief.add(new AjaxEventBehavior("click")
 		{

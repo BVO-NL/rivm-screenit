@@ -128,8 +128,8 @@ import nl.rivm.screenit.model.mamma.enums.MammaZijde;
 import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.model.project.ProjectBriefActieType;
 import nl.rivm.screenit.model.project.ProjectClient;
+import nl.rivm.screenit.service.BaseBezwaarService;
 import nl.rivm.screenit.service.BaseDossierAuditService;
-import nl.rivm.screenit.service.BezwaarService;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.RondeNummerService;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
@@ -176,7 +176,7 @@ public class DossierServiceImpl implements DossierService
 
 	private final ColonBaseAfspraakService afspraakService;
 
-	private final BezwaarService bezwaarService;
+	private final BaseBezwaarService bezwaarService;
 
 	@PersistenceContext
 	private EntityManager entityManager;

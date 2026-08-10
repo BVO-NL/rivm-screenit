@@ -37,7 +37,7 @@ public class WerkdagValidator implements IValidator<Date>
 		var datum = DateUtil.toLocalDate(validatable.getValue());
 		if (!DateUtil.isWerkdag(datum))
 		{
-			ValidationError error = new ValidationError();
+			var error = new ValidationError();
 			error.addKey("WerkdagValidator.geen.werkdag");
 			validatable.error(error);
 		}

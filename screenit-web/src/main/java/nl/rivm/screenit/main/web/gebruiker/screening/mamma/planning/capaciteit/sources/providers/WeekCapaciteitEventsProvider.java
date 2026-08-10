@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.
 
 import java.util.Date;
 
-import nl.rivm.screenit.dto.mamma.planning.PlanningCapaciteitBlokDto;
 import nl.rivm.screenit.main.web.component.fullcalendar.event.Event;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.sources.ScreenITEventSourceFactory;
 import nl.rivm.screenit.util.DateUtil;
@@ -41,13 +40,13 @@ public class WeekCapaciteitEventsProvider extends AbstractScreenITEventProvider
 	public void createEvents(Date start, Date end)
 	{
 		screenITEventSourceFactory.resetCapaciteit(start);
-		for (PlanningCapaciteitBlokDto blok : screenITEventSourceFactory.getWeekDto().blokken)
+		for (var blok : screenITEventSourceFactory.getWeekDto().blokken)
 		{
-			Event event = new Event();
+			var event = new Event();
 			event.setConceptId(blok.conceptId);
 
-			String title = "";
-			String topRight = "";
+			var title = "";
+			var topRight = "";
 			event.setBackgroundColor(blok.blokType.getBackgroundColor());
 			event.setBorderColor(blok.blokType.getBorderColor());
 			switch (blok.blokType)
@@ -63,7 +62,7 @@ public class WeekCapaciteitEventsProvider extends AbstractScreenITEventProvider
 			{
 				topRight += "<i class=\"fa-lg fa fa-wheelchair fa-purple line-height-14px width-14px float-right\"></i>";
 			}
-			boolean inConcept = blok.conceptId != null;
+			var inConcept = blok.conceptId != null;
 
 			event.setStart(DateUtil.toLocalDateTime(blok.vanaf));
 			event.setEnd(DateUtil.toLocalDateTime(blok.tot));

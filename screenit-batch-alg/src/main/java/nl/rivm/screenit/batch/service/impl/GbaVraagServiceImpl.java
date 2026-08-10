@@ -24,6 +24,8 @@ package nl.rivm.screenit.batch.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,16 +38,14 @@ import nl.rivm.screenit.model.enums.GbaVraagType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.RedenIntrekkenGbaIndicatie;
 import nl.rivm.screenit.model.gba.GbaVraag;
+import nl.rivm.screenit.model.vertrouwdverbonden.Vo107Bericht;
+import nl.rivm.screenit.model.vertrouwdverbonden.enums.Vo107_ArecordVeld;
 import nl.rivm.screenit.service.BaseGbaVraagService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.LogService;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo107Bericht;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.enums.Vo107_ArecordVeld;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
-
-import jakarta.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor

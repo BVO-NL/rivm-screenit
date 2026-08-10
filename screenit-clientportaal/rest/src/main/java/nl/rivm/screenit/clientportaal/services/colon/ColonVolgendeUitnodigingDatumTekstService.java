@@ -21,8 +21,6 @@ package nl.rivm.screenit.clientportaal.services.colon;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
-
 import nl.rivm.screenit.clientportaal.model.colon.ColonVolgendeUitnodigingTekstType;
 import nl.rivm.screenit.model.Client;
 

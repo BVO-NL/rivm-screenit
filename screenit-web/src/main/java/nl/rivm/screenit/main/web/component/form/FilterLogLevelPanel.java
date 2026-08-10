@@ -37,7 +37,7 @@ public class FilterLogLevelPanel<T extends IBevolkingsonderzoek> extends Generic
 	public FilterLogLevelPanel(String id, IModel<T> model)
 	{
 		super(id, model);
-		List<Level> logLevels = List.of(Level.values());
+		var logLevels = List.of(Level.values());
 
 		add(new ScreenitListMultipleChoice<Level>("loggingLevels", logLevels, new EnumChoiceRenderer<Level>()));
 	}

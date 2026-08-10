@@ -26,7 +26,6 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.logging.LoggingInzienPage;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.ClientInzienPage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -60,10 +59,10 @@ public class MammaHl7v24BerichtPage extends AlgemeenPage implements IDetachable
 	public MammaHl7v24BerichtPage(IModel<MammaHl7v24BerichtLogEvent> model)
 	{
 		hl7BerichtLogEventModel = CompoundPropertyModel.of(model);
-		String hl7MessageStructure = hl7BerichtLogEventModel.getObject().getHl7MessageStructure();
+		var hl7MessageStructure = hl7BerichtLogEventModel.getObject().getHl7MessageStructure();
 		hl7MessageStructure = hl7MessageStructure.replace("\n", "<br>");
 		hl7MessageStructure = hl7MessageStructure.replace("\t", "&#9;");
-		Label messageStructure = new Label("messageStructure", hl7MessageStructure);
+		var messageStructure = new Label("messageStructure", hl7MessageStructure);
 		messageStructure.setEscapeModelStrings(false);
 		add(messageStructure);
 
@@ -74,7 +73,7 @@ public class MammaHl7v24BerichtPage extends AlgemeenPage implements IDetachable
 
 	private void clientdossierButtonToevoegenAanPagina()
 	{
-		AjaxLink<Void> clientDossierButton = new AjaxLink<Void>("directNaarClientDossier")
+		var clientDossierButton = new AjaxLink<Void>("directNaarClientDossier")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)
@@ -82,13 +81,13 @@ public class MammaHl7v24BerichtPage extends AlgemeenPage implements IDetachable
 				var clientUitModel = hl7BerichtLogEventModel.getObject().getLogRegel().getClient();
 				if (clientUitModel != null)
 				{
-					Client client = clientService
+					var client = clientService
 						.getClientByBsn(clientUitModel.getPersoon().getBsn());
 					setResponsePage(new ClientInzienPage(new SimpleHibernateModel<>(client)));
 				}
 			}
 		};
-		Label directNaarClientDossierAlternatiefLabel = new Label("directNaarClientDossierAlternatief", "Geen client gekoppeld, bekijk HL7 bericht voor client BSN");
+		var directNaarClientDossierAlternatiefLabel = new Label("directNaarClientDossierAlternatief", "Geen client gekoppeld, bekijk HL7 bericht voor client BSN");
 		if (hl7BerichtLogEventModel.getObject().getLogRegel().getClient() == null)
 		{
 			clientDossierButton.setVisible(false);

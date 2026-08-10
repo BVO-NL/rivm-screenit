@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.base;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
@@ -50,7 +48,7 @@ class OrganisatieWisselPanel extends GenericPanel<OrganisatieMedewerker>
 	OrganisatieWisselPanel(String id)
 	{
 		super(id);
-		OrganisatieMedewerker ingelogdeOrganisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		var ingelogdeOrganisatieMedewerker = getIngelogdeOrganisatieMedewerker();
 
 		setModel(ModelUtil.sModel(ingelogdeOrganisatieMedewerker));
 
@@ -62,16 +60,16 @@ class OrganisatieWisselPanel extends GenericPanel<OrganisatieMedewerker>
 
 	private DropDownChoice<OrganisatieMedewerker> createOrganisatiesDropdown()
 	{
-		List<OrganisatieMedewerker> organisatieMedewerkers = authenticatieService.getActieveOrganisatieMedewerkers(getIngelogdeOrganisatieMedewerker().getMedewerker());
+		var organisatieMedewerkers = authenticatieService.getActieveOrganisatieMedewerkers(getIngelogdeOrganisatieMedewerker().getMedewerker());
 		DropDownChoice<OrganisatieMedewerker> organisatie = new ScreenitDropdown<>("organisatie", getModel(),
 			ModelUtil.listRModel(organisatieMedewerkers), new ChoiceRenderer<>("organisatie.naam"));
 
 		organisatie.setNullValid(false);
 		organisatie.setOutputMarkupId(true);
 
-		AbstractDefaultAjaxBehavior wisselBehavior = createWisselBehavior();
+		var wisselBehavior = createWisselBehavior();
 		organisatie.add(wisselBehavior);
-		AbstractDefaultAjaxBehavior cancelBehavior = createCancelBehavior();
+		var cancelBehavior = createCancelBehavior();
 		organisatie.add(cancelBehavior);
 
 		organisatie.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -95,7 +93,7 @@ class OrganisatieWisselPanel extends GenericPanel<OrganisatieMedewerker>
 			@Override
 			protected void respond(AjaxRequestTarget target)
 			{
-				OrganisatieMedewerker gewensteOrganisatieMedewerker = getModelObject();
+				var gewensteOrganisatieMedewerker = getModelObject();
 				Component pageForOrganisatieMedewerker = ScreenitSession.get().getPageForOrganisatieMedewerker(gewensteOrganisatieMedewerker);
 				if (pageForOrganisatieMedewerker != null)
 				{

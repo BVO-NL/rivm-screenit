@@ -46,7 +46,7 @@ public class ColonPrimaireParametersPanel extends BasePrimaireParametersPanel
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
 		form.add(new TextField<>("uitnodigingsinterval", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("vooraankondiginsperiode", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));
 		form.add(new TextField<>("colonVooraankondigingNaVervolgonderzoek", Integer.class).add(RangeValidator.minimum(0)).setRequired(true));

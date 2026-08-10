@@ -207,9 +207,9 @@ public class VerwerkteBerichtenOverzichtPage extends ColonScreeningBasePage
 			var onderzoeken = ScreenitSession.get().getOnderzoeken();
 			var colon = onderzoeken.contains(Bevolkingsonderzoek.COLON);
 
-			CheckBox mdlBerichten = new CheckBox("mdlBerichten");
-			CheckBox paLabBerichten = new CheckBox("paLabBerichten");
-			CheckBox cytologieBerichten = new CheckBox("cytologieBerichten");
+			var mdlBerichten = new CheckBox("mdlBerichten");
+			var paLabBerichten = new CheckBox("paLabBerichten");
+			var cytologieBerichten = new CheckBox("cytologieBerichten");
 			mdlBerichten.setVisible(colon);
 			paLabBerichten.setVisible(colon);
 			cytologieBerichten.setVisible(false);

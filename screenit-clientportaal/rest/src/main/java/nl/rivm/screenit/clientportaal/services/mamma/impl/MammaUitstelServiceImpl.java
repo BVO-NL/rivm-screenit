@@ -21,8 +21,6 @@ package nl.rivm.screenit.clientportaal.services.mamma.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.clientportaal.exception.NotValidException;
@@ -33,9 +31,7 @@ import nl.rivm.screenit.clientportaal.services.mamma.MammaAfspraakService;
 import nl.rivm.screenit.clientportaal.services.mamma.MammaUitstelService;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaStandplaatsPeriodeMetAfstandDto;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.MammaUitstel;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.service.mamma.MammaBaseUitstelService;
@@ -66,10 +62,10 @@ public class MammaUitstelServiceImpl implements MammaUitstelService
 	public MammaStandplaatsperiodeOptieDto toStandplaatsPeriodeOptie(MammaStandplaatsPeriodeMetAfstandDto standplaatsPeriodeDto,
 		MammaAfspraakWijzigenFilterDto wijzigenFilterDto)
 	{
-		MammaStandplaatsperiodeOptieDto standplaatsPeriodeOptieDto = standplaatsPeriodeMapper.entityToDto(standplaatsPeriodeDto);
-		MammaStandplaatsPeriode standplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class,
+		var standplaatsPeriodeOptieDto = standplaatsPeriodeMapper.entityToDto(standplaatsPeriodeDto);
+		var standplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class,
 			standplaatsPeriodeDto.getStandplaatsPeriodeId());
-		MammaStandplaatsLocatie locatie = standplaatsService.getStandplaatsLocatie(standplaatsPeriode.getStandplaatsRonde().getStandplaats(),
+		var locatie = standplaatsService.getStandplaatsLocatie(standplaatsPeriode.getStandplaatsRonde().getStandplaats(),
 			DateUtil.toUtilDate(wijzigenFilterDto.getVanaf()));
 		standplaatsPeriodeOptieDto.setAdres(locatie.getAdres());
 		standplaatsPeriodeOptieDto.setPostcode(locatie.getPostcode());
@@ -83,13 +79,13 @@ public class MammaUitstelServiceImpl implements MammaUitstelService
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void maakUitstelEnSlaOp(Client client, MammaStandplaatsperiodeOptieDto standplaatsPeriodeDto)
 	{
-		MammaStandplaatsPeriode standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class,
+		var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class,
 			standplaatsPeriodeDto.getStandplaatsPeriodeId());
 
-		MammaUitstel mammaUitstel = uitstelService.getOfMaakMammaUitstel(client.getMammaDossier().getLaatsteScreeningRonde(),
+		var mammaUitstel = uitstelService.getOfMaakMammaUitstel(client.getMammaDossier().getLaatsteScreeningRonde(),
 			standplaatsPeriode.getStandplaatsRonde().getStandplaats(), DateUtil.toUtilDate(standplaatsPeriodeDto.getFilter().getVanaf()));
 
-		String validatieError = uitstelService.valideerStandplaatsPeriode(standplaatsPeriode, DateUtil.toLocalDate(mammaUitstel.getStreefDatum()));
+		var validatieError = uitstelService.valideerStandplaatsPeriode(standplaatsPeriode, DateUtil.toLocalDate(mammaUitstel.getStreefDatum()));
 		if (StringUtils.isNotBlank(validatieError))
 		{
 			throw new NotValidException(validatieError);
@@ -100,8 +96,8 @@ public class MammaUitstelServiceImpl implements MammaUitstelService
 	@Override
 	public boolean beschikbareStandplaatsperiodesBevatGekozenStandplaatsperiode(MammaStandplaatsperiodeOptieDto standplaatsPeriodeDto, Client client)
 	{
-		MammaAfspraakWijzigenFilterDto filter = afspraakService.toAfspraakFilter(standplaatsPeriodeDto.getFilter(), client, false);
-		List<MammaStandplaatsPeriodeMetAfstandDto> beschikbareStandplaatsPeriodes = standplaatsService.getStandplaatsPeriodeMetAfstandDtos(client, filter, true);
+		var filter = afspraakService.toAfspraakFilter(standplaatsPeriodeDto.getFilter(), client, false);
+		var beschikbareStandplaatsPeriodes = standplaatsService.getStandplaatsPeriodeMetAfstandDtos(client, filter, true);
 
 		return beschikbareStandplaatsPeriodes.stream()
 			.anyMatch(standplaatsPeriode -> standplaatsPeriode.getStandplaatsPeriodeId().equals(standplaatsPeriodeDto.getStandplaatsPeriodeId()));

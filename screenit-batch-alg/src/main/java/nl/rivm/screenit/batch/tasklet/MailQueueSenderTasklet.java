@@ -26,7 +26,6 @@ import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.service.MailSenderService;
-import nl.rivm.screenit.model.Mail;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.repository.algemeen.MailRepository;
 import nl.rivm.screenit.service.DatabaseRunner;
@@ -101,7 +100,7 @@ public class MailQueueSenderTasklet
 	private void verwerkMailQueue() throws MessagingException, MailException
 	{
 		var queueSize = mailRepository.count();
-		for (Mail mail : mailRepository.findAllByOrderByPriorityAscIdAsc(BATCH_SIZE))
+		for (var mail : mailRepository.findAllByOrderByPriorityAscIdAsc(BATCH_SIZE))
 		{
 			mailSenderService.verzendEnVerwijderQueuedMail(mail);
 		}

@@ -50,7 +50,7 @@ public class RollenBeheer extends AlgemeenPage
 	public void addOrReplaceContentWith(Panel panel)
 	{
 		panel.setOutputMarkupId(true);
-		AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class).orElse(null);
+		var target = getRequestCycle().find(AjaxRequestTarget.class).orElse(null);
 		if (target != null && content != null)
 		{
 			content.replaceWith(panel);

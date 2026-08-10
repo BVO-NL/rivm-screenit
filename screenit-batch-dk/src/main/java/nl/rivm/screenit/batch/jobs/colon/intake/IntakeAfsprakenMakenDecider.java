@@ -37,7 +37,7 @@ public class IntakeAfsprakenMakenDecider implements JobExecutionDecider
 	@Override
 	public FlowExecutionStatus decide(JobExecution jobExecution, StepExecution stepExecution)
 	{
-		Integer ronde = (Integer) jobExecution.getExecutionContext().get(IntakeAfsprakenMakenConstants.HUIDIGE_RONDE);
+		var ronde = (Integer) jobExecution.getExecutionContext().get(IntakeAfsprakenMakenConstants.HUIDIGE_RONDE);
 		if (ronde == null)
 		{
 			ronde = 0;
@@ -47,7 +47,7 @@ public class IntakeAfsprakenMakenDecider implements JobExecutionDecider
 			++ronde;
 		}
 
-		Boolean allesVerwerkt = (Boolean) jobExecution.getExecutionContext().get(IntakeAfsprakenMakenConstants.ALLE_INTAKES_VERWERKT);
+		var allesVerwerkt = (Boolean) jobExecution.getExecutionContext().get(IntakeAfsprakenMakenConstants.ALLE_INTAKES_VERWERKT);
 
 		if (!Boolean.TRUE.equals(allesVerwerkt))
 		{

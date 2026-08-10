@@ -61,7 +61,7 @@ public class CervixHuisartsberichtVersturenWriter extends BaseWriter<CervixHuisa
 			{
 				huisartsBericht.setStatus(CervixHuisartsBerichtStatus.KLANTNUMMER_NIET_GEVERIFIEERD);
 				getHibernateService().saveOrUpdate(huisartsBericht);
-				List<Organisatie> dashboardOrganisaties = landelijkBeheerOrganisatie();
+				var dashboardOrganisaties = landelijkBeheerOrganisatie();
 				dashboardOrganisaties.add(huisartsBericht.getScreeningsOrganisatie());
 				logService.logGebeurtenis(LogGebeurtenis.CERVIX_HUISARTSBERICHT_VERZENDEN_MISLUKT, dashboardOrganisaties, null, huisartsBericht.getClient(),
 					String.format(

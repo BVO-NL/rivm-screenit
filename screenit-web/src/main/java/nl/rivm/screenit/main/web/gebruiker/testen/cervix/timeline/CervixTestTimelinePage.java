@@ -24,11 +24,9 @@ package nl.rivm.screenit.main.web.gebruiker.testen.cervix.timeline;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
-import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenissen;
 import nl.rivm.screenit.main.model.TypeGebeurtenis;
 import nl.rivm.screenit.main.model.testen.TestTimelineModel;
 import nl.rivm.screenit.main.model.testen.TestTimelineRonde;
@@ -48,10 +46,8 @@ import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.Gemeente_;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
-import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.enums.CervixAfmeldingReden;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -96,7 +92,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.data.domain.Sort;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import org.wicketstuff.shiro.ShiroConstraint;
-import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
 @SecurityConstraint(
 	actie = Actie.VERWIJDEREN,
@@ -148,18 +143,18 @@ public class CervixTestTimelinePage extends TestenBasePage
 		};
 		add(dialog);
 
-		List<Gemeente> gemeenten = gemeenteRepository.findAll(GemeenteSpecification.heeftScreeningOrganisatie().and(GemeenteSpecification.heeftBmhkLaboratorium()),
+		var gemeenten = gemeenteRepository.findAll(GemeenteSpecification.heeftScreeningOrganisatie().and(GemeenteSpecification.heeftBmhkLaboratorium()),
 			Sort.by(Sort.Order.asc(Gemeente_.NAAM)));
 
 		gemeentenModel = ModelUtil.listRModel(gemeenten, false);
 
-		TestTimelineModel testTimelineModel = new TestTimelineModel();
+		var testTimelineModel = new TestTimelineModel();
 		testTimelineModel.setGeslacht(Geslacht.VROUW);
 		testTimelineModel.setGeboortedatum(DateUtil.minusTijdseenheid(dateSupplier.getDate(), 30, ChronoUnit.YEARS));
 		testTimelineModel.setLeeftijd(30);
 
 		model = new CompoundPropertyModel<>(testTimelineModel);
-		TestTimelineModel object = model.getObject();
+		var object = model.getObject();
 		object.setBsn(TestBsnGenerator.getValideBsn());
 
 		form = new Form<>("form", model);
@@ -180,7 +175,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
-				String message = cervixTestService.clientenResetten(bsns.getObject());
+				var message = cervixTestService.clientenResetten(bsns.getObject());
 				if (message.contains("Succesvol"))
 				{
 					info(message);
@@ -199,7 +194,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 			@Override
 			public boolean isVisible()
 			{
-				List<Client> clienten = ModelUtil.nullSafeGet(clientModel);
+				var clienten = ModelUtil.nullSafeGet(clientModel);
 				return clienten != null && !clienten.isEmpty() && clienten.get(0).getCervixDossier().getCisHistorie() != null;
 			}
 		};
@@ -210,12 +205,12 @@ public class CervixTestTimelinePage extends TestenBasePage
 			@Override
 			public void onSubmit(AjaxRequestTarget target)
 			{
-				int aantal = cervixTestService.clientenDefinitiefAfmelden(ModelUtil.nullSafeGet(clientModel), afmeldingReden.getObject());
+				var aantal = cervixTestService.clientenDefinitiefAfmelden(ModelUtil.nullSafeGet(clientModel), afmeldingReden.getObject());
 				info(aantal + " clienten definitief afgemeld");
 			}
 		});
 		List<CervixAfmeldingReden> afmeldingRedenen = new ArrayList<>(Arrays.asList(CervixAfmeldingReden.values()));
-		final DropDownChoice<CervixAfmeldingReden> afmeldingRedenDropdown = new DropDownChoice<>("afmeldingReden", afmeldingReden, afmeldingRedenen);
+		final var afmeldingRedenDropdown = new DropDownChoice<CervixAfmeldingReden>("afmeldingReden", afmeldingReden, afmeldingRedenen);
 		afmeldingRedenDropdown.setNullValid(false);
 		afmeldingRedenDropdown.setOutputMarkupId(true);
 		clientDefinitiefAfmeldenForm.add(afmeldingRedenDropdown);
@@ -226,7 +221,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 	@Override
 	protected WebMarkupContainer getFormComponentsContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("formComponents");
+		var container = new WebMarkupContainer("formComponents");
 		container.setOutputMarkupId(true);
 
 		bsnField = new TextField<>("bsn");
@@ -234,10 +229,10 @@ public class CervixTestTimelinePage extends TestenBasePage
 		bsnField.setOutputMarkupId(true);
 		container.add(bsnField);
 
-		Label aNummer = new Label("aNummer");
+		var aNummer = new Label("aNummer");
 		container.add(aNummer);
 
-		Label leeftijd = new Label("leeftijd");
+		var leeftijd = new Label("leeftijd");
 		leeftijd.setOutputMarkupId(true);
 		container.add(leeftijd);
 
@@ -253,14 +248,14 @@ public class CervixTestTimelinePage extends TestenBasePage
 
 		addClientBsnGenererenButtons(container, model);
 
-		DatePicker<Date> geboortedatum = ComponentHelper.monthYearDatePicker("geboortedatum");
+		var geboortedatum = ComponentHelper.monthYearDatePicker("geboortedatum");
 		geboortedatum.setOutputMarkupId(true);
 		geboortedatum.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				TestTimelineModel timelineModel = model.getObject();
+				var timelineModel = model.getObject();
 				timelineModel.setLeeftijd(DateUtil.getLeeftijd(DateUtil.toLocalDate(timelineModel.getGeboortedatum()), dateSupplier.getLocalDate()));
 				target.add(leeftijd);
 			}
@@ -277,7 +272,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 
 		container.add(new DropDownChoice<>("gemeente", gemeentenModel, new ChoiceRenderer<>("naam")));
 
-		IndicatingAjaxSubmitLink clientVindOfMaak = new IndicatingAjaxSubmitLink("clientVindOfMaak")
+		var clientVindOfMaak = new IndicatingAjaxSubmitLink("clientVindOfMaak")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -302,7 +297,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 		form.setDefaultButton(clientVindOfMaak);
 		container.add(clientVindOfMaak);
 
-		IndicatingAjaxSubmitLink clientWijzigOfMaak = new IndicatingAjaxSubmitLink("clientWijzigOfMaak")
+		var clientWijzigOfMaak = new IndicatingAjaxSubmitLink("clientWijzigOfMaak")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -322,7 +317,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 	protected WebMarkupContainer getGebeurtenissenContainer()
 	{
 
-		WebMarkupContainer container = new WebMarkupContainer("gebeurtenissenContainer");
+		var container = new WebMarkupContainer("gebeurtenissenContainer");
 		container.setOutputMarkupPlaceholderTag(true);
 
 		container.setVisible(clientModel != null);
@@ -340,15 +335,15 @@ public class CervixTestTimelinePage extends TestenBasePage
 			@Override
 			public boolean refreshContainer(AjaxRequestTarget target)
 			{
-				List<Client> clienten = testTimelineService.maakOfVindClienten(model.getObject());
-				List<String> errors = testTimelineService.validateTestClienten(clienten);
-				for (String error : errors)
+				var clienten = testTimelineService.maakOfVindClienten(model.getObject());
+				var errors = testTimelineService.validateTestClienten(clienten);
+				for (var error : errors)
 				{
 					error(error);
 				}
 				clientModel = ModelUtil.listModel(clienten);
 
-				WebMarkupContainer geContainer = getGebeurtenissenContainer();
+				var geContainer = getGebeurtenissenContainer();
 				gebeurtenissenContainer.replaceWith(geContainer);
 				gebeurtenissenContainer = geContainer;
 				target.add(gebeurtenissenContainer);
@@ -360,7 +355,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 			public List<TestVervolgKeuzeOptie> getOptions()
 			{
 				var keuzes = new ArrayList<TestVervolgKeuzeOptie>();
-				CervixDossier dossier = clientModel.getObject().get(0).getCervixDossier();
+				var dossier = clientModel.getObject().get(0).getCervixDossier();
 				if (!Deelnamemodus.SELECTIEBLOKKADE.equals(dossier.getDeelnamemodus()))
 				{
 					if (testTimelineService.magNieuweRondeStarten(dossier))
@@ -385,8 +380,8 @@ public class CervixTestTimelinePage extends TestenBasePage
 			@Override
 			public boolean isVisible()
 			{
-				Persoon persoon = clientModel.getObject().get(0).getPersoon();
-				boolean isOverleden = persoon.getOverlijdensdatum() != null;
+				var persoon = clientModel.getObject().get(0).getPersoon();
+				var isOverleden = persoon.getOverlijdensdatum() != null;
 				return !isOverleden;
 			}
 
@@ -397,7 +392,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 			}
 		});
 
-		ListView<TestTimelineRonde> listView = getListView();
+		var listView = getListView();
 		listView.setOutputMarkupId(true);
 		container.add(listView);
 
@@ -425,7 +420,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 					@Override
 					public boolean refreshContainer(AjaxRequestTarget target)
 					{
-						WebMarkupContainer geContainer = getGebeurtenissenContainer();
+						var geContainer = getGebeurtenissenContainer();
 						gebeurtenissenContainer.replaceWith(geContainer);
 						gebeurtenissenContainer = geContainer;
 						target.add(gebeurtenissenContainer);
@@ -435,13 +430,13 @@ public class CervixTestTimelinePage extends TestenBasePage
 					@Override
 					public boolean isVisible()
 					{
-						Client client = clientModel.getObject().get(0);
-						Persoon persoon = client.getPersoon();
-						boolean isOverleden = persoon.getOverlijdensdatum() != null;
-						TestTimelineRonde timeLineRonde = item.getModelObject();
-						ScreeningRondeGebeurtenissen gebeurtenissen = timeLineRonde.getCervixScreeningRondeDossier();
+						var client = clientModel.getObject().get(0);
+						var persoon = client.getPersoon();
+						var isOverleden = persoon.getOverlijdensdatum() != null;
+						var timeLineRonde = item.getModelObject();
+						var gebeurtenissen = timeLineRonde.getCervixScreeningRondeDossier();
 						ScreeningRonde<?, ?, ?, ?> ronde = gebeurtenissen.getScreeningRonde();
-						boolean isLopend = ScreeningRondeStatus.LOPEND.equals(ronde.getStatus());
+						var isLopend = ScreeningRondeStatus.LOPEND.equals(ronde.getStatus());
 						boolean isAangemeld = ronde.getAangemeld();
 						return !isOverleden && (isLopend || !isAangemeld);
 					}
@@ -453,7 +448,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 					}
 				});
 
-				SortingListModel<ScreeningRondeGebeurtenis> sortingListModel = new SortingListModel<>(
+				var sortingListModel = new SortingListModel<ScreeningRondeGebeurtenis>(
 					new PropertyModel<>(item.getModel(), "cervixScreeningRondeDossier.gebeurtenissen"),
 					new GebeurtenisComparator());
 
@@ -468,8 +463,8 @@ public class CervixTestTimelinePage extends TestenBasePage
 						item.add(new AttributeAppender("class", new Model<>("badge-not-clickable"), " "));
 						item.add(new Label("extraOmschrijving", (IModel<String>) () ->
 						{
-							ScreeningRondeGebeurtenis gebeurtenis = item.getModelObject();
-							String[] extraOmschrijvingen = gebeurtenis.getExtraOmschrijving();
+							var gebeurtenis = item.getModelObject();
+							var extraOmschrijvingen = gebeurtenis.getExtraOmschrijving();
 							return BriefOmschrijvingUtil.verwerkExtraOmschrijvingen(extraOmschrijvingen, CervixTestTimelinePage.this::getString);
 						}));
 					}
@@ -491,7 +486,7 @@ public class CervixTestTimelinePage extends TestenBasePage
 					public void close(AjaxRequestTarget target)
 					{
 						dialog.close(target);
-						WebMarkupContainer geContainer = getGebeurtenissenContainer();
+						var geContainer = getGebeurtenissenContainer();
 						gebeurtenissenContainer.replaceWith(geContainer);
 						gebeurtenissenContainer = geContainer;
 						target.add(gebeurtenissenContainer);

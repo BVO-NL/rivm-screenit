@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.v
 import nl.rivm.screenit.main.service.mamma.MammaKwaliteitscontroleService;
 import nl.rivm.screenit.main.web.component.ScreenitDateTextField;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.mamma.MammaVisitatie;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
@@ -56,7 +55,7 @@ public abstract class MammaVisitatieOnderzoekToevoegenPopupPanel extends Generic
 	{
 		super(id, visitatieModel);
 		this.visitatieOnderdeel = visitatieOnderdeel;
-		Persoon zoekPersoon = new Persoon();
+		var zoekPersoon = new Persoon();
 		Form<Persoon> form = new ScreenitForm<>("form", new CompoundPropertyModel<>(zoekPersoon));
 		form.add(new TextField<>("bsn").setRequired(true).setOutputMarkupId(true).add(new BSNValidator()));
 		form.add(new ScreenitDateTextField("geboortedatum").setRequired(true).setOutputMarkupId(true));
@@ -71,11 +70,11 @@ public abstract class MammaVisitatieOnderzoekToevoegenPopupPanel extends Generic
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Persoon zoekPersoon = (Persoon) getForm().getModelObject();
-				Client client = clientService.getClientByBsn(zoekPersoon.getBsn());
+				var zoekPersoon = (Persoon) getForm().getModelObject();
+				var client = clientService.getClientByBsn(zoekPersoon.getBsn());
 				if (client != null && DateUtil.getGeboortedatum(client).equals(DateUtil.getGeboortedatum(zoekPersoon)))
 				{
-					String melding = kwaliteitscontroleService.addVisitatieOnderzoek(getModelObject(), visitatieOnderdeel, client);
+					var melding = kwaliteitscontroleService.addVisitatieOnderzoek(getModelObject(), visitatieOnderdeel, client);
 					if (StringUtils.isNotBlank(melding))
 					{
 						warn(melding);

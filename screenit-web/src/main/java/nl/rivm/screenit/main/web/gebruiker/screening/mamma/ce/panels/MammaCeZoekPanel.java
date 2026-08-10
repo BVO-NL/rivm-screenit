@@ -85,30 +85,30 @@ public abstract class MammaCeZoekPanel extends GenericPanel<MammaCeWerklijstZoek
 
 	private void createZoekForm()
 	{
-		List<MammaCeFilter> teTonenCeFilters = getTeTonenCeFilters();
+		var teTonenCeFilters = getTeTonenCeFilters();
 		toonSeFilter = teTonenCeFilters.contains(MammaCeFilter.SE);
-		List<CentraleEenheid> mogelijkeCentraleEenheden = organisatieService.getMogelijkeCentraleEenheden(ScreenitSession.get().getOrganisatie());
-		List<BeoordelingsEenheid> mogelijkeBeoordelingsEenheden = getMogelijkeBeoordelingsEenheden(mogelijkeCentraleEenheden);
+		var mogelijkeCentraleEenheden = organisatieService.getMogelijkeCentraleEenheden(ScreenitSession.get().getOrganisatie());
+		var mogelijkeBeoordelingsEenheden = getMogelijkeBeoordelingsEenheden(mogelijkeCentraleEenheden);
 
-		WebMarkupContainer centraleEenhedenContainer = new WebMarkupContainer("centraleEenhedenContainer");
+		var centraleEenhedenContainer = new WebMarkupContainer("centraleEenhedenContainer");
 		centraleEenhedenContainer.add(createCentraleEenhedenSelector(mogelijkeCentraleEenheden));
 		centraleEenhedenContainer.setVisible(teTonenCeFilters.contains(MammaCeFilter.CE));
 		centraleEenhedenContainer.setOutputMarkupId(true);
 
-		WebMarkupContainer beoordelingsEenhedenContainer = new WebMarkupContainer("beoordelingsEenhedenContainer");
+		var beoordelingsEenhedenContainer = new WebMarkupContainer("beoordelingsEenhedenContainer");
 		beoordelingseenhedenSelector = createBeoordelingseenhedenSelector(mogelijkeBeoordelingsEenheden);
 		beoordelingsEenhedenContainer.add(beoordelingseenhedenSelector);
 		beoordelingsEenhedenContainer.setVisible(teTonenCeFilters.contains(MammaCeFilter.BE));
 		beoordelingsEenhedenContainer.setOutputMarkupId(true);
 
-		WebMarkupContainer screeningsEenhedenContainer = new WebMarkupContainer("screeningsEenhedenContainer");
+		var screeningsEenhedenContainer = new WebMarkupContainer("screeningsEenhedenContainer");
 		screeningsEenhedenSelector = createScreeningsEenhedenSelector(toonSeFilter ? mogelijkeBeoordelingsEenheden : new ArrayList<>());
 		screeningsEenhedenContainer.add(screeningsEenhedenSelector);
 		screeningsEenhedenContainer.setVisible(toonSeFilter);
 		screeningsEenhedenContainer.setOutputMarkupId(true);
 
-		WebMarkupContainer beoordelingStatussenContainer = new WebMarkupContainer("beoordelingStatussenContainer");
-		ScreenitListMultipleChoice<MammaBeoordelingStatus> onderzoekStatusSelector = new ScreenitListMultipleChoice<>("beoordelingStatussen",
+		var beoordelingStatussenContainer = new WebMarkupContainer("beoordelingStatussenContainer");
+		var onderzoekStatusSelector = new ScreenitListMultipleChoice<MammaBeoordelingStatus>("beoordelingStatussen",
 			getMammaMogelijkeBeoordelingFilterStatussen(), new EnumChoiceRenderer<>(this));
 		beoordelingStatussenContainer.add(onderzoekStatusSelector);
 		beoordelingStatussenContainer.setVisible(teTonenCeFilters.contains(MammaCeFilter.STATUS));
@@ -124,13 +124,13 @@ public abstract class MammaCeZoekPanel extends GenericPanel<MammaCeWerklijstZoek
 
 	private ScreenitListMultipleChoice<MammaScreeningsEenheid> createScreeningsEenhedenSelector(List<BeoordelingsEenheid> mogelijkeBeoordelingsEenheden)
 	{
-		List<MammaScreeningsEenheid> mogelijkeScreeningsEenheden = getMogelijkeScreeningsEenheden(mogelijkeBeoordelingsEenheden);
+		var mogelijkeScreeningsEenheden = getMogelijkeScreeningsEenheden(mogelijkeBeoordelingsEenheden);
 		return new ScreenitListMultipleChoice<>("screeningsEenheden", ModelUtil.listRModel(mogelijkeScreeningsEenheden), new ChoiceRenderer<>("naam"));
 	}
 
 	private void addZoekButton()
 	{
-		IndicatingAjaxSubmitLink zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
+		var zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -155,7 +155,7 @@ public abstract class MammaCeZoekPanel extends GenericPanel<MammaCeWerklijstZoek
 
 	private void zetZoekobjectModel()
 	{
-		MammaCeWerklijstZoekObject zoekObject = getModelObject();
+		var zoekObject = getModelObject();
 		if (CollectionUtils.isEmpty(zoekObject.getBeoordelingStatussen()))
 		{
 			zoekObject.setBeoordelingStatussen(getMammaMogelijkeBeoordelingFilterStatussen());
@@ -183,7 +183,7 @@ public abstract class MammaCeZoekPanel extends GenericPanel<MammaCeWerklijstZoek
 
 	private ScreenitListMultipleChoice<CentraleEenheid> createCentraleEenhedenSelector(List<CentraleEenheid> mogelijkeCentraleEenheden)
 	{
-		ScreenitListMultipleChoice<CentraleEenheid> centraleEenhedenSelector = new ScreenitListMultipleChoice<>("centraleEenheden",
+		var centraleEenhedenSelector = new ScreenitListMultipleChoice<CentraleEenheid>("centraleEenheden",
 			ModelUtil.listRModel(mogelijkeCentraleEenheden), new ChoiceRenderer<>("naam"));
 		centraleEenhedenSelector.setRequired(true);
 
@@ -202,9 +202,9 @@ public abstract class MammaCeZoekPanel extends GenericPanel<MammaCeWerklijstZoek
 
 	private void resetBeKeuzelijst()
 	{
-		MammaCeWerklijstZoekObject zoekObject = getModelObject();
-		List<CentraleEenheid> gekozenCEs = zoekObject.getCentraleEenheden();
-		List<BeoordelingsEenheid> mogelijkeBEs = getMogelijkeBeoordelingsEenheden(gekozenCEs);
+		var zoekObject = getModelObject();
+		var gekozenCEs = zoekObject.getCentraleEenheden();
+		var mogelijkeBEs = getMogelijkeBeoordelingsEenheden(gekozenCEs);
 		beoordelingseenhedenSelector.setChoices(ModelUtil.listRModel(mogelijkeBEs));
 		zoekObject.setBeoordelingsEenheden(mogelijkeBEs);
 		resetSeKeuzelijst();
@@ -218,7 +218,7 @@ public abstract class MammaCeZoekPanel extends GenericPanel<MammaCeWerklijstZoek
 
 	private ScreenitListMultipleChoice<BeoordelingsEenheid> createBeoordelingseenhedenSelector(List<BeoordelingsEenheid> mogelijkeBeoordelingsEenheden)
 	{
-		ScreenitListMultipleChoice<BeoordelingsEenheid> beoordelingsEenhedenSelector = new ScreenitListMultipleChoice<>("beoordelingsEenheden",
+		var beoordelingsEenhedenSelector = new ScreenitListMultipleChoice<BeoordelingsEenheid>("beoordelingsEenheden",
 			ModelUtil.listRModel(mogelijkeBeoordelingsEenheden), new ChoiceRenderer<>("naam"));
 		beoordelingsEenhedenSelector.setRequired(true);
 		beoordelingsEenhedenSelector.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -236,9 +236,9 @@ public abstract class MammaCeZoekPanel extends GenericPanel<MammaCeWerklijstZoek
 
 	private void resetSeKeuzelijst()
 	{
-		MammaCeWerklijstZoekObject zoekObject = getModelObject();
-		List<BeoordelingsEenheid> gekozenBEs = zoekObject.getBeoordelingsEenheden();
-		List<MammaScreeningsEenheid> mogelijkeSEs = getMogelijkeScreeningsEenheden(gekozenBEs);
+		var zoekObject = getModelObject();
+		var gekozenBEs = zoekObject.getBeoordelingsEenheden();
+		var mogelijkeSEs = getMogelijkeScreeningsEenheden(gekozenBEs);
 		screeningsEenhedenSelector.setChoices(ModelUtil.listRModel(mogelijkeSEs));
 		zoekObject.setScreeningsEenheden(mogelijkeSEs);
 	}

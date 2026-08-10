@@ -71,7 +71,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -185,7 +184,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public void sendPostcodeReeks(MammaPostcodeReeks postcodeReeks, boolean isNieuw)
 	{
-		PlanningPostcodeReeksDto dto = new PlanningPostcodeReeksDto();
+		var dto = new PlanningPostcodeReeksDto();
 		dto.standplaatsId = postcodeReeks.getStandplaats().getId();
 		dto.totPostcode = postcodeReeks.getTotPostcode();
 		dto.vanPostcode = postcodeReeks.getVanPostcode();
@@ -203,7 +202,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	private <T extends PlanningDto> void sendToPlanningApplicatie(String context, T dto, boolean isNieuw, OrganisatieMedewerker ingelogdeOrganisatieMedewerker,
 		Duration readTimeout)
 	{
-		RestTemplate restApi = RestApiFactory.create(readTimeout);
+		var restApi = RestApiFactory.create(readTimeout);
 		if (isNieuw)
 		{
 			restApi.postForEntity(planningBkRestUrl + context, dto, String.class);
@@ -227,8 +226,8 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public Long[] getConceptGewijzigdDoor(ScreeningOrganisatie screeningOrganisatie)
 	{
-		RestTemplate restApi = RestApiFactory.create();
-		ResponseEntity<Long[]> result = restApi.getForEntity(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptGewijzigdDoor/" + screeningOrganisatie.getId(),
+		var restApi = RestApiFactory.create();
+		var result = restApi.getForEntity(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptGewijzigdDoor/" + screeningOrganisatie.getId(),
 			Long[].class);
 
 		return result.getBody();
@@ -237,15 +236,15 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public NavigableSet<String> getUncoveredPostcodes(ScreeningOrganisatie screeningOrganisatie)
 	{
-		RestTemplate restApi = RestApiFactory.create();
+		var restApi = RestApiFactory.create();
 		Long screeningOrganisatieId = 0L;
 		if (screeningOrganisatie != null)
 		{
 			screeningOrganisatieId = screeningOrganisatie.getId();
 		}
-		ResponseEntity<NavigableSet> result = restApi.getForEntity(planningBkRestUrl + PlanningRestConstants.C_UNCOVEREDPOSTCODES + "/" + screeningOrganisatieId,
+		var result = restApi.getForEntity(planningBkRestUrl + PlanningRestConstants.C_UNCOVEREDPOSTCODES + "/" + screeningOrganisatieId,
 			NavigableSet.class);
-		NavigableSet resultSet = result.getBody();
+		var resultSet = result.getBody();
 		if (resultSet == null)
 		{
 			resultSet = new TreeSet<>();
@@ -265,7 +264,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 
 	private void sendDeleteToPlanningApplicatie(String payload, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		RestTemplate restApi = RestApiFactory.create();
+		var restApi = RestApiFactory.create();
 		restApi.delete(planningBkRestUrl + payload);
 		sendGewijzigdDoor(ingelogdeOrganisatieMedewerker, restApi);
 	}
@@ -275,7 +274,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	{
 		if (standplaats.getActief())
 		{
-			PlanningStandplaatsDto dto = new PlanningStandplaatsDto();
+			var dto = new PlanningStandplaatsDto();
 			dto.id = standplaats.getId();
 			dto.screeningsOrganisatieId = standplaats.getRegio().getId();
 
@@ -292,7 +291,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	{
 		if (screeningsEenheid.getActief())
 		{
-			PlanningScreeningsEenheidDto dto = new PlanningScreeningsEenheidDto();
+			var dto = new PlanningScreeningsEenheidDto();
 			dto.id = screeningsEenheid.getId();
 			dto.aantalMammografen = Math.max(screeningsEenheid.getMammografen().size(), 1); 
 			dto.screeningsOrganisatieId = MammaScreeningsEenheidUtil.getScreeningsOrganisatie(screeningsEenheid).getId();
@@ -308,8 +307,8 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public PlanningWeekDto getWeek(MammaScreeningsEenheid screeningsEenheid, Date start)
 	{
-		RestTemplate restApi = RestApiFactory.create();
-		ResponseEntity<PlanningWeekDto> responseEntity = restApi.getForEntity(
+		var restApi = RestApiFactory.create();
+		var responseEntity = restApi.getForEntity(
 			planningBkRestUrl + PlanningRestConstants.C_WEEK + "/" + screeningsEenheid.getId() + "/" + start.getTime(),
 			PlanningWeekDto.class);
 		return responseEntity.getBody();
@@ -318,14 +317,14 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public String getAfspraakDrempelOverzichtStandplaats(long standplaatsId)
 	{
-		RestTemplate restApi = RestApiFactory.create();
+		var restApi = RestApiFactory.create();
 		return restApi.getForObject(planningBkRestUrl + PlanningRestConstants.C_STANDPLAATS + "/" + "getAfspraakDrempelOverzicht/" + standplaatsId, String.class);
 	}
 
 	@Override
 	public String getAfspraakDrempelOverzichtScreeningsOrganisatie(long screeningsOrganisatieId)
 	{
-		RestTemplate restApi = RestApiFactory.create();
+		var restApi = RestApiFactory.create();
 		return restApi.getForObject(planningBkRestUrl + PlanningRestConstants.C_SCREENINGS_ORGANISATIE + "/" + "getAfspraakDrempelOverzicht/" + screeningsOrganisatieId,
 			String.class);
 	}
@@ -333,8 +332,8 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public PlanningScreeningsEenheidMetaDataDto getScreeningsEenheidMetaData(MammaScreeningsEenheid screeningEenheid)
 	{
-		RestTemplate restApi = RestApiFactory.create();
-		ResponseEntity<PlanningScreeningsEenheidMetaDataDto> responseEntity = restApi
+		var restApi = RestApiFactory.create();
+		var responseEntity = restApi
 			.getForEntity(planningBkRestUrl + PlanningRestConstants.C_SCREENINGSEENHEID + "/metaData/" + screeningEenheid.getId(),
 				PlanningScreeningsEenheidMetaDataDto.class);
 		return responseEntity.getBody();
@@ -367,8 +366,8 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public PlanningStandplaatsPeriodeDto[] getStandplaatsPeriodesSorted(MammaScreeningsEenheid screeningsEenheid)
 	{
-		RestTemplate restApi = RestApiFactory.create();
-		ResponseEntity<PlanningStandplaatsPeriodeDto[]> responseEntity = restApi.getForEntity(
+		var restApi = RestApiFactory.create();
+		var responseEntity = restApi.getForEntity(
 			planningBkRestUrl + PlanningRestConstants.C_ROUTE + "/" + screeningsEenheid.getId(), PlanningStandplaatsPeriodeDto[].class);
 		return responseEntity.getBody();
 	}
@@ -376,7 +375,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public void changeRoute(PlanningStandplaatsPeriodeDto standplaatsPeriodeDto, MammaScreeningsEenheid screeningsEenheid, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		PlanningRouteWijzigenDto wijziging = new PlanningRouteWijzigenDto();
+		var wijziging = new PlanningRouteWijzigenDto();
 		wijziging.screeningsEenheidId = screeningsEenheid.getId();
 		wijziging.standplaatsId = standplaatsPeriodeDto.standplaatsId;
 		wijziging.volgNr = standplaatsPeriodeDto.screeningsEenheidVolgNr;
@@ -399,8 +398,8 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public Long[] getStandplaatsenZonderRoute(ScreeningOrganisatie screeningOrganisatie)
 	{
-		RestTemplate restApi = RestApiFactory.create();
-		ResponseEntity<Long[]> result = restApi.getForEntity(planningBkRestUrl + PlanningRestConstants.C_STANDPLAATS + "/zonderRoute/" + screeningOrganisatie.getId(),
+		var restApi = RestApiFactory.create();
+		var result = restApi.getForEntity(planningBkRestUrl + PlanningRestConstants.C_STANDPLAATS + "/zonderRoute/" + screeningOrganisatie.getId(),
 			Long[].class);
 		return result.getBody();
 	}
@@ -408,8 +407,8 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public Long[] getStandplaatsenMetRoute(ScreeningOrganisatie screeningOrganisatie)
 	{
-		RestTemplate restApi = RestApiFactory.create();
-		ResponseEntity<Long[]> result = restApi.getForEntity(planningBkRestUrl + PlanningRestConstants.C_STANDPLAATS + "/metRoute/" + screeningOrganisatie.getId(),
+		var restApi = RestApiFactory.create();
+		var result = restApi.getForEntity(planningBkRestUrl + PlanningRestConstants.C_STANDPLAATS + "/metRoute/" + screeningOrganisatie.getId(),
 			Long[].class);
 		return result.getBody();
 	}
@@ -417,8 +416,8 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public PlanningConceptMeldingenDto saveConcept(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean runDry)
 	{
-		RestTemplate restApi = RestApiFactory.create();
-		ResponseEntity<PlanningConceptMeldingenDto> result = restApi.getForEntity(
+		var restApi = RestApiFactory.create();
+		var result = restApi.getForEntity(
 			planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptOpslaan/" + ingelogdeOrganisatieMedewerker.getOrganisatie().getId() + "/" + runDry,
 			PlanningConceptMeldingenDto.class);
 		if (!runDry)
@@ -431,7 +430,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public void conceptAnnuleren(OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		RestTemplate restApi = RestApiFactory.create();
+		var restApi = RestApiFactory.create();
 		restApi.postForEntity(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptAnnuleren/" + ingelogdeOrganisatieMedewerker.getOrganisatie().getId(), null,
 			String.class);
 	}
@@ -441,7 +440,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	{
 		if (blokkade.getId() == null || Boolean.TRUE.equals(blokkade.getActief()))
 		{
-			PlanningBlokkadeDto blokkadeDto = new PlanningBlokkadeDto();
+			var blokkadeDto = new PlanningBlokkadeDto();
 			blokkadeDto.id = blokkade.getId();
 			blokkadeDto.blokkadeType = blokkade.getType();
 			if (blokkade.getScreeningsEenheid() != null)
@@ -469,8 +468,8 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public int getAantalAfsprakenOpBlok(PlanningCapaciteitBlokDto blokDto, boolean toDelete)
 	{
-		RestTemplate restApi = RestApiFactory.create();
-		ResponseEntity<Integer> responseEntity = restApi.getForEntity(
+		var restApi = RestApiFactory.create();
+		var responseEntity = restApi.getForEntity(
 			planningBkRestUrl + PlanningRestConstants.C_CAPACITEITBLOK + "/aantalAfsprakenOpBlok/" + (blokDto.conceptId != null ? blokDto.conceptId : UUID.randomUUID())
 				+ "/" + blokDto.blokType + "/" + blokDto.vanaf.getTime()
 				+ "/" + blokDto.tot.getTime() + "/" + toDelete,
@@ -482,7 +481,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	public void herhaalWeek(MammaScreeningsEenheid screeningsEenheidVan, MammaScreeningsEenheid screeningsEenheidNaar, LocalDate teHerhalenWeek, LocalDate herhalenVanafWeek,
 		LocalDate herhalenTotEnMetWeek, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		PlanningHerhalenDto dto = new PlanningHerhalenDto();
+		var dto = new PlanningHerhalenDto();
 		dto.screeningsEenheidIdVan = screeningsEenheidVan.getId();
 		dto.screeningsEenheidIdNaar = screeningsEenheidNaar.getId();
 		dto.teHerhalenWeek = teHerhalenWeek;
@@ -510,8 +509,8 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public Date getPlannenTotEnMetDatum()
 	{
-		RestTemplate restApi = RestApiFactory.create();
-		ResponseEntity<Date> responseEntity = restApi.getForEntity(
+		var restApi = RestApiFactory.create();
+		var responseEntity = restApi.getForEntity(
 			planningBkRestUrl + PlanningRestConstants.C_WEEK + "/plannenTotEnMetDatum", Date.class);
 		return responseEntity.getBody();
 	}
@@ -525,10 +524,10 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	@Override
 	public PlanningStatusDto getStatus()
 	{
-		RestTemplate restApi = RestApiFactory.create();
+		var restApi = RestApiFactory.create();
 		try
 		{
-			ResponseEntity<PlanningStatusDto> responseEntity = restApi.getForEntity(
+			var responseEntity = restApi.getForEntity(
 				planningBkRestUrl + PlanningRestConstants.C_STATUS, PlanningStatusDto.class);
 			return responseEntity.getBody();
 		}

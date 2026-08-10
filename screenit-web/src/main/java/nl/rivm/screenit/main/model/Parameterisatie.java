@@ -80,7 +80,7 @@ public class Parameterisatie implements IDetachable, Cloneable
 	@Override
 	public Parameterisatie clone()
 	{
-		Parameterisatie cloned = new Parameterisatie();
+		var cloned = new Parameterisatie();
 		cloned.setParameters(new HashMap<>(this.getParameters()));
 		cloned.setCohorten(new ArrayList<>(this.getCohorten()));
 		return cloned;

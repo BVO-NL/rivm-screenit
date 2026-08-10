@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.service.mamma.impl;
  */
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -133,10 +132,10 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 	{
 		if (standplaats.getLocatie() == null)
 		{
-			MammaStandplaatsLocatie locatie = new MammaStandplaatsLocatie();
+			var locatie = new MammaStandplaatsLocatie();
 			locatie.setToonHuisnummerInBrieven(true);
 			standplaats.setLocatie(locatie);
-			MammaStandplaatsLocatie tijdelijkeLocatie = new MammaStandplaatsLocatie();
+			var tijdelijkeLocatie = new MammaStandplaatsLocatie();
 			tijdelijkeLocatie.setToonHuisnummerInBrieven(true);
 			standplaats.setTijdelijkeLocatie(tijdelijkeLocatie);
 			tijdelijkeLocatie.setTijdelijk(true);
@@ -146,9 +145,9 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 		if (!standplaats.getActief())
 		{
 			List<MammaStandplaatsRonde> teVerwijderenStandplaatsRonden = new ArrayList<>();
-			for (MammaStandplaatsRonde ronde : standplaats.getStandplaatsRonden())
+			for (var ronde : standplaats.getStandplaatsRonden())
 			{
-				boolean heeftScreeningRondenOfAfspraken =
+				var heeftScreeningRondenOfAfspraken =
 					screeningRondeRepository.existsByStandplaatsRonde(ronde) || afspraakRepository.existsByStandplaatsPeriode_StandplaatsRonde(ronde);
 				if (!heeftScreeningRondenOfAfspraken)
 				{
@@ -158,10 +157,10 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 			}
 			hibernateService.deleteAll(teVerwijderenStandplaatsRonden);
 		}
-		String melding = "";
-		String diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(standplaats, hibernateService.getHibernateSession());
+		var melding = "";
+		var diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(standplaats, hibernateService.getHibernateSession());
 
-		boolean isNieuw = standplaats.getId() == null;
+		var isNieuw = standplaats.getId() == null;
 		if (isNieuw)
 		{
 			melding += "Standplaats '" + standplaats.getNaam() + "' aangemaakt.";
@@ -201,8 +200,8 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 			standplaats = opmerking.getStandplaats();
 		}
 
-		String melding = "";
-		String diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(opmerking, hibernateService.getHibernateSession());
+		var melding = "";
+		var diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(opmerking, hibernateService.getHibernateSession());
 
 		if (opmerking.getId() == null)
 		{
@@ -228,7 +227,7 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 	{
 		if (nieuweBijlage != null)
 		{
-			UploadDocument oudeBijlage = locatie.getStandplaatsLocatieBijlage();
+			var oudeBijlage = locatie.getStandplaatsLocatieBijlage();
 			if (oudeBijlage != null && !oudeBijlage.equals(nieuweBijlage))
 			{
 				oudeBijlage.setActief(false);
@@ -244,8 +243,8 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 				LOG.error("Fout bij opslaan locatie bijlage", e);
 			}
 		}
-		String diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(locatie, hibernateService.getHibernateSession());
-		String melding = "";
+		var diffToLatestVersion = EntityAuditUtil.getDiffToLatestVersion(locatie, hibernateService.getHibernateSession());
+		var melding = "";
 
 		if (diffToLatestVersion.length() > 0)
 		{
@@ -270,9 +269,9 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 	{
 		if (locatie.getTijdelijk())
 		{
-			Range<Date> nieuwePeriode = Range.closed(DateUtil.startDag(locatie.getStartDatum()), DateUtil.eindDag(locatie.getEindDatum()));
-			boolean adresGewijzigd = !AdresUtil.getVolledigeAdresString(locatie).equals(oudeAdres);
-			Set<MammaAfspraak> afsprakenInGewijzigdePeriodes = zoekAfsprakenInGewijzigdePeriode(standplaats, oudePeriode, nieuwePeriode, adresGewijzigd);
+			var nieuwePeriode = Range.closed(DateUtil.startDag(locatie.getStartDatum()), DateUtil.eindDag(locatie.getEindDatum()));
+			var adresGewijzigd = !AdresUtil.getVolledigeAdresString(locatie).equals(oudeAdres);
+			var afsprakenInGewijzigdePeriodes = zoekAfsprakenInGewijzigdePeriode(standplaats, oudePeriode, nieuwePeriode, adresGewijzigd);
 
 			if (!afsprakenInGewijzigdePeriodes.isEmpty())
 			{
@@ -298,7 +297,7 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 			}
 		}
 
-		Date brievenGenererenVanaf = DateUtil.startDag(DateUtil.toUtilDate(dateSupplier.getLocalDate().plusDays(1)));
+		var brievenGenererenVanaf = DateUtil.startDag(DateUtil.toUtilDate(dateSupplier.getLocalDate().plusDays(1)));
 		if (!periodesVoorZoeken.isEmpty() && periodesVoorZoeken.span().lowerEndpoint().before(brievenGenererenVanaf))
 		{
 			periodesVoorZoeken.remove(Range.closed(periodesVoorZoeken.span().lowerEndpoint(), brievenGenererenVanaf));
@@ -327,10 +326,10 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 		protected void runInternal()
 		{
 			List<MammaBrief> brieven = new ArrayList<>();
-			MammaStandplaats persistentStandplaats = hibernateService.get(MammaStandplaats.class, standplaatsId);
-			for (Long afspraakId : afsprakenIds)
+			var persistentStandplaats = hibernateService.get(MammaStandplaats.class, standplaatsId);
+			for (var afspraakId : afsprakenIds)
 			{
-				MammaAfspraak afspraak = hibernateService.get(MammaAfspraak.class, afspraakId);
+				var afspraak = hibernateService.get(MammaAfspraak.class, afspraakId);
 
 				if (afspraak.equals(MammaScreeningRondeUtil.getLaatsteAfspraak(afspraak.getUitnodiging().getScreeningRonde())))
 				{
@@ -379,7 +378,7 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 		var vandaag = dateSupplier.getLocalDate();
 		var aantalAfsprakenVoorStandplaats = baseAfspraakService.countAfspraken(standplaats, vandaag, null, MammaAfspraakStatus.GEPLAND);
 
-		MammaStandplaatsLocatie tijdelijkAdres = standplaats.getTijdelijkeLocatie();
+		var tijdelijkAdres = standplaats.getTijdelijkeLocatie();
 		var aantalAfsprakenTijdensTijdelijkeLocatie = 0L;
 		if (tijdelijkAdres.getStartDatum() != null)
 		{
@@ -405,18 +404,18 @@ public class MammaStandplaatsServiceImpl implements MammaStandplaatsService
 	public String controleerUitnodigingenNaVeranderingTijdelijkeLocatie(MammaStandplaats standplaats, String oudeAdres, Range<Date> oudePeriode)
 	{
 
-		MammaStandplaatsLocatie locatie = standplaats.getTijdelijkeLocatie();
-		LocalDate nieuweStartDatum = DateUtil.toLocalDate(locatie.getStartDatum());
-		LocalDate nieuweEindDatum = DateUtil.toLocalDate(locatie.getEindDatum());
+		var locatie = standplaats.getTijdelijkeLocatie();
+		var nieuweStartDatum = DateUtil.toLocalDate(locatie.getStartDatum());
+		var nieuweEindDatum = DateUtil.toLocalDate(locatie.getEindDatum());
 
 		if (oudePeriode != null)
 		{
 			if (!nieuweStartDatum.isEqual(DateUtil.toLocalDate(oudePeriode.lowerEndpoint())) || !nieuweEindDatum.isEqual(DateUtil.toLocalDate(oudePeriode.upperEndpoint())))
 			{
-				long aantalAfsprakenBinnenOudeLocatie = baseAfspraakService.countAfspraken(standplaats, DateUtil.toLocalDate(oudePeriode.lowerEndpoint()),
+				var aantalAfsprakenBinnenOudeLocatie = baseAfspraakService.countAfspraken(standplaats, DateUtil.toLocalDate(oudePeriode.lowerEndpoint()),
 					DateUtil.toLocalDate(oudePeriode.upperEndpoint()),
 					MammaAfspraakStatus.GEPLAND);
-				long aantalAfsprakenBinnenNieuweLocatie = baseAfspraakService.countAfspraken(standplaats, nieuweStartDatum, nieuweEindDatum, MammaAfspraakStatus.GEPLAND);
+				var aantalAfsprakenBinnenNieuweLocatie = baseAfspraakService.countAfspraken(standplaats, nieuweStartDatum, nieuweEindDatum, MammaAfspraakStatus.GEPLAND);
 
 				if (aantalAfsprakenBinnenOudeLocatie > 0 || aantalAfsprakenBinnenNieuweLocatie > 0)
 				{

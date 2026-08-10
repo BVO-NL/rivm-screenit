@@ -28,7 +28,6 @@ import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBasisgegevens;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatiemedewerker.OrganisatieMedewerkerKoppelPage;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
-import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Actie;
@@ -64,7 +63,7 @@ public class MedewerkerKoppelPage extends OrganisatieMedewerkerKoppelPage
 	@Override
 	public Actie getActie(Recht recht)
 	{
-		Actie actie = autorisatieService.getActieVoorOrganisatie(
+		var actie = autorisatieService.getActieVoorOrganisatie(
 			getIngelogdeOrganisatieMedewerker(), 
 			getCurrentSelectedOrganisatie(), 
 			recht);
@@ -80,7 +79,7 @@ public class MedewerkerKoppelPage extends OrganisatieMedewerkerKoppelPage
 	@Override
 	protected void onNavigeerNaar(IModel<OrganisatieMedewerker> rowModel, AjaxRequestTarget target)
 	{
-		Organisatie organisatie = rowModel.getObject().getOrganisatie();
+		var organisatie = rowModel.getObject().getOrganisatie();
 		setCurrentSelectedOrganisatie(organisatie);
 		setResponsePage(new OrganisatieBasisgegevens(ModelUtil.cModel(organisatie)));
 	}
@@ -88,10 +87,10 @@ public class MedewerkerKoppelPage extends OrganisatieMedewerkerKoppelPage
 	@Override
 	protected boolean magNavigerenNaar(IModel<OrganisatieMedewerker> rowModel)
 	{
-		OrganisatieMedewerker ingelogdeOrganisatieMedewerker = getIngelogdeOrganisatieMedewerker();
-		OrganisatieMedewerker organisatieMedewerker = rowModel.getObject();
-		Organisatie organisatie = organisatieMedewerker.getOrganisatie();
-		Recht recht = organisatie.getOrganisatieType().getRecht();
+		var ingelogdeOrganisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		var organisatieMedewerker = rowModel.getObject();
+		var organisatie = organisatieMedewerker.getOrganisatie();
+		var recht = organisatie.getOrganisatieType().getRecht();
 		if (recht != null && autorisatieService.getActieVoorOrganisatie(ingelogdeOrganisatieMedewerker, organisatie, recht) != null)
 		{
 			return true;
@@ -102,7 +101,7 @@ public class MedewerkerKoppelPage extends OrganisatieMedewerkerKoppelPage
 	@Override
 	protected OrganisatieMedewerker createSearchObject()
 	{
-		OrganisatieMedewerker searchObject = super.createSearchObject();
+		var searchObject = super.createSearchObject();
 		searchObject.setMedewerker(getCurrentSelectedMedewerker());
 		return searchObject;
 	}
@@ -126,13 +125,13 @@ public class MedewerkerKoppelPage extends OrganisatieMedewerkerKoppelPage
 			@Override
 			protected void onCloseWithSelected(AjaxRequestTarget target, IModel<Organisatie> model)
 			{
-				Medewerker medewerker = getCurrentSelectedMedewerker();
-				Medewerker loggedInMedewerker = getIngelogdeOrganisatieMedewerker().getMedewerker();
+				var medewerker = getCurrentSelectedMedewerker();
+				var loggedInMedewerker = getIngelogdeOrganisatieMedewerker().getMedewerker();
 				if (medewerker.equals(loggedInMedewerker))
 				{
 					medewerker = loggedInMedewerker;
 				}
-				Organisatie organisatie = ModelUtil.nullSafeGet(model);
+				var organisatie = ModelUtil.nullSafeGet(model);
 				if (organisatie != null)
 				{
 

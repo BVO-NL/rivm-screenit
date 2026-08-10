@@ -81,10 +81,10 @@ public class ParameterisatieClientportaalPropertyModel<T extends Parameterisatie
 			return super.getObject();
 		}
 
-		final Parameterisatie target = (Parameterisatie) super.getObject();
+		final var target = (Parameterisatie) super.getObject();
 		if (target != null)
 		{
-			PreferenceKey preferenceKey = getPreferenceKeyFromExpression();
+			var preferenceKey = getPreferenceKeyFromExpression();
 			return (C) target.getParameters().get(preferenceKey);
 		}
 
@@ -98,29 +98,29 @@ public class ParameterisatieClientportaalPropertyModel<T extends Parameterisatie
 		{
 			super.setObject(object);
 		}
-		final Parameterisatie target = (Parameterisatie) super.getObject();
+		final var target = (Parameterisatie) super.getObject();
 		if (target != null)
 		{
-			final PreferenceKey preferenceKey = getPreferenceKeyFromExpression();
+			final var preferenceKey = getPreferenceKeyFromExpression();
 			target.getParameters().put(preferenceKey, object);
 		}
 	}
 
 	private PreferenceKey getPreferenceKeyFromExpression()
 	{
-		final String expression = getPropertyExpression();
+		final var expression = getPropertyExpression();
 		if (expression.startsWith("."))
 		{
 			throw new IllegalArgumentException("Property expressions cannot start with a '.' character");
 		}
-		PreferenceKey cachedKey = paramMapping.get(expression);
+		var cachedKey = paramMapping.get(expression);
 		if (cachedKey != null)
 		{
 			return cachedKey;
 		}
-		for (PreferenceKey prefKey : PreferenceKey.values())
+		for (var prefKey : PreferenceKey.values())
 		{
-			String prefProperty = WordUtils.capitalizeFully(prefKey.name(), new char[] { '_' });
+			var prefProperty = WordUtils.capitalizeFully(prefKey.name(), new char[] { '_' });
 			prefProperty = StringUtils.uncapitalize(prefProperty.replaceAll("_", ""));
 			if (expression.equals(prefProperty))
 			{

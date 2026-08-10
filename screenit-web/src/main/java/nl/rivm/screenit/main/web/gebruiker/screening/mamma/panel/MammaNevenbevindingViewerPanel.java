@@ -41,13 +41,13 @@ public class MammaNevenbevindingViewerPanel extends GenericPanel<MammaBeoordelin
 		super(id, model);
 		setVisible(beoordelingService.heeftBeoordelingNevenbevindingen(getModelObject()));
 
-		String nevenbevindingenTekst = beoordelingService.getMammaLezingEnumsTekst(MammaLezing::getNevenbevindingen, getModelObject().getEersteLezing(),
+		var nevenbevindingenTekst = beoordelingService.getMammaLezingEnumsTekst(MammaLezing::getNevenbevindingen, getModelObject().getEersteLezing(),
 			getModelObject().getTweedeLezing());
-		Label nevenbevindingen = new Label("nevenbevindingen", nevenbevindingenTekst);
+		var nevenbevindingen = new Label("nevenbevindingen", nevenbevindingenTekst);
 		add(nevenbevindingen);
 
-		String nevenbevindingOpmerkingTekst = beoordelingService.getNevenbevindingOpmerkingTekst("<br />", getModelObject().getEersteLezing(), getModelObject().getTweedeLezing());
-		Label nevenbevindingOpmerkingLabel = new Label("nevenbevindingenOpmerkingen", nevenbevindingOpmerkingTekst);
+		var nevenbevindingOpmerkingTekst = beoordelingService.getNevenbevindingOpmerkingTekst("<br />", getModelObject().getEersteLezing(), getModelObject().getTweedeLezing());
+		var nevenbevindingOpmerkingLabel = new Label("nevenbevindingenOpmerkingen", nevenbevindingOpmerkingTekst);
 		nevenbevindingOpmerkingLabel.setEscapeModelStrings(false);
 		nevenbevindingOpmerkingLabel.setVisible(nevenbevindingOpmerkingTekst != null);
 		add(nevenbevindingOpmerkingLabel);

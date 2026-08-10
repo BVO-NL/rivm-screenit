@@ -37,7 +37,7 @@ import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.Gebeu
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.enums.BriefType;
-import nl.rivm.screenit.service.BezwaarService;
+import nl.rivm.screenit.service.BaseBezwaarService;
 import nl.topicuszorg.wicket.model.DetachableListModel;
 import nl.topicuszorg.wicket.model.SortingListModel;
 
@@ -61,7 +61,7 @@ public class ClientInzienAlgemeneBrievenPanel extends GenericPanel<Client>
 	private DossierService dossierService;
 
 	@SpringBean
-	private BezwaarService bezwaarService;
+	private BaseBezwaarService bezwaarService;
 
 	private final BootstrapDialog dialog;
 
@@ -149,8 +149,8 @@ public class ClientInzienAlgemeneBrievenPanel extends GenericPanel<Client>
 	{
 		item.add(new Label("extraOmschrijving", (IModel<String>) () ->
 		{
-			ScreeningRondeGebeurtenis screeningRondeGebeurtenis = item.getModelObject();
-			String[] extraOmschrijvingen = screeningRondeGebeurtenis.getExtraOmschrijving();
+			var screeningRondeGebeurtenis = item.getModelObject();
+			var extraOmschrijvingen = screeningRondeGebeurtenis.getExtraOmschrijving();
 			return BriefOmschrijvingUtil.verwerkExtraOmschrijvingen(extraOmschrijvingen, ClientInzienAlgemeneBrievenPanel.this::getString);
 		})
 		{

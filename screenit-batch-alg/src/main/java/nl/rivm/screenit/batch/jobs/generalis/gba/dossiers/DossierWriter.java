@@ -21,8 +21,6 @@ package nl.rivm.screenit.batch.jobs.generalis.gba.dossiers;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Set;
-
 import nl.rivm.screenit.batch.jobs.generalis.gba.GbaConstants;
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.Client;
@@ -41,7 +39,7 @@ public class DossierWriter extends BaseWriter<Client>
 	@Override
 	protected void write(Client client)
 	{
-		Set<Bevolkingsonderzoek> bevolkingsonderzoeken = dossierFactory.maakDossiers(client);
+		var bevolkingsonderzoeken = dossierFactory.maakDossiers(client);
 
 		if (bevolkingsonderzoeken.contains(Bevolkingsonderzoek.COLON))
 		{

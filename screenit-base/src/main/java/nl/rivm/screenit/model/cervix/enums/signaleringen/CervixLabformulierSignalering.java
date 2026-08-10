@@ -53,7 +53,7 @@ public enum CervixLabformulierSignalering
 
 	public static List<CervixLabformulierSignalering> getMogelijkeSignaleringen()
 	{
-		List<CervixLabformulierSignalering> values = Arrays.asList(values());
+		var values = Arrays.asList(values());
 		return values.stream().filter(value -> !value.equals(CervixLabformulierSignalering.KOPIE_AANVRAAGFORMULIER_GEBRUIKT)).collect(Collectors.toList());
 	}
 }

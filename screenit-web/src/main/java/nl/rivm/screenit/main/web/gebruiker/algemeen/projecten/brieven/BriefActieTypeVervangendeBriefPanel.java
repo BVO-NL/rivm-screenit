@@ -48,7 +48,7 @@ public class BriefActieTypeVervangendeBriefPanel extends GenericPanel<ProjectBri
 		List<ProjectBriefActieType> types = new ArrayList<>();
 		types.add(ProjectBriefActieType.VERVANGENDEBRIEF);
 
-		ScreenitDropdown<BriefType> moment = new ScreenitDropdown<>("briefType", new PropertyModel<>(model, "briefType"),
+		var moment = new ScreenitDropdown<BriefType>("briefType", new PropertyModel<>(model, "briefType"),
 			new ListModel<>(ProjectUtil.getBriefTypesWithVervanging(types)), new BriefTypeChoiceRenderer());
 		moment.setRequired(true);
 		add(moment);

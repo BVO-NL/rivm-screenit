@@ -33,7 +33,6 @@ import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.model.IModel;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(
@@ -49,10 +48,10 @@ public class AanvullendeRadiologieGegevensPage extends AanvullendeMammaAfdelingG
 
 	public AanvullendeRadiologieGegevensPage()
 	{
-		RadiologieAfdeling mammapoli = (RadiologieAfdeling) getCurrentSelectedOrganisatie();
+		var mammapoli = (RadiologieAfdeling) getCurrentSelectedOrganisatie();
 		add(new OrganisatiePaspoortPanel("paspoort", ModelUtil.sModel(mammapoli)));
 
-		final IModel<RadiologieAfdeling> model = ModelUtil.cModel(mammapoli);
+		final var model = ModelUtil.cModel(mammapoli);
 		setDefaultModel(model);
 
 		Form<Void> form = new ScreenitForm<>("form");

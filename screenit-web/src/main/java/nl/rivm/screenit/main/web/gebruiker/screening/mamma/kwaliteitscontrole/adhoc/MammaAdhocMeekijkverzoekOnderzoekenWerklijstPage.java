@@ -110,9 +110,9 @@ public class MammaAdhocMeekijkverzoekOnderzoekenWerklijstPage extends MammaScree
 	{
 		super.onInitialize();
 
-		MammaAdhocMeekijkverzoekOnderzoekenDataProvider onderzoekDataProvider = new MammaAdhocMeekijkverzoekOnderzoekenDataProvider(zoekObjectModel);
+		var onderzoekDataProvider = new MammaAdhocMeekijkverzoekOnderzoekenDataProvider(zoekObjectModel);
 		zoekObjectModel.getObject().setStatus(MammaVisitatieOnderzoekStatus.NIET_GEZIEN);
-		List<MammaScreeningsEenheid> mogelijkeScreeningsEenheden = screeningsEenheidService.getActieveScreeningsEenheden();
+		var mogelijkeScreeningsEenheden = screeningsEenheidService.getActieveScreeningsEenheden();
 		zoekObjectModel.getObject().setScreeningsEenheden(mogelijkeScreeningsEenheden);
 		screeningsEenhedenModel.setObject(mogelijkeScreeningsEenheden);
 		zoekForm = new Form<>("form", zoekObjectModel);
@@ -120,14 +120,14 @@ public class MammaAdhocMeekijkverzoekOnderzoekenWerklijstPage extends MammaScree
 		screeningsEenhedenSelector = createScreeningsEenhedenSelector();
 		zoekForm.add(screeningsEenhedenSelector);
 
-		ScreenitDropdown<MammaVisitatieOnderzoekStatus> onderzoekStatusSelector = new ScreenitDropdown<>(
+		var onderzoekStatusSelector = new ScreenitDropdown<MammaVisitatieOnderzoekStatus>(
 			"status",
 			Arrays.asList(MammaVisitatieOnderzoekStatus.values()),
 			new EnumChoiceRenderer<>(this));
 		onderzoekStatusSelector.setNullValid(true);
 		zoekForm.add(onderzoekStatusSelector);
 
-		IndicatingAjaxSubmitLink zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
+		var zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
 		{
 
 			@Override
@@ -159,7 +159,7 @@ public class MammaAdhocMeekijkverzoekOnderzoekenWerklijstPage extends MammaScree
 		columns.add(new PropertyColumn<>(Model.of("SE"), "se.naam", "onderzoek.screeningsEenheid.naam"));
 		columns.add(new EnumPropertyColumn<>(Model.of("Status"), "status", "status", this));
 
-		ScreenitDataTable<MammaAdhocMeekijkverzoek, String> table = new ScreenitDataTable<>("resultaten", columns,
+		var table = new ScreenitDataTable<>("resultaten", columns,
 			onderzoekDataProvider, 10,
 			Model.of("onderzoek(en)"))
 		{
@@ -176,7 +176,7 @@ public class MammaAdhocMeekijkverzoekOnderzoekenWerklijstPage extends MammaScree
 			@Override
 			public Panel getCustomPanel(String id)
 			{
-				IModel<Integer> gezienModel = new IModel<Integer>()
+				var gezienModel = new IModel<Integer>()
 				{
 					@Override
 					public Integer getObject()
@@ -187,7 +187,7 @@ public class MammaAdhocMeekijkverzoekOnderzoekenWerklijstPage extends MammaScree
 
 				};
 
-				IModel<Integer> nietGezienModel = new IModel<Integer>()
+				var nietGezienModel = new IModel<Integer>()
 				{
 					@Override
 					public Integer getObject()
@@ -219,7 +219,7 @@ public class MammaAdhocMeekijkverzoekOnderzoekenWerklijstPage extends MammaScree
 			onderzoekenIdMapping.put(meekijkverzoek.getOnderzoek().getId(), meekijkverzoek.getId());
 		}
 
-		MammaAdhocMeekijkverzoek verzoek = model.getObject();
+		var verzoek = model.getObject();
 		setResponsePage(new MammaAdhocMeekijkverzoekOnderzoekInzienPage(verzoek.getOnderzoek().getId(), onderzoekenIdMapping, getClass()));
 	}
 

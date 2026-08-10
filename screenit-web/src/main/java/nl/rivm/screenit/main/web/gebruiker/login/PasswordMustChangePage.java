@@ -49,8 +49,8 @@ public class PasswordMustChangePage extends LoginBasePage
 			@Override
 			protected void onWachtwoordChanged(AjaxRequestTarget target, Medewerker medewerker)
 			{
-				OrganisatieMedewerker organisatieMedewerker = (OrganisatieMedewerker) PasswordMustChangePage.this.getDefaultModelObject();
-				ScreenitSession session = ScreenitSession.get();
+				var organisatieMedewerker = (OrganisatieMedewerker) PasswordMustChangePage.this.getDefaultModelObject();
+				var session = ScreenitSession.get();
 				Component pageForOrganisatieMedewerker = session.getPageForOrganisatieMedewerker(organisatieMedewerker);
 				if (pageForOrganisatieMedewerker != null)
 				{

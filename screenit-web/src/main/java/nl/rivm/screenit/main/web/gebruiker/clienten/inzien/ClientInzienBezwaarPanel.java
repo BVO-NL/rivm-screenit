@@ -82,14 +82,14 @@ public class ClientInzienBezwaarPanel extends GenericPanel<Client>
 
 	private void addOrReplaceActueleBezwarenContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("actueleBezwarenContainer");
+		var container = new WebMarkupContainer("actueleBezwarenContainer");
 		container.setOutputMarkupPlaceholderTag(true);
 		container.setVisible(false);
 
-		List<BezwaarMoment> momenten = getModelObject().getBezwaarMomenten();
+		var momenten = getModelObject().getBezwaarMomenten();
 		Collections.sort(momenten, new BezwaarComparator());
 
-		BezwaarMoment laatsteAfgerondeBezwaarMoment = getLaatstAfgerondeBezwaarMoment(momenten);
+		var laatsteAfgerondeBezwaarMoment = getLaatstAfgerondeBezwaarMoment(momenten);
 		Component bezwaarTekstPanel = new EmptyPanel("bezwaarTekstPanel");
 		if (laatsteAfgerondeBezwaarMoment != null && !BezwaarUtil.isVerwijderDossierHetEnigeBezwaar(laatsteAfgerondeBezwaarMoment)
 			&& !laatsteAfgerondeBezwaarMoment.getBezwaren().isEmpty())
@@ -109,15 +109,15 @@ public class ClientInzienBezwaarPanel extends GenericPanel<Client>
 
 	private void addOrReplaceMeldingContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("meldingenContainer");
+		var container = new WebMarkupContainer("meldingenContainer");
 		container.setOutputMarkupPlaceholderTag(true);
 
-		Client client = getModelObject();
-		ArrayList<BezwaarDossierGebeurtenis> listMeldingen = new ArrayList<>();
+		var client = getModelObject();
+		var listMeldingen = new ArrayList<BezwaarDossierGebeurtenis>();
 
-		for (BezwaarMoment bezwaar : client.getBezwaarMomenten())
+		for (var bezwaar : client.getBezwaarMomenten())
 		{
-			BezwaarDossierGebeurtenis c = new BezwaarDossierGebeurtenis(bezwaarOmschrijving(bezwaar), bezwaar.getStatusDatum());
+			var c = new BezwaarDossierGebeurtenis(bezwaarOmschrijving(bezwaar), bezwaar.getStatusDatum());
 			c.setDossierGebeurtenisType(DossierGebeurtenisType.BEZWAAR);
 			c.setBron(dossierService.bepaalGebeurtenisBron(bezwaar));
 			c.setBezwaarModel(ModelUtil.sModel(bezwaar));
@@ -129,8 +129,8 @@ public class ClientInzienBezwaarPanel extends GenericPanel<Client>
 			@Override
 			protected void populateItem(ListItem<BezwaarDossierGebeurtenis> item)
 			{
-				BezwaarDossierGebeurtenis clientMelding = item.getModelObject();
-				WebMarkupContainer meldingContainer = new WebMarkupContainer("melding");
+				var clientMelding = item.getModelObject();
+				var meldingContainer = new WebMarkupContainer("melding");
 				meldingContainer.add(new Label("omschrijving", new PropertyModel<String>(clientMelding, "omschrijving")));
 				meldingContainer.add(DateLabel.forDatePattern("tijd", Model.of(clientMelding.getTijd()), "dd-MM-yyyy HH:mm:ss"));
 				meldingContainer.add(new EnumLabel<>("bron", Model.of(clientMelding.getBron())));
@@ -166,7 +166,7 @@ public class ClientInzienBezwaarPanel extends GenericPanel<Client>
 	{
 		if (!momenten.isEmpty())
 		{
-			BezwaarMoment moment = momenten.get(0);
+			var moment = momenten.get(0);
 			if (AanvraagBriefStatus.VERWERKT.equals(moment.getStatus()))
 			{
 				return moment;
@@ -181,7 +181,7 @@ public class ClientInzienBezwaarPanel extends GenericPanel<Client>
 
 	private String bezwaarOmschrijving(BezwaarMoment bezwaar)
 	{
-		StringBuilder omschrijving = new StringBuilder();
+		var omschrijving = new StringBuilder();
 		omschrijving.append(getString("gebruik.gegevens.aangepast"));
 
 		if (AanvraagBriefStatus.VERWERKT == bezwaar.getStatus() && bezwaar.getBezwaarBrief() != null)
@@ -194,7 +194,7 @@ public class ClientInzienBezwaarPanel extends GenericPanel<Client>
 	@Override
 	public boolean isVisible()
 	{
-		Client client = getModelObject();
+		var client = getModelObject();
 		return !client.getBezwaarMomenten().isEmpty();
 	}
 }

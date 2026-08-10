@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.service.BezwaarService;
+import nl.rivm.screenit.service.BaseBezwaarService;
 
 import org.springframework.stereotype.Component;
 
@@ -38,7 +38,7 @@ import static nl.rivm.screenit.batch.jobs.generalis.clientgegevensverwijderen.Cl
 @AllArgsConstructor
 public class PersoonsgegevensVerwijderenWriter extends BaseWriter<Client>
 {
-	private final BezwaarService bezwaarService;
+	private final BaseBezwaarService bezwaarService;
 
 	@Override
 	protected void write(Client client) throws Exception

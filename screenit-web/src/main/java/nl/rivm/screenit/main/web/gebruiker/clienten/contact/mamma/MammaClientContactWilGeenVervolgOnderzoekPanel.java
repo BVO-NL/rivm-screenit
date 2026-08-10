@@ -23,18 +23,16 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact.mamma;
 
 import java.util.List;
 
-import nl.rivm.screenit.service.RondeNummerService;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActie;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
+import nl.rivm.screenit.service.RondeNummerService;
 
-import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public class MammaClientContactWilGeenVervolgOnderzoekPanel extends AbstractClientContactActiePanel<ClientContactActie>
 {
@@ -48,8 +46,8 @@ public class MammaClientContactWilGeenVervolgOnderzoekPanel extends AbstractClie
 	{
 		super(id, model);
 
-		MammaOnderzoek laatsteOnderzoek = client.getObject().getMammaDossier().getLaatsteScreeningRonde().getLaatsteOnderzoek();
-		MammaScreeningRonde screeningRonde = laatsteOnderzoek.getAfspraak().getUitnodiging().getScreeningRonde();
+		var laatsteOnderzoek = client.getObject().getMammaDossier().getLaatsteScreeningRonde().getLaatsteOnderzoek();
+		var screeningRonde = laatsteOnderzoek.getAfspraak().getUitnodiging().getScreeningRonde();
 
 		add(new Label("rondeNr", rondeNummerService.geefRondeNummer(screeningRonde)));
 		add(DateLabel.forDatePattern("datum", Model.of(laatsteOnderzoek.getCreatieDatum()), "dd-MM-yyyy HH:mm:ss"));

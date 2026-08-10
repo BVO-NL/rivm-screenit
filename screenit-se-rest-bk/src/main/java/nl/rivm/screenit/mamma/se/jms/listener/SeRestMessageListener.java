@@ -21,6 +21,9 @@ package nl.rivm.screenit.mamma.se.jms.listener;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Session;
+
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +35,6 @@ import nl.rivm.screenit.websocket.WebsocketBerichtType;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
-
-import jakarta.jms.JMSException;
-import jakarta.jms.Session;
 
 @Component
 @Slf4j
@@ -54,7 +54,7 @@ public class SeRestMessageListener implements SessionAwareMessageListener<Active
 
 			if (object instanceof String)
 			{
-				String bericht = (String) object;
+				var bericht = (String) object;
 				if (bericht.startsWith("SE"))
 				{
 					daglijstService.verstuurUpdate(bericht);

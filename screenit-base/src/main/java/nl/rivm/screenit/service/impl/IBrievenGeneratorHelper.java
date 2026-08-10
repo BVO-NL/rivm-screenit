@@ -73,7 +73,7 @@ public interface IBrievenGeneratorHelper<B extends Brief, MB extends MergedBriev
 		var briefType = BriefUtil.getOrigineleBrief(brief).getBriefType();
 		return BriefafdrukopdrachtDto.builder()
 			.code(briefType != null ? briefType.getBriefCode() : BriefType.FALLBACK_BRIEF_CODE)
-			.kenmerk(BriefUtil.maakKenmerk(brief))
+			.kenmerk(BriefUtil.maakParagonKenmerk(brief))
 			.timestamp(timestamp.format(DateTimeFormatter.ofPattern(Constants.DATE_FORMAT_YYYYMMDDHHMMSS)))
 			.codeAddendum("")
 			.entityId(brief.getId())

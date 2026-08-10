@@ -36,7 +36,13 @@ import org.springframework.data.jpa.repository.Query;
 public interface DashboardLogRegelRepository extends BaseJpaRepository<DashboardLogRegel>
 {
 	@Modifying
-	@Query("delete from DashboardLogRegel dl where dl.id in (select dl.id from DashboardLogRegel dl join dl.dashboardStatus ds join dl.logRegel lr join lr.logEvent le where ds.type = :dashboardType and le.level = :level)")
+	@Query("""
+		delete from DashboardLogRegel dl where dl.id in (
+		select dl.id from DashboardLogRegel dl
+		join DashboardStatus ds on ds = dl.dashboardStatus
+		join LogRegel lr on lr = dl.logRegel
+		join LogEvent le on le = lr.logEvent
+		where ds.type = :dashboardType and le.level = :level)""")
 	void maakDashboardStatusLeegVoorLandelijk(DashboardType dashboardType, Level level);
 
 	@Modifying

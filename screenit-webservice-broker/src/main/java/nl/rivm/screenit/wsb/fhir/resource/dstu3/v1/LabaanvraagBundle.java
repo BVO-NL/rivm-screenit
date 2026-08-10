@@ -171,7 +171,7 @@ public class LabaanvraagBundle extends Bundle implements LabaanvraagResource
 	@Override
 	public String getClientBsn()
 	{
-		String reference = getCompositionStream()
+		var reference = getCompositionStream()
 			.map(composition -> composition.getSubject())
 			.filter(Objects::nonNull)
 			.map(subject -> subject.getReference())
@@ -186,7 +186,7 @@ public class LabaanvraagBundle extends Bundle implements LabaanvraagResource
 	@Override
 	public String getPraktijkAgb()
 	{
-		String reference = getCompositionStream()
+		var reference = getCompositionStream()
 			.map(composition -> composition.getCustodian())
 			.filter(Objects::nonNull)
 			.map(custodian -> custodian.getReference())
@@ -201,7 +201,7 @@ public class LabaanvraagBundle extends Bundle implements LabaanvraagResource
 	@Override
 	public String getIndividueleAgb()
 	{
-		List<Reference> authorReferences = getAuthorReferences();
+		var authorReferences = getAuthorReferences();
 
 		if (authorReferences.size() == 1)
 		{
@@ -399,7 +399,7 @@ public class LabaanvraagBundle extends Bundle implements LabaanvraagResource
 	private Composition.SectionComponent getSectionComponent(CodeSystem code,
 		List<Composition.SectionComponent> sectionComponents)
 	{
-		List<Composition.SectionComponent> sectionComponentByCode = sectionComponents.stream()
+		var sectionComponentByCode = sectionComponents.stream()
 			.filter(sectionComponent -> Objects.nonNull(sectionComponent.getCode()))
 			.filter(sectionComponent -> Objects.nonNull(sectionComponent.getCode().getCoding()))
 			.filter(sectionComponent -> matchesCodeSystem(code, sectionComponent)).collect(Collectors.toUnmodifiableList());

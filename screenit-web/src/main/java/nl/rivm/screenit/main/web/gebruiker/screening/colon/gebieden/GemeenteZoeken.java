@@ -91,7 +91,7 @@ public class GemeenteZoeken extends GebiedenBeheerPage
 	public GemeenteZoeken()
 	{
 
-		final WebMarkupContainer refreshContainer = new WebMarkupContainer("refreshContainer");
+		final var refreshContainer = new WebMarkupContainer("refreshContainer");
 		refreshContainer.setOutputMarkupId(Boolean.TRUE);
 		add(refreshContainer);
 
@@ -102,8 +102,8 @@ public class GemeenteZoeken extends GebiedenBeheerPage
 		}
 		else
 		{
-			Gemeente zoekObject = new Gemeente();
-			ToegangLevel toeganglevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER_GEBIEDEN);
+			var zoekObject = new Gemeente();
+			var toeganglevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER_GEBIEDEN);
 			if (toeganglevel == ToegangLevel.REGIO)
 			{
 				zoekObject.setScreeningOrganisatie(ScreenitSession.get().getScreeningOrganisatie());
@@ -126,7 +126,7 @@ public class GemeenteZoeken extends GebiedenBeheerPage
 			}
 		});
 
-		ScreenitDataTable<Gemeente, String> gemeentes = new ScreenitDataTable<Gemeente, String>("gemeentes", columns, new GemeenteDataProvider(criteriaModel, NAAM), 10,
+		var gemeentes = new ScreenitDataTable<Gemeente, String>("gemeentes", columns, new GemeenteDataProvider(criteriaModel, NAAM), 10,
 			new Model<>("gemeentes"))
 		{
 			private static final long serialVersionUID = 1L;
@@ -134,7 +134,7 @@ public class GemeenteZoeken extends GebiedenBeheerPage
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<Gemeente> model)
 			{
-				Gemeente gemeente = model.getObject();
+				var gemeente = model.getObject();
 				setResponsePage(new GemeenteGegevens(ModelUtil.cRModel(gemeente)));
 			}
 
@@ -147,7 +147,7 @@ public class GemeenteZoeken extends GebiedenBeheerPage
 
 		zoekForm.add(new TextField<>("naam"));
 
-		AjaxSubmitLink submitLink = new AjaxSubmitLink("zoeken", zoekForm)
+		var submitLink = new AjaxSubmitLink("zoeken", zoekForm)
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -174,7 +174,7 @@ public class GemeenteZoeken extends GebiedenBeheerPage
 		var intakelocaties = new ArrayList<ColonIntakelocatie>();
 		organisaties.forEach(org -> intakelocaties.add((ColonIntakelocatie) Hibernate.unproxy(org)));
 		IModel<List<ColonIntakelocatie>> values = ModelUtil.listRModel(intakelocaties, false);
-		ScreenitDropdown<ColonIntakelocatie> intakelocatieSelect = new ScreenitDropdown<>("intakelocatie", new PropertyModel<ColonIntakelocatie>(this, "selectedIntakelocatie"),
+		var intakelocatieSelect = new ScreenitDropdown<ColonIntakelocatie>("intakelocatie", new PropertyModel<ColonIntakelocatie>(this, "selectedIntakelocatie"),
 			values);
 
 		intakelocatieSelect.setChoiceRenderer(new ChoiceRenderer<>("naam"));

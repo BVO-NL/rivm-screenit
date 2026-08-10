@@ -40,7 +40,7 @@ public class TestCervixHerdrukAction extends TestCervixVervolgKeuzeAction
 	@Override
 	public void execute()
 	{
-		for (Client client : clienten)
+		for (var client : clienten)
 		{
 			cervixTestTimelineService.herdruk(client.getCervixDossier().getLaatsteScreeningRonde(), ScreenitSession.get().getIngelogdAccount());
 		}

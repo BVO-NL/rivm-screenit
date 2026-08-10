@@ -22,12 +22,9 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be;
  */
 
 import java.util.Arrays;
-import java.util.List;
 
 import nl.rivm.screenit.main.service.mamma.MammaFollowUpService;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
-import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag;
-import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
@@ -120,7 +117,7 @@ public class MammaBeoordelenHistorischeRondePanel extends AbstractMammaRondePane
 
 	private void createVisueleInspectiePanel(WebMarkupContainer panelContainer)
 	{
-		MammaVisueleInspectiePanel visueleInspectiePanel = new MammaVisueleInspectiePanel(VISUELE_INSPECTIE_PANEL_MARKUP_ID, new PropertyModel<>(getModel(), "onderzoek"));
+		var visueleInspectiePanel = new MammaVisueleInspectiePanel(VISUELE_INSPECTIE_PANEL_MARKUP_ID, new PropertyModel<>(getModel(), "onderzoek"));
 		panelContainer.addOrReplace(visueleInspectiePanel);
 	}
 
@@ -132,23 +129,23 @@ public class MammaBeoordelenHistorischeRondePanel extends AbstractMammaRondePane
 	private void createMBBerPanel(WebMarkupContainer panelContainer)
 	{
 		IModel<MammaOnderzoek> onderzoekModel = new CompoundPropertyModel<>(new PropertyModel<>(getModel(), "onderzoek"));
-		MammaMBBBeoordelingPanel mbberBevindingenPanel = new MammaMBBBeoordelingPanel(MBBER_BEVINDINGEN_PANEL_MARKUP_ID, onderzoekModel, true);
+		var mbberBevindingenPanel = new MammaMBBBeoordelingPanel(MBBER_BEVINDINGEN_PANEL_MARKUP_ID, onderzoekModel, true);
 		panelContainer.addOrReplace(mbberBevindingenPanel);
 	}
 
 	private void createLezingenPanel(WebMarkupContainer panelContainer)
 	{
-		MammaHistorischeLezingenPanel result = new MammaHistorischeLezingenPanel(LEZINGEN_PANEL_MARKUP_ID, getModel());
+		var result = new MammaHistorischeLezingenPanel(LEZINGEN_PANEL_MARKUP_ID, getModel());
 		panelContainer.addOrReplace(result);
 	}
 
 	private void createRedenenFotobesprekingPanel(WebMarkupContainer panelContainer)
 	{
-		MammaLezing eersteLezing = getModelObject().getEersteLezing();
-		MammaLezing tweedeLezing = getModelObject().getTweedeLezing();
+		var eersteLezing = getModelObject().getEersteLezing();
+		var tweedeLezing = getModelObject().getTweedeLezing();
 
-		String redenenFotobesprekingRadioloogTekst = beoordelingService.getMammaLezingEnumsTekst(MammaLezing::getRedenenFotobesprekingRadioloog, eersteLezing, tweedeLezing);
-		String redenenFotobesprekingMbberTekst = beoordelingService.getMammaLezingEnumsTekst(MammaLezing::getRedenenFotobesprekingMbber, eersteLezing, tweedeLezing);
+		var redenenFotobesprekingRadioloogTekst = beoordelingService.getMammaLezingEnumsTekst(MammaLezing::getRedenenFotobesprekingRadioloog, eersteLezing, tweedeLezing);
+		var redenenFotobesprekingMbberTekst = beoordelingService.getMammaLezingEnumsTekst(MammaLezing::getRedenenFotobesprekingMbber, eersteLezing, tweedeLezing);
 
 		panelContainer.addOrReplace(
 			new MammaBeRedenenFotobesprekingHistoriesPanel(REDENEN_FOTOBESPREKING_RADIOLOOG_MARKUP_ID, getModel(), "Redenen fotobespreking radioloog",
@@ -172,7 +169,7 @@ public class MammaBeoordelenHistorischeRondePanel extends AbstractMammaRondePane
 
 	private void createFollowUpPathologiePanel(WebMarkupContainer panelContainer)
 	{
-		List<MammaFollowUpVerslag> followUpVerslagen = followUpService
+		var followUpVerslagen = followUpService
 			.getAfgerondeFollowUpPathologieVerslagen(getModelObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde());
 
 		if (!followUpVerslagen.isEmpty())
@@ -187,7 +184,7 @@ public class MammaBeoordelenHistorischeRondePanel extends AbstractMammaRondePane
 
 	private void createFollowUpRadiologiePanel(WebMarkupContainer panelContainer)
 	{
-		List<MammaFollowUpRadiologieVerslag> followUpVerslagen = followUpService
+		var followUpVerslagen = followUpService
 			.getIngevoerdeFollowUpRadiologieVerslagen(getModelObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde());
 
 		if (!followUpVerslagen.isEmpty())

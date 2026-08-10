@@ -63,8 +63,8 @@ public class MammaHuisartsBerichtServiceImpl implements MammaHuisartsBerichtServ
 	public MammaHuisartsBericht verstuurHuisartsBericht(MammaBeoordeling beoordeling, EnovationHuisarts huisarts, HuisartsBerichtType huisartsBerichtType,
 		boolean isOpnieuwVerzonden)
 	{
-		Client client = (Client) Hibernate.unproxy(baseBeoordelingService.getClientVanBeoordeling(beoordeling));
-		MailMergeContext context = new MailMergeContext();
+		var client = (Client) Hibernate.unproxy(baseBeoordelingService.getClientVanBeoordeling(beoordeling));
+		var context = new MailMergeContext();
 		context.setClient(client);
 
 		if (client.getPersoon().getOverlijdensdatum() != null)
@@ -76,7 +76,7 @@ public class MammaHuisartsBerichtServiceImpl implements MammaHuisartsBerichtServ
 		LOG.debug("Er wordt een HuisartsBericht gemaakt voor het HuisartsBerichtType: " + huisartsBerichtType + ", voor Client: "
 			+ client.getId());
 
-		final MammaHuisartsBericht huisartsBericht = maakHuisartsbericht(beoordeling, huisarts, huisartsBerichtType, isOpnieuwVerzonden);
+		final var huisartsBericht = maakHuisartsbericht(beoordeling, huisarts, huisartsBerichtType, isOpnieuwVerzonden);
 
 		ediService.maakHuisartsBericht(client, context, huisartsBericht);
 		hibernateService.saveOrUpdate(huisartsBericht);
@@ -88,9 +88,9 @@ public class MammaHuisartsBerichtServiceImpl implements MammaHuisartsBerichtServ
 
 	private MammaHuisartsBericht maakHuisartsbericht(MammaBeoordeling beoordeling, EnovationHuisarts huisarts, HuisartsBerichtType huisartsBerichtType, boolean isOpnieuwVerzonden)
 	{
-		ScreeningOrganisatie screeningOrganisatie = (ScreeningOrganisatie) Hibernate.unproxy(
+		var screeningOrganisatie = (ScreeningOrganisatie) Hibernate.unproxy(
 			beoordeling.getOnderzoek().getScreeningsEenheid().getBeoordelingsEenheid().getParent().getRegio());
-		final MammaHuisartsBericht huisartsBericht = new MammaHuisartsBericht();
+		final var huisartsBericht = new MammaHuisartsBericht();
 		huisartsBericht.setClient(baseBeoordelingService.getClientVanBeoordeling(beoordeling));
 		huisartsBericht.setBerichtType(huisartsBerichtType);
 		huisartsBericht.setScreeningsOrganisatie(screeningOrganisatie);

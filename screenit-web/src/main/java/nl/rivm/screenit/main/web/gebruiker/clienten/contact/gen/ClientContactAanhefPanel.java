@@ -50,12 +50,12 @@ public class ClientContactAanhefPanel extends AbstractClientContactActiePanel<Cl
 	{
 		super(id, model);
 		aanhefModel = Model.of(Aanhef.bepaalJuisteAanhef(client.getObject().getPersoon()));
-		RadioChoice<Aanhef> aanhefRadioChoice = new RadioChoice<>("aanhef", aanhefModel, Aanhef.aanhefVormenClienten(), new EnumChoiceRenderer<>()
+		var aanhefRadioChoice = new RadioChoice<Aanhef>("aanhef", aanhefModel, Aanhef.aanhefVormenClienten(), new EnumChoiceRenderer<>()
 		{
 			@Override
 			public Object getDisplayValue(Aanhef aanhef)
 			{
-				Client voorbeeld = client.getObject();
+				var voorbeeld = client.getObject();
 				voorbeeld.getPersoon().setAanhef(aanhef);
 				return NaamUtil.getGewensteAanspreekVorm(voorbeeld);
 			}

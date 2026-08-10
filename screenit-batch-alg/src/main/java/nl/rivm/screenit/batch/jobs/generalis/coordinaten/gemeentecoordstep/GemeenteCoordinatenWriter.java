@@ -47,18 +47,18 @@ public class GemeenteCoordinatenWriter implements ItemWriter<String>
 	@Override
 	public void write(Chunk<? extends String> chunk)
 	{
-		for (String item : chunk.getItems())
+		for (var item : chunk.getItems())
 		{
-			String[] lineParts = item.split(",");
+			var lineParts = item.split(",");
 
 			if (lineParts.length >= 10 && !lineParts[0].equals("pcnl_plaatsid"))
 			{
 
-				String plaatscode = lineParts[2];
-				String gemcode = lineParts[3];
-				String woonplaats = lineParts[4];
-				String latitude = lineParts[8];
-				String longitude = lineParts[9];
+				var plaatscode = lineParts[2];
+				var gemcode = lineParts[3];
+				var woonplaats = lineParts[4];
+				var latitude = lineParts[8];
+				var longitude = lineParts[9];
 				coordinatenService.updateGemeenteCoordinaten(gemcode, latitude, longitude);
 				woonplaatsService.saveOrUpdateWoonplaats(plaatscode, woonplaats, gemcode);
 			}

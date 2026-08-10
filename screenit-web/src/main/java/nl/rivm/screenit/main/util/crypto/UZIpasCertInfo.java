@@ -55,7 +55,7 @@ public class UZIpasCertInfo implements Serializable
 	public UZIpasCertInfo(String serial, Date geldigVanaf, Date geldigTot)
 	{
 		this.serial = serial;
-		String[] elementen = serial.split("-");
+		var elementen = serial.split("-");
 		this.oid = elementen[0];
 		this.versie = elementen[1];
 		this.uziCode = elementen[2];

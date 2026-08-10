@@ -21,21 +21,16 @@ package nl.rivm.screenit.main.util;
  * =========================LICENSE_END==================================
  */
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 public class TiffUtil
 {
@@ -43,35 +38,35 @@ public class TiffUtil
 	public static PDDocument tiffToPdfDocument(File tiffFile) throws IOException
 	{
 
-		PDDocument pdDocument = new PDDocument();
+		var pdDocument = new PDDocument();
 
-		try (ImageInputStream is = ImageIO.createImageInputStream(tiffFile))
+		try (var is = ImageIO.createImageInputStream(tiffFile))
 		{
 			if (is == null || is.length() == 0)
 			{
 				throw new IOException("Kon Tiff bestand niet vinden of tiff bestand is leeg.");
 			}
 
-			Iterator<ImageReader> iterator = ImageIO.getImageReaders(is);
+			var iterator = ImageIO.getImageReaders(is);
 			if (iterator == null || !iterator.hasNext())
 			{
 				throw new IOException("File format wordt niet ondersteund.");
 			}
-			ImageReader reader = iterator.next();
+			var reader = iterator.next();
 			reader.setInput(is);
 
-			int aantalImages = reader.getNumImages(true);
+			var aantalImages = reader.getNumImages(true);
 
-			for (int i = 0; i < aantalImages; i++)
+			for (var i = 0; i < aantalImages; i++)
 			{
 
-				BufferedImage image = reader.read(i);
-				final int width = image.getWidth();
-				final int height = image.getHeight();
-				PDPage page = new PDPage(new PDRectangle(width, height));
+				var image = reader.read(i);
+				final var width = image.getWidth();
+				final var height = image.getHeight();
+				var page = new PDPage(new PDRectangle(width, height));
 				pdDocument.addPage(page);
-				final PDImageXObject imageXObject = LosslessFactory.createFromImage(pdDocument, image);
-				try (PDPageContentStream contentStream = new PDPageContentStream(pdDocument, page))
+				final var imageXObject = LosslessFactory.createFromImage(pdDocument, image);
+				try (var contentStream = new PDPageContentStream(pdDocument, page))
 				{
 					contentStream.drawImage(imageXObject, 0, 0, width, height);
 				}

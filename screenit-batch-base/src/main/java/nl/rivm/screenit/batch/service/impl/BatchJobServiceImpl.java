@@ -28,7 +28,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -72,9 +71,9 @@ public class BatchJobServiceImpl implements BatchJobService
 		{
 			return "";
 		}
-		StringBuilder stringBuilder = new StringBuilder();
+		var stringBuilder = new StringBuilder();
 
-		for (Entry<String, Serializable> entry : map.entrySet())
+		for (var entry : map.entrySet())
 		{
 			if (stringBuilder.length() > 0)
 			{
@@ -82,7 +81,7 @@ public class BatchJobServiceImpl implements BatchJobService
 			}
 			stringBuilder.append(entry.getKey());
 			stringBuilder.append("=");
-			Serializable value = entry.getValue();
+			var value = entry.getValue();
 			if (value instanceof Number || value instanceof String)
 			{
 				stringBuilder.append(value.getClass().getName());
@@ -99,17 +98,17 @@ public class BatchJobServiceImpl implements BatchJobService
 	{
 		Map<String, Serializable> map = new HashMap<>();
 
-		String[] nameValuePairs = input.split("&");
-		for (String nameValuePair : nameValuePairs)
+		var nameValuePairs = input.split("&");
+		for (var nameValuePair : nameValuePairs)
 		{
-			String[] nameValue = nameValuePair.split("=");
+			var nameValue = nameValuePair.split("=");
 			try
 			{
-				String value = nameValue[1];
-				String[] splittedValue = value.split("->");
+				var value = nameValue[1];
+				var splittedValue = value.split("->");
 
-				Class<?> clazz = Class.forName(splittedValue[0]);
-				Serializable valueObject = (Serializable) ConstructorUtils.invokeConstructor(clazz, splittedValue[1]);
+				var clazz = Class.forName(splittedValue[0]);
+				var valueObject = (Serializable) ConstructorUtils.invokeConstructor(clazz, splittedValue[1]);
 				map.put(nameValue[0], valueObject);
 			}
 			catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e)
@@ -132,7 +131,7 @@ public class BatchJobServiceImpl implements BatchJobService
 	@Override
 	public JobType getHeadOfBatchJobQueue(BatchApplicationType batchApplicationType)
 	{
-		JobType peeked = peekQueuedEntry(batchApplicationType);
+		var peeked = peekQueuedEntry(batchApplicationType);
 		if (peeked != null)
 		{
 			LOG.trace("headFromQueue " + peeked.name());
@@ -144,7 +143,7 @@ public class BatchJobServiceImpl implements BatchJobService
 	public Map<String, Serializable> dequeueHead(JobType jobType)
 	{
 		LOG.info("Start dequeueHead");
-		Map<String, Serializable> jobArgs = pollQueuedEntry(jobType);
+		var jobArgs = pollQueuedEntry(jobType);
 		LOG.info("End dequeueHead {}", jobArgs);
 		return jobArgs;
 	}
@@ -160,9 +159,9 @@ public class BatchJobServiceImpl implements BatchJobService
 			if (types != null && !types.isEmpty())
 			{
 
-				for (String type : types)
+				for (var type : types)
 				{
-					JobType queuedJob = JobType.valueOf(type);
+					var queuedJob = JobType.valueOf(type);
 
 					if (queuedJob.getBatchApplicationType().equals(batchApplicationType))
 					{
@@ -202,12 +201,12 @@ public class BatchJobServiceImpl implements BatchJobService
 			if (id != null)
 			{
 
-				Object queueEntry = entityManager.createNativeQuery(BatchQueue.SQL_PEEK_BATCH1).setParameter(BatchQueue.ID_PARAM, id).getSingleResult();
+				var queueEntry = entityManager.createNativeQuery(BatchQueue.SQL_PEEK_BATCH1).setParameter(BatchQueue.ID_PARAM, id).getSingleResult();
 
 				if (queueEntry != null)
 				{
-					Object[] queueRow = (Object[]) queueEntry;
-					JobType selectedJobType = JobType.valueOf((String) queueRow[0]);
+					var queueRow = (Object[]) queueEntry;
+					var selectedJobType = JobType.valueOf((String) queueRow[0]);
 					LOG.info("poll jobType " + selectedJobType.name());
 					jobArgs = stringToMap((String) queueRow[1]);
 				}
@@ -247,7 +246,7 @@ public class BatchJobServiceImpl implements BatchJobService
 		dependendJobs.removeAll(jobType.getParallelleJobs());
 
 		LOG.info("Afhankelijke jobs locken. ({}) jobs.", dependendJobs.size());
-		for (JobType jt : dependendJobs)
+		for (var jt : dependendJobs)
 		{
 
 			distributedLockService.lockAndWait(getJobLockName(jt));

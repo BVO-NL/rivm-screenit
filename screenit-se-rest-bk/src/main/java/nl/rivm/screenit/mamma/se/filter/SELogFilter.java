@@ -23,6 +23,7 @@ package nl.rivm.screenit.mamma.se.filter;
 
 import java.io.IOException;
 
+import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
@@ -35,8 +36,6 @@ import nl.rivm.screenit.mamma.se.SERequestHeader;
 import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.MDC;
 
-import jakarta.servlet.Filter;
-
 public class SELogFilter implements Filter
 {
 	@Override
@@ -44,12 +43,12 @@ public class SELogFilter implements Filter
 	{
 		if (request instanceof HttpServletRequest)
 		{
-			HttpServletRequest httpRequest = (HttpServletRequest) request;
+			var httpRequest = (HttpServletRequest) request;
 
 			MDC.put("SE", httpRequest.getHeader(SERequestHeader.SE_CODE));
 			MDC.put("PROXY-DT", httpRequest.getHeader(SERequestHeader.SE_PROXY_DATUMTIJD));
 
-			String accountId = httpRequest.getHeader(SERequestHeader.ACCOUNT_ID);
+			var accountId = httpRequest.getHeader(SERequestHeader.ACCOUNT_ID);
 			if (NumberUtils.isNumber(accountId))
 			{
 				MDC.put("A", "M" + accountId);

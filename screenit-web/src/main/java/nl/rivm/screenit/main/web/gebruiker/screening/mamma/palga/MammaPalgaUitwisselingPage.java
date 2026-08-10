@@ -30,14 +30,12 @@ import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.OrganisatieType;
-import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.mamma.MammaPalgaService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.markup.html.panel.EmptyPanel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
 
@@ -54,7 +52,7 @@ public class MammaPalgaUitwisselingPage extends MedewerkerBasePage
 	public MammaPalgaUitwisselingPage()
 	{
 		add(new MammaPalgaImportPanel("importPanel"));
-		IModel<UploadDocument> export = ModelUtil.cModel(palgaService.getExport());
+		var export = ModelUtil.cModel(palgaService.getExport());
 		add(export != null ? new MammaPalgaExportPanel("exportPanel", export) : new EmptyPanel("exportPanel"));
 	}
 

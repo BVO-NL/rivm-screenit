@@ -48,7 +48,7 @@ public class MammaImsWijzigingenDoorsturenWriter extends BaseWriter<Client>
 	protected void write(Client client)
 	{
 		List<GbaMutatie> bsnMarkerMutaties = new ArrayList<>();
-		boolean gegevensGewijzigdMarkerGevonden = false;
+		var gegevensGewijzigdMarkerGevonden = false;
 		for (var mutatie : client.getGbaMutaties())
 		{
 			if (StringUtils.contains(mutatie.getAanvullendeInformatie(), Constants.MAMMA_IMS_CLIENT_BSN_GEWIJZIGD_MARKER))

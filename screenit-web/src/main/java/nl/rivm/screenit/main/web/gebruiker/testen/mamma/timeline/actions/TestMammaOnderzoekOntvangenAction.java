@@ -42,7 +42,7 @@ public class TestMammaOnderzoekOntvangenAction extends TestMammaVervolgKeuzeActi
 	@Override
 	public void execute()
 	{
-		for (Client client : clienten)
+		for (var client : clienten)
 		{
 			mammaTestTimelineService.beeldenBeschikbaarBe(MammaScreeningRondeUtil.getLaatsteAfspraak(client.getMammaDossier().getLaatsteScreeningRonde()));
 		}

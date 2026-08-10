@@ -79,7 +79,7 @@ public class TemplateInzienPanel extends GenericPanel<Brief>
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		Date datum = BriefUtil.geefDatumVoorGebeurtenisoverzicht(getModelObject());
+		var datum = BriefUtil.geefDatumVoorGebeurtenisoverzicht(getModelObject());
 		maakBriefInzienContent(getModelObject(), datum);
 
 	}
@@ -87,10 +87,10 @@ public class TemplateInzienPanel extends GenericPanel<Brief>
 	private void maakBriefInzienContent(Brief brief, Date datum)
 	{
 		add(pdfDialog);
-		WebMarkupContainer inzienContainer = new WebMarkupContainer("inzienContainer");
+		var inzienContainer = new WebMarkupContainer("inzienContainer");
 		inzienContainer.setOutputMarkupId(true);
 
-		WebMarkupContainer inzienGroep = new WebMarkupContainer("inzienGroep");
+		var inzienGroep = new WebMarkupContainer("inzienGroep");
 
 		Label inzienMsg;
 		if (brief.getBriefDefinitie() != null)
@@ -126,7 +126,7 @@ public class TemplateInzienPanel extends GenericPanel<Brief>
 		}
 		var downloadLink = getDownloadLink(brief);
 		inzienGroep.add(downloadLink);
-		WebMarkupContainer inzienMeldingGroup = new WebMarkupContainer("inzienMeldingGroup");
+		var inzienMeldingGroup = new WebMarkupContainer("inzienMeldingGroup");
 		inzienMeldingGroup.setOutputMarkupId(true);
 		inzienMeldingGroup.add(inzienMsg);
 		inzienMeldingGroup.setVisible(inzienMsg.isVisible());

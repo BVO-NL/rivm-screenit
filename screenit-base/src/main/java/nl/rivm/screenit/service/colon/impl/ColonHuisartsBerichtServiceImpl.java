@@ -53,7 +53,7 @@ public class ColonHuisartsBerichtServiceImpl implements ColonHuisartsBerichtServ
 	@Override
 	public ColonHuisartsBericht verstuurHuisartsBericht(ColonHuisartsBericht huidigBericht, EnovationHuisarts huisarts)
 	{
-		MailMergeContext context = new MailMergeContext();
+		var context = new MailMergeContext();
 		context.setClient(huidigBericht.getClient());
 		return verstuurColonHuisartsBericht(huidigBericht.getClient(), huidigBericht.getScreeningsRonde(), huisarts, huidigBericht.getBerichtType(), context, true);
 	}
@@ -70,7 +70,7 @@ public class ColonHuisartsBerichtServiceImpl implements ColonHuisartsBerichtServ
 
 		if (huisarts != null)
 		{
-			ColonHuisartsBericht huisartsBericht = ediService.maakHuisartsBericht(berichtType, ColonHuisartsBerichtStatus.CONTROLE_NIET_NODIG, client,
+			var huisartsBericht = ediService.maakHuisartsBericht(berichtType, ColonHuisartsBerichtStatus.CONTROLE_NIET_NODIG, client,
 				huisarts, context, opnieuwVerzonden);
 			ediService.verstuurMedVry(huisartsBericht);
 			return huisartsBericht;

@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.rollenrechten;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +56,6 @@ import nl.rivm.screenit.security.IScreenitRealm;
 import nl.rivm.screenit.service.AutorisatieService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
-import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.cache.Cache;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -139,10 +136,10 @@ public class RolEditPanel extends GenericPanel<Rol>
 
 	private void addAlgemeneRolGegevens()
 	{
-		Rol rol = getModelObject();
+		var rol = getModelObject();
 
 		beginDataBevolkingsOnderzoeken = new ArrayList<>(rol.getBevolkingsonderzoeken());
-		ScreenitDropdown<Rol> parentRol = ComponentHelper.addDropDownChoiceINaam(rolForm, "parentRol", false, ModelUtil.listRModel(rolService.getParentRollen(rol)), false);
+		var parentRol = ComponentHelper.addDropDownChoiceINaam(rolForm, "parentRol", false, ModelUtil.listRModel(rolService.getParentRollen(rol)), false);
 		parentRol.setEnabled(magAanpassen);
 		parentRol.setNullValid(true);
 
@@ -153,7 +150,7 @@ public class RolEditPanel extends GenericPanel<Rol>
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				List<Recht> rechten = autorisatieService.getRechtWithBevolkingsonderzoek((List<Bevolkingsonderzoek>) onderzoeken.getConvertedInput());
+				var rechten = autorisatieService.getRechtWithBevolkingsonderzoek((List<Bevolkingsonderzoek>) onderzoeken.getConvertedInput());
 				rechtDropdown.setChoices(rechten);
 				target.add(permissiesContainer);
 			}
@@ -162,7 +159,7 @@ public class RolEditPanel extends GenericPanel<Rol>
 		onderzoeken.setEnabled(magAanpassen);
 		rolForm.add(onderzoeken);
 
-		FormComponent<String> textField = ComponentHelper.addTextField(rolForm, "naam", true, 255, false);
+		var textField = ComponentHelper.addTextField(rolForm, "naam", true, 255, false);
 
 		Map<String, Object> restrictions = new HashMap<>();
 		restrictions.put("actief", Boolean.TRUE);
@@ -182,9 +179,9 @@ public class RolEditPanel extends GenericPanel<Rol>
 			@Override
 			protected void populateItem(final ListItem<Permissie> item)
 			{
-				Permissie permissie = item.getModelObject();
+				var permissie = item.getModelObject();
 				item.setVisible(Boolean.TRUE.equals(permissie.getActief()));
-				String cssClass = "odd";
+				var cssClass = "odd";
 				if (item.getIndex() % 2 == 0)
 				{
 					cssClass = "even";
@@ -192,10 +189,10 @@ public class RolEditPanel extends GenericPanel<Rol>
 				item.add(new AttributeAppender("class", Model.of(cssClass), " "));
 				item.setDefaultModel(new CompoundPropertyModel<>(item.getModel()));
 
-				WebMarkupContainer toegangLevelContainer = new WebMarkupContainer("toegangLevelContainer");
+				var toegangLevelContainer = new WebMarkupContainer("toegangLevelContainer");
 				toegangLevelContainer.setOutputMarkupId(true);
 
-				ScreenitDropdown<ToegangLevel> toegangLevel = new ScreenitDropdown<>("toegangLevel", getToegangLevel(permissie),
+				var toegangLevel = new ScreenitDropdown<ToegangLevel>("toegangLevel", getToegangLevel(permissie),
 					new NaamChoiceRenderer<>());
 				toegangLevel.add(new OnChangeAjaxBehavior()
 				{
@@ -210,16 +207,16 @@ public class RolEditPanel extends GenericPanel<Rol>
 				toegangLevelContainer.add(toegangLevel);
 				item.add(toegangLevelContainer);
 
-				String bvos = "";
+				var bvos = "";
 				if (permissie.getRecht() != null)
 				{
 					bvos = Bevolkingsonderzoek.getAfkortingen(permissie.getRecht().getBevolkingsonderzoeken());
 				}
 				item.add(new Label("rechtBvoVast", Model.of(bvos)));
 
-				WebMarkupContainer actieContainer = new WebMarkupContainer("actieContainer");
+				var actieContainer = new WebMarkupContainer("actieContainer");
 				actieContainer.setOutputMarkupId(true);
-				ScreenitDropdown<Actie> actie = new ScreenitDropdown<>("actie", getActies(permissie), new NaamChoiceRenderer<>());
+				var actie = new ScreenitDropdown<Actie>("actie", getActies(permissie), new NaamChoiceRenderer<>());
 				actie.setRequired(true);
 
 				actie.add(new OnChangeAjaxBehavior()
@@ -234,17 +231,17 @@ public class RolEditPanel extends GenericPanel<Rol>
 				actieContainer.add(actie);
 				item.add(actieContainer);
 
-				List<Bevolkingsonderzoek> bevolkingsonderzoeken = (List<Bevolkingsonderzoek>) onderzoeken.getConvertedInput();
+				var bevolkingsonderzoeken = (List<Bevolkingsonderzoek>) onderzoeken.getConvertedInput();
 				if (bevolkingsonderzoeken == null)
 				{
 					bevolkingsonderzoeken = permissie.getRol().getBevolkingsonderzoeken();
 				}
-				List<Recht> rechten = autorisatieService.getRechtWithBevolkingsonderzoek(bevolkingsonderzoeken);
+				var rechten = autorisatieService.getRechtWithBevolkingsonderzoek(bevolkingsonderzoeken);
 				if (item.getModel().getObject().getRecht() != null && !rechten.contains(item.getModel().getObject().getRecht()))
 				{
 					rechten.add(item.getModel().getObject().getRecht());
 				}
-				INaamComparator comparator = new INaamComparator();
+				var comparator = new INaamComparator();
 				rechten.sort(comparator);
 				rechten.remove(Recht.CLIENT_DASHBOARD);
 				rechten.remove(Recht.CLIENT_GEGEVENS);
@@ -276,7 +273,7 @@ public class RolEditPanel extends GenericPanel<Rol>
 					@Override
 					protected void onUpdate(AjaxRequestTarget target)
 					{
-						Permissie permissie = item.getModelObject();
+						var permissie = item.getModelObject();
 						actie.setChoices(getActies(permissie));
 						toegangLevel.setChoices(getToegangLevel(permissie));
 						target.add(toegangLevelContainer);
@@ -294,9 +291,9 @@ public class RolEditPanel extends GenericPanel<Rol>
 				}
 				rechtDropdownContainer.add(rechtVast);
 
-				final WebMarkupContainer verwijderColumn = new WebMarkupContainer("verwijderColumn");
+				final var verwijderColumn = new WebMarkupContainer("verwijderColumn");
 				verwijderColumn.setVisible(magAanpassen);
-				FormulierIndicatingAjaxSubmitLink permissieVerwijderen = new FormulierIndicatingAjaxSubmitLink("permissieVerwijderen", rolForm)
+				var permissieVerwijderen = new FormulierIndicatingAjaxSubmitLink("permissieVerwijderen", rolForm)
 				{
 					@Override
 					protected void onSubmit(AjaxRequestTarget target)
@@ -323,12 +320,12 @@ public class RolEditPanel extends GenericPanel<Rol>
 
 	private static String getOmschrijvenEnAfkortingenBevolkingsonderzoeken(Recht recht)
 	{
-		StringBuilder builder = new StringBuilder(recht.getNaam());
+		var builder = new StringBuilder(recht.getNaam());
 		if (recht.getBevolkingsonderzoeken().length > 0)
 		{
 			builder.append(" - ");
 			builder.append(recht.getBevolkingsonderzoeken()[0].getAfkorting());
-			for (int i = 1; i < recht.getBevolkingsonderzoeken().length; i++)
+			for (var i = 1; i < recht.getBevolkingsonderzoeken().length; i++)
 			{
 				builder.append(", ");
 				builder.append(recht.getBevolkingsonderzoeken()[i].getAfkorting());
@@ -341,7 +338,7 @@ public class RolEditPanel extends GenericPanel<Rol>
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		Rol rol = getModelObject();
+		var rol = getModelObject();
 		initieleRol = Model.of(rolMapper.rolToDto(rol));
 
 		rolForm = new RolForm("rolForm", getModel());
@@ -353,12 +350,12 @@ public class RolEditPanel extends GenericPanel<Rol>
 		permissiesContainer.setOutputMarkupId(true);
 		permissiesContainer.add(getPermissieListView());
 
-		final WebMarkupContainer verwijderHeader = new WebMarkupContainer("verwijderHeader");
+		final var verwijderHeader = new WebMarkupContainer("verwijderHeader");
 		verwijderHeader.setVisible(magAanpassen);
 		permissiesContainer.add(verwijderHeader);
 		rolForm.add(permissiesContainer);
 
-		FormulierIndicatingAjaxSubmitLink opslaan = opslaanAjaxLink();
+		var opslaan = opslaanAjaxLink();
 
 		opslaan.setVisible(magAanpassen);
 		rolForm.add(opslaan);
@@ -390,7 +387,7 @@ public class RolEditPanel extends GenericPanel<Rol>
 			}
 		};
 
-		Label labelActiverenKnop = new Label("inActiverenTitle", "Inactiveren");
+		var labelActiverenKnop = new Label("inActiverenTitle", "Inactiveren");
 		if (Boolean.FALSE.equals(rol.getActief()))
 		{
 			labelActiverenKnop = new Label("inActiverenTitle", "Activeren");
@@ -410,14 +407,14 @@ public class RolEditPanel extends GenericPanel<Rol>
 		};
 		rolForm.add(annuleren);
 
-		IndicatingAjaxLink<Rol> permissieToevoegenKnop = new IndicatingAjaxLink<>("permissieToevoegen", getModel())
+		var permissieToevoegenKnop = new IndicatingAjaxLink<>("permissieToevoegen", getModel())
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				Rol rol = getModelObject();
+				var rol = getModelObject();
 
-				Permissie nieuwPermissie = new Permissie(rol);
+				var nieuwPermissie = new Permissie(rol);
 				rol.getPermissies().add(nieuwPermissie);
 				updateTotaalPermissies(rol.getPermissies());
 				target.add(permissiesContainer);
@@ -436,14 +433,14 @@ public class RolEditPanel extends GenericPanel<Rol>
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				Rol rol = getModelObject();
+				var rol = getModelObject();
 				List<String> messages = new ArrayList<>();
 				if (heeftRechtVanNietToegestaandeBVOs())
 				{
 					error(getLocalizer().getString("error.recht.nvt.bvo", this));
 					return;
 				}
-				Map<String, List<Bevolkingsonderzoek>> resultaten = vergelijkArrays(beginDataBevolkingsOnderzoeken, rol.getBevolkingsonderzoeken());
+				var resultaten = vergelijkArrays(beginDataBevolkingsOnderzoeken, rol.getBevolkingsonderzoeken());
 
 				if (rol.getId() != null && (!resultaten.get("toegevoegd").isEmpty() || !resultaten.get("verwijderd").isEmpty())
 					&& medewerkerService.zijnErOrganisatieMedewerkersMetRol(rol))
@@ -532,7 +529,7 @@ public class RolEditPanel extends GenericPanel<Rol>
 
 	private boolean heeftRechtVanNietToegestaandeBVOs()
 	{
-		final Collection<Bevolkingsonderzoek> input = onderzoeken.getConvertedInput();
+		final var input = onderzoeken.getConvertedInput();
 		return getModelObject()
 			.getPermissies()
 			.stream()
@@ -544,11 +541,11 @@ public class RolEditPanel extends GenericPanel<Rol>
 	private void verwijderPermissie(Permissie permissieOmTeVerwijderen, AjaxRequestTarget target)
 	{
 		permissieOmTeVerwijderen.setActief(false);
-		Rol rol = permissieOmTeVerwijderen.getRol();
+		var rol = permissieOmTeVerwijderen.getRol();
 
-		boolean erZijnNogActievePermissiesOver = false;
-		List<Permissie> permissies = rol.getPermissies();
-		for (Permissie permissie : permissies)
+		var erZijnNogActievePermissiesOver = false;
+		var permissies = rol.getPermissies();
+		for (var permissie : permissies)
 		{
 			if (Boolean.TRUE.equals(permissie.getActief()))
 			{
@@ -559,7 +556,7 @@ public class RolEditPanel extends GenericPanel<Rol>
 
 		if (!erZijnNogActievePermissiesOver)
 		{
-			Permissie nieuwPermissie = new Permissie(rol);
+			var nieuwPermissie = new Permissie(rol);
 			permissies.add(nieuwPermissie);
 		}
 		updateTotaalPermissies(permissies);
@@ -630,7 +627,7 @@ public class RolEditPanel extends GenericPanel<Rol>
 
 	private void clearAuthorizationCache()
 	{
-		Cache<Object, AuthorizationInfo> cache = realm.getAuthorizationCache();
+		var cache = realm.getAuthorizationCache();
 		if (cache != null)
 		{
 			cache.clear();
@@ -678,13 +675,13 @@ public class RolEditPanel extends GenericPanel<Rol>
 				{
 					if (message.getLevel() == FeedbackMessage.ERROR)
 					{
-						FormComponent<?> comp = (FormComponent<?>) message.getReporter();
+						var comp = (FormComponent<?>) message.getReporter();
 						if (message.getMessage() instanceof ValidationErrorFeedback)
 						{
-							ValidationErrorFeedback errorFeedback = (ValidationErrorFeedback) message.getMessage();
+							var errorFeedback = (ValidationErrorFeedback) message.getMessage();
 							if (errorFeedback.getError() instanceof ValidationError)
 							{
-								ValidationError validationError = (ValidationError) errorFeedback.getError();
+								var validationError = (ValidationError) errorFeedback.getError();
 								return comp.isRequired() && validationError.getKeys().contains("Required");
 							}
 						}

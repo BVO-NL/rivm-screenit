@@ -22,8 +22,6 @@ package nl.rivm.screenit.service.cervix.impl;
  */
 
 import nl.rivm.screenit.model.ScreeningRondeStatus;
-import nl.rivm.screenit.model.cervix.CervixLabformulier;
-import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixLabformulierStatus;
 import nl.rivm.screenit.model.cervix.enums.CervixUitstrijkjeStatus;
@@ -38,13 +36,13 @@ public class CervixAanvraagServiceImpl implements CervixAanvraagService
 	@Override
 	public boolean magDigitaalLabformulierAanvragen(CervixUitstrijkje uitstrijkje)
 	{
-		CervixScreeningRonde laatsteScreeningRonde = uitstrijkje.getUitnodiging().getScreeningRonde().getDossier().getLaatsteScreeningRonde();
-		CervixLabformulier labformulier = uitstrijkje.getLabformulier();
+		var laatsteScreeningRonde = uitstrijkje.getUitnodiging().getScreeningRonde().getDossier().getLaatsteScreeningRonde();
+		var labformulier = uitstrijkje.getLabformulier();
 		return laatsteScreeningRonde.getStatus() != ScreeningRondeStatus.AFGEROND
 			&& uitstrijkje.getUitstrijkjeStatus() == CervixUitstrijkjeStatus.NIET_ONTVANGEN
 			&& (labformulier == null || (labformulier.getStatus() != CervixLabformulierStatus.GECONTROLEERD
-				|| labformulier.getStatus() != CervixLabformulierStatus.GECONTROLEERD_CYTOLOGIE
-				|| labformulier.getStatus() != CervixLabformulierStatus.HUISARTS_ONBEKEND));
+			|| labformulier.getStatus() != CervixLabformulierStatus.GECONTROLEERD_CYTOLOGIE
+			|| labformulier.getStatus() != CervixLabformulierStatus.HUISARTS_ONBEKEND));
 	}
 
 }

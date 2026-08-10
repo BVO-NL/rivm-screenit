@@ -38,7 +38,7 @@ public class AbstractGebeurtenisDetailPanel extends GenericPanel<ScreeningRondeG
 
 	protected void addButton(String id, GebeurtenisPopupBasePanel parent)
 	{
-		Button button = new Button(id);
+		var button = new Button(id);
 		parent.add(button);
 		button.setVisible(false);
 		button.add(new Label("label", getString("label.verwijderen")));
@@ -46,7 +46,7 @@ public class AbstractGebeurtenisDetailPanel extends GenericPanel<ScreeningRondeG
 
 	protected void addExtraButton(String id, GebeurtenisPopupBasePanel parent)
 	{
-		Button button = new Button(id);
+		var button = new Button(id);
 		button.setVisible(false);
 		button.add(new Label("label", "onzichtbaar"));
 		parent.add(button);
@@ -54,14 +54,14 @@ public class AbstractGebeurtenisDetailPanel extends GenericPanel<ScreeningRondeG
 
 	protected void addDocumentVervangenButton(String id, GebeurtenisPopupBasePanel parent)
 	{
-		Button button = new Button(id);
+		var button = new Button(id);
 		button.setVisible(false);
 		parent.add(button);
 	}
 
 	protected void addDocumentDownloadenButton(String id, GebeurtenisPopupBasePanel parent)
 	{
-		Button button = new Button(id);
+		var button = new Button(id);
 		button.setVisible(false);
 		parent.add(button);
 	}

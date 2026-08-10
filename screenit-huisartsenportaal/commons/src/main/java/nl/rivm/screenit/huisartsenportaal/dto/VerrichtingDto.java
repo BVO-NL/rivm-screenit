@@ -25,6 +25,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class VerrichtingDto extends AbstractDtoReferenceObject
 {
 	private String regio;
@@ -45,93 +50,4 @@ public class VerrichtingDto extends AbstractDtoReferenceObject
 
 	private List<BetalingDto> betalingen = new ArrayList<>();
 
-	public List<BetalingDto> getBetalingen()
-	{
-		return betalingen;
-	}
-
-	public void setBetalingen(List<BetalingDto> betalingen)
-	{
-		this.betalingen = betalingen;
-	}
-
-	public String getRegio()
-	{
-		return regio;
-	}
-
-	public void setRegio(String regio)
-	{
-		this.regio = regio;
-	}
-
-	public String getMonsterId()
-	{
-		return monsterId;
-	}
-
-	public void setMonsterId(String monsterId)
-	{
-		this.monsterId = monsterId;
-	}
-
-	public Date getVerrichtingsDatum()
-	{
-		return verrichtingsDatum;
-	}
-
-	public void setVerrichtingsDatum(Date verrichtingsDatum)
-	{
-		this.verrichtingsDatum = verrichtingsDatum;
-	}
-
-	public String getClientNaam()
-	{
-		return clientNaam;
-	}
-
-	public void setClientNaam(String clientNaam)
-	{
-		this.clientNaam = clientNaam;
-	}
-
-	public Date getDatumUitstrijkje()
-	{
-		return datumUitstrijkje;
-	}
-
-	public void setDatumUitstrijkje(Date datumUitstrijkje)
-	{
-		this.datumUitstrijkje = datumUitstrijkje;
-	}
-
-	public Date getFormulierOntvangstDatum()
-	{
-		return formulierOntvangstDatum;
-	}
-
-	public void setFormulierOntvangstDatum(Date formulierOntvangstDatum)
-	{
-		this.formulierOntvangstDatum = formulierOntvangstDatum;
-	}
-
-	public String getHuisartsLocatieNaam()
-	{
-		return huisartsLocatieNaam;
-	}
-
-	public void setHuisartsLocatieNaam(String huisartsLocatieNaam)
-	{
-		this.huisartsLocatieNaam = huisartsLocatieNaam;
-	}
-
-	public LocatieDto getHuisartsLocatie()
-	{
-		return huisartsLocatie;
-	}
-
-	public void setHuisartsLocatie(LocatieDto huisartsLocatie)
-	{
-		this.huisartsLocatie = huisartsLocatie;
-	}
 }

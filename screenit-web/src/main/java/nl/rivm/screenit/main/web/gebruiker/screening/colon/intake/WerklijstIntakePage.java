@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.intake;
  */
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,13 +55,11 @@ import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Persoon_;
-import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.colon.ColonConclusie_;
 import nl.rivm.screenit.model.colon.ColonDossier_;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak_;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonVolgendeUitnodiging_;
 import nl.rivm.screenit.model.colon.ConclusieTypeFilter;
 import nl.rivm.screenit.model.colon.MdlVerslag;
@@ -76,7 +73,6 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
@@ -178,10 +174,10 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 
 	protected WerklijstIntakePage(ColonAfspraakStatus filterStatus, String titleProperty)
 	{
-		ColonIntakelocatie intakelocatie = ScreenitSession.get().getIntakelocatie();
+		var intakelocatie = ScreenitSession.get().getIntakelocatie();
 		add(new Label("intakelocatie", intakelocatie.getNaam()));
 		add(new Label("title", getString(titleProperty)));
-		final BootstrapDialog dialog = new BootstrapDialog("dialog");
+		final var dialog = new BootstrapDialog("dialog");
 		add(dialog);
 		zoekModel = getNewWerkLijstIntakeFilter(filterStatus);
 		setDefaultModel(zoekModel);
@@ -222,10 +218,10 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 		form.setOutputMarkupId(true);
 		add(form);
 
-		boolean afgerondeAfspraken = ColonAfspraakStatus.UITGEVOERD.equals(filterStatus);
+		var afgerondeAfspraken = ColonAfspraakStatus.UITGEVOERD.equals(filterStatus);
 		form.setVisible(!afgerondeAfspraken);
 
-		final FormComponent<Date> vanaf = ComponentHelper.addTextField(form, "vanaf", false, 10, Date.class, false);
+		final var vanaf = ComponentHelper.addTextField(form, "vanaf", false, 10, Date.class, false);
 		vanaf.setType(Date.class);
 		vanaf.setOutputMarkupId(true);
 		vanaf.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -238,7 +234,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			}
 		});
 
-		final FormComponent<Date> totEnMet = ComponentHelper.addTextField(form, "totEnMet", false, 10, Date.class, false);
+		final var totEnMet = ComponentHelper.addTextField(form, "totEnMet", false, 10, Date.class, false);
 		totEnMet.setType(Date.class);
 		totEnMet.setOutputMarkupId(true);
 		totEnMet.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -256,7 +252,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 		datepickerVandaag = new WebMarkupContainer("datepickerVandaag");
 		form.add(datepickerVandaag);
 
-		List<ConclusieTypeFilter> values = getFilterOpties();
+		var values = getFilterOpties();
 		conclusieType = ComponentHelper.newDropDownChoice("conclusieTypeFilter", new ListModel<>(values), new EnumChoiceRenderer<>(this),
 			false);
 		conclusieType.setOutputMarkupId(true);
@@ -290,7 +286,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 		bsnForm = new Form<>("bsnForm", zoekModel);
 		bsnForm.setOutputMarkupId(true);
 		add(bsnForm);
-		FormComponent<String> bsn = ComponentHelper.addTextField(bsnForm, "bsn", false, 10, String.class, false);
+		var bsn = ComponentHelper.addTextField(bsnForm, "bsn", false, 10, String.class, false);
 		bsn.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
 			@Override
@@ -300,7 +296,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			}
 		});
 		bsn.add(new BSNValidator());
-		AjaxSubmitLink submitOnEnter = new AjaxSubmitLink("submitOnEnter")
+		var submitOnEnter = new AjaxSubmitLink("submitOnEnter")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -314,7 +310,13 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 
 		addBsnGeboortedatumForm(afgerondeAfspraken);
 
-		exportToCsvLink = new ExportToXslLink<>("csv", "Intake Afspraken")
+		exportToCsvLink = maakExportToCsvLink(table);
+		add(exportToCsvLink);
+	}
+
+	protected ExportToXslLink<ColonIntakeAfspraak, String> maakExportToCsvLink(ScreenitDataTable<ColonIntakeAfspraak, String> table)
+	{
+		return new ExportToXslLink<>("csv", "Intake afspraken")
 		{
 			@Override
 			protected String getCsv()
@@ -322,7 +324,6 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 				return getCsvInhoud();
 			}
 		};
-		add(exportToCsvLink);
 	}
 
 	protected void addExtraValidators(FormComponent<Date> vanaf, FormComponent<Date> totEnMet)
@@ -339,7 +340,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 		bsnGebroortedatumForm = new Form<>("bsnGebroortedatumForm", zoekModel);
 		bsnGebroortedatumForm.setOutputMarkupId(true);
 		add(bsnGebroortedatumForm);
-		FormComponent<String> bsn = ComponentHelper.addTextField(bsnGebroortedatumForm, "bsn", true, 10, String.class, false);
+		var bsn = ComponentHelper.addTextField(bsnGebroortedatumForm, "bsn", true, 10, String.class, false);
 		bsn.add(new BSNValidator());
 		bsnGebroortedatumForm.add(
 			new ScreenitDateTextField("geboortedatum").setRequired(true).setVisible(afgerondeAfspraken).setOutputMarkupId(true)
@@ -351,7 +352,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 						target.add(getComponent());
 					}
 				}));
-		AjaxSubmitLink submitOnEnter = new AjaxSubmitLink("zoek")
+		var submitOnEnter = new AjaxSubmitLink("zoek")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -372,7 +373,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			@Override
 			public IModel<Object> getDataModel(IModel<ColonIntakeAfspraak> embeddedModel)
 			{
-				IModel<Object> dataModel = super.getDataModel(embeddedModel);
+				var dataModel = super.getDataModel(embeddedModel);
 				if (embeddedModel.getObject().getAfspraakslot() == null)
 				{
 					dataModel.setObject(dataModel.getObject() + " *");
@@ -577,12 +578,12 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 
 			private String getBriefAfgedrukt(IModel<ColonIntakeAfspraak> rowModel)
 			{
-				String briefAfgedrukt = "";
-				ColonScreeningRonde ronde = rowModel.getObject().getScreeningRonde();
+				var briefAfgedrukt = "";
+				var ronde = rowModel.getObject().getScreeningRonde();
 				if (ronde != null)
 				{
 					ClientBrief<?, ?, ?> laatsteBrief = null;
-					for (ColonBrief brief : ronde.getBrieven())
+					for (var brief : ronde.getBrieven())
 					{
 						if (brief.getIntakeAfspraak() != null
 							&& (BriefType.COLON_UITNODIGING_INTAKE.equals(brief.getBriefType())
@@ -602,7 +603,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			private ClientBrief<?, ?, ?> bepaalLaatsteBrief(ClientBrief<?, ?, ?> laatsteBrief, ClientBrief<?, ?, ?> brief)
 			{
 				laatsteBrief = bepaalLaatsteBriefInner(laatsteBrief, brief);
-				ProjectBrief projectBrief = brief.getProjectBrief();
+				var projectBrief = brief.getProjectBrief();
 				if (projectBrief != null)
 				{
 					laatsteBrief = bepaalLaatsteBriefInner(laatsteBrief, projectBrief);
@@ -637,9 +638,9 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			@Override
 			public IModel<String> getDataModel(IModel<ColonIntakeAfspraak> rowModel)
 			{
-				String huisarts = "";
+				var huisarts = "";
 
-				ColonScreeningRonde ronde = rowModel.getObject().getScreeningRonde();
+				var ronde = rowModel.getObject().getScreeningRonde();
 				if (ronde != null && ronde.getHuisarts() != null)
 				{
 					huisarts = NaamUtil.getNaamHuisarts(ronde.getHuisarts());
@@ -660,8 +661,8 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			@Override
 			public IModel<String> getDataModel(IModel<ColonIntakeAfspraak> rowModel)
 			{
-				LocalDate datumVolgendeUitnodiging = dossierBaseService.getDatumVolgendeUitnodiging(rowModel.getObject().getClient().getColonDossier());
-				String aantalDagenToGo = "";
+				var datumVolgendeUitnodiging = dossierBaseService.getDatumVolgendeUitnodiging(rowModel.getObject().getClient().getColonDossier());
+				var aantalDagenToGo = "";
 				if (datumVolgendeUitnodiging != null)
 				{
 					aantalDagenToGo = "" + ChronoUnit.DAYS.between(dateSupplier.getLocalDate(), datumVolgendeUitnodiging);
@@ -752,21 +753,21 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 
 	protected IModel<WerklijstIntakeFilter> getNewWerkLijstIntakeFilter(ColonAfspraakStatus afspraakStatus)
 	{
-		ScreenitSession session = ScreenitSession.get();
+		var session = ScreenitSession.get();
 		IModel<WerklijstIntakeFilter> intakeFilter;
 		if ((intakeFilter = (IModel<WerklijstIntakeFilter>) session.getZoekObject(this.getClass())) != null)
 		{
 			return intakeFilter;
 		}
 		intakeFilter = new CompoundPropertyModel<>(new WerklijstIntakeFilter());
-		WerklijstIntakeFilter filter = intakeFilter.getObject();
+		var filter = intakeFilter.getObject();
 		filter.setStatus(afspraakStatus);
-		Integer uitnodigingsInterval = preferenceService.getInteger(PreferenceKey.UITNODIGINGSINTERVAL.name());
+		var uitnodigingsInterval = preferenceService.getInteger(PreferenceKey.UITNODIGINGSINTERVAL.name());
 		if (uitnodigingsInterval == null)
 		{
 			throw new IllegalStateException("Spreidingsperiode op de parameterisatie pagina is niet gezet");
 		}
-		Integer maximaleLeeftijd = preferenceService.getInteger(PreferenceKey.MAXIMALE_LEEFTIJD_COLON.name());
+		var maximaleLeeftijd = preferenceService.getInteger(PreferenceKey.MAXIMALE_LEEFTIJD_COLON.name());
 		if (maximaleLeeftijd == null)
 		{
 			throw new IllegalStateException("Maximale leeftijd colonscreening op de parameterisatie pagina is niet gezet");
@@ -779,7 +780,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 
 	private void onFilter(AjaxRequestTarget target)
 	{
-		WerklijstIntakeFilter filter = zoekModel.getObject();
+		var filter = zoekModel.getObject();
 		filter.setBsn(null);
 		filter.setEersteKeerZoeken(false);
 		target.add(table);
@@ -789,7 +790,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 
 	private void onFilterBsn(AjaxRequestTarget target)
 	{
-		WerklijstIntakeFilter filter = zoekModel.getObject();
+		var filter = zoekModel.getObject();
 
 		if (StringUtils.isNotBlank(filter.getBsn()))
 		{
@@ -826,14 +827,14 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			@Override
 			public Component getPostfix(String id)
 			{
-				WerklijstIntakeFilter filter = new WerklijstIntakeFilter();
+				var filter = new WerklijstIntakeFilter();
 				aantalLabel = new Label(id, new LoadableDetachableModel<String>()
 				{
 
 					@Override
 					protected String load()
 					{
-						long aantal = afspraakService.countAfsprakenVoorColoscopiecentrum(filter, ScreenitSession.get().getIntakelocatie());
+						var aantal = afspraakService.countAfsprakenVoorColoscopiecentrum(filter, ScreenitSession.get().getIntakelocatie());
 						return "(" + aantal + ")";
 					}
 

@@ -51,7 +51,9 @@ public class RomanNumeral
 		{
 			this.weight = weight;
 		}
-	};
+	}
+
+	;
 
 	public static String toRoman(long n)
 	{
@@ -60,10 +62,10 @@ public class RomanNumeral
 			throw new IllegalArgumentException();
 		}
 
-		StringBuilder buf = new StringBuilder();
+		var buf = new StringBuilder();
 
-		final Numeral[] values = Numeral.values();
-		for (int i = values.length - 1; i >= 0; i--)
+		final var values = Numeral.values();
+		for (var i = values.length - 1; i >= 0; i--)
 		{
 			while (n >= values[i].weight)
 			{
@@ -76,9 +78,9 @@ public class RomanNumeral
 
 	public static Integer toInteger(String roman)
 	{
-		int result = 0;
-		String uRoman = roman.toUpperCase(); 
-		for (int i = 0; i < uRoman.length() - 1; i++)
+		var result = 0;
+		var uRoman = roman.toUpperCase(); 
+		for (var i = 0; i < uRoman.length() - 1; i++)
 		{
 			if (decodeSingleRoman(uRoman.charAt(i)) < decodeSingleRoman(uRoman.charAt(i + 1)))
 			{

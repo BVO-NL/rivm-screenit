@@ -45,8 +45,8 @@ public class EnumResourceComparator<T extends Enum> implements Comparator<T>
 	{
 		if (component != null)
 		{
-			String name1 = component.getString(resourceKey(o1));
-			String name2 = component.getString(resourceKey(o2));
+			var name1 = component.getString(resourceKey(o1));
+			var name2 = component.getString(resourceKey(o2));
 			return name1.compareTo(name2);
 		}
 		return 0;

@@ -22,6 +22,7 @@ package nl.rivm.screenit.main.controller.algemeen;
  */
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +38,7 @@ import nl.rivm.screenit.main.dto.algemeen.TijdelijkAdresDto;
 import nl.rivm.screenit.main.exception.EntityNietGevondenException;
 import nl.rivm.screenit.main.mappers.algemeen.ClientMapper;
 import nl.rivm.screenit.main.mappers.algemeen.ScreeningRondeGebeurtenisWrapper;
+import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.main.service.DossierService;
 import nl.rivm.screenit.main.service.algemeen.BvoStatusService;
 import nl.rivm.screenit.main.service.algemeen.ClientZoekenService;
@@ -232,7 +234,7 @@ public class ClientController
 	private void logZoekenGebeurtenis(ClientZoekenFilterDto filter)
 	{
 		var account = ScreenitSession.get().getIngelogdAccount();
-		List<String> ingevuldeGeavanceerdeVelden = getIngevuldeGeavanceerdeVelden(filter);
+		var ingevuldeGeavanceerdeVelden = getIngevuldeGeavanceerdeVelden(filter);
 		if (!ingevuldeGeavanceerdeVelden.isEmpty())
 		{
 			logService.logGebeurtenis(LogGebeurtenis.ZOEKEN_CLIENT, account, "Uitgebreid zoeken. Gezocht op " + String.join(", ", getIngevuldeVelden(filter)));
@@ -392,18 +394,16 @@ public class ClientController
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 	public ResponseEntity<List<ScreeningRondeGebeurtenisDto>> getAlgemeneClientbriefGebeurtenissen(@PathVariable Long clientId, @PathVariable String type)
 	{
-		var client = clientService.getClientById(clientId);
-		if (client.isPresent())
+		var client = getClientOfGooiNotFoundException(clientId);
+		if (type.equals("algemene-brieven"))
 		{
-			if (type.equals("algemene-brieven"))
-			{
-				var gebeurtenissen = dossierService.getAlgemeneBriefGebeurtenissen(client.get());
-				var screeningRondeGebeurtenisDtos = gebeurtenissen.stream().map(screeningRondeGebeurtenisWrapper::screeningRondeGebeurtenisNaarDto).toList();
-				return ResponseEntity.ok().body(screeningRondeGebeurtenisDtos);
-			}
-			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+			var gebeurtenissen = dossierService.getAlgemeneBriefGebeurtenissen(client);
+			var screeningRondeGebeurtenisDtos = gebeurtenissen.stream()
+					.sorted(Comparator.comparing(ScreeningRondeGebeurtenis::getDatum).reversed())
+					.map(screeningRondeGebeurtenisWrapper::screeningRondeGebeurtenisNaarDto)
+					.toList();
+			return ResponseEntity.ok().body(screeningRondeGebeurtenisDtos);
 		}
-
-		return ResponseEntity.notFound().build();
+		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
 	}
 }

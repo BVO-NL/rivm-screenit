@@ -36,7 +36,7 @@ import org.wicketstuff.wiquery.core.javascript.JsQuery;
 import org.wicketstuff.wiquery.core.javascript.JsUtils;
 import org.wicketstuff.wiquery.core.options.Options;
 
-public class ScreenitListMultipleChoice<T> extends ListMultipleChoice<T>implements IAjaxIndicatorAware
+public class ScreenitListMultipleChoice<T> extends ListMultipleChoice<T> implements IAjaxIndicatorAware
 {
 
 	private static final long serialVersionUID = 1L;
@@ -108,7 +108,7 @@ public class ScreenitListMultipleChoice<T> extends ListMultipleChoice<T>implemen
 	{
 		super.renderHead(response);
 
-		Options select2Options = new Options();
+		var select2Options = new Options();
 		select2Options.put("placeholder", JsUtils.quotes("- Maak een keuze -"));
 		select2Options.put("formatNoMatches", "function () { return \"Geen resultaten gevonden.\"; }");
 		select2Options.put("formatInputTooShort", "function (input, min) { return \"Vul a.u.b. meer dan \" + (min - input.length) + \" karakters in.\"; }");

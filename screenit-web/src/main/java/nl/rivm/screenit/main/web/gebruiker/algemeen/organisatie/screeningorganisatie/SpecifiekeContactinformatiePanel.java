@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.component.ComponentHelper;
+import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.RegioBvoContactGegevens;
@@ -34,7 +35,6 @@ import nl.topicuszorg.organisatie.model.Adres;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
-import nl.rivm.screenit.main.web.component.validator.EmailAddressValidator;
 
 public class SpecifiekeContactinformatiePanel extends GenericPanel<Organisatie>
 {
@@ -49,7 +49,7 @@ public class SpecifiekeContactinformatiePanel extends GenericPanel<Organisatie>
 	{
 		super(id, model);
 		isSO = model.getObject().getOrganisatieType().equals(OrganisatieType.SCREENINGSORGANISATIE);
-		ScreeningOrganisatie screeningOrganisatie = (ScreeningOrganisatie) model.getObject();
+		var screeningOrganisatie = (ScreeningOrganisatie) model.getObject();
 
 		if (screeningOrganisatie.getRegioBvoContactGegevensDk() == null)
 		{
@@ -78,7 +78,7 @@ public class SpecifiekeContactinformatiePanel extends GenericPanel<Organisatie>
 			screeningOrganisatie.getRegioBvoContactGegevensBmhk().setPostbusnummerAdres(new Adres());
 		}
 
-		for (String bvo : screeningOrganisatieBvoObject)
+		for (var bvo : screeningOrganisatieBvoObject)
 		{
 			ComponentHelper.addTextField(this, "regioBvoContactGegevens" + bvo + ".telefoon", isSO, 20, inzien);
 
@@ -96,7 +96,7 @@ public class SpecifiekeContactinformatiePanel extends GenericPanel<Organisatie>
 
 			ComponentHelper.addTextField(this, "regioBvoContactGegevens" + bvo + ".antwoordnummerAdres.plaats", isSO, 200, inzien);
 
-			WebMarkupContainer clientPortaalVrijeTekstContainer = new WebMarkupContainer("clientPortaalVrijeTekstContainer" + bvo);
+			var clientPortaalVrijeTekstContainer = new WebMarkupContainer("clientPortaalVrijeTekstContainer" + bvo);
 			clientPortaalVrijeTekstContainer.setOutputMarkupId(true);
 			ComponentHelper.addTextArea(clientPortaalVrijeTekstContainer, "regioBvoContactGegevens" + bvo + ".clientPortaalVrijeTekst", isSO, 256, inzien);
 			add(clientPortaalVrijeTekstContainer);

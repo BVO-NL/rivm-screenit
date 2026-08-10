@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -61,7 +60,6 @@ import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.validation.SingleValidationMessage;
-import ca.uhn.fhir.validation.ValidationResult;
 
 public class BundleProvider extends BaseResourceProvider
 {
@@ -100,13 +98,13 @@ public class BundleProvider extends BaseResourceProvider
 	{
 		try
 		{
-			FhirContext context = FhirContext.forDstu3();
-			ValidationResult result = getFhirValidator(context)
+			var context = FhirContext.forDstu3();
+			var result = getFhirValidator(context)
 				.validateWithResult(bundle);
 
 			if (result.isSuccessful()) 
 			{
-				LabaanvraagValidator labAanvraagValidator = new LabaanvraagValidator();
+				var labAanvraagValidator = new LabaanvraagValidator();
 				if (labAanvraagValidator.validate(bundle).isSuccesvol()) 
 				{
 					try
@@ -132,7 +130,7 @@ public class BundleProvider extends BaseResourceProvider
 		}
 		catch (Exception e)
 		{
-			String melding = String.format("Er is een onbekende fout opgetreden. Neem contact op met de helpdesk. (FQDN:%s)", fqdnProvider.getCurrentFQDN());
+			var melding = String.format("Er is een onbekende fout opgetreden. Neem contact op met de helpdesk. (FQDN:%s)", fqdnProvider.getCurrentFQDN());
 			logGebeurtenis(Level.WARNING, melding, melding, null);
 			LOG.error("Er is een onbekende fout opgetreden.", e);
 			throw new UnprocessableEntityException("Er is een onbekende fout opgetreden. Neem contact op met " + Constants.NAAM_BEHEER_ORGANISATIE + ".", e);
@@ -141,7 +139,7 @@ public class BundleProvider extends BaseResourceProvider
 
 	private void updateLabaanvraagValidatorBijDubbelMonster(LabaanvraagValidator labAanvraagValidator, RuntimeException e)
 	{
-		Throwable cause = e.getCause();
+		var cause = e.getCause();
 		while (cause != null)
 		{
 			if (cause.getMessage().contains("Monster reeds gebruikt"))
@@ -156,7 +154,7 @@ public class BundleProvider extends BaseResourceProvider
 
 	private void doAanvraag(LabaanvraagBundle bundle) throws GenericJDBCException, DataAccessException
 	{
-		CervixLabformulier labformulier = LabaanvraagMapper.INSTANCE.toLabformulier(bundle);
+		var labformulier = LabaanvraagMapper.INSTANCE.toLabformulier(bundle);
 		labformulier.setLeverancierFqdn(fqdnProvider.getCurrentFQDN());
 		hibernateService.saveOrUpdate(labformulier);
 		labformulierService.koppelDigitaalLabformulier(labformulier);
@@ -164,9 +162,9 @@ public class BundleProvider extends BaseResourceProvider
 
 	private void logGebeurtenis(LabaanvraagBundle bundle, HttpStatus httpStatus, List<?> valiationOutcomes)
 	{
-		String melding = getMelding(bundle, httpStatus, valiationOutcomes);
-		String gegevensMeldingPart = getGegevensMeldingPart(bundle);
-		Client clientByBsn = clientService.getClientByBsn(bundle.getClientBsn());
+		var melding = getMelding(bundle, httpStatus, valiationOutcomes);
+		var gegevensMeldingPart = getGegevensMeldingPart(bundle);
+		var clientByBsn = clientService.getClientByBsn(bundle.getClientBsn());
 
 		logGebeurtenis(httpStatus.value() == 201 ? Level.INFO : Level.WARNING, melding, gegevensMeldingPart, clientByBsn);
 	}
@@ -180,7 +178,7 @@ public class BundleProvider extends BaseResourceProvider
 			bsn = client.getPersoon().getBsn();
 		}
 		var foutLogGebeurtenis = LogGebeurtenis.CERVIX_DIGITAAL_LABFORMULIER_FOUT_ONTVANGEN;
-		boolean heeftBestaandeWarningLogregelInAfgelopenDag = level == Level.WARNING && !logService.heeftGeenBestaandeLogregelBinnenPeriode(List.of(foutLogGebeurtenis), bsn, null,
+		var heeftBestaandeWarningLogregelInAfgelopenDag = level == Level.WARNING && !logService.heeftGeenBestaandeLogregelBinnenPeriode(List.of(foutLogGebeurtenis), bsn, null,
 			logMelding, 1);
 		if (!heeftBestaandeWarningLogregelInAfgelopenDag)
 		{

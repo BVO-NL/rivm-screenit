@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,13 +57,14 @@ import nl.topicuszorg.zorgid.model.sessie.OpenCancelledReason;
 import nl.topicuszorg.zorgid.webservice.SessionInitializedEvent;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.hc.core5.util.TimeValue;
 import org.apache.hc.core5.util.Timeout;
-import org.apache.http.ssl.SSLContexts;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
@@ -110,10 +112,6 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 	@Inject
 	@Qualifier("applicationEnvironment")
 	private String applicationEnvironment;
-
-	@Inject
-	@Qualifier("applicationInstance")
-	private String applicationInstance;
 
 	@Inject
 	@Qualifier("applicationUrl")
@@ -167,7 +165,7 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 	@Override
 	public UUID startSessie() throws ZorgidException
 	{
-		final UUID uuid = zorgidClient.start();
+		final var uuid = zorgidClient.start();
 		LOG.info("Open detached: {}", uuid);
 		return uuid;
 	}
@@ -175,7 +173,7 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 	@Override
 	public SessieState getSessieState(UUID uuid)
 	{
-		JedisPool jedisPool = getJedisPool();
+		var jedisPool = getJedisPool();
 		if (jedisPool != null)
 		{
 			return getCachedObject(uuid);
@@ -188,10 +186,10 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 		Jedis jedis = null;
 		try
 		{
-			String key = getKey(uuid);
+			var key = getKey(uuid);
 			jedis = jedisPool.getResource();
 			SessieState obj = null;
-			String serialized = jedis.get(key);
+			var serialized = jedis.get(key);
 			if (StringUtils.isNotBlank(serialized))
 			{
 				obj = fromString(serialized);
@@ -211,7 +209,7 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 
 	private static String getKey(UUID uuid)
 	{
-		String key = "ZorgId-" + uuid.toString();
+		var key = "ZorgId-" + uuid.toString();
 		if (LOG.isTraceEnabled())
 		{
 			LOG.trace("Key: {}", key);
@@ -221,8 +219,8 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 
 	private static SessieState fromString(String s) throws IOException, ClassNotFoundException
 	{
-		String[] splittedString = s.split("\\|");
-		Object object = objectMapper.readValue(splittedString[1], Class.forName(splittedString[0]));
+		var splittedString = s.split("\\|");
+		var object = objectMapper.readValue(splittedString[1], Class.forName(splittedString[0]));
 		LOG.trace(object.getClass().getSimpleName());
 		return (SessieState) object;
 	}
@@ -247,7 +245,7 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 		Jedis jedis = null;
 		try
 		{
-			String key = getKey(uuid);
+			var key = getKey(uuid);
 			jedis = jedisPool.getResource();
 			jedis.set(key, toString(sessieState));
 			jedis.expire(key, SESSIE_TIMEOUT);
@@ -265,13 +263,13 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 	@Override
 	public void refreshSessie(UUID uuid)
 	{
-		JedisPool jedisPool = getJedisPool();
+		var jedisPool = getJedisPool();
 		if (jedisPool != null && uuid != null)
 		{
 			Jedis jedis = null;
 			try
 			{
-				String key = getKey(uuid);
+				var key = getKey(uuid);
 				jedis = jedisPool.getResource();
 				jedis.expire(key, SESSIE_TIMEOUT);
 			}
@@ -299,7 +297,7 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 
 		activeSessions.entrySet().removeIf(entry ->
 		{
-			final boolean remove = entry.getValue().isExpired();
+			final var remove = entry.getValue().isExpired();
 			if (remove)
 			{
 				if (entry.getValue() instanceof InitializedSessieState)
@@ -350,7 +348,7 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 
 	private void addSessieState(UUID uuid, SessieState sessieState)
 	{
-		JedisPool jedisPool = getJedisPool();
+		var jedisPool = getJedisPool();
 		if (jedisPool != null)
 		{
 			storeCacheObject(uuid, sessieState);
@@ -428,12 +426,12 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 
 	private SSLContext zorgidSslContext()
 	{
-		final String keyStoreLocation = zorgidKeyStoreLocation();
-		final char[] keyStorePassword = zorgidKeyStorePassword();
+		final var keyStoreLocation = zorgidKeyStoreLocation();
+		final var keyStorePassword = zorgidKeyStorePassword();
 
-		try (final FileInputStream is = new FileInputStream(keyStoreLocation))
+		try (final var is = new FileInputStream(keyStoreLocation))
 		{
-			final KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+			final var keystore = KeyStore.getInstance(KeyStore.getDefaultType());
 			keystore.load(is, keyStorePassword);
 
 			return SSLContexts.custom()
@@ -451,19 +449,22 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 		var maxConnPerRoute = zorgidClientMaxConnections();
 		var socketConfig = SocketConfig.custom()
 			.setSoTimeout(Timeout.ofMilliseconds(zorgidClientReadTimeout())).build();
+		var connectionConfig = ConnectionConfig.custom()
+			.setTimeToLive(TimeValue.ofSeconds(ZORG_ID_CONNECTION_TIME))
+			.setConnectTimeout(Timeout.ofMilliseconds(zorgidClientConnectTimeout()))
+			.build();
 		var httpClientConnectionManager = PoolingHttpClientConnectionManagerBuilder.create()
 			.setMaxConnPerRoute(maxConnPerRoute)
 			.setMaxConnTotal(2 * maxConnPerRoute)
 			.setDefaultSocketConfig(socketConfig)
-			.setConnectionTimeToLive(TimeValue.ofSeconds(ZORG_ID_CONNECTION_TIME))
-			.setSSLSocketFactory(new SSLConnectionSocketFactory(zorgidSslContext()))
+			.setDefaultConnectionConfig(connectionConfig)
+			.setTlsSocketStrategy(new DefaultClientTlsStrategy(zorgidSslContext()))
 			.build();
 		var httpClient = HttpClients.custom()
 			.setConnectionManager(httpClientConnectionManager)
 			.build();
 		var httpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		httpRequestFactory.setConnectionRequestTimeout(zorgidClientConnectTimeout());
-		httpRequestFactory.setConnectTimeout(zorgidClientConnectTimeout());
+		httpRequestFactory.setConnectionRequestTimeout(Duration.ofMillis(zorgidClientConnectTimeout()));
 		return new RestTemplate(httpRequestFactory);
 	}
 

@@ -23,10 +23,11 @@ package nl.rivm.screenit.batch.jobs.helpers;
 
 import jakarta.persistence.Query;
 
+import nl.rivm.screenit.repository.impl.EmptyScrollableResults;
+
 import org.hibernate.HibernateException;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
-import org.hibernate.internal.EmptyScrollableResults;
 import org.hibernate.query.NativeQuery;
 
 public abstract class BaseSqlScrollableResultReader extends BaseIdScrollableResultReader

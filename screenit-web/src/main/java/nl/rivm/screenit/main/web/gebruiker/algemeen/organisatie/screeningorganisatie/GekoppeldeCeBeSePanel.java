@@ -56,14 +56,14 @@ public class GekoppeldeCeBeSePanel extends GenericPanel<Organisatie>
 	{
 		super(id, model);
 
-		ScreeningOrganisatie regio = (ScreeningOrganisatie) model.getObject();
+		var regio = (ScreeningOrganisatie) model.getObject();
 		vulRijen(regio);
 
 		add(new ListView<GekoppeldeCeBeSeRij>("ceLijst", rijen)
 		{
 			protected void populateItem(ListItem<GekoppeldeCeBeSeRij> item)
 			{
-				GekoppeldeCeBeSeRij rij = item.getModelObject();
+				var rij = item.getModelObject();
 				item.add(new Label("centraleEenheid", rij.centraleEenheid));
 				item.add(new Label("beoordelingseenheid", rij.beoordelingsEenheid));
 				item.add(new Label("seLijst", rij.screeningsEenheden));
@@ -73,10 +73,10 @@ public class GekoppeldeCeBeSePanel extends GenericPanel<Organisatie>
 
 	private void vulRijen(ScreeningOrganisatie regio)
 	{
-		List<CentraleEenheid> centraleEenheden = organisatieService.getActieveCentraleEenhedenBinnenRegio(regio);
-		List<BeoordelingsEenheid> regioBeoordelingseenheden = organisatieService.getActieveBeoordelingseenhedenBinnenRegio(regio);
+		var centraleEenheden = organisatieService.getActieveCentraleEenhedenBinnenRegio(regio);
+		var regioBeoordelingseenheden = organisatieService.getActieveBeoordelingseenhedenBinnenRegio(regio);
 
-		for (CentraleEenheid centraleEenheid : centraleEenheden)
+		for (var centraleEenheid : centraleEenheden)
 		{
 			addRijenVoorCentraleEenheid(regioBeoordelingseenheden, centraleEenheid);
 		}
@@ -84,7 +84,7 @@ public class GekoppeldeCeBeSePanel extends GenericPanel<Organisatie>
 
 	private void addRijenVoorCentraleEenheid(List<BeoordelingsEenheid> regioBeoordelingseenheden, CentraleEenheid centraleEenheid)
 	{
-		List<BeoordelingsEenheid> ceBeoordelingseenheden = filterCeBeoordelingseenheden(regioBeoordelingseenheden, centraleEenheid);
+		var ceBeoordelingseenheden = filterCeBeoordelingseenheden(regioBeoordelingseenheden, centraleEenheid);
 
 		if (ceBeoordelingseenheden.isEmpty())
 		{
@@ -103,7 +103,7 @@ public class GekoppeldeCeBeSePanel extends GenericPanel<Organisatie>
 
 	private void addRijZonderBeoordelingsEenheden(CentraleEenheid centraleEenheid)
 	{
-		GekoppeldeCeBeSeRij rij = new GekoppeldeCeBeSeRij();
+		var rij = new GekoppeldeCeBeSeRij();
 		rij.centraleEenheid = centraleEenheid.getNaam();
 		rij.beoordelingsEenheid = "Geen beoordelingseenheden gekoppeld";
 		rijen.add(rij);
@@ -111,9 +111,9 @@ public class GekoppeldeCeBeSePanel extends GenericPanel<Organisatie>
 
 	private void addRijPerBeoordelingseenheid(CentraleEenheid centraleEenheid, List<BeoordelingsEenheid> ceBeoordelingsEenheden)
 	{
-		for (BeoordelingsEenheid beoordelingsEenheid : ceBeoordelingsEenheden)
+		for (var beoordelingsEenheid : ceBeoordelingsEenheden)
 		{
-			GekoppeldeCeBeSeRij rij = new GekoppeldeCeBeSeRij();
+			var rij = new GekoppeldeCeBeSeRij();
 			rij.centraleEenheid = centraleEenheid.getNaam();
 			rij.beoordelingsEenheid = beoordelingsEenheid.getNaam();
 			rij.screeningsEenheden = screeningsEenheidService.getScreeningsEenhedenNamen(beoordelingsEenheid);

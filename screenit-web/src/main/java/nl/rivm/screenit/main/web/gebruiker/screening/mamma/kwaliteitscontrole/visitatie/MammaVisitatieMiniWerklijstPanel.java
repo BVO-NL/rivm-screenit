@@ -36,7 +36,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoor
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.MammaBeTabelCounterPanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MammaOnderzoekMiniWerklijstDataProvider;
 import nl.rivm.screenit.model.OrganisatieType;
-import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaVisitatieOnderzoek;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieOnderdeel;
 import nl.rivm.screenit.service.HibernateService;
@@ -63,7 +62,7 @@ public class MammaVisitatieMiniWerklijstPanel extends Panel
 	{
 		super(id);
 
-		MammaOnderzoekMiniWerklijstDataProvider<MammaVisitatieOnderzoek> miniWerklijstDataProvider = new MammaOnderzoekMiniWerklijstDataProvider<>(huidigeBeoordelingId,
+		var miniWerklijstDataProvider = new MammaOnderzoekMiniWerklijstDataProvider<MammaVisitatieOnderzoek>(huidigeBeoordelingId,
 			beoordelingenIds, MammaVisitatieOnderzoek.class);
 
 		IModel<MammaVisitatieOnderzoekenWerklijstZoekObject> zoekObjectModel = null;
@@ -87,15 +86,15 @@ public class MammaVisitatieMiniWerklijstPanel extends Panel
 		}
 		columns.add(new EnumPropertyColumn<>(Model.of("Status"), "status", this));
 
-		MammaVisitatieOnderdeel onderdeel = hibernateService.load(MammaVisitatieOnderzoek.class, huidigeBeoordelingId).getOnderdeel();
+		var onderdeel = hibernateService.load(MammaVisitatieOnderzoek.class, huidigeBeoordelingId).getOnderdeel();
 
 		addOrReplace(new ScreenitDataTable<>("miniwerklijst", columns, miniWerklijstDataProvider, 5, Model.of("onderzoek(en)"), false)
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<MammaVisitatieOnderzoek> model)
 			{
-				MammaVisitatieOnderzoek onderzoek = model.getObject();
-				MammaBeoordeling beoordeling = onderzoek.getBeoordeling();
+				var onderzoek = model.getObject();
+				var beoordeling = onderzoek.getBeoordeling();
 				parent.gaNaarBeoordeling(beoordeling.getId(), target);
 			}
 
@@ -104,7 +103,7 @@ public class MammaVisitatieMiniWerklijstPanel extends Panel
 			{
 				if (getDataProvider() instanceof MammaOnderzoekMiniWerklijstDataProvider)
 				{
-					int openVerslag = ((MammaOnderzoekMiniWerklijstDataProvider) getDataProvider()).getOpenVerslag();
+					var openVerslag = ((MammaOnderzoekMiniWerklijstDataProvider) getDataProvider()).getOpenVerslag();
 
 					if (index == openVerslag)
 					{
@@ -117,18 +116,18 @@ public class MammaVisitatieMiniWerklijstPanel extends Panel
 			@Override
 			public Panel getCustomPanel(String id)
 			{
-				IModel<Integer> aantalGezienModel = new IModel<Integer>()
+				var aantalGezienModel = new IModel<Integer>()
 				{
 					@Override
 					public Integer getObject()
 					{
-						MammaVisitatieOnderzoek visitatieOnderzoek = hibernateService.load(MammaVisitatieOnderzoek.class, huidigeBeoordelingId);
+						var visitatieOnderzoek = hibernateService.load(MammaVisitatieOnderzoek.class, huidigeBeoordelingId);
 
 						return (int) visitatieService.countAantalGezien(visitatieOnderzoek.getVisitatie(), onderdeel);
 					}
 				};
 
-				IModel<Integer> nogTeGaanModel = new IModel<Integer>()
+				var nogTeGaanModel = new IModel<Integer>()
 				{
 					@Override
 					public Integer getObject()

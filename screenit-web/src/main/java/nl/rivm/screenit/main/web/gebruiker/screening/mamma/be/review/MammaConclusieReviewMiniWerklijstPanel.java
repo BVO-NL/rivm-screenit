@@ -28,7 +28,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoor
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.werklijst.MiniWerklijstPanel;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
-import nl.rivm.screenit.model.mamma.MammaConclusieReview;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
@@ -58,7 +57,7 @@ public class MammaConclusieReviewMiniWerklijstPanel extends MiniWerklijstPanel
 			@Override
 			public IModel<String> getDataModel(IModel<MammaBeoordeling> beoordelingModel)
 			{
-				MammaConclusieReview conclusieReview = conclusieReviewService.getConclusieReview(beoordelingModel.getObject().getOnderzoek().getAfspraak().getUitnodiging()
+				var conclusieReview = conclusieReviewService.getConclusieReview(beoordelingModel.getObject().getOnderzoek().getAfspraak().getUitnodiging()
 					.getScreeningRonde(), radioloogModel.getObject());
 				return conclusieReview.getReviewMoment() != null ? Model.of(getString("conclusie.gezien.status")) : Model.of(getString("conclusie.niet.gezien.status"));
 			}

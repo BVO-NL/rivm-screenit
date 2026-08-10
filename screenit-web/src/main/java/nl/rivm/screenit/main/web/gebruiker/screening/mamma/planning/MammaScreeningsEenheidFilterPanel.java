@@ -48,13 +48,13 @@ public abstract class MammaScreeningsEenheidFilterPanel extends GenericPanel<Mam
 	{
 		super(id);
 
-		ScreeningOrganisatie sessionSO = ScreenitSession.get().getScreeningOrganisatie();
+		var sessionSO = ScreenitSession.get().getScreeningOrganisatie();
 
-		IModel<MammaScreeningsEenheidFilter> zoekObjectModel = (IModel<MammaScreeningsEenheidFilter>) ScreenitSession.get()
+		var zoekObjectModel = (IModel<MammaScreeningsEenheidFilter>) ScreenitSession.get()
 			.getZoekObject(MammaScreeningsEenheidFilterPanel.class);
 		if (zoekObjectModel == null)
 		{
-			MammaScreeningsEenheidFilter zoekObject = new MammaScreeningsEenheidFilter();
+			var zoekObject = new MammaScreeningsEenheidFilter();
 			zoekObject.setRegio(sessionSO);
 			zoekObject.setActief(true);
 			zoekObjectModel = new CompoundPropertyModel<>(zoekObject);
@@ -62,18 +62,18 @@ public abstract class MammaScreeningsEenheidFilterPanel extends GenericPanel<Mam
 		}
 		setModel(zoekObjectModel);
 
-		Form<MammaScreeningsEenheidFilter> form = new Form<>("form");
+		var form = new Form<MammaScreeningsEenheidFilter>("form");
 		add(form);
 
 		form.add(new TextField<>("screeningsEenheid.naam"));
 
-		ScreenitDropdown<ScreeningOrganisatie> regio = new ScreenitDropdown<>("regio",
+		var regio = new ScreenitDropdown<ScreeningOrganisatie>("regio",
 			ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class), true), new ChoiceRenderer<>("naam"));
 		regio.setVisible(sessionSO == null);
 		regio.setNullValid(true);
 		form.add(regio);
 
-		AjaxSubmitLink zoekenBtn = new AjaxSubmitLink("zoeken")
+		var zoekenBtn = new AjaxSubmitLink("zoeken")
 		{
 
 			private static final long serialVersionUID = 1L;

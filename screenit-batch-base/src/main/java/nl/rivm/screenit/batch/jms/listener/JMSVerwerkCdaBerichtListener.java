@@ -21,7 +21,8 @@ package nl.rivm.screenit.batch.jms.listener;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
+import jakarta.jms.JMSException;
+import jakarta.jms.Session;
 
 import nl.rivm.screenit.batch.service.VerwerkCdaBerichtService;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -29,9 +30,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import org.apache.activemq.command.ActiveMQMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.listener.SessionAwareMessageListener;
-
-import jakarta.jms.JMSException;
-import jakarta.jms.Session;
 
 public class JMSVerwerkCdaBerichtListener implements SessionAwareMessageListener<ActiveMQMessage>
 {
@@ -44,8 +42,8 @@ public class JMSVerwerkCdaBerichtListener implements SessionAwareMessageListener
 	@Override
 	public void onMessage(ActiveMQMessage message, Session session) throws JMSException
 	{
-		List<Long> berichten = verwerkCdaBerichtService.getAlleNietVerwerkteCdaBerichten(bvo);
-		for (Long berichtId : berichten)
+		var berichten = verwerkCdaBerichtService.getAlleNietVerwerkteCdaBerichten(bvo);
+		for (var berichtId : berichten)
 		{
 			try
 			{

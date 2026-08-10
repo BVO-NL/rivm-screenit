@@ -26,7 +26,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.Iterator;
@@ -37,7 +36,6 @@ import nl.rivm.screenit.main.csv2xls.services.Csv2xlsService;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -48,7 +46,6 @@ import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.ContentDisposition;
@@ -92,7 +89,7 @@ public class ExportToXslLink<T extends Serializable, S> extends GenericPanel<T>
 			@Override
 			protected ResourceResponse newResourceResponse(Attributes attributes)
 			{
-				ResourceResponse resourceResponse = new ResourceResponse();
+				var resourceResponse = new ResourceResponse();
 				resourceResponse.setFileName(bestandsnaam + ".xls");
 				resourceResponse.setContentDisposition(ContentDisposition.ATTACHMENT);
 				resourceResponse.setContentType("application/vnd.ms-excel");
@@ -105,11 +102,11 @@ public class ExportToXslLink<T extends Serializable, S> extends GenericPanel<T>
 					{
 						ByteArrayOutputStream outputStream = null;
 						InputStream inputStream = null;
-						OutputStream outputStream1 = attributes.getResponse().getOutputStream();
+						var outputStream1 = attributes.getResponse().getOutputStream();
 
 						try
 						{
-							String csv = getCsv();
+							var csv = getCsv();
 
 							outputStream = new ByteArrayOutputStream();
 							csv2xlsService.createXls(csv, outputStream, false, "HeaderValueYjKFLs23", "CelValueFKWsx3D", bestandsnaam, getDatumFormat(),
@@ -167,10 +164,10 @@ public class ExportToXslLink<T extends Serializable, S> extends GenericPanel<T>
 
 	protected String getCsv() throws NullPointerException
 	{
-		StringBuffer csv = new StringBuffer();
+		var csv = new StringBuffer();
 		Iterator<? extends T> iterator = null;
 		List<IColumn<T, S>> columns = null;
-		int columnNumber = 0;
+		var columnNumber = 0;
 
 		if (dataTable != null)
 		{
@@ -180,13 +177,13 @@ public class ExportToXslLink<T extends Serializable, S> extends GenericPanel<T>
 
 		if (iterator != null && columns != null)
 		{
-			for (IColumn<T, S> column : columns)
+			for (var column : columns)
 			{
-				String headerString = "";
+				var headerString = "";
 				if (column instanceof AbstractColumn)
 				{
-					AbstractColumn<T, S> propertyColumn = (AbstractColumn<T, S>) column;
-					IModel<String> header = propertyColumn.getDisplayModel();
+					var propertyColumn = (AbstractColumn<T, S>) column;
+					var header = propertyColumn.getDisplayModel();
 					try
 					{
 						headerString = header.getObject();
@@ -206,38 +203,38 @@ public class ExportToXslLink<T extends Serializable, S> extends GenericPanel<T>
 			csv.append("\n");
 			while (iterator.hasNext())
 			{
-				T object = iterator.next();
+				var object = iterator.next();
 				columnNumber = 0;
-				for (IColumn<T, S> column : columns)
+				for (var column : columns)
 				{
-					String value = "";
+					var value = "";
 					if (column instanceof AbstractColumn)
 					{
-						AbstractColumn<T, S> propertyColumn = (AbstractColumn<T, S>) column;
-						Model<T> model = new Model<T>(object);
+						var propertyColumn = (AbstractColumn<T, S>) column;
+						var model = new Model<T>(object);
 						Item<ICellPopulator<T>> item = new Item("testId", 0, model);
 						propertyColumn.populateItem(item, "testId", model);
-						Component labelComponent = item.get("testId");
+						var labelComponent = item.get("testId");
 						if (labelComponent instanceof Label)
 						{
-							Label label = (Label) labelComponent;
+							var label = (Label) labelComponent;
 							value = leadingZeroFixed(label.getDefaultModelObjectAsString());
 						}
 						else if (labelComponent instanceof MultiLineLabel)
 						{
-							MultiLineLabel label = (MultiLineLabel) labelComponent;
+							var label = (MultiLineLabel) labelComponent;
 							value = label.getDefaultModelObjectAsString();
 						}
 						else if (labelComponent instanceof EnumLabel)
 						{
-							EnumLabel<?> label = (EnumLabel<?>) labelComponent;
-							Enum<?> enumValue = label.getModelObject();
-							String property = Classes.simpleName(enumValue.getDeclaringClass()) + '.' + enumValue.name();
+							var label = (EnumLabel<?>) labelComponent;
+							var enumValue = label.getModelObject();
+							var property = Classes.simpleName(enumValue.getDeclaringClass()) + '.' + enumValue.name();
 							value = getString(property);
 						}
 						else if (column instanceof IExportableColumn)
 						{
-							IModel dataModel = ((IExportableColumn) column).getDataModel(model);
+							var dataModel = ((IExportableColumn) column).getDataModel(model);
 							value = String.valueOf(dataModel.getObject());
 						}
 					}
@@ -267,7 +264,7 @@ public class ExportToXslLink<T extends Serializable, S> extends GenericPanel<T>
 	{
 		try
 		{
-			char c = string.charAt(0);
+			var c = string.charAt(0);
 
 			if (c == '0' && !string.contains("-") && !string.contains(":") && !string.contains(" "))
 			{

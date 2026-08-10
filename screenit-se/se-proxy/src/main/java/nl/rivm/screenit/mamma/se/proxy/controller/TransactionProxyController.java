@@ -22,9 +22,10 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
  */
 
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import jakarta.servlet.http.HttpSession;
 
 import nl.rivm.screenit.mamma.se.proxy.services.LogischeSessieService;
 import nl.rivm.screenit.mamma.se.proxy.services.TransactionQueueService;
@@ -42,8 +43,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/putTransactionToScreenItCentraal")
@@ -68,9 +67,9 @@ public class TransactionProxyController
 		}
 		if (transactionJSON.startsWith("["))
 		{
-			final JsonNode jsonNode = new ObjectMapper().readTree(transactionJSON);
-			List<String> transacties = StreamSupport.stream(jsonNode.spliterator(), false).map(JsonNode::toString).collect(Collectors.toList());
-			for (String transactie : transacties)
+			final var jsonNode = new ObjectMapper().readTree(transactionJSON);
+			var transacties = StreamSupport.stream(jsonNode.spliterator(), false).map(JsonNode::toString).collect(Collectors.toList());
+			for (var transactie : transacties)
 			{
 				doTransaction(transactie);
 			}
@@ -84,7 +83,7 @@ public class TransactionProxyController
 
 	private void doTransaction(String transactionJSON)
 	{
-		Long clientId = new TransactionParser(transactionJSON).getClientId();
+		var clientId = new TransactionParser(transactionJSON).getClientId();
 		transactionQueueService.addTransactionToQueue(transactionJSON, clientId);
 		webSocketProxyService.broadcast(transactionJSON);
 	}

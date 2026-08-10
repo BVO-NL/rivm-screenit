@@ -115,7 +115,7 @@ public abstract class BaseKoppelRestReader implements ItemStream
 					voorkomVerwerkingKoppeldata(koppeldataLijst);
 				}
 
-				boolean versturenSuccesvol = verstuurSemantischeFoutmeldingen(semantischeFoutmeldingen);
+				var versturenSuccesvol = verstuurSemantischeFoutmeldingen(semantischeFoutmeldingen);
 
 				if (!versturenSuccesvol)
 				{

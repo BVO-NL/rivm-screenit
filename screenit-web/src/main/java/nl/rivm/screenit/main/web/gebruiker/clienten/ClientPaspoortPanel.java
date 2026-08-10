@@ -25,10 +25,8 @@ import nl.rivm.screenit.main.service.algemeen.DeelnamemodusService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.gedeeld.MammaDoelgroepIndicatorPanel;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.AdresUtil;
@@ -64,8 +62,8 @@ public class ClientPaspoortPanel extends GenericPanel<Client>
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		Client client = getModelObject();
-		Persoon persoon = client.getPersoon();
+		var client = getModelObject();
+		var persoon = client.getPersoon();
 
 		add(new Label("persoon.voornaam"));
 		add(new Label("persoon.achternaam", NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client)));
@@ -95,7 +93,7 @@ public class ClientPaspoortPanel extends GenericPanel<Client>
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				MammaDossier mammaDossier = ClientPaspoortPanel.this.getModelObject().getMammaDossier();
+				var mammaDossier = ClientPaspoortPanel.this.getModelObject().getMammaDossier();
 				setVisible(mammaDossier != null && mammaDossier.getDubbeleTijdReden() != null &&
 					(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_DOSSIERGEGEVENS, Actie.INZIEN)
 						|| ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_AFSPRAKEN_BEHEER, Actie.INZIEN)
@@ -107,7 +105,7 @@ public class ClientPaspoortPanel extends GenericPanel<Client>
 
 	private void addSelectieblokkadeIndicator()
 	{
-		String selectieblokkadeTekst = deelnamemodusService.selectieblokkadeTekst(getModelObject());
+		var selectieblokkadeTekst = deelnamemodusService.selectieblokkadeTekst(getModelObject());
 		add(new Label("selectieblokkade", selectieblokkadeTekst).setVisible(StringUtils.isNotBlank(selectieblokkadeTekst)));
 	}
 

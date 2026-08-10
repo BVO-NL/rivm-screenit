@@ -51,14 +51,14 @@ public abstract class ScreenITDateTimeField extends AjaxDateTimeField
 	@Override
 	protected DatePicker<Date> newDatePicker(String wicketId, IModel<Date> model)
 	{
-		DatePicker<Date> datePicker = new DatePicker<>(wicketId, model)
+		var datePicker = new DatePicker<>(wicketId, model)
 		{
 			@Override
 			public void renderHead(IHeaderResponse response)
 			{
 				response.render(JavaScriptHeaderItem.forReference(JQueryUIJavaScriptResourceReference.get()));
 
-				DatePickerLanguageResourceReference dpl = DatePickerLanguageResourceReference.get(getLocale());
+				var dpl = DatePickerLanguageResourceReference.get(getLocale());
 				if (dpl != null)
 				{
 					response.render(JavaScriptHeaderItem.forReference(dpl));

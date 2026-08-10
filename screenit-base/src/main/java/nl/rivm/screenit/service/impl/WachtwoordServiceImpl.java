@@ -69,7 +69,7 @@ public class WachtwoordServiceImpl implements WachtwoordService
 	@Override
 	public String hashWachtwoord(Medewerker medewerker, String plainWachtwoord)
 	{
-		Sha512Hash hash = new Sha512Hash(plainWachtwoord, medewerker.getId().toString(), Constants.PASSWORDHASHINGITERATIONS);
+		var hash = new Sha512Hash(plainWachtwoord, medewerker.getId().toString(), Constants.PASSWORDHASHINGITERATIONS);
 		return hash.toHex();
 	}
 
@@ -86,7 +86,7 @@ public class WachtwoordServiceImpl implements WachtwoordService
 	@Override
 	public boolean isEerderGebruiktWachtwoord(@NonNull Medewerker medewerker, String unecryptedWachtwoord, List<String> vorigeWachtwoorden)
 	{
-		String hashedWachtwoord = hashWachtwoord(medewerker, unecryptedWachtwoord);
+		var hashedWachtwoord = hashWachtwoord(medewerker, unecryptedWachtwoord);
 
 		return vorigeWachtwoorden
 			.stream()

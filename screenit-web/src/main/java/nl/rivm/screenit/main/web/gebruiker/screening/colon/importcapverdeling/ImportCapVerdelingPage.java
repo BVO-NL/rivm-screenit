@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.colon.importcapverdeling;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.colon.ImportCapVerdelingService;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
@@ -33,13 +32,11 @@ import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.FileType;
-import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.Recht;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.IModel;
@@ -72,14 +69,14 @@ public class ImportCapVerdelingPage extends ColonScreeningBasePage
 
 		final IModel<List<FileUpload>> importCapVerdelingen = new ListModel<>();
 
-		FormComponent<List<FileUpload>> importCapVerdeling = new FileUploadField("importCapVerdeling", importCapVerdelingen)
+		var importCapVerdeling = new FileUploadField("importCapVerdeling", importCapVerdelingen)
 			.add(new FileValidator(FileType.EXCEL_NIEUW));
 		form.add(importCapVerdeling);
 		importCapVerdeling.setRequired(true);
 		importCapVerdeling.setOutputMarkupId(true);
 		importCapVerdeling.setLabel(Model.of("Bestand retourzendingen"));
 
-		final BootstrapDialog dialog = new BootstrapDialog("dialog");
+		final var dialog = new BootstrapDialog("dialog");
 		add(dialog);
 		form.add(new IndicatingAjaxButton("verwerken", form)
 		{
@@ -92,11 +89,11 @@ public class ImportCapVerdelingPage extends ColonScreeningBasePage
 				if (importCapVerdelingen.getObject().size() == 1)
 				{
 
-					FileUpload importCapVerdelingFileUpload = importCapVerdelingen.getObject().get(0);
+					var importCapVerdelingFileUpload = importCapVerdelingen.getObject().get(0);
 
 					try
 					{
-						Level level = importCapVerdelingService.verwerkBestand(getIngelogdeOrganisatieMedewerker(),
+						var level = importCapVerdelingService.verwerkBestand(getIngelogdeOrganisatieMedewerker(),
 							importCapVerdelingFileUpload.writeToTempFile());
 						switch (level)
 						{

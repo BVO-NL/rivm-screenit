@@ -129,7 +129,7 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 
 	protected void openInitieleBeoordeling(Long initieleBeoordelingId)
 	{
-		BeoordelingenReserveringResult reserveringResult = beoordelingService.openBeschikbareBeoordeling(initieleBeoordelingId, beoordelingenIds,
+		var reserveringResult = beoordelingService.openBeschikbareBeoordeling(initieleBeoordelingId, beoordelingenIds,
 			getIngelogdeOrganisatieMedewerker(),
 			getLezerSoort());
 
@@ -193,10 +193,10 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 
 	protected void addRondeHistorie(List<AbstractMammaRondePanel> rondePanels)
 	{
-		List<MammaBeoordeling> historischeBeoordelingen = beoordelingService.getVorigeTweeTeTonenBeoordelingen(beoordelingModel.getObject());
-		for (MammaBeoordeling beoordeling : historischeBeoordelingen)
+		var historischeBeoordelingen = beoordelingService.getVorigeTweeTeTonenBeoordelingen(beoordelingModel.getObject());
+		for (var beoordeling : historischeBeoordelingen)
 		{
-			MammaBeoordelenHistorischeRondePanel readOnlyRondePanel = new MammaBeoordelenHistorischeRondePanel("rondeItem", ModelUtil.sModel(beoordeling));
+			var readOnlyRondePanel = new MammaBeoordelenHistorischeRondePanel("rondeItem", ModelUtil.sModel(beoordeling));
 			rondePanels.add(readOnlyRondePanel);
 		}
 		fillRondesInContainer(rondePanels);
@@ -204,10 +204,10 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 
 	protected void fillRondesInContainer(List<? extends AbstractBEAccordionPanel<?>> rondePanels)
 	{
-		RepeatingView rondeRepeatingView = new RepeatingView("rondesContainer");
-		for (AbstractBEAccordionPanel<?> panel : rondePanels)
+		var rondeRepeatingView = new RepeatingView("rondesContainer");
+		for (var panel : rondePanels)
 		{
-			WebMarkupContainer rondeItemWebMarkupContainer = new WebMarkupContainer(rondeRepeatingView.newChildId());
+			var rondeItemWebMarkupContainer = new WebMarkupContainer(rondeRepeatingView.newChildId());
 			rondeRepeatingView.add(rondeItemWebMarkupContainer);
 			rondeItemWebMarkupContainer.add(panel);
 			panel.setOutputMarkupId(true);
@@ -276,7 +276,7 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 
 	public void gaNaarBeoordeling(Long beoordelingId, AjaxRequestTarget target)
 	{
-		BeoordelingenReserveringResult reserveringResult = beoordelingService.openBeschikbareBeoordeling(beoordelingId, beoordelingenIds, getIngelogdeOrganisatieMedewerker(),
+		var reserveringResult = beoordelingService.openBeschikbareBeoordeling(beoordelingId, beoordelingenIds, getIngelogdeOrganisatieMedewerker(),
 			getLezerSoort());
 
 		if (reserveringResult.getInfoMessage() != null)
@@ -309,7 +309,7 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 	{
 		zetBeoordeeldeLezingenInWerklijstfilter();
 
-		Long volgendeBeoordelingId = beoordelingService.getVolgendeBeoordelingId(huidigeBeoordelingId(), beoordelingenIds);
+		var volgendeBeoordelingId = beoordelingService.getVolgendeBeoordelingId(huidigeBeoordelingId(), beoordelingenIds);
 
 		gaNaarBeoordeling(volgendeBeoordelingId, target);
 	}
@@ -318,8 +318,8 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 	{
 		if (ScreenitSession.get().isZoekObjectGezetForComponent(werklijstPageClass))
 		{
-			IModel<MammaBeWerklijstZoekObject> zoekObjectModel = (IModel<MammaBeWerklijstZoekObject>) ScreenitSession.get().getZoekObject(werklijstPageClass);
-			List<MammaBeoordelingStatus> filterStatussen = zoekObjectModel.getObject().getBeoordelingStatussen();
+			var zoekObjectModel = (IModel<MammaBeWerklijstZoekObject>) ScreenitSession.get().getZoekObject(werklijstPageClass);
+			var filterStatussen = zoekObjectModel.getObject().getBeoordelingStatussen();
 			if (filterStatussen.contains(MammaBeoordelingStatus.EERSTE_LEZING) && !filterStatussen.contains(MammaBeoordelingStatus.EERSTE_LEZING_OPGESLAGEN))
 			{
 				filterStatussen.add(MammaBeoordelingStatus.EERSTE_LEZING_OPGESLAGEN);
@@ -337,7 +337,7 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 
 	protected String createImsDesktopSyncCommand()
 	{
-		String imsDesktopSyncMessage = imsService.createDesktopSyncMessage(getIngelogdeOrganisatieMedewerker().getMedewerker(), ScreenitSession.get().getMammaHuidigeIDS7Role(),
+		var imsDesktopSyncMessage = imsService.createDesktopSyncMessage(getIngelogdeOrganisatieMedewerker().getMedewerker(), ScreenitSession.get().getMammaHuidigeIDS7Role(),
 			huidigeOnderzoekId(), getVolgendeGereserveerdeBeoordelingenIds(), getMammobridgeFocusMode());
 		return createUserSessionToImsBridgeSendCommand(MammaImsUserSessionType.ClientDesktopSync, imsDesktopSyncMessage, huidigeOnderzoekId());
 	}
@@ -354,19 +354,19 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 
 	private String createImsOpenWebsocketCommand()
 	{
-		String gebruikersnaam = getIngelogdeOrganisatieMedewerker().getMedewerker().getGebruikersnaam();
+		var gebruikersnaam = getIngelogdeOrganisatieMedewerker().getMedewerker().getGebruikersnaam();
 		return "openWebsocketToImsBridge('" + gebruikersnaam + "');";
 	}
 
 	protected String createImsUpdateBsnCommand()
 	{
-		String bsn = getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient().getPersoon().getBsn();
+		var bsn = getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient().getPersoon().getBsn();
 		return "bsnVoorImsCheck = '" + bsn + "'";
 	}
 
 	private String createImsEmptyDesktopSyncCommand()
 	{
-		String imsDesktopSyncMessage = imsService.createEmptyDesktopSyncMessage(getIngelogdeOrganisatieMedewerker().getMedewerker(),
+		var imsDesktopSyncMessage = imsService.createEmptyDesktopSyncMessage(getIngelogdeOrganisatieMedewerker().getMedewerker(),
 			ScreenitSession.get().getMammaHuidigeIDS7Role());
 		return String.format("console.log('IMS: unload event'); if(!window.imsLogOffSent) {%s};",
 			createUserSessionToImsBridgeSendCommand(MammaImsUserSessionType.EmptyDesktopSync, imsDesktopSyncMessage));
@@ -379,17 +379,17 @@ public abstract class AbstractMammaBeoordelenPage extends AbstractMammaBePage
 
 	protected String createImsAllImagesSeenCommand()
 	{
-		String allImagesSeenObject = imsService.createAllImagesSeenMessage(getIngelogdeOrganisatieMedewerker().getMedewerker(), ScreenitSession.get().getMammaHuidigeIDS7Role(),
+		var allImagesSeenObject = imsService.createAllImagesSeenMessage(getIngelogdeOrganisatieMedewerker().getMedewerker(), ScreenitSession.get().getMammaHuidigeIDS7Role(),
 			getOnderzoek(), getMammobridgeFocusMode());
 		return "allImagesSeenRequestBody = " + allImagesSeenObject + ";";
 	}
 
 	protected void getHistorischeRondePanels(IModel<MammaBeoordeling> beoordelingModel, List<AbstractMammaRondePanel> rondePanels)
 	{
-		List<MammaBeoordeling> historischeBeoordelingen = beoordelingService.getAlleBeoordelingenMetBeelden(beoordelingModel.getObject());
-		for (MammaBeoordeling beoordeling : historischeBeoordelingen)
+		var historischeBeoordelingen = beoordelingService.getAlleBeoordelingenMetBeelden(beoordelingModel.getObject());
+		for (var beoordeling : historischeBeoordelingen)
 		{
-			MammaBeoordelenHistorischeRondePanel readOnlyRondePanel = new MammaBeoordelenHistorischeRondePanel("rondeItem", ModelUtil.sModel(beoordeling));
+			var readOnlyRondePanel = new MammaBeoordelenHistorischeRondePanel("rondeItem", ModelUtil.sModel(beoordeling));
 			rondePanels.add(readOnlyRondePanel);
 		}
 	}

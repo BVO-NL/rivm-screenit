@@ -31,7 +31,6 @@ import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActie;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.util.DateUtil;
@@ -51,15 +50,15 @@ public class ClientContactTijdelijkAdresPanel extends AbstractClientContactActie
 	public ClientContactTijdelijkAdresPanel(String id, IModel<ClientContactActie> model, IModel<Client> client, List<Object> extraPanelParams)
 	{
 		super(id, model);
-		Persoon persoon = client.getObject().getPersoon();
+		var persoon = client.getObject().getPersoon();
 		tijdelijkAdresModel = ModelUtil.cModel(new TijdelijkAdres());
 		if (persoon.getTijdelijkAdres() != null)
 		{
 			tijdelijkAdresModel = ModelUtil.cModel(persoon.getTijdelijkAdres());
 		}
 
-		boolean inzien = false;
-		WebMarkupContainer container = new WebMarkupContainer("container", tijdelijkAdresModel);
+		var inzien = false;
+		var container = new WebMarkupContainer("container", tijdelijkAdresModel);
 		add(container);
 		ComponentHelper.addTextField(container, "straat", true, 43, inzien);
 		ComponentHelper.addTextField(container, "huisnummer", true, 10, Integer.class, inzien);
@@ -88,7 +87,7 @@ public class ClientContactTijdelijkAdresPanel extends AbstractClientContactActie
 	@Override
 	public void validate()
 	{
-		TijdelijkAdres tijdelijkAdres = getTijdelijkAdres();
+		var tijdelijkAdres = getTijdelijkAdres();
 		if (tijdelijkAdres != null && tijdelijkAdres.getStartDatum() != null && tijdelijkAdres.getEindDatum() != null
 			&& DateUtil.compareBefore(tijdelijkAdres.getEindDatum(), tijdelijkAdres.getStartDatum()))
 		{

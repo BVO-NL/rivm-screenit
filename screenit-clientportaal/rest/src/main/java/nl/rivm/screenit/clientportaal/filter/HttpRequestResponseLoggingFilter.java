@@ -43,9 +43,9 @@ public class HttpRequestResponseLoggingFilter extends CommonsRequestLoggingFilte
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException
 	{
 
-		boolean isFirstRequest = !isAsyncDispatch(request);
+		var isFirstRequest = !isAsyncDispatch(request);
 
-		boolean shouldLog = shouldLog(request);
+		var shouldLog = shouldLog(request);
 		if (shouldLog && isFirstRequest)
 		{
 			logger.debug(createMessage(request, "API Request [", "]"));

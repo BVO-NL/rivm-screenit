@@ -24,7 +24,6 @@ package nl.rivm.screenit.batch.quartz;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,9 +45,9 @@ public class JobLauncherDetails extends QuartzJobBean
 	protected void executeInternal(JobExecutionContext context)
 	{
 		Map<String, Object> jobDataMap = context.getMergedJobDataMap();
-		String jobTypeString = (String) jobDataMap.get(QuartzJobHelper.JOB_NAME);
+		var jobTypeString = (String) jobDataMap.get(QuartzJobHelper.JOB_NAME);
 		JobType jobType = null;
-		BatchJob batchJob = new BatchJob();
+		var batchJob = new BatchJob();
 		if (StringUtils.isBlank(jobTypeString))
 		{
 			throw new IllegalStateException("Job type not found: " + jobTypeString);
@@ -62,10 +61,10 @@ public class JobLauncherDetails extends QuartzJobBean
 
 		batchJob.setJobType(jobType);
 
-		for (Entry<String, Object> entry : jobDataMap.entrySet())
+		for (var entry : jobDataMap.entrySet())
 		{
-			String key = entry.getKey();
-			Object value = entry.getValue();
+			var key = entry.getKey();
+			var value = entry.getValue();
 			if (value instanceof String && !key.equals(QuartzJobHelper.JOB_NAME))
 			{
 				batchJob.getJobParameters().put(key, value);

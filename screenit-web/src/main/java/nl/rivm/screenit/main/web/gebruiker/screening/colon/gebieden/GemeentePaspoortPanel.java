@@ -44,13 +44,13 @@ public class GemeentePaspoortPanel extends GenericPanel<Gemeente>
 		super(id, model);
 		add(new Label("naam"));
 		add(new Label("code"));
-		Gemeente gemeente = model.getObject();
+		var gemeente = model.getObject();
 
-		int aantal = gemeente.getUitnodigingsGebieden().size();
+		var aantal = gemeente.getUitnodigingsGebieden().size();
 		add(new Label("aantal", Model.of(aantal)));
-		String gesplitstOp = "";
+		var gesplitstOp = "";
 
-		final Boolean gesplitsOpPostcode = gemeenteService.getGesplitsOpPostcode(gemeente);
+		final var gesplitsOpPostcode = gemeenteService.getGesplitsOpPostcode(gemeente);
 		if (gesplitsOpPostcode != null)
 		{
 			if (gesplitsOpPostcode)

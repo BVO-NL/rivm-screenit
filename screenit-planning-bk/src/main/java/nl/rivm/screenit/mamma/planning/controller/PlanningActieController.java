@@ -21,9 +21,6 @@ package nl.rivm.screenit.mamma.planning.controller;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Date;
-import java.util.Map;
-
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.dto.mamma.planning.PlanningConceptMeldingenDto;
@@ -42,7 +39,6 @@ import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningDoorrekenenManager;
 import nl.rivm.screenit.model.mamma.enums.MammaMeldingNiveau;
 import nl.rivm.screenit.model.mamma.enums.MammaPlanningStatus;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Propagation;
@@ -95,20 +91,20 @@ public class PlanningActieController
 			{
 				PlanningStatusIndex.set(MammaPlanningStatus.CONCEPT_WIJZIGINGEN_OPSLAAN, screeningOrganisatieId);
 			}
-			PlanningConceptMeldingenDto opslaanMeldingenDto = conceptOpslaanService.slaConceptOpVoorScreeningsOrganisatie(screeningOrganisatieId, runDry);
+			var opslaanMeldingenDto = conceptOpslaanService.slaConceptOpVoorScreeningsOrganisatie(screeningOrganisatieId, runDry);
 			PlanningStatusIndex.set(MammaPlanningStatus.OPERATIONEEL);
 			return opslaanMeldingenDto;
 		}
 		catch (OpslaanVerwijderenTijdBlokException e)
 		{
-			PlanningConceptMeldingenDto meldingenDto = new PlanningConceptMeldingenDto();
+			var meldingenDto = new PlanningConceptMeldingenDto();
 			meldingenDto.niveau = MammaMeldingNiveau.PROBLEEM;
 
-			PlanningMeldingDto meldingDto = new PlanningMeldingDto();
+			var meldingDto = new PlanningMeldingDto();
 			meldingDto.niveau = MammaMeldingNiveau.PROBLEEM;
 			meldingDto.tekst = e.getMessage() + e.getAdditionalMessageInfo();
-			SeTijdBlokOverlapException seTijdBlokOverlapException = (SeTijdBlokOverlapException) e;
-			PlanningMeldingenPerSeDto meldingenPerSeDto = new PlanningMeldingenPerSeDto();
+			var seTijdBlokOverlapException = (SeTijdBlokOverlapException) e;
+			var meldingenPerSeDto = new PlanningMeldingenPerSeDto();
 			meldingenPerSeDto.niveau = MammaMeldingNiveau.PROBLEEM;
 			meldingenPerSeDto.meldingen.add(meldingDto);
 			meldingenDto.seMeldingen.put(seTijdBlokOverlapException.getScreeningsEenheidId(), meldingenPerSeDto);
@@ -122,16 +118,16 @@ public class PlanningActieController
 		}
 		catch (OpslaanAfsprakenBuitenStandplaatsPeriodeException e)
 		{
-			PlanningConceptMeldingenDto meldingenDto = new PlanningConceptMeldingenDto();
+			var meldingenDto = new PlanningConceptMeldingenDto();
 			meldingenDto.niveau = MammaMeldingNiveau.PROBLEEM;
 
-			for (Map.Entry<Long, Pair<Date, Date>> entry : e.getAfsprakenBuitenStandplaatsPeriodeMap().entrySet())
+			for (var entry : e.getAfsprakenBuitenStandplaatsPeriodeMap().entrySet())
 			{
-				PlanningMeldingDto meldingDto = new PlanningMeldingDto();
+				var meldingDto = new PlanningMeldingDto();
 				meldingDto.niveau = MammaMeldingNiveau.PROBLEEM;
 				meldingDto.tekst = e.getMessage(entry.getValue());
 
-				PlanningMeldingenPerSeDto meldingenPerSeDto = new PlanningMeldingenPerSeDto();
+				var meldingenPerSeDto = new PlanningMeldingenPerSeDto();
 				meldingenPerSeDto.niveau = MammaMeldingNiveau.PROBLEEM;
 				meldingenPerSeDto.meldingen.add(meldingDto);
 				meldingenDto.seMeldingen.put(entry.getKey(), meldingenPerSeDto);

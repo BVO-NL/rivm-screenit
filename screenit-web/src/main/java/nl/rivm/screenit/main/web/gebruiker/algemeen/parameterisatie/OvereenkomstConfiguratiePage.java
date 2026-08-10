@@ -86,7 +86,7 @@ public class OvereenkomstConfiguratiePage extends ParameterisatieBasePage
 			super(id, model);
 
 			level = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_BEHEER_PARAMETERISATIE);
-			Actie actie = autorisatieService.getActieVoorMedewerker(getIngelogdeOrganisatieMedewerker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
+			var actie = autorisatieService.getActieVoorMedewerker(getIngelogdeOrganisatieMedewerker(), ScreenitSession.get().getCurrentSelectedMedewerker(),
 				Recht.MEDEWERKER_BEHEER_PARAMETERISATIE);
 			inzien = !isMinimumActie(actie, Actie.AANPASSEN);
 
@@ -95,7 +95,7 @@ public class OvereenkomstConfiguratiePage extends ParameterisatieBasePage
 			ComponentHelper.addTextField(this, "emailSubjectZVUA", true, 2000, inzien);
 			add(new TextArea<>("emailContentZVUA").setEnabled(!inzien));
 
-			AjaxSubmitLink opslaan = new AjaxSubmitLink("opslaan")
+			var opslaan = new AjaxSubmitLink("opslaan")
 			{
 
 				private static final long serialVersionUID = 1L;

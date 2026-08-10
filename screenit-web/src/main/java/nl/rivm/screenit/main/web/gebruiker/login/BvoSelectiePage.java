@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.login;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
@@ -36,7 +34,6 @@ import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.wicket.Application;
-import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -62,7 +59,7 @@ public class BvoSelectiePage extends LoginBasePage
 
 	public BvoSelectiePage(OrganisatieMedewerker organisatieMedewerker)
 	{
-		List<Bevolkingsonderzoek> onderzoeken = Bevolkingsonderzoek.sort(autorisatieService.getBevolkingsonderzoeken(organisatieMedewerker));
+		var onderzoeken = Bevolkingsonderzoek.sort(autorisatieService.getBevolkingsonderzoeken(organisatieMedewerker));
 		if (CollectionUtils.isNotEmpty(onderzoeken) && onderzoeken.size() == 1)
 		{
 			LOG.debug("Er is 1 BVO beschikbaar, deze wordt meteen toegekend.");
@@ -76,10 +73,10 @@ public class BvoSelectiePage extends LoginBasePage
 		else if (CollectionUtils.isNotEmpty(onderzoeken) && onderzoeken.size() > 1)
 		{
 			LOG.debug("Er zijn meerdere BVO's beschikbaar, selectiescherm wordt getoond.");
-			WebMarkupContainer bvoBeschikbaarContainer = new WebMarkupContainer("bvoBeschikbaarContainer");
-			Form<OrganisatieMedewerker> bvoForm = new Form<OrganisatieMedewerker>("bvoForm", ModelUtil.cModel(organisatieMedewerker));
+			var bvoBeschikbaarContainer = new WebMarkupContainer("bvoBeschikbaarContainer");
+			var bvoForm = new Form<OrganisatieMedewerker>("bvoForm", ModelUtil.cModel(organisatieMedewerker));
 			bvoForm.add(new BootstrapFeedbackPanel("feedback"));
-			CheckBoxMultipleChoice<Bevolkingsonderzoek> keuzemaken = new CheckBoxMultipleChoice<Bevolkingsonderzoek>("bevolkingsonderzoeken", onderzoeken,
+			var keuzemaken = new CheckBoxMultipleChoice<Bevolkingsonderzoek>("bevolkingsonderzoeken", onderzoeken,
 				new EnumChoiceRenderer<Bevolkingsonderzoek>()
 				{
 
@@ -98,7 +95,7 @@ public class BvoSelectiePage extends LoginBasePage
 				@Override
 				protected void onSubmit(AjaxRequestTarget target)
 				{
-					OrganisatieMedewerker organisatieMedewerker = (OrganisatieMedewerker) getForm().getDefaultModelObject();
+					var organisatieMedewerker = (OrganisatieMedewerker) getForm().getDefaultModelObject();
 					if (CollectionUtils.isEmpty(organisatieMedewerker.getBevolkingsonderzoeken()))
 					{
 						error(getString("error.bvo.selecteer.een.minimaal"));
@@ -121,13 +118,13 @@ public class BvoSelectiePage extends LoginBasePage
 		{
 			LOG.debug("Er zijn geen BVO's beschikbaar, selectiescherm met uitleg wordt getoond.");
 			add(new WebMarkupContainer("bvoBeschikbaarContainer").setVisible(false));
-			WebMarkupContainer container = new WebMarkupContainer("bvoOnbeschikbaarContainer");
+			var container = new WebMarkupContainer("bvoOnbeschikbaarContainer");
 			container.add(new Link<Void>("stoppen")
 			{
 				@Override
 				public void onClick()
 				{
-					Class<? extends Page> homePage = Application.get().getHomePage();
+					var homePage = Application.get().getHomePage();
 					ScreenitSession.get().logout();
 					setResponsePage(homePage);
 				}

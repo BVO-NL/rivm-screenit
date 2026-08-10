@@ -227,7 +227,7 @@ public class RoosterServiceImpl implements RoosterService
 
 	private LocalDateTime getEindTijdVolgendeTijdslot(ColonTijdslot afspraakslot, LocalDateTime volgendeStartTijd)
 	{
-		long tijdSlotDuurInSeconden = Duration.between(afspraakslot.getVanaf(), afspraakslot.getTot()).getSeconds();
+		var tijdSlotDuurInSeconden = Duration.between(afspraakslot.getVanaf(), afspraakslot.getTot()).getSeconds();
 		return volgendeStartTijd.plusSeconds(tijdSlotDuurInSeconden);
 	}
 

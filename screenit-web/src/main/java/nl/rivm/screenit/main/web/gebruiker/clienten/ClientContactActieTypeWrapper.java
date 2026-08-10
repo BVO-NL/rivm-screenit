@@ -520,7 +520,7 @@ public enum ClientContactActieTypeWrapper
 
 	private static ClientContactActieTypeWrapper[] getFullExclusieArrayWithoutSelf(ClientContactActieTypeWrapper self)
 	{
-		final ArrayList<ClientContactActieTypeWrapper> clientContactActieTypeWrappers = new ArrayList<>(Arrays.asList(ClientContactActieTypeWrapper.values()));
+		final var clientContactActieTypeWrappers = new ArrayList<ClientContactActieTypeWrapper>(Arrays.asList(ClientContactActieTypeWrapper.values()));
 		clientContactActieTypeWrappers.remove(self);
 		return clientContactActieTypeWrappers.toArray(new ClientContactActieTypeWrapper[] {});
 	}

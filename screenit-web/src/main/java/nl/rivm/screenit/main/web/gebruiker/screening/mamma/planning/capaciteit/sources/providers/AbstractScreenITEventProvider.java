@@ -58,7 +58,7 @@ public abstract class AbstractScreenITEventProvider implements EventProvider
 	@Override
 	public final Event getEventForId(String id) throws EventNotFoundException
 	{
-		Event event = events.get(ScreenITEventSourceType.getEventId(getSourceType(), id));
+		var event = events.get(ScreenITEventSourceType.getEventId(getSourceType(), id));
 		if (event != null)
 		{
 			return event;

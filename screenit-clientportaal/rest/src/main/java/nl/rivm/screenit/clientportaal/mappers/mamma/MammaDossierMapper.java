@@ -30,8 +30,6 @@ import nl.rivm.screenit.clientportaal.model.mamma.MammaDossierDto;
 import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
 import nl.rivm.screenit.model.ClientGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaDossier;
-import nl.rivm.screenit.model.mamma.MammaStandplaats;
-import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
@@ -54,12 +52,12 @@ public interface MammaDossierMapper extends BaseDossierMapper<MammaDossier, Mamm
 	@Named("dossierToLaatsteStandplaatsPlaats")
 	static String dossierToLaatsteStandplaatsPlaats(MammaDossier dossier)
 	{
-		MammaBaseStandplaatsService baseStandplaatsService = ApplicationContextProvider.getApplicationContext().getBean(MammaBaseStandplaatsService.class);
-		MammaUitnodiging laatsteUitnodiging = dossier.getLaatsteScreeningRonde() != null ? dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging() : null;
+		var baseStandplaatsService = ApplicationContextProvider.getApplicationContext().getBean(MammaBaseStandplaatsService.class);
+		var laatsteUitnodiging = dossier.getLaatsteScreeningRonde() != null ? dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging() : null;
 		String plaats = null;
 		if (laatsteUitnodiging != null)
 		{
-			MammaStandplaats standplaats = laatsteUitnodiging.getLaatsteAfspraak() != null
+			var standplaats = laatsteUitnodiging.getLaatsteAfspraak() != null
 				? laatsteUitnodiging.getLaatsteAfspraak().getStandplaatsPeriode().getStandplaatsRonde().getStandplaats()
 				: laatsteUitnodiging.getStandplaatsRonde().getStandplaats();
 			plaats = baseStandplaatsService.getStandplaatsLocatie(standplaats, new Date()).getPlaats();

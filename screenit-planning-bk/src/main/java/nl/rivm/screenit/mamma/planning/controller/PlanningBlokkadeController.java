@@ -25,10 +25,7 @@ import nl.rivm.screenit.dto.mamma.planning.PlanningBlokkadeDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningRestConstants;
 import nl.rivm.screenit.mamma.planning.index.PlanningBlokkadeIndex;
 import nl.rivm.screenit.mamma.planning.model.PlanningBlokkade;
-import nl.rivm.screenit.mamma.planning.model.PlanningDag;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsRonde;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningDoorrekenenManager;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingen;
 
@@ -49,7 +46,7 @@ public class PlanningBlokkadeController
 	@PostMapping
 	public void post(@RequestBody PlanningBlokkadeDto blokkadeDto)
 	{
-		PlanningBlokkade blokkade = PlanningMapper.from(blokkadeDto);
+		var blokkade = PlanningMapper.from(blokkadeDto);
 		PlanningBlokkadeIndex.put(blokkade);
 		bepaalWijzigingen(blokkade);
 
@@ -59,7 +56,7 @@ public class PlanningBlokkadeController
 	@PutMapping
 	public void put(@RequestBody PlanningBlokkadeDto blokkadeDto)
 	{
-		PlanningBlokkade oudeBlokkade = PlanningBlokkadeIndex.get(blokkadeDto.id);
+		var oudeBlokkade = PlanningBlokkadeIndex.get(blokkadeDto.id);
 		if (oudeBlokkade != null)
 		{
 			PlanningBlokkadeIndex.remove(oudeBlokkade);
@@ -72,7 +69,7 @@ public class PlanningBlokkadeController
 	@DeleteMapping("/{blokkadeId}")
 	public void delete(@PathVariable Long blokkadeId)
 	{
-		PlanningBlokkade blokkade = PlanningBlokkadeIndex.get(blokkadeId);
+		var blokkade = PlanningBlokkadeIndex.get(blokkadeId);
 		if (blokkade != null)
 		{
 			PlanningBlokkadeIndex.remove(blokkade);
@@ -86,7 +83,7 @@ public class PlanningBlokkadeController
 		switch (blokkade.getBlokkadeType())
 		{
 		case SCREENINGS_ORGANISATIE:
-			for (PlanningScreeningsEenheid se : blokkade.getScreeningsOrganisatie().getScreeningsEenheidSet())
+			for (var se : blokkade.getScreeningsOrganisatie().getScreeningsEenheidSet())
 			{
 				bepaalSeWijzigingen(blokkade, se);
 			}
@@ -95,9 +92,9 @@ public class PlanningBlokkadeController
 			bepaalSeWijzigingen(blokkade, blokkade.getScreeningsEenheid());
 			break;
 		case STANDPLAATS:
-			for (PlanningStandplaatsRonde standplaatsRonde : blokkade.getStandplaats().getStandplaatsRondeNavigableSet())
+			for (var standplaatsRonde : blokkade.getStandplaats().getStandplaatsRondeNavigableSet())
 			{
-				for (PlanningStandplaatsPeriode standplaatsPeriode : standplaatsRonde.getStandplaatsPeriodeNavigableSet())
+				for (var standplaatsPeriode : standplaatsRonde.getStandplaatsPeriodeNavigableSet())
 				{
 					if (!standplaatsPeriode.getVanaf().isAfter(blokkade.getTotEnMet()) && !standplaatsPeriode.getTotEnMet().isBefore(blokkade.getVanaf()))
 					{
@@ -111,12 +108,12 @@ public class PlanningBlokkadeController
 
 	private void bepaalSeWijzigingen(PlanningBlokkade blokkade, PlanningScreeningsEenheid se)
 	{
-		PlanningDag dag = se.getDagNavigableMap().get(blokkade.getVanaf());
+		var dag = se.getDagNavigableMap().get(blokkade.getVanaf());
 		if (dag == null)
 		{
 			dag = se.getDagNavigableMap().firstEntry().getValue();
 		}
-		PlanningStandplaatsPeriode periode = dag.getStandplaatsPeriode();
+		var periode = dag.getStandplaatsPeriode();
 		if (periode == null && CollectionUtils.isNotEmpty(se.getStandplaatsPeriodeNavigableSet()))
 		{
 

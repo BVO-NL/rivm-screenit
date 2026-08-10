@@ -66,7 +66,7 @@ public abstract class TestVervolgKeuzePopupBasePanel extends GenericPanel<TestVe
 		this.model = model;
 		add(new Label("gebeurtenis", getModelObject().getNaam()));
 
-		Form<Void> form = new Form<Void>("form");
+		var form = new Form<Void>("form");
 		form.add(getKeuzeDetailPanel("details", form));
 		add(form);
 	}
@@ -80,8 +80,8 @@ public abstract class TestVervolgKeuzePopupBasePanel extends GenericPanel<TestVe
 		Component comp = new EmptyPanel(id);
 		try
 		{
-			Class<? extends AbstractTestBasePopupPanel> detailPanelClass = (Class<? extends AbstractTestBasePopupPanel>) getModelObject().getDetailClass();
-			AbstractTestBasePopupPanel detailPanel = (AbstractTestBasePopupPanel) ConstructorUtils.invokeConstructor(detailPanelClass, params.toArray());
+			var detailPanelClass = (Class<? extends AbstractTestBasePopupPanel>) getModelObject().getDetailClass();
+			var detailPanel = (AbstractTestBasePopupPanel) ConstructorUtils.invokeConstructor(detailPanelClass, params.toArray());
 			detailPanel.getOpslaanButton("opslaan", this, form);
 			comp = detailPanel;
 		}

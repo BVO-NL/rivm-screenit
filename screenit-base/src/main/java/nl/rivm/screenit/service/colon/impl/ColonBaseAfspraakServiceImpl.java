@@ -286,7 +286,7 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 			specification = specification.and(PersoonSpecification.heeftBsn("nobsn").with(persoonJoin()));
 		}
 
-		LocalDate vanaf = DateUtil.toLocalDate(zoekFilter.getVanaf());
+		var vanaf = DateUtil.toLocalDate(zoekFilter.getVanaf());
 		LocalDate totEnMet = null;
 		if (zoekFilter.getTotEnMet() != null)
 		{

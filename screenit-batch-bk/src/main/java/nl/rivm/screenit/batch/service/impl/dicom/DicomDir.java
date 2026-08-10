@@ -83,10 +83,10 @@ public class DicomDir
 	{
 		checkOut();
 		checkRecordFactory();
-		int n = 0;
+		var n = 0;
 		if (f.isDirectory())
 		{
-			for (String s : f.list())
+			for (var s : f.list())
 			{
 				n += addReferenceTo(new File(f, s));
 			}
@@ -126,13 +126,13 @@ public class DicomDir
 				}
 			}
 		}
-		char prompt = '.';
+		var prompt = '.';
 		if (fmi == null)
 		{
 			fmi = dataset.createFileMetaInformation(UID.ImplicitVRLittleEndian);
 			prompt = 'F';
 		}
-		String iuid = fmi.getString(Tag.MediaStorageSOPInstanceUID, null);
+		var iuid = fmi.getString(Tag.MediaStorageSOPInstanceUID, null);
 		if (iuid == null)
 		{
 			LOG.warn("File overgeslagen " + f.getPath());
@@ -144,9 +144,9 @@ public class DicomDir
 
 	private int addRecords(Attributes dataset, int num, String[] fileIDs, char prompt, String iuid, Attributes fmi) throws IOException
 	{
-		String pid = dataset.getString(Tag.PatientID, null);
-		String styuid = dataset.getString(Tag.StudyInstanceUID, null);
-		String seruid = dataset.getString(Tag.SeriesInstanceUID, null);
+		var pid = dataset.getString(Tag.PatientID, null);
+		var styuid = dataset.getString(Tag.StudyInstanceUID, null);
+		var seruid = dataset.getString(Tag.SeriesInstanceUID, null);
 
 		if (styuid != null)
 		{
@@ -155,14 +155,14 @@ public class DicomDir
 				dataset.setString(Tag.PatientID, VR.LO, pid = styuid);
 				prompt = prompt == 'F' ? 'P' : 'p';
 			}
-			Attributes patRec = in.findPatientRecord(pid);
+			var patRec = in.findPatientRecord(pid);
 			if (patRec == null)
 			{
 				patRec = recFact.createRecord(RecordType.PATIENT, null, dataset, null, null);
 				out.addRootDirectoryRecord(patRec);
 				num++;
 			}
-			Attributes studyRec = in.findStudyRecord(patRec, styuid);
+			var studyRec = in.findStudyRecord(patRec, styuid);
 			if (studyRec == null)
 			{
 				studyRec = recFact.createRecord(RecordType.STUDY, null, dataset, null, null);
@@ -172,7 +172,7 @@ public class DicomDir
 
 			if (seruid != null)
 			{
-				Attributes seriesRec = in.findSeriesRecord(studyRec, seruid);
+				var seriesRec = in.findSeriesRecord(studyRec, seruid);
 				if (seriesRec == null)
 				{
 					seriesRec = recFact.createRecord(RecordType.SERIES, null, dataset, null, null);
@@ -193,7 +193,7 @@ public class DicomDir
 		{
 			if (iuid != null)
 			{
-				Attributes instRec = recFact.createRecord(dataset, fmi, fileIDs);
+				var instRec = recFact.createRecord(dataset, fmi, fileIDs);
 				out.addRootDirectoryRecord(instRec);
 				prompt = prompt == 'F' ? 'R' : 'r';
 				num++;

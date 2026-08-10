@@ -76,7 +76,7 @@ public class MammaTehuisOpmerkingenPanel extends GenericPanel<MammaTehuis>
 		opmerkingen = new WebMarkupContainer("opmerkingen");
 		opmerkingen.setOutputMarkupId(true);
 
-		MammaTehuisOpmerking searchObject = new MammaTehuisOpmerking();
+		var searchObject = new MammaTehuisOpmerking();
 		searchObject.setActief(true);
 		final IModel<MammaTehuisOpmerking> searchObjectModel = Model.of(searchObject);
 		opmerkingen.add(new ActiefHeaderPanel<>("actiefHeader", opmerkingen, searchObjectModel));
@@ -91,15 +91,15 @@ public class MammaTehuisOpmerkingenPanel extends GenericPanel<MammaTehuis>
 				return list;
 			}
 		};
-		ListView<MammaTehuisOpmerking> list = new ListView<>("list", listModel)
+		var list = new ListView<>("list", listModel)
 		{
 			@Override
 			protected void populateItem(ListItem<MammaTehuisOpmerking> item)
 			{
-				MammaTehuisOpmerking opmerking = item.getModelObject();
-				Boolean searchActief = searchObjectModel.getObject().getActief();
-				Boolean opmerkingActief = opmerking.getActief();
-				boolean visible = false;
+				var opmerking = item.getModelObject();
+				var searchActief = searchObjectModel.getObject().getActief();
+				var opmerkingActief = opmerking.getActief();
+				var visible = false;
 				if (Boolean.TRUE.equals(searchActief) && !Boolean.FALSE.equals(opmerkingActief))
 				{
 					visible = true;
@@ -163,7 +163,7 @@ public class MammaTehuisOpmerkingenPanel extends GenericPanel<MammaTehuis>
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				IModel<MammaTehuisOpmerking> nieuweOpmerking = ModelUtil.csModel(new MammaTehuisOpmerking());
+				var nieuweOpmerking = ModelUtil.csModel(new MammaTehuisOpmerking());
 				nieuweOpmerking.getObject().setActief(true);
 				editOpmerking(target, nieuweOpmerking);
 			}
@@ -179,7 +179,7 @@ public class MammaTehuisOpmerkingenPanel extends GenericPanel<MammaTehuis>
 
 	private void editOpmerking(AjaxRequestTarget target, IModel<MammaTehuisOpmerking> opmerking)
 	{
-		WebMarkupContainer opmerkingContainer = new WebMarkupContainer("editOpmerkingContainer");
+		var opmerkingContainer = new WebMarkupContainer("editOpmerkingContainer");
 		opmerkingContainer.setOutputMarkupId(true);
 		editOpmerkingContainer.replaceWith(opmerkingContainer);
 		editOpmerkingContainer = opmerkingContainer;
@@ -198,15 +198,15 @@ public class MammaTehuisOpmerkingenPanel extends GenericPanel<MammaTehuis>
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaTehuis Tehuis = (MammaTehuis) MammaTehuisOpmerkingenPanel.this.getDefaultModelObject();
-				MammaTehuisOpmerking opmerking = (MammaTehuisOpmerking) opmerkingForm.getModelObject();
-				boolean changed = tehuisService.saveOrUpdateTehuisOpmerking(opmerking, Tehuis, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+				var Tehuis = (MammaTehuis) MammaTehuisOpmerkingenPanel.this.getDefaultModelObject();
+				var opmerking = (MammaTehuisOpmerking) opmerkingForm.getModelObject();
+				var changed = tehuisService.saveOrUpdateTehuisOpmerking(opmerking, Tehuis, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				if (changed)
 				{
 					success(getString("message.gegevensopgeslagen"));
 				}
 				target.add(opmerkingen);
-				WebMarkupContainer invisibleopmerkingContainer = new WebMarkupContainer("editOpmerkingContainer");
+				var invisibleopmerkingContainer = new WebMarkupContainer("editOpmerkingContainer");
 				invisibleopmerkingContainer.setOutputMarkupPlaceholderTag(true);
 				invisibleopmerkingContainer.setVisible(false);
 				editOpmerkingContainer.replaceWith(invisibleopmerkingContainer);

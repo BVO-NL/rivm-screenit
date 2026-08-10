@@ -21,7 +21,7 @@ package nl.rivm.screenit.main.dto.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +36,7 @@ public class ScreeningRondeGebeurtenisDto
 {
 	private String documentNaam;
 
-	private LocalDate datum;
+	private LocalDateTime datum;
 
 	private Long briefId;
 

@@ -256,7 +256,7 @@ public class LabformulierGenererenWriter implements ItemStreamWriter<Long>
 
 		var briefafdrukopdrachtDto = BriefafdrukopdrachtDto.builder()
 			.code(briefType.getBriefCode())
-			.kenmerk(BriefUtil.maakKenmerk(voorbladBrief))
+			.kenmerk(BriefUtil.maakParagonKenmerk(voorbladBrief))
 			.timestamp(timestamp)
 			.codeAddendum("")
 			.build();

@@ -28,7 +28,9 @@ import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.component.table.ClientColumn;
+import nl.rivm.screenit.main.web.component.table.ExportToXslLink;
 import nl.rivm.screenit.main.web.component.table.GeboortedatumColumn;
+import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.component.table.ScreenitDateTimePropertyColumn;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client_;
@@ -57,6 +59,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.DateValidator;
+import org.jspecify.annotations.NonNull;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
@@ -137,5 +140,10 @@ public class ColonMissendeMdlVerslagenWerklijstPage extends WerklijstIntakePage
 	{
 		var vandaag = currentDateSupplier.getLocalDate().minusDays(1L);
 		totEnMet.add(DateValidator.maximum(Date.from(vandaag.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())));
+	}
+
+	protected @NonNull ExportToXslLink<ColonIntakeAfspraak, String> maakExportToCsvLink(ScreenitDataTable<ColonIntakeAfspraak, String> table)
+	{
+		return new ExportToXslLink<>("csv", "Missende verslagen", table);
 	}
 }

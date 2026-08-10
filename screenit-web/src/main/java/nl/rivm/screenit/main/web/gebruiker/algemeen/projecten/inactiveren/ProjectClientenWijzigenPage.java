@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.inactiveren;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +54,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
@@ -105,10 +103,10 @@ public class ProjectClientenWijzigenPage extends ProjectBasePage
 		dialog = new BootstrapDialog("dialog");
 		add(dialog);
 
-		FormComponent<String> inactiveerReden = ComponentHelper.addTextField(form, "dynamischeInactiveerReden", false, 255, false);
+		var inactiveerReden = ComponentHelper.addTextField(form, "dynamischeInactiveerReden", false, 255, false);
 		inactiveerReden.setLabel(Model.of("Inactiveer reden"));
 
-		FormComponent<List<FileUpload>> clientenBestand = new FileUploadField("bestand", clientenBestanden)
+		var clientenBestand = new FileUploadField("bestand", clientenBestanden)
 			.add(new FileValidator(FileType.CSV));
 		clientenBestand.setRequired(true);
 		clientenBestand.setLabel(Model.of("Bestand met clienten"));
@@ -119,7 +117,7 @@ public class ProjectClientenWijzigenPage extends ProjectBasePage
 		projectBestandTypes.add(ProjectBestandType.HERACTIVEREN);
 		projectBestandTypes.add(ProjectBestandType.VERWIJDEREN);
 
-		RadioChoice<ProjectBestandType> bestandTypeRadio = new RadioChoice<>("type", projectBestandTypes,
+		var bestandTypeRadio = new RadioChoice<ProjectBestandType>("type", projectBestandTypes,
 			new EnumChoiceRenderer<>(this));
 		bestandTypeRadio.setPrefix("<label class=\"radio padding-left-5px\">");
 		bestandTypeRadio.setSuffix("</label>");
@@ -139,8 +137,8 @@ public class ProjectClientenWijzigenPage extends ProjectBasePage
 				{
 					stelFileVeilig(); 
 
-					ProjectBestand projectBestand = form.getModelObject();
-					String dialogTekst = "Weet u zeker dat u deze clienten wilt " + getString("ProjectBestandType." + projectBestand.getType() + ".melding") + "?";
+					var projectBestand = form.getModelObject();
+					var dialogTekst = "Weet u zeker dat u deze clienten wilt " + getString("ProjectBestandType." + projectBestand.getType() + ".melding") + "?";
 					dialog.openWith(target, new ConfirmPanel(dialog.CONTENT_ID, Model.of(dialogTekst), null, new DefaultConfirmCallback()
 					{
 						@Override
@@ -148,10 +146,10 @@ public class ProjectClientenWijzigenPage extends ProjectBasePage
 						{
 							try
 							{
-								Project project = getProjectModel().getObject();
+								var project = getProjectModel().getObject();
 
-								ProjectBestand projectBestand = ProjectClientenWijzigenPage.this.form.getModelObject();
-								UploadDocument uploadDocument = documentModel.getObject();
+								var projectBestand = ProjectClientenWijzigenPage.this.form.getModelObject();
+								var uploadDocument = documentModel.getObject();
 
 								projectService.queueProjectBestandVoorClientWijzigingen(project, projectBestand, uploadDocument, uploadDocument.getContentType(),
 									uploadDocument.getNaam(),
@@ -176,7 +174,7 @@ public class ProjectClientenWijzigenPage extends ProjectBasePage
 			}
 
 		});
-		WebMarkupContainer passpoortContainer = getPassPoortContainer();
+		var passpoortContainer = getPassPoortContainer();
 
 		add(passpoortContainer);
 	}
@@ -187,10 +185,10 @@ public class ProjectClientenWijzigenPage extends ProjectBasePage
 		{
 			if (clientenBestanden.getObject() != null)
 			{
-				FileUpload upload = clientenBestanden.getObject().get(0);
-				File definitieFile = upload.writeToTempFile();
+				var upload = clientenBestanden.getObject().get(0);
+				var definitieFile = upload.writeToTempFile();
 
-				UploadDocument document = new UploadDocument();
+				var document = new UploadDocument();
 				document.setActief(Boolean.TRUE);
 				document.setContentType(upload.getContentType());
 				document.setFile(definitieFile);
@@ -207,7 +205,7 @@ public class ProjectClientenWijzigenPage extends ProjectBasePage
 
 	private WebMarkupContainer getPassPoortContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("projectPasspoortContainer");
+		var container = new WebMarkupContainer("projectPasspoortContainer");
 		container.setOutputMarkupId(true);
 
 		container.add(new ProjectPaspoortPanel("projectPasspoort", getProjectModel()));

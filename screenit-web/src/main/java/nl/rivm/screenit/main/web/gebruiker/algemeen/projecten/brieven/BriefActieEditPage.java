@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.brieven;
  */
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +31,6 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.validator.FileValidator;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.ProjectBasePage;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.ProjectPaspoortPanel;
-import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.FileType;
@@ -95,12 +93,12 @@ public class BriefActieEditPage extends ProjectBasePage
 	public BriefActieEditPage(IModel<Project> model)
 	{
 		super(model);
-		Project project = model.getObject();
-		ProjectBriefActie actie = new ProjectBriefActie();
+		var project = model.getObject();
+		var actie = new ProjectBriefActie();
 		briefActieModel = ModelUtil.ccModel(actie);
 		briefActieModel.getObject().setProject(project);
 
-		ProjectBriefActie herinnerActie = new ProjectBriefActie();
+		var herinnerActie = new ProjectBriefActie();
 		briefHerinnerenVragenlijstModel = ModelUtil.ccModel(herinnerActie);
 		briefHerinnerenVragenlijstModel.getObject().setProject(project);
 
@@ -111,10 +109,10 @@ public class BriefActieEditPage extends ProjectBasePage
 		typePanelContainer = getTypePanelContainer(null);
 		form.add(typePanelContainer);
 
-		final WebMarkupContainer fileUploadContainer = new WebMarkupContainer("fileUploadContainer");
+		final var fileUploadContainer = new WebMarkupContainer("fileUploadContainer");
 		fileUploadContainer.setVisible(false);
 		fileUploadContainer.setOutputMarkupPlaceholderTag(true);
-		FileUploadField upload = new FileUploadField("fileUpload", fileUploads);
+		var upload = new FileUploadField("fileUpload", fileUploads);
 		upload.setRequired(true);
 		upload.add(new FileValidator(FileType.WORD_NIEUW));
 		fileUploadContainer.add(upload);
@@ -130,15 +128,15 @@ public class BriefActieEditPage extends ProjectBasePage
 			types.add(ProjectBriefActieType.VERVANGENDEBRIEF);
 		}
 
-		ScreenitDropdown<ProjectBriefActieType> typeDropDown = new ScreenitDropdown<>("type", new ListModel<>(types),
+		var typeDropDown = new ScreenitDropdown<ProjectBriefActieType>("type", new ListModel<>(types),
 			new EnumChoiceRenderer<>());
 		typeDropDown.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				ProjectBriefActie actie = form.getModelObject();
-				WebMarkupContainer container = getTypePanelContainer(actie.getType());
+				var actie = form.getModelObject();
+				var container = getTypePanelContainer(actie.getType());
 				typePanelContainer.replaceWith(container);
 				typePanelContainer = container;
 				target.add(typePanelContainer);
@@ -165,13 +163,13 @@ public class BriefActieEditPage extends ProjectBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				ProjectBriefActie actie = form.getModelObject();
-				Project project = actie.getProject();
+				var actie = form.getModelObject();
+				var project = actie.getProject();
 				if (validatieProjectBriefActie(actie))
 				{
 					UploadDocument uploadDocument;
-					Date nu = currentDateSupplier.getDate();
-					List<FileUpload> filesUploaded = fileUploads.getObject();
+					var nu = currentDateSupplier.getDate();
+					var filesUploaded = fileUploads.getObject();
 					try
 					{
 						uploadDocument = ScreenitSession.get().fileUploadToUploadDocument(filesUploaded.getFirst());
@@ -181,7 +179,7 @@ public class BriefActieEditPage extends ProjectBasePage
 						actie.setLaatstGewijzigd(nu);
 						hibernateService.saveOrUpdate(actie);
 
-						String melding = getString(EnumStringUtil.getPropertyString(project.getType())) + ": " + project.getNaam() +
+						var melding = getString(EnumStringUtil.getPropertyString(project.getType())) + ": " + project.getNaam() +
 							" Briefsoort: " + getString(EnumStringUtil.getPropertyString(actie.getType()));
 
 						if (actie.getBriefType() != null)
@@ -236,7 +234,7 @@ public class BriefActieEditPage extends ProjectBasePage
 
 	private WebMarkupContainer getTypePanelContainer(ProjectBriefActieType type)
 	{
-		WebMarkupContainer container = new WebMarkupContainer("typePanelContainer");
+		var container = new WebMarkupContainer("typePanelContainer");
 		container.setOutputMarkupId(true);
 
 		container.add(getTypePanel(type));
@@ -267,18 +265,18 @@ public class BriefActieEditPage extends ProjectBasePage
 
 	private boolean isZelfdeBriefActieAlAanwezig()
 	{
-		ProjectBriefActie nieuweActie = briefActieModel.getObject();
-		List<ProjectBriefActie> acties = nieuweActie.getProject().getProjectBriefActies();
-		for (ProjectBriefActie actie : acties)
+		var nieuweActie = briefActieModel.getObject();
+		var acties = nieuweActie.getProject().getProjectBriefActies();
+		for (var actie : acties)
 		{
-			boolean isGelijkAanVervangendeBrief = ProjectBriefActieType.VERVANGENDEBRIEF.equals(nieuweActie.getType())
+			var isGelijkAanVervangendeBrief = ProjectBriefActieType.VERVANGENDEBRIEF.equals(nieuweActie.getType())
 				&& ProjectBriefActieType.VERVANGENDEBRIEF.equals(actie.getType()) && nieuweActie.getBriefType().equals(actie.getBriefType())
 				&& Boolean.TRUE.equals(actie.getActief());
-			boolean isGelijkAanXDAGENNAY = ProjectBriefActieType.XDAGENNAY.equals(nieuweActie.getType()) && ProjectBriefActieType.XDAGENNAY.equals(actie.getType())
+			var isGelijkAanXDAGENNAY = ProjectBriefActieType.XDAGENNAY.equals(nieuweActie.getType()) && ProjectBriefActieType.XDAGENNAY.equals(actie.getType())
 				&& nieuweActie.getBriefType().equals(actie.getBriefType()) && nieuweActie.getAantalDagen().equals(actie.getAantalDagen()) && Boolean.TRUE.equals(actie.getActief());
-			boolean isGelijkAanXMETY = ProjectBriefActieType.XMETY.equals(nieuweActie.getType()) && ProjectBriefActieType.XMETY.equals(actie.getType())
+			var isGelijkAanXMETY = ProjectBriefActieType.XMETY.equals(nieuweActie.getType()) && ProjectBriefActieType.XMETY.equals(actie.getType())
 				&& nieuweActie.getBriefType().equals(actie.getBriefType()) && Boolean.TRUE.equals(actie.getActief());
-			boolean isGelijkAanDatum = ProjectBriefActieType.DATUM.equals(nieuweActie.getType()) && ProjectBriefActieType.DATUM.equals(actie.getType())
+			var isGelijkAanDatum = ProjectBriefActieType.DATUM.equals(nieuweActie.getType()) && ProjectBriefActieType.DATUM.equals(actie.getType())
 				&& nieuweActie.getDatum().compareTo(actie.getDatum()) == 0 && Boolean.TRUE.equals(actie.getActief());
 			if (isGelijkAanVervangendeBrief || isGelijkAanXDAGENNAY || isGelijkAanDatum || isGelijkAanXMETY)
 			{
@@ -290,17 +288,17 @@ public class BriefActieEditPage extends ProjectBasePage
 
 	private String getBestandsNaam(ProjectBriefActie actie)
 	{
-		String naam = "2017-01-01_12.00-";
-		Organisatie organisatie = getIngelogdeOrganisatieMedewerker().getOrganisatie();
+		var naam = "2017-01-01_12.00-";
+		var organisatie = getIngelogdeOrganisatieMedewerker().getOrganisatie();
 		if (organisatie != null)
 		{
-			String soNaam = organisatie.getNaam();
+			var soNaam = organisatie.getNaam();
 			soNaam = soNaam.replace(" ", "_");
 			naam += soNaam + "-";
 		}
 		if (actie.getProject().getNaam() != null)
 		{
-			String projectNaam = actie.getProject().getNaam();
+			var projectNaam = actie.getProject().getNaam();
 			projectNaam = projectNaam.replace(" ", "_");
 			naam += projectNaam + "-";
 		}

@@ -71,7 +71,7 @@ public abstract class FilterBvoFormPanel<T extends IBevolkingsonderzoek> extends
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				super.onSubmit(target);
-				IModel<T> filterModel = FilterBvoFormPanel.this.getModel();
+				var filterModel = FilterBvoFormPanel.this.getModel();
 				FilterBvoFormPanel.this.doFilter(filterModel, target);
 			}
 		});

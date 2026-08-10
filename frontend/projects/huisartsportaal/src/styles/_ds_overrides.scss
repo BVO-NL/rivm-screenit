@@ -1,0 +1,52 @@
+/*-
+ * ========================LICENSE_START=================================
+ * huisartsportaal
+ * %%
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+.ds-form-element-hint-error-container__error {
+  max-width: 100%;
+}
+
+.ds-navigation-topbar {
+  background: var(--ds-color-primary) !important;
+  border-bottom: none !important;
+  .ds-navigation-topbar__custom-buttons {
+    --ds-text-color: #fff;
+
+    .ds-button-quaternary:hover {
+      color: var(--ds-color-primary);
+    }
+  }
+
+  .ds-navigation-topbar-menu-item {
+    background: var(--ds-color-primary) !important;
+    border-bottom: none !important;
+
+    &--active {
+      background-color: var(--ds-color-secondary) !important;
+    }
+  }
+}
+
+.ds-paginator__page-size-result-container__label {
+  width: 315px;
+}
+
+.ds-modal {
+  position: relative;
+}

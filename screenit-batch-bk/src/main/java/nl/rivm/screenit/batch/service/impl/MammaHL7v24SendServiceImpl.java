@@ -26,7 +26,6 @@ import java.io.IOException;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.batch.exception.HL7CreateMessageException;
 import nl.rivm.screenit.batch.model.HL7v24ResponseWrapper;
-import nl.rivm.screenit.batch.model.ScreenITHL7MessageContext;
 import nl.rivm.screenit.batch.model.enums.MammaHL7Connectie;
 import nl.rivm.screenit.batch.service.HL7BaseSendMessageService;
 import nl.rivm.screenit.batch.service.MammaHL7CreateMessageService;
@@ -50,7 +49,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ca.uhn.hl7v2.AcknowledgmentCode;
 import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Connection;
 import ca.uhn.hl7v2.llp.LLPException;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v24.message.ADT_AXX;
@@ -100,7 +98,7 @@ public class MammaHL7v24SendServiceImpl implements MammaHL7v24SendService
 		throws HL7CreateMessageException, HL7SendMessageException
 	{
 		LOG.info("Creating HL7v24 ADT message {} for client id {}", adtBerichtTriggerDto.getStatus(), adtBerichtTriggerDto.getClientId());
-		Client client = hibernateService.load(Client.class, adtBerichtTriggerDto.getClientId());
+		var client = hibernateService.load(Client.class, adtBerichtTriggerDto.getClientId());
 		Message bericht = createADTMessage(client, adtBerichtTriggerDto);
 		sendMessageAndHandleResponse(bericht, messageConnection);
 	}
@@ -109,8 +107,8 @@ public class MammaHL7v24SendServiceImpl implements MammaHL7v24SendService
 	{
 		try
 		{
-			HL7v24ResponseWrapper responseWrapper = sendMammaHL7Message(bericht, messageConnection);
-			ScreenITResponseV24MessageWrapper responseV24MessageWrapper = responseWrapper.getResponseV24MessageWrapper();
+			var responseWrapper = sendMammaHL7Message(bericht, messageConnection);
+			var responseV24MessageWrapper = responseWrapper.getResponseV24MessageWrapper();
 			handleIMSResponse(responseV24MessageWrapper, bericht);
 		}
 		catch (HL7Exception | HL7SendMessageException | LLPException | IOException e)
@@ -126,7 +124,7 @@ public class MammaHL7v24SendServiceImpl implements MammaHL7v24SendService
 	{
 		LOG.info("Creating HL7v24 ORM message {} for client id {} {}", hl7BerichtTrigger.getStatus().getLabel(), hl7BerichtTrigger.getClientId(),
 			(hl7BerichtTrigger.isUploaded() ? "ihkv. upload beelden" : ""));
-		Client client = hibernateService.load(Client.class, hl7BerichtTrigger.getClientId());
+		var client = hibernateService.load(Client.class, hl7BerichtTrigger.getClientId());
 		Message bericht = createORMMessage(client, hl7BerichtTrigger);
 		sendMessageAndHandleResponse(bericht, messageConnection);
 	}
@@ -143,7 +141,7 @@ public class MammaHL7v24SendServiceImpl implements MammaHL7v24SendService
 		}
 		catch (Exception e)
 		{
-			String melding = "Fout bij aanmaken HL7 ORM bericht!";
+			var melding = "Fout bij aanmaken HL7 ORM bericht!";
 			LOG.error(melding, e);
 			throw new HL7CreateMessageException(melding, e);
 		}
@@ -153,7 +151,7 @@ public class MammaHL7v24SendServiceImpl implements MammaHL7v24SendService
 	{
 		if (hl7Enabled && !responseV24MessageWrapper.getAcknowledgmentCode().equals(AcknowledgmentCode.AA))
 		{
-			String melding = String.format("Geen ACK ontvangen! %s.", responseV24MessageWrapper.getMelding());
+			var melding = String.format("Geen ACK ontvangen! %s.", responseV24MessageWrapper.getMelding());
 			LOG.error(melding);
 			throw new HL7SendMessageException(melding, message.toString());
 		}
@@ -174,7 +172,7 @@ public class MammaHL7v24SendServiceImpl implements MammaHL7v24SendService
 		}
 		catch (HL7Exception | IOException e)
 		{
-			String melding = "Fout bij aanmaken HL7 ORM bericht!";
+			var melding = "Fout bij aanmaken HL7 ORM bericht!";
 			LOG.error(melding, e);
 			throw new HL7CreateMessageException(melding, e);
 		}
@@ -189,7 +187,7 @@ public class MammaHL7v24SendServiceImpl implements MammaHL7v24SendService
 		}
 		catch (Exception e)
 		{
-			String melding = "Fout bij aanmaken HL7 ORM bericht!";
+			var melding = "Fout bij aanmaken HL7 ORM bericht!";
 			LOG.error(melding, e);
 			throw new HL7CreateMessageException(melding, e);
 		}
@@ -213,7 +211,7 @@ public class MammaHL7v24SendServiceImpl implements MammaHL7v24SendService
 			port = hl7ImsOrmIlmPort;
 			host = hl7IMSHost;
 		}
-		ScreenITHL7MessageContext messageContext = hl7Connection.getMessageContext();
+		var messageContext = hl7Connection.getMessageContext();
 		messageContext.setHost(host);
 		messageContext.setPort(Integer.valueOf(port));
 		sendMessageService.openConnection(hl7Connection.getConnectieNaam(), 3, messageContext);
@@ -222,10 +220,10 @@ public class MammaHL7v24SendServiceImpl implements MammaHL7v24SendService
 	private HL7v24ResponseWrapper sendMammaHL7Message(Message hl7Bericht, MammaHL7Connectie messageConnection)
 		throws HL7Exception, LLPException, IOException
 	{
-		ScreenITHL7MessageContext messageContext = messageConnection.getMessageContext();
+		var messageContext = messageConnection.getMessageContext();
 		if (hl7Enabled)
 		{
-			Connection connection = messageContext.getConnection();
+			var connection = messageContext.getConnection();
 			if (connection == null)
 			{
 				openHl7Connection(messageConnection);

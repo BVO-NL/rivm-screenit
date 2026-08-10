@@ -23,11 +23,6 @@ package nl.rivm.screenit.mamma.se.proxy.configuration;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,6 +30,11 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 @Component
 @Order(1)
@@ -45,17 +45,17 @@ public class RequestFilter implements Filter
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException
 	{
-		long startTime = System.currentTimeMillis();
+		var startTime = System.currentTimeMillis();
 
 		filterChain.doFilter(servletRequest, servletResponse);
 
 		if (servletRequest instanceof HttpServletRequest && servletResponse instanceof HttpServletResponse)
 		{
-			HttpServletRequest request = (HttpServletRequest) servletRequest;
-			HttpServletResponse response = (HttpServletResponse) servletResponse;
+			var request = (HttpServletRequest) servletRequest;
+			var response = (HttpServletResponse) servletResponse;
 			if (!request.getRequestURI().equals("/api/authenticatie/identificeren"))
 			{
-				long duration = System.currentTimeMillis() - startTime;
+				var duration = System.currentTimeMillis() - startTime;
 				LOG.info(String.format("duration=%d, %s <= %s[%s]%s", duration, response.getStatus(), request.getRemoteAddr(), request.getMethod(), request.getRequestURI()));
 			}
 		}

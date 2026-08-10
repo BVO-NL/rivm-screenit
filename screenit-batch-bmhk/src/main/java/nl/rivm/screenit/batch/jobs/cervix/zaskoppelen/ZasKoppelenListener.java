@@ -44,7 +44,7 @@ public class ZasKoppelenListener extends BaseLogListener
 	@Override
 	protected void beforeStarting(JobExecution jobExecution)
 	{
-		ZasKoppelingBeeindigdLogEvent koppelLogEvent = new ZasKoppelingBeeindigdLogEvent();
+		var koppelLogEvent = new ZasKoppelingBeeindigdLogEvent();
 		jobExecution.getExecutionContext().put(ZasKoppelenConstants.RAPPORTAGEKEYZASKOPPELEN, koppelLogEvent);
 	}
 
@@ -69,7 +69,7 @@ public class ZasKoppelenListener extends BaseLogListener
 	@Override
 	protected LogEvent getEindLogEvent()
 	{
-		String key = ZasKoppelenConstants.RAPPORTAGEKEYZASKOPPELEN;
+		var key = ZasKoppelenConstants.RAPPORTAGEKEYZASKOPPELEN;
 		var context = getJobExecution().getExecutionContext();
 		if (context.containsKey(key))
 		{

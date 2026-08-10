@@ -1,0 +1,41 @@
+<!--
+  ========================LICENSE_START=================================
+  huisartsportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<p class="mb-2">U heeft het Zorgmail klantnummer nog niet geverifieerd voor de volgende huisartslocatie(s):</p>
+
+@for (locatie of locatieVerificaties(); track locatie) {
+  <div class="row">
+    <div class="col-4">
+      <span>Locatie</span>
+      <span>{{ locatie.locatieNaam }}</span>
+    </div>
+    <div class="col-4">
+      <span>Zorgmail klantnummer</span>
+      <span>{{ locatie.zorgmailKlantnummer }}</span>
+    </div>
+    <div class="col-4">
+      <button ds-button-primary (click)="openVerificatieDialog(locatie)" data-testid="verifieren_button">Locatie verifiëren</button>
+    </div>
+  </div>
+}
+<p class="my-2">Via de Zorgmail heeft u per locatie een bericht ontvangen met een verificatiecode. Klik op de knop 'Locatie verifiëren' en bevestig uw zorgmailklantnummer door de
+  verificatiecode in te voeren.</p>
+<p>Na verificatie van uw Zorgmail klantnummer kunt u laboratoriumformulieren aanvragen en huisartsberichten ontvangen.</p>
+<p>Let op: U ontvangt geen uitslagberichten zolang uw klantnummer niet is bevestigd.</p>

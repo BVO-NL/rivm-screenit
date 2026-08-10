@@ -58,7 +58,7 @@ public class MammaVisueleInspectiePanel extends AbstractBEAccordionPanel<MammaOn
 	{
 		super.onInitialize();
 
-		boolean isAutoniem = !MammobridgeRole.anoniemeRollen().contains(ScreenitSession.get().getMammaHuidigeIDS7Role());
+		var isAutoniem = !MammobridgeRole.anoniemeRollen().contains(ScreenitSession.get().getMammaHuidigeIDS7Role());
 		panelContainer.add(new Label("afspraak.ingeschrevenDoor.medewerker.naamVolledig").setVisible(isAutoniem));
 
 		panelContainer.add(new SvgImage("svgImage")
@@ -67,7 +67,7 @@ public class MammaVisueleInspectiePanel extends AbstractBEAccordionPanel<MammaOn
 			@Override
 			protected InputStream getSvgImageData(Attributes attributes)
 			{
-				MammaOnderzoek onderzoek = MammaVisueleInspectiePanel.this.getModelObject();
+				var onderzoek = MammaVisueleInspectiePanel.this.getModelObject();
 				return afbeeldingService.createVisueleInspectieAfbeelding(onderzoek.getMammografie().getVisueleInspectieAfbeelding(),
 					onderzoek.getAmputatie());
 			}

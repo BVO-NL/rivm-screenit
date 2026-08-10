@@ -92,9 +92,9 @@ public class LogRegel extends AbstractHibernateObject
 
 	public String getAfkortingen()
 	{
-		List<Bevolkingsonderzoek> bvoList = bevolkingsonderzoeken;
-		String bvoString = "";
-		for (int i = 0; i < bvoList.size(); i++)
+		var bvoList = bevolkingsonderzoeken;
+		var bvoString = "";
+		for (var i = 0; i < bvoList.size(); i++)
 		{
 			if (i != bvoList.size() - 1)
 			{

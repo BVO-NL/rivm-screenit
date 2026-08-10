@@ -30,7 +30,6 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.popups.AbstractTestBasePopupPanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.RetourredenAfhandeling;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
@@ -65,38 +64,38 @@ public class TestRetourzendingPopup extends AbstractTestBasePopupPanel
 	public TestRetourzendingPopup(String id, IModel<List<Client>> clientModel)
 	{
 		super(id, clientModel);
-		ColonScreeningRonde ronde = getModelObject().get(0).getColonDossier().getLaatsteScreeningRonde();
+		var ronde = getModelObject().get(0).getColonDossier().getLaatsteScreeningRonde();
 
 		List<ColonUitnodiging> uitnodigingVoorRetourzending = new ArrayList<>();
-		for (ColonUitnodiging uitnodiging : ronde.getUitnodigingen())
+		for (var uitnodiging : ronde.getUitnodigingen())
 		{
 			if (uitnodiging.isVerstuurdDoorInpakcentrum() && uitnodiging.getGekoppeldeFitRegistratie().getUitslag() == null && uitnodiging.getAntwoordFormulier() == null)
 			{
 				uitnodigingVoorRetourzending.add(uitnodiging);
 				List<ColonUitnodiging> uitnodigingen = new ArrayList<>();
 				uitnodigingen.add(uitnodiging);
-				SimpleListHibernateModel<ColonUitnodiging> uitnodigingenModel = new SimpleListHibernateModel<>(uitnodigingen);
+				var uitnodigingenModel = new SimpleListHibernateModel<ColonUitnodiging>(uitnodigingen);
 				uitnodigingenMap.put(uitnodiging.getUitnodigingsId(), uitnodigingenModel);
 			}
 		}
 		IModel<List<ColonUitnodiging>> uitnodigingenModel = ModelUtil.listModel(uitnodigingVoorRetourzending);
 
-		int rondeSize = ronde.getUitnodigingen().size();
+		var rondeSize = ronde.getUitnodigingen().size();
 
 		if (getModelObject().size() > 1)
 		{
-			for (Client client : getModelObject().subList(1, getModelObject().size()))
+			for (var client : getModelObject().subList(1, getModelObject().size()))
 			{
 				ronde = client.getColonDossier().getLaatsteScreeningRonde();
 				if (rondeSize == ronde.getUitnodigingen().size())
 				{
-					for (int i = 0; i < ronde.getUitnodigingen().size(); i++)
+					for (var i = 0; i < ronde.getUitnodigingen().size(); i++)
 					{
-						ColonUitnodiging uitnodiging = ronde.getUitnodigingen().get(i);
+						var uitnodiging = ronde.getUitnodigingen().get(i);
 						if (uitnodiging.isVerstuurdDoorInpakcentrum() && uitnodiging.getGekoppeldeFitRegistratie().getUitslag() == null
 							&& uitnodiging.getAntwoordFormulier() == null)
 						{
-							SimpleListHibernateModel<ColonUitnodiging> uitnodigingen = uitnodigingenMap.get(uitnodigingVoorRetourzending.get(i).getUitnodigingsId());
+							var uitnodigingen = uitnodigingenMap.get(uitnodigingVoorRetourzending.get(i).getUitnodigingsId());
 							uitnodigingen.add(uitnodiging);
 						}
 					}
@@ -108,7 +107,7 @@ public class TestRetourzendingPopup extends AbstractTestBasePopupPanel
 			}
 		}
 
-		ScreenitDropdown<ColonUitnodiging> uitnodigingDropDown = new ScreenitDropdown<>("uitnodigingen", uitnodigingModel, uitnodigingenModel,
+		var uitnodigingDropDown = new ScreenitDropdown<ColonUitnodiging>("uitnodigingen", uitnodigingModel, uitnodigingenModel,
 			new IChoiceRenderer<>()
 			{
 				private static final long serialVersionUID = 1L;
@@ -145,9 +144,9 @@ public class TestRetourzendingPopup extends AbstractTestBasePopupPanel
 		uitnodigingDropDown.setLabel(Model.of("Uitnodiging"));
 		add(uitnodigingDropDown);
 
-		List<RetourredenAfhandeling> retourRedenAfhandelingen = hibernateService.loadAll(RetourredenAfhandeling.class);
+		var retourRedenAfhandelingen = hibernateService.loadAll(RetourredenAfhandeling.class);
 
-		ScreenitDropdown<RetourredenAfhandeling> retourDropDown = new ScreenitDropdown<>("retourzendingReden", redenModel, ModelUtil.listModel(retourRedenAfhandelingen),
+		var retourDropDown = new ScreenitDropdown<RetourredenAfhandeling>("retourzendingReden", redenModel, ModelUtil.listModel(retourRedenAfhandelingen),
 			new ChoiceRenderer<>("retourReden"));
 		retourDropDown.setNullValid(true);
 		retourDropDown.setRequired(true);
@@ -158,17 +157,17 @@ public class TestRetourzendingPopup extends AbstractTestBasePopupPanel
 	@Override
 	protected void opslaan()
 	{
-		String reden = redenModel.getObject().getRetourReden();
+		var reden = redenModel.getObject().getRetourReden();
 
 		List<ColonUitnodiging> uitnodigingList = new ArrayList<>();
 		if (uitnodigingModel.getObject().getUitnodigingsId() != null)
 		{
-			Long eersteClientUitnodigingId = uitnodigingModel.getObject().getUitnodigingsId();
+			var eersteClientUitnodigingId = uitnodigingModel.getObject().getUitnodigingsId();
 			if (uitnodigingenMap.containsKey(eersteClientUitnodigingId))
 			{
 				uitnodigingList = uitnodigingenMap.get(eersteClientUitnodigingId).getObject();
 			}
-			for (ColonUitnodiging uitnodiging : uitnodigingList)
+			for (var uitnodiging : uitnodigingList)
 			{
 				colonTestTimelineService.retourzendingOntvangen(uitnodiging, reden);
 			}

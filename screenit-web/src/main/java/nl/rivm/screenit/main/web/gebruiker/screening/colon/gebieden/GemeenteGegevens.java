@@ -35,7 +35,6 @@ import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.PostcodeGebied;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
-import nl.rivm.screenit.model.colon.ColoscopieCentrumColonCapaciteitVerdeling;
 import nl.rivm.screenit.model.colon.UitnodigingsGebied;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -96,7 +95,7 @@ public class GemeenteGegevens extends GebiedenBeheerPage
 
 	private void addOrReplaceMarkup(AjaxRequestTarget target)
 	{
-		WebMarkupContainer newRefreshContainer = new WebMarkupContainer("refreshContainer");
+		var newRefreshContainer = new WebMarkupContainer("refreshContainer");
 		newRefreshContainer.setOutputMarkupId(true);
 
 		if (this.refreshContainer == null)
@@ -114,10 +113,10 @@ public class GemeenteGegevens extends GebiedenBeheerPage
 			target.add(refreshContainer);
 		}
 
-		IModel<Gemeente> model = (IModel<Gemeente>) getDefaultModel();
-		Gemeente gemeente = model.getObject();
+		var model = (IModel<Gemeente>) getDefaultModel();
+		var gemeente = model.getObject();
 
-		Boolean gesplitsOpPostcode = gemeenteService.getGesplitsOpPostcode(gemeente);
+		var gesplitsOpPostcode = gemeenteService.getGesplitsOpPostcode(gemeente);
 
 		refreshContainer.add(new GemeentePaspoortPanel("paspoort", model));
 
@@ -129,7 +128,7 @@ public class GemeenteGegevens extends GebiedenBeheerPage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				Gemeente gemeente = (Gemeente) GemeenteGegevens.this.getDefaultModelObject();
+				var gemeente = (Gemeente) GemeenteGegevens.this.getDefaultModelObject();
 				if (gemeenteService.magAlleGebiedenVerwijderen(gemeente))
 				{
 					gemeenteService.verwijderAlleGebieden(gemeente);
@@ -146,7 +145,7 @@ public class GemeenteGegevens extends GebiedenBeheerPage
 		allesVerwijderen.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN, Actie.VERWIJDEREN) && gemeente.getUitnodigingsGebieden().size() > 1);
 		refreshContainer.add(allesVerwijderen);
 
-		WebMarkupContainer opsplitsen = new WebMarkupContainer("opsplitsen");
+		var opsplitsen = new WebMarkupContainer("opsplitsen");
 		opsplitsen.setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_BEHEER_GEBIEDEN, Actie.TOEVOEGEN));
 		refreshContainer.add(opsplitsen);
 		opsplitsen.add(new IndicatingAjaxLink<Gemeente>("woonplaats")
@@ -157,7 +156,7 @@ public class GemeenteGegevens extends GebiedenBeheerPage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				UitnodigingsGebied nieuweUitnodigingsGebied = new UitnodigingsGebied();
+				var nieuweUitnodigingsGebied = new UitnodigingsGebied();
 				nieuweUitnodigingsGebied.setGemeente((Gemeente) GemeenteGegevens.this.getDefaultModelObject());
 				nieuweUitnodigingsGebied.setNaam("<Kies woonplaats>");
 				nieuweUitnodigingsGebied.setWoonplaats("<Kies woonplaats>");
@@ -173,7 +172,7 @@ public class GemeenteGegevens extends GebiedenBeheerPage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				UitnodigingsGebied nieuweUitnodigingsGebied = new UitnodigingsGebied();
+				var nieuweUitnodigingsGebied = new UitnodigingsGebied();
 				nieuweUitnodigingsGebied.setGemeente((Gemeente) GemeenteGegevens.this.getDefaultModelObject());
 				nieuweUitnodigingsGebied.setNaam("<Kies postcodegebied>");
 				nieuweUitnodigingsGebied.setPostcodeGebied(new PostcodeGebied());
@@ -193,7 +192,7 @@ public class GemeenteGegevens extends GebiedenBeheerPage
 			public void populateItem(Item<ICellPopulator<UitnodigingsGebied>> cellItem, String componentId, IModel<UitnodigingsGebied> rowModel)
 			{
 				Set<ColonIntakelocatie> centra = new HashSet<ColonIntakelocatie>();
-				for (ColoscopieCentrumColonCapaciteitVerdeling verdeling : rowModel.getObject().getVerdeling())
+				for (var verdeling : rowModel.getObject().getVerdeling())
 				{
 					centra.add(verdeling.getIntakelocatie());
 				}
@@ -202,7 +201,7 @@ public class GemeenteGegevens extends GebiedenBeheerPage
 
 		});
 
-		ScreenitDataTable<UitnodigingsGebied, String> dataTabel = new ScreenitDataTable<UitnodigingsGebied, String>("gebieden", columns,
+		var dataTabel = new ScreenitDataTable<UitnodigingsGebied, String>("gebieden", columns,
 			new HibernateListDataProvider<UitnodigingsGebied, String>(((Gemeente) getDefaultModelObject()).getUitnodigingsGebieden()), new Model<>("gebieden"))
 		{
 			private static final long serialVersionUID = 1L;

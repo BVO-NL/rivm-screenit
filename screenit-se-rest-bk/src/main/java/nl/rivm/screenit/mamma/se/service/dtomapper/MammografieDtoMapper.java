@@ -26,19 +26,18 @@ import nl.rivm.screenit.mamma.se.dto.onderzoek.MammografieSeDto;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAnnotatieAfbeelding;
 import nl.rivm.screenit.model.mamma.MammaMammografie;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 
 public class MammografieDtoMapper
 {
 	public MammografieSeDto createMammografieDto(MammaAfspraak afspraak)
 	{
-		MammaOnderzoek onderzoek = afspraak.getOnderzoek();
+		var onderzoek = afspraak.getOnderzoek();
 		return onderzoek != null && onderzoek.getMammografie() != null ? createMammografieDto(onderzoek.getMammografie()) : null;
 	}
 
 	private MammografieSeDto createMammografieDto(MammaMammografie mammografie)
 	{
-		MammografieSeDto mammografieSeDto = new MammografieSeDto();
+		var mammografieSeDto = new MammografieSeDto();
 		mammografieSeDto.setId(mammografie.getId());
 		mammografieSeDto.setVisueleInspectieAfbeelding(createAfbeeldingDto(mammografie.getVisueleInspectieAfbeelding()));
 		return mammografieSeDto;

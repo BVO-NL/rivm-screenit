@@ -33,8 +33,6 @@ import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActie;
-import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
-import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.CervixUitstel;
 import nl.rivm.screenit.model.cervix.enums.CervixUitstelType;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
@@ -79,13 +77,13 @@ public class CervixClientContactUitstelPanel extends AbstractClientContactActieP
 		super(id, model);
 		clientModel = client;
 
-		Date geboortedatum = client.getObject().getPersoon().getGeboortedatum();
+		var geboortedatum = client.getObject().getPersoon().getGeboortedatum();
 		dagNaDertigsteVerjaardag = DateUtil.toLocalDate(geboortedatum).plusYears(30).plusDays(1);
 
 		uitstelBijZwangerschap = preferenceService.getInteger(PreferenceKey.UITSTEL_BIJ_ZWANGERSCHAP_CERVIX.name());
 
-		CervixScreeningRonde ronde = client.getObject().getCervixDossier().getLaatsteScreeningRonde();
-		CervixUitstel uitstel = ronde.getUitstel();
+		var ronde = client.getObject().getCervixDossier().getLaatsteScreeningRonde();
+		var uitstel = ronde.getUitstel();
 		if (uitstel == null)
 		{
 			uitstel = new CervixUitstel();
@@ -95,16 +93,16 @@ public class CervixClientContactUitstelPanel extends AbstractClientContactActieP
 		uitstelModel = ModelUtil.cModel(uitstel);
 		datumModel = new Model<>(DateUtil.toUtilDate(getDatum()));
 
-		WebMarkupContainer container = new WebMarkupContainer("container", uitstelModel);
+		var container = new WebMarkupContainer("container", uitstelModel);
 		add(container);
 
-		ScreenitDropdown<CervixUitstelType> uitstelType = new ScreenitDropdown<>("uitstelType", Arrays.asList(CervixUitstelType.values()), new EnumChoiceRenderer<>());
+		var uitstelType = new ScreenitDropdown<CervixUitstelType>("uitstelType", Arrays.asList(CervixUitstelType.values()), new EnumChoiceRenderer<>());
 		uitstelType.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				WebMarkupContainer newDetailContainer = maakDetailContainer();
+				var newDetailContainer = maakDetailContainer();
 				detailContainer.replaceWith(newDetailContainer);
 				detailContainer = newDetailContainer;
 				target.add(detailContainer);
@@ -118,12 +116,12 @@ public class CervixClientContactUitstelPanel extends AbstractClientContactActieP
 
 	private WebMarkupContainer maakDetailContainer()
 	{
-		WebMarkupContainer detailContainer = new WebMarkupContainer("detailContainer");
+		var detailContainer = new WebMarkupContainer("detailContainer");
 		detailContainer.setVisible(uitstelModel.getObject().getUitstelType() != null);
 		detailContainer.setOutputMarkupPlaceholderTag(true);
 
 		detailContainer.add(new EnumLabel<>("label", uitstelModel.getObject().getUitstelType()));
-		DatePicker<Date> datum = new DatePicker<>("datum", datumModel, Date.class);
+		var datum = new DatePicker<Date>("datum", datumModel, Date.class);
 		datum.setRequired(true);
 		detailContainer.add(datum);
 		return detailContainer;
@@ -134,7 +132,7 @@ public class CervixClientContactUitstelPanel extends AbstractClientContactActieP
 	{
 		super.validate();
 
-		CervixUitstel uitstel = uitstelModel.getObject();
+		var uitstel = uitstelModel.getObject();
 
 		if (uitstel.getUitstelType() == null)
 		{
@@ -146,12 +144,12 @@ public class CervixClientContactUitstelPanel extends AbstractClientContactActieP
 		}
 		else
 		{
-			LocalDate datum = DateUtil.toLocalDate(datumModel.getObject());
-			LocalDate morgen = dateSupplier.getLocalDate().plusDays(1);
-			LocalDate uitstellenTotDatum = getUitstellenTotDatum();
-			CervixUitstelType uitstelType = uitstel.getUitstelType();
-			Client client = clientModel.getObject();
-			LocalDate dagNaDertigsteVerjaardag = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum()).plusYears(30).plusDays(1);
+			var datum = DateUtil.toLocalDate(datumModel.getObject());
+			var morgen = dateSupplier.getLocalDate().plusDays(1);
+			var uitstellenTotDatum = getUitstellenTotDatum();
+			var uitstelType = uitstel.getUitstelType();
+			var client = clientModel.getObject();
+			var dagNaDertigsteVerjaardag = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum()).plusYears(30).plusDays(1);
 
 			if (uitstelType == CervixUitstelType.ZWANGERSCHAP && uitstellenTotDatum.isBefore(morgen))
 			{
@@ -185,11 +183,11 @@ public class CervixClientContactUitstelPanel extends AbstractClientContactActieP
 	@Override
 	public List<String> getOpslaanMeldingen()
 	{
-		List<String> meldingen = super.getOpslaanMeldingen();
-		LocalDate uitstellenTotDatum = getUitstellenTotDatum();
+		var meldingen = super.getOpslaanMeldingen();
+		var uitstellenTotDatum = getUitstellenTotDatum();
 		meldingen.add("Uitstel tot " + uitstellenTotDatum.format(DateUtil.LOCAL_DATE_FORMAT) + ".");
 
-		CervixUitnodiging zasUitnodiging = uitstelModel.getObject().getScreeningRonde().getLaatsteZasUitnodiging();
+		var zasUitnodiging = uitstelModel.getObject().getScreeningRonde().getLaatsteZasUitnodiging();
 		if (zasUitnodiging != null && zasUitnodiging.getVerstuurdDatum() == null && zasUitnodiging.getGeannuleerdDatum() == null)
 		{
 			meldingen.add("Aanvraag ZAS wordt geannuleerd.");
@@ -202,7 +200,7 @@ public class CervixClientContactUitstelPanel extends AbstractClientContactActieP
 	public Map<ExtraOpslaanKey, Object> getOpslaanObjecten()
 	{
 		Map<ExtraOpslaanKey, Object> opslaanObjecten = new HashMap<>();
-		CervixUitstel uitstel = uitstelModel.getObject();
+		var uitstel = uitstelModel.getObject();
 		uitstel.setUitstellenTotDatum(DateUtil.toUtilDate(getUitstellenTotDatum()));
 		opslaanObjecten.put(ExtraOpslaanKey.CERVIX_UITSTEL, uitstel);
 		return opslaanObjecten;
@@ -219,7 +217,7 @@ public class CervixClientContactUitstelPanel extends AbstractClientContactActieP
 
 	private LocalDate getUitstellenTotDatum()
 	{
-		LocalDate datum = DateUtil.toLocalDate(datumModel.getObject());
+		var datum = DateUtil.toLocalDate(datumModel.getObject());
 		LocalDate uitstellenTotDatum = null;
 		switch (uitstelModel.getObject().getUitstelType())
 		{
@@ -235,8 +233,8 @@ public class CervixClientContactUitstelPanel extends AbstractClientContactActieP
 
 	private LocalDate getDatum()
 	{
-		CervixUitstel uitstel = uitstelModel.getObject();
-		LocalDate datum = DateUtil.toLocalDate(uitstel.getUitstellenTotDatum());
+		var uitstel = uitstelModel.getObject();
+		var datum = DateUtil.toLocalDate(uitstel.getUitstellenTotDatum());
 		if (datum != null && uitstel.getUitstelType() == CervixUitstelType.ZWANGERSCHAP)
 		{
 			datum = datum.minusDays(uitstelBijZwangerschap);

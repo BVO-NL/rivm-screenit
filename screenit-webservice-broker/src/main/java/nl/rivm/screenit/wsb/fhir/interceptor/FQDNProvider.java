@@ -62,7 +62,7 @@ public class FQDNProvider
 		databaseRunner.runInSessionOnly(() ->
 		{
 			LOG.debug("Start: " + JOB_OMSCHRIJVING);
-			String validFQDNstring = simplePreferenceService.getString(PreferenceKey.INTERNAL_CERVIX_LAB_FORMULIER_VALID_FQDNS.name());
+			var validFQDNstring = simplePreferenceService.getString(PreferenceKey.INTERNAL_CERVIX_LAB_FORMULIER_VALID_FQDNS.name());
 			if (StringUtils.isNotBlank(validFQDNstring))
 			{
 				validFQDNs = Arrays.asList(validFQDNstring.split(";"));

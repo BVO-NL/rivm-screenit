@@ -21,11 +21,8 @@ package nl.rivm.screenit.mamma.se.proxy.dao.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,9 +46,9 @@ public class PersistableTransactionDaoImpl extends BaseDaoImpl implements Persis
 	@Override
 	public void putLast(PersistableTransaction transaction)
 	{
-		String sql = "INSERT INTO TRANSACTIE (datumTijd, transactie, clientId) VALUES (?, ?, ?);";
-		try (Connection connection = getConnection();
-			PreparedStatement putLast = connection.prepareStatement(sql))
+		var sql = "INSERT INTO TRANSACTIE (datumTijd, transactie, clientId) VALUES (?, ?, ?);";
+		try (var connection = getConnection();
+			var putLast = connection.prepareStatement(sql))
 		{
 			putLast.setString(1, transaction.getDatumTijd().toString());
 			putLast.setString(2, transaction.getTransactie());
@@ -71,15 +68,15 @@ public class PersistableTransactionDaoImpl extends BaseDaoImpl implements Persis
 	{
 		PersistableTransaction transaction = null;
 
-		String query = "SELECT T.ID, T.datumTijd, T.transactie, T.clientId " +
+		var query = "SELECT T.ID, T.datumTijd, T.transactie, T.clientId " +
 			"FROM TRANSACTIE T " +
 			"LEFT JOIN CLIENTEN_MET_GEBLOKKEERDE_TRANSACTIES FT ON FT.clientId = T.clientId " +
 			"WHERE FT.clientId ISNULL " +
 			"ORDER BY T.ID ASC LIMIT 1;";
 
-		try (Connection dbConnection = getConnection();
-			Statement statement = dbConnection.createStatement();
-			ResultSet takeFirstResultSet = statement.executeQuery(query))
+		try (var dbConnection = getConnection();
+			var statement = dbConnection.createStatement();
+			var takeFirstResultSet = statement.executeQuery(query))
 		{
 			if (takeFirstResultSet.next())
 			{
@@ -96,12 +93,12 @@ public class PersistableTransactionDaoImpl extends BaseDaoImpl implements Persis
 	@Override
 	public List<PersistableTransaction> getAll()
 	{
-		String getAll = "SELECT ID, datumTijd, transactie, clientId FROM TRANSACTIE;";
+		var getAll = "SELECT ID, datumTijd, transactie, clientId FROM TRANSACTIE;";
 		List<PersistableTransaction> list = new ArrayList<>();
 
-		try (Connection dbConnection = getConnection();
-			Statement statement = dbConnection.createStatement();
-			ResultSet getAllResultSet = statement.executeQuery(getAll))
+		try (var dbConnection = getConnection();
+			var statement = dbConnection.createStatement();
+			var getAllResultSet = statement.executeQuery(getAll))
 		{
 			while (getAllResultSet.next())
 			{
@@ -119,12 +116,12 @@ public class PersistableTransactionDaoImpl extends BaseDaoImpl implements Persis
 	@Override
 	public void clearDb()
 	{
-		String getAll = "SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'DATABASECHANGELOG%';";
+		var getAll = "SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'DATABASECHANGELOG%';";
 
 		List<String> tablesToTruncate = new ArrayList<>();
-		try (Connection dbConnection = getConnection();
-			Statement statement = dbConnection.createStatement();
-			ResultSet getAllResultSet = statement.executeQuery(getAll))
+		try (var dbConnection = getConnection();
+			var statement = dbConnection.createStatement();
+			var getAllResultSet = statement.executeQuery(getAll))
 		{
 			while (getAllResultSet.next())
 			{
@@ -136,10 +133,10 @@ public class PersistableTransactionDaoImpl extends BaseDaoImpl implements Persis
 			LOG.warn("Tabelnamen konden niet uit de database gelezen worden: " + e.getMessage());
 			throw new IllegalStateException("Er is iets fout gegaan bij het ophalen van lijst van tabel namen.");
 		}
-		for (String tabel : tablesToTruncate)
+		for (var tabel : tablesToTruncate)
 		{
-			try (Connection connection = getConnection();
-				PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM " + tabel))
+			try (var connection = getConnection();
+				var deleteStatement = connection.prepareStatement("DELETE FROM " + tabel))
 			{
 				deleteStatement.execute();
 			}
@@ -155,9 +152,9 @@ public class PersistableTransactionDaoImpl extends BaseDaoImpl implements Persis
 	@Override
 	public void remove(Long id)
 	{
-		String sql = "DELETE FROM TRANSACTIE WHERE ID = ?;";
-		try (Connection connection = getConnection();
-			PreparedStatement removeTransactie = connection.prepareStatement(sql))
+		var sql = "DELETE FROM TRANSACTIE WHERE ID = ?;";
+		try (var connection = getConnection();
+			var removeTransactie = connection.prepareStatement(sql))
 		{
 			removeTransactie.setLong(1, id);
 			removeTransactie.execute();
@@ -171,10 +168,10 @@ public class PersistableTransactionDaoImpl extends BaseDaoImpl implements Persis
 	@Override
 	public void addToVerstuurdeTransacties(PersistableTransaction transaction)
 	{
-		String sql = "INSERT INTO VERSTUURDE_TRANSACTIE(afspraakId, datumTijd, transactie, clientId) VALUES (?, ?, ?, ?);";
+		var sql = "INSERT INTO VERSTUURDE_TRANSACTIE(afspraakId, datumTijd, transactie, clientId) VALUES (?, ?, ?, ?);";
 
-		try (Connection connection = getConnection();
-			PreparedStatement addToVerstuurdeTransacties = connection.prepareStatement(sql))
+		try (var connection = getConnection();
+			var addToVerstuurdeTransacties = connection.prepareStatement(sql))
 		{
 			addToVerstuurdeTransacties.setString(1, new TransactionParser(transaction.getTransactie()).getAfspraakId());
 			addToVerstuurdeTransacties.setString(2, transaction.getDatumTijd().toString());
@@ -192,13 +189,13 @@ public class PersistableTransactionDaoImpl extends BaseDaoImpl implements Persis
 	@Override
 	public void startOfDayCleanUp()
 	{
-		String verwijderDatum = DateUtil.getCurrentDateTime().minusWeeks(WEKEN).toString();
+		var verwijderDatum = DateUtil.getCurrentDateTime().minusWeeks(WEKEN).toString();
 		LOG.info("Verwijder verstuurde transacties met datum t/m {}", verwijderDatum);
 
-		String sql = "DELETE FROM VERSTUURDE_TRANSACTIE WHERE datumTijd <= ?;";
+		var sql = "DELETE FROM VERSTUURDE_TRANSACTIE WHERE datumTijd <= ?;";
 
-		try (Connection connection = getConnection();
-			PreparedStatement removeVerstuurdeTransactie = connection.prepareStatement(sql))
+		try (var connection = getConnection();
+			var removeVerstuurdeTransactie = connection.prepareStatement(sql))
 		{
 			removeVerstuurdeTransactie.setString(1, verwijderDatum);
 			removeVerstuurdeTransactie.execute();
@@ -212,9 +209,9 @@ public class PersistableTransactionDaoImpl extends BaseDaoImpl implements Persis
 	@Override
 	public void addToFouteTransactie(PersistableTransaction transaction)
 	{
-		String sql = "INSERT INTO CLIENTEN_MET_GEBLOKKEERDE_TRANSACTIES (clientId, transactieId) VALUES (?, ?);";
-		try (Connection connection = getConnection();
-			PreparedStatement putLast = connection.prepareStatement(sql))
+		var sql = "INSERT INTO CLIENTEN_MET_GEBLOKKEERDE_TRANSACTIES (clientId, transactieId) VALUES (?, ?);";
+		try (var connection = getConnection();
+			var putLast = connection.prepareStatement(sql))
 		{
 			putLast.setString(1, transaction.getClientId().toString());
 			putLast.setString(2, Long.toString(transaction.getTransactionId()));

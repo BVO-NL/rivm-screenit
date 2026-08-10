@@ -27,7 +27,6 @@ import java.io.FileOutputStream;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.huisartsenportaal.model.Overeenkomst;
 import nl.rivm.screenit.huisartsenportaal.service.OvereenkomstService;
 
 import org.apache.commons.io.FileUtils;
@@ -57,19 +56,19 @@ public class OvereenkomstController extends BaseController
 	@GetMapping(produces = "application/pdf")
 	public FileSystemResource getOvereenkomst()
 	{
-		Overeenkomst overeenkomst = overeenkomstService.geefLaatsteOvereenkomst();
+		var overeenkomst = overeenkomstService.geefLaatsteOvereenkomst();
 		if (overeenkomst != null)
 		{
 			try
 			{
-				File overeenkomstPdf = new File(
+				var overeenkomstPdf = new File(
 					System.getProperty("java.io.tmpdir") + File.separator + overeenkomst.getFileName() + "_" + overeenkomst.getHuisartsportaalId() + ".pdf");
 
 				if (!overeenkomstPdf.exists())
 				{
-					File overeenkomstDocx = new File(filestoreLocatie + overeenkomst.getPath());
+					var overeenkomstDocx = new File(filestoreLocatie + overeenkomst.getPath());
 					overeenkomstPdf = File.createTempFile(overeenkomst.getFileName() + "_" + overeenkomst.getHuisartsportaalId(), ".pdf");
-					byte[] overeenkomstBytes = FileUtils.readFileToByteArray(overeenkomstDocx);
+					var overeenkomstBytes = FileUtils.readFileToByteArray(overeenkomstDocx);
 
 					try (var overeenkomstInputStream = new ByteArrayInputStream(overeenkomstBytes); var output = new FileOutputStream(overeenkomstPdf))
 					{

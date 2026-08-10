@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.base;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Iterator;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
@@ -43,13 +42,13 @@ public class SubMenuPanel extends Panel
 	{
 		super(id);
 
-		Iterator<IMenuItem> gebruikerMenuItemIterator = model.iterator();
+		var gebruikerMenuItemIterator = model.iterator();
 		while (gebruikerMenuItemIterator.hasNext())
 		{
-			IMenuItem menuItem = gebruikerMenuItemIterator.next();
+			var menuItem = gebruikerMenuItemIterator.next();
 			if (menuItem instanceof MedewerkerMenuItem medewerkerMenuItem)
 			{
-				Class<? extends MedewerkerBasePage> targetPageClass = MedewerkerMenuItem.getTargetPageClass(medewerkerMenuItem);
+				var targetPageClass = MedewerkerMenuItem.getTargetPageClass(medewerkerMenuItem);
 				if (targetPageClass == null || !Session.get().getAuthorizationStrategy().isInstantiationAuthorized(targetPageClass))
 				{
 					gebruikerMenuItemIterator.remove();
@@ -64,7 +63,7 @@ public class SubMenuPanel extends Panel
 			{
 				if (item.getModelObject() instanceof MedewerkerMenuItem medewerkerMenuItem)
 				{
-					Link<Object> link = new Link<Object>("subMenuLink")
+					var link = new Link<Object>("subMenuLink")
 					{
 						@Override
 						public void onClick()

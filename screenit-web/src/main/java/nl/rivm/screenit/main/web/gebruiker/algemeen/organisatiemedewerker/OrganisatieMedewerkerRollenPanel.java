@@ -61,7 +61,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -113,33 +112,33 @@ public class OrganisatieMedewerkerRollenPanel extends GenericPanel<OrganisatieMe
 		initieleRollen = Model.ofList(
 			getModelObject().getRollen().stream().map(rol -> organisatieMedewerkerRolMapper.organisatieMedewerkerRolToDto(rol)).collect(Collectors.toList()));
 
-		final Form<OrganisatieMedewerker> rollenForm = new Form<>("rollenForm");
+		final var rollenForm = new Form<OrganisatieMedewerker>("rollenForm");
 		rollenForm.setOutputMarkupId(true);
 
-		OrganisatieMedewerkerKoppelPage page = (OrganisatieMedewerkerKoppelPage) getPage();
-		Actie actie = page.getActie(Recht.MEDEWERKER_ORGANISATIE_KOPPELING_BEHEER);
+		var page = (OrganisatieMedewerkerKoppelPage) getPage();
+		var actie = page.getActie(Recht.MEDEWERKER_ORGANISATIE_KOPPELING_BEHEER);
 
-		final boolean inzien = actie.getNiveau() < Actie.AANPASSEN.getNiveau();
+		final var inzien = actie.getNiveau() < Actie.AANPASSEN.getNiveau();
 
-		OrganisatieMedewerker organisatieMedewerker = getModel().getObject();
+		var organisatieMedewerker = getModel().getObject();
 		rollenForm.add(new Label("achternaam", organisatieMedewerker.getMedewerker().getAchternaamVolledig()));
 		rollenForm.add(new Label("voornaam", organisatieMedewerker.getMedewerker().getVoornaam()));
 		rollenForm.add(new Label("organisatie", organisatieMedewerker.getOrganisatie().getNaam()));
 
-		final AjaxSubmitLink opslaan = new AjaxSubmitLink("opslaan")
+		final var opslaan = new AjaxSubmitLink("opslaan")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				OrganisatieMedewerker organisatieMedewerker = OrganisatieMedewerkerRollenPanel.this.getModelObject();
+				var organisatieMedewerker = OrganisatieMedewerkerRollenPanel.this.getModelObject();
 				List<Bevolkingsonderzoek> onderzoeken = new ArrayList<>();
 				organisatieMedewerker.setRollen(ModelProxyHelper.deproxy(rollenModel.getObject()));
 
-				for (OrganisatieMedewerkerRol rol : organisatieMedewerker.getRollen())
+				for (var rol : organisatieMedewerker.getRollen())
 				{
 					if (rol.isRolActief() && CollectionUtils.isNotEmpty(rol.getBevolkingsonderzoeken()))
 					{
-						for (Bevolkingsonderzoek bvo : rol.getBevolkingsonderzoeken())
+						for (var bvo : rol.getBevolkingsonderzoeken())
 						{
 							if (!onderzoeken.contains(bvo))
 							{
@@ -152,7 +151,7 @@ public class OrganisatieMedewerkerRollenPanel extends GenericPanel<OrganisatieMe
 				if (CollectionUtils.isNotEmpty(organisatieMedewerker.getBevolkingsonderzoeken()))
 				{
 					List<Bevolkingsonderzoek> huidigeLijst = new ArrayList<>();
-					for (Bevolkingsonderzoek bvo : organisatieMedewerker.getBevolkingsonderzoeken())
+					for (var bvo : organisatieMedewerker.getBevolkingsonderzoeken())
 					{
 						if (onderzoeken.contains(bvo))
 						{
@@ -170,7 +169,7 @@ public class OrganisatieMedewerkerRollenPanel extends GenericPanel<OrganisatieMe
 				medewerkerService.saveOrUpdateRollen(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), initieleRollen.getObject(),
 					(OrganisatieMedewerker) Hibernate.unproxy(organisatieMedewerker));
 				info(getLocalizer().getString("action.save.rol", this));
-				OrganisatieMedewerkerKoppelPage page = (OrganisatieMedewerkerKoppelPage) getPage();
+				var page = (OrganisatieMedewerkerKoppelPage) getPage();
 				page.clearCachedAuthorizationInfo(organisatieMedewerker);
 				dialogParent.close(target);
 				target.add(organisatieMedewerkersContainer);
@@ -179,12 +178,12 @@ public class OrganisatieMedewerkerRollenPanel extends GenericPanel<OrganisatieMe
 		opslaan.setVisible(!inzien);
 		rollenForm.add(opslaan);
 
-		AjaxSubmitLink toevoegen = new AjaxSubmitLink("toevoegen", rollenForm)
+		var toevoegen = new AjaxSubmitLink("toevoegen", rollenForm)
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				OrganisatieMedewerkerRol organisatieMedewerkerRol = new OrganisatieMedewerkerRol();
+				var organisatieMedewerkerRol = new OrganisatieMedewerkerRol();
 
 				var rollen = new ArrayList<>(rollenModel.getObject());
 				rollen.add(organisatieMedewerkerRol);
@@ -222,7 +221,7 @@ public class OrganisatieMedewerkerRollenPanel extends GenericPanel<OrganisatieMe
 
 	private void createRollenOverview(final Form<OrganisatieMedewerker> rollenForm, final AjaxSubmitLink opslaan, final Actie actie)
 	{
-		OrganisatieMedewerkerRol searchObject = new OrganisatieMedewerkerRol();
+		var searchObject = new OrganisatieMedewerkerRol();
 		searchObject.setActief(null);
 		final IModel<OrganisatieMedewerkerRol> searchObjectModel = Model.of(searchObject);
 		var toeTeVoegenRollen = rolService.getToeTeVoegenRollen(getModelObject(), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
@@ -233,23 +232,23 @@ public class OrganisatieMedewerkerRollenPanel extends GenericPanel<OrganisatieMe
 			@Override
 			protected void populateItem(final ListItem<OrganisatieMedewerkerRol> item)
 			{
-				final boolean inzien = actie.getNiveau() < Actie.AANPASSEN.getNiveau();
+				final var inzien = actie.getNiveau() < Actie.AANPASSEN.getNiveau();
 				item.setDefaultModel(new CompoundPropertyModel<>(item.getModel()));
-				OrganisatieMedewerkerRol organisatieMedewerkerRol = item.getModelObject();
+				var organisatieMedewerkerRol = item.getModelObject();
 
 				final List<Bevolkingsonderzoek> bvoKeuze;
 				bvoKeuze = getBvoKeuzes(item);
 
-				ScreenitListMultipleChoice<Bevolkingsonderzoek> bevolkingsonderzoeken = new ScreenitListMultipleChoice<>("bevolkingsonderzoeken",
+				var bevolkingsonderzoeken = new ScreenitListMultipleChoice<Bevolkingsonderzoek>("bevolkingsonderzoeken",
 					new PropertyModel<>(item.getDefaultModel(), "bevolkingsonderzoeken"), bvoKeuze, new EnumChoiceRenderer<>());
 				bevolkingsonderzoeken.setRequired(true);
 
-				final WebMarkupContainer bvoContainer = new WebMarkupContainer("bevolkingsonderzoekenContainer");
+				final var bvoContainer = new WebMarkupContainer("bevolkingsonderzoekenContainer");
 				bvoContainer.add(bevolkingsonderzoeken);
 				bvoContainer.setOutputMarkupId(true);
 				item.add(bvoContainer);
 
-				RequiredScreenitDropdown<Rol> rol = new RequiredScreenitDropdown<>("rol",
+				var rol = new RequiredScreenitDropdown<Rol>("rol",
 					toeTeVoegenRollenModel, new NaamChoiceRenderer<>(), opslaan);
 				rol.add(new AjaxFormComponentUpdatingBehavior("change")
 				{
@@ -266,17 +265,17 @@ public class OrganisatieMedewerkerRollenPanel extends GenericPanel<OrganisatieMe
 				rol.setVisible(organisatieMedewerkerRol.getId() == null && !inzien);
 				item.add(rol);
 
-				Label rolVast = new Label("rolVast", new PropertyModel<>(item.getModel(), "rol.naam"));
+				var rolVast = new Label("rolVast", new PropertyModel<>(item.getModel(), "rol.naam"));
 				rolVast.setVisible(organisatieMedewerkerRol.getId() != null || inzien);
 				item.add(rolVast);
 
-				FormComponent<Date> beginDatum = ComponentHelper.addTextField(item, "beginDatum", false, 20, Date.class, inzien);
-				FormComponent<Date> eindDatum = ComponentHelper.addTextField(item, "eindDatum", false, 20, Date.class, inzien);
+				var beginDatum = ComponentHelper.addTextField(item, "beginDatum", false, 20, Date.class, inzien);
+				var eindDatum = ComponentHelper.addTextField(item, "eindDatum", false, 20, Date.class, inzien);
 				beginDatum.setLabel(Model.of("begin datum"));
 				eindDatum.setLabel(Model.of("eind datum"));
 				rollenForm.add(new DependantDateValidator(beginDatum, eindDatum, DependantDateValidator.Operator.AFTER));
 
-				Boolean rolActief = organisatieMedewerkerRol.getActief();
+				var rolActief = organisatieMedewerkerRol.getActief();
 				WebMarkupContainer toggleActief = new AjaxLink<Void>("toggleActief")
 				{
 					@Override
@@ -284,7 +283,7 @@ public class OrganisatieMedewerkerRollenPanel extends GenericPanel<OrganisatieMe
 					{
 						if (actie.getNiveau() > Actie.TOEVOEGEN.getNiveau())
 						{
-							OrganisatieMedewerkerRol organisatieMedewerkerRol = item.getModelObject();
+							var organisatieMedewerkerRol = item.getModelObject();
 							organisatieMedewerkerRol.setActief(Boolean.FALSE.equals(organisatieMedewerkerRol.getActief()));
 							if (Boolean.TRUE.equals(organisatieMedewerkerRol.getActief()))
 							{
@@ -319,8 +318,8 @@ public class OrganisatieMedewerkerRollenPanel extends GenericPanel<OrganisatieMe
 					toggleActief.add(new AttributeAppender("class", Model.of(" actief")));
 				}
 				item.add(toggleActief);
-				boolean visible = false;
-				Boolean searchActief = searchObjectModel.getObject().getActief();
+				var visible = false;
+				var searchActief = searchObjectModel.getObject().getActief();
 
 				if (searchActief == null
 					|| Boolean.TRUE.equals(searchActief) && !Boolean.FALSE.equals(rolActief)

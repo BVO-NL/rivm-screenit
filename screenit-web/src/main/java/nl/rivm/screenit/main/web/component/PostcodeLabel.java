@@ -50,7 +50,7 @@ public class PostcodeLabel extends Label
 	@Override
 	public void onComponentTagBody(final MarkupStream markupStream, final ComponentTag openTag)
 	{
-		String postcode = getDefaultModelObjectAsString();
+		var postcode = getDefaultModelObjectAsString();
 		if (postcode != null)
 		{
 			postcode = PostcodeFormatter.formatPostcode(postcode, metSpatie);

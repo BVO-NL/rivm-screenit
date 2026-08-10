@@ -49,11 +49,11 @@ public class BlokkadeEventsProvider extends AbstractScreenITEventProvider
 	@Override
 	void createEvents(Date start, Date end)
 	{
-		for (Long blokkadeId : screenITEventSourceFactory.getWeekDto().blokkadesIds)
+		for (var blokkadeId : screenITEventSourceFactory.getWeekDto().blokkadesIds)
 		{
 			String blokkadetitel = null;
 
-			MammaBlokkade blokkade = hibernateService.get(MammaBlokkade.class, blokkadeId);
+			var blokkade = hibernateService.get(MammaBlokkade.class, blokkadeId);
 			switch (blokkade.getType())
 			{
 			case SCREENINGS_ORGANISATIE:
@@ -67,7 +67,7 @@ public class BlokkadeEventsProvider extends AbstractScreenITEventProvider
 				break;
 			}
 
-			Event event = new Event();
+			var event = new Event();
 			event.setTitle(blokkadetitel);
 			event.setStart(DateUtil.toLocalDateTime(blokkade.getVanaf()));
 			event.setEnd(DateUtil.toLocalDateTime(blokkade.getTotEnMet()));

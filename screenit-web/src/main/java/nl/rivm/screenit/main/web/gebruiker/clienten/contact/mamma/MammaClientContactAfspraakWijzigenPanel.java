@@ -66,7 +66,7 @@ public class MammaClientContactAfspraakWijzigenPanel extends AbstractClientConta
 			public void verzetten(AjaxRequestTarget target, MammaAfspraak afspraak)
 			{
 				afspraak = (MammaAfspraak) Hibernate.unproxy(ModelProxyHelper.deproxy(afspraak));
-				MammaClientAfspraakVerzettenPanel newAfspraakWijzigenPanel = new MammaClientAfspraakVerzettenPanel("afspraakWijzigenPanel", afspraak);
+				var newAfspraakWijzigenPanel = new MammaClientAfspraakVerzettenPanel("afspraakWijzigenPanel", afspraak);
 				newAfspraakWijzigenPanel.setOutputMarkupId(true);
 
 				afspraakWijzigenPanel.replaceWith(newAfspraakWijzigenPanel);
@@ -78,7 +78,7 @@ public class MammaClientContactAfspraakWijzigenPanel extends AbstractClientConta
 			public void uitstellen(AjaxRequestTarget target, MammaAfspraak afspraak)
 			{
 				afspraak = (MammaAfspraak) Hibernate.unproxy(ModelProxyHelper.deproxy(afspraak));
-				MammaClientAfspraakUitstellenPanel newAfspraakWijzigenPanel = new MammaClientAfspraakUitstellenPanel("afspraakWijzigenPanel", afspraak);
+				var newAfspraakWijzigenPanel = new MammaClientAfspraakUitstellenPanel("afspraakWijzigenPanel", afspraak);
 				newAfspraakWijzigenPanel.setOutputMarkupId(true);
 
 				afspraakWijzigenPanel.replaceWith(newAfspraakWijzigenPanel);
@@ -98,8 +98,8 @@ public class MammaClientContactAfspraakWijzigenPanel extends AbstractClientConta
 		clientContactPanelCreateContext.bkVanuitPlanning = extraPanelParams.stream().anyMatch(p -> Constants.CONTACT_EXTRA_PARAMETER_VANUIT_BK_PLANNING.equals(p.toString()));
 		if (extraPanelParams.size() > 1)
 		{
-			MammaAfspraak afspraak = (MammaAfspraak) extraPanelParams.stream().filter(MammaAfspraak.class::isInstance).findFirst().orElse(null);
-			MammaAfspraakStatus afspraakStatus = (MammaAfspraakStatus) extraPanelParams.stream().filter(MammaAfspraakStatus.class::isInstance).findFirst().orElse(null);
+			var afspraak = (MammaAfspraak) extraPanelParams.stream().filter(MammaAfspraak.class::isInstance).findFirst().orElse(null);
+			var afspraakStatus = (MammaAfspraakStatus) extraPanelParams.stream().filter(MammaAfspraakStatus.class::isInstance).findFirst().orElse(null);
 
 			switch (afspraakStatus)
 			{
@@ -148,7 +148,7 @@ public class MammaClientContactAfspraakWijzigenPanel extends AbstractClientConta
 	@Override
 	public List<String> getOpslaanMeldingen()
 	{
-		List<String> opslaanMeldingen = super.getOpslaanMeldingen();
+		var opslaanMeldingen = super.getOpslaanMeldingen();
 		if (afspraakWijzigenPanel instanceof AbstractClientContactActiePanel)
 		{
 			opslaanMeldingen.addAll(((AbstractClientContactActiePanel) afspraakWijzigenPanel).getOpslaanMeldingen());
@@ -160,7 +160,7 @@ public class MammaClientContactAfspraakWijzigenPanel extends AbstractClientConta
 	@Override
 	public Map<ExtraOpslaanKey, Object> getOpslaanObjecten()
 	{
-		Map<ExtraOpslaanKey, Object> opslaanObjecten = super.getOpslaanObjecten();
+		var opslaanObjecten = super.getOpslaanObjecten();
 		if (afspraakWijzigenPanel instanceof AbstractClientContactActiePanel)
 		{
 			opslaanObjecten.putAll(((AbstractClientContactActiePanel) afspraakWijzigenPanel).getOpslaanObjecten());

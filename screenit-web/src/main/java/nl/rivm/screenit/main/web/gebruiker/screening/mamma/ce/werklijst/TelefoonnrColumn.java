@@ -39,7 +39,7 @@ public class TelefoonnrColumn<T> extends PropertyColumn<T, String>
 	@Override
 	public IModel<?> getDataModel(IModel<T> rowModel)
 	{
-		Persoon persoon = (Persoon) super.getDataModel(rowModel).getObject();
+		var persoon = (Persoon) super.getDataModel(rowModel).getObject();
 		return Model.of(TelefoonnummersFormatter.getTelefoonnummersVoorPersoon(persoon));
 	}
 

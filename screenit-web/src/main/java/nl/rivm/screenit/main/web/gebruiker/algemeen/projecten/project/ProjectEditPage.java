@@ -50,7 +50,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.project.GroepSelectieType;
 import nl.rivm.screenit.model.project.Project;
-import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.model.project.ProjectType;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -73,7 +72,6 @@ import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.RadioChoice;
-import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -81,7 +79,6 @@ import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.DateValidator;
 import org.wicketstuff.shiro.ShiroConstraint;
-import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
 @Slf4j
 @SecurityConstraint(
@@ -123,7 +120,7 @@ public class ProjectEditPage extends AlgemeenPage
 	{
 		model = ModelUtil.cModel(model.getObject());
 		setDefaultModel(model);
-		Project project = model.getObject();
+		var project = model.getObject();
 
 		if (project.getBevolkingsonderzoeken() != null)
 		{
@@ -132,20 +129,20 @@ public class ProjectEditPage extends AlgemeenPage
 
 		Boolean magSelectiePopulatieGegevensAanpassen = project.getGroepen() == null || project.getGroepen().size() == 0;
 
-		String title = String.format(getString("toevoegen"), project.getType());
+		var title = String.format(getString("toevoegen"), project.getType());
 		if (project.getId() != null)
 		{
 			title = String.format(getString("bewerken"), project.getType());
 		}
 		add(new Label("title", Model.of(title)));
 
-		Form<Project> form = new Form<Project>("form", model);
+		var form = new Form<Project>("form", model);
 		add(form);
 
 		ComponentHelper.addTextField(form, "naam", true, 255, false)
 			.add(new ScreenitUniqueFieldValidator<>(Project.class, project.getId(), "naam", false));
 
-		ScreenitListMultipleChoice<Organisatie> soDropDown = new ScreenitListMultipleChoice<Organisatie>("screeningOrganisaties",
+		var soDropDown = new ScreenitListMultipleChoice<Organisatie>("screeningOrganisaties",
 			new SimpleListHibernateModel<>(organisatieZoekService.getAllActieveOrganisatiesWithType(ScreeningOrganisatie.class)), new ChoiceRenderer<Organisatie>("naam"));
 		soDropDown.setRequired(true);
 		form.add(soDropDown);
@@ -160,8 +157,8 @@ public class ProjectEditPage extends AlgemeenPage
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				Organisatie organisatie = organisatieDropdown.getConvertedInput();
-				WebMarkupContainer container = getMedewerkersContainer(organisatie);
+				var organisatie = organisatieDropdown.getConvertedInput();
+				var container = getMedewerkersContainer(organisatie);
 				medewerkersContainer.replaceWith(container);
 				medewerkersContainer = container;
 				target.add(medewerkersContainer);
@@ -173,31 +170,31 @@ public class ProjectEditPage extends AlgemeenPage
 		medewerkersContainer = getMedewerkersContainer(project.getOrganisatie());
 		form.add(medewerkersContainer);
 
-		Date vandaag = currentDateSupplier.getDateMidnight();
+		var vandaag = currentDateSupplier.getDateMidnight();
 
-		Date startDatum = form.getModelObject().getStartDatum();
-		boolean enabled = startDatum == null || currentDateSupplier.getDate().before(startDatum);
-		DatePicker<Date> startDatumDatePicker = ComponentHelper.newDatePicker("startDatum", new PropertyModel<Date>(form.getModel(), "startDatum"), enabled);
+		var startDatum = form.getModelObject().getStartDatum();
+		var enabled = startDatum == null || currentDateSupplier.getDate().before(startDatum);
+		var startDatumDatePicker = ComponentHelper.newDatePicker("startDatum", new PropertyModel<Date>(form.getModel(), "startDatum"), enabled);
 		startDatumDatePicker.setRequired(true);
 		startDatumDatePicker.add(DateValidator.minimum(vandaag));
 		form.add(startDatumDatePicker);
 
-		Date eindDatum = form.getModelObject().getEindDatum();
+		var eindDatum = form.getModelObject().getEindDatum();
 		enabled = eindDatum == null || currentDateSupplier.getDate().before(eindDatum);
-		DatePicker<Date> correspondentieDatum = ComponentHelper.newDatePicker("eindDatum", new PropertyModel<Date>(form.getModel(), "eindDatum"), enabled);
+		var correspondentieDatum = ComponentHelper.newDatePicker("eindDatum", new PropertyModel<Date>(form.getModel(), "eindDatum"), enabled);
 		correspondentieDatum.add(DateValidator.minimum(vandaag));
 		correspondentieDatum.setRequired(true);
 		form.add(correspondentieDatum);
 		form.add(new DependantDateValidator(startDatumDatePicker, correspondentieDatum, DependantDateValidator.Operator.AFTER));
 
-		Date eindeInstroom = form.getModelObject().getEindeInstroom();
+		var eindeInstroom = form.getModelObject().getEindeInstroom();
 		enabled = eindeInstroom == null || currentDateSupplier.getDate().before(eindeInstroom);
-		DatePicker<Date> eindeInstroomDatePicker = ComponentHelper.newDatePicker("correspondentieDatum", new PropertyModel<Date>(form.getModel(), "eindeInstroom"), enabled);
+		var eindeInstroomDatePicker = ComponentHelper.newDatePicker("correspondentieDatum", new PropertyModel<Date>(form.getModel(), "eindeInstroom"), enabled);
 		eindeInstroomDatePicker.add(DateValidator.minimum(vandaag));
 		form.add(eindeInstroomDatePicker);
 		form.add(new DependantDateValidator(startDatumDatePicker, eindeInstroomDatePicker, DependantDateValidator.Operator.AFTER));
 
-		ScreenitListMultipleChoice<Bevolkingsonderzoek> bvoDropdown = new ScreenitListMultipleChoice<Bevolkingsonderzoek>("bevolkingsonderzoeken",
+		var bvoDropdown = new ScreenitListMultipleChoice<Bevolkingsonderzoek>("bevolkingsonderzoeken",
 			new ListModel<>(Arrays.asList(Bevolkingsonderzoek.values())), new EnumChoiceRenderer<>());
 		bvoDropdown.setRequired(true);
 		bvoDropdown.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -208,18 +205,18 @@ public class ProjectEditPage extends AlgemeenPage
 				gekozenBevolkingsonderzoeken.clear();
 				gekozenBevolkingsonderzoeken.addAll(bvoDropdown.getConvertedInput());
 
-				Project innerProject = (Project) getDefaultModelObject();
+				var innerProject = (Project) getDefaultModelObject();
 				innerProject.getParameters().removeIf(parameter -> !gekozenBevolkingsonderzoeken.contains(parameter.getKey().getBevolkingsonderzoek()));
 
-				List<ProjectParameterKey> gefilterdeParameters = Arrays.stream(ProjectParameterKey.values())
+				var gefilterdeParameters = Arrays.stream(ProjectParameterKey.values())
 					.filter(p -> gekozenBevolkingsonderzoeken.contains(p.getBevolkingsonderzoek()) && p.getProjectType().equals(innerProject.getType()))
 					.collect(Collectors.toList());
 
-				for (ProjectParameterKey parameterKey : gefilterdeParameters)
+				for (var parameterKey : gefilterdeParameters)
 				{
 					if (innerProject.getParameters().stream().noneMatch(p -> p.getKey().equals(parameterKey)))
 					{
-						ProjectParameter parameter = new ProjectParameter();
+						var parameter = new ProjectParameter();
 						parameter.setProject(innerProject);
 						parameter.setKey(parameterKey);
 						innerProject.getParameters().add(parameter);
@@ -237,7 +234,7 @@ public class ProjectEditPage extends AlgemeenPage
 		booleanRadio.setRequired(true);
 		form.add(booleanRadio);
 
-		RadioChoice<GroepSelectieType> groepSelectieType = new RadioChoice<GroepSelectieType>("groepSelectieType", Arrays.asList(GroepSelectieType.values()),
+		var groepSelectieType = new RadioChoice<GroepSelectieType>("groepSelectieType", Arrays.asList(GroepSelectieType.values()),
 			new EnumChoiceRenderer<>(this));
 		groepSelectieType.setPrefix("<label class=\"radio\">");
 		groepSelectieType.setSuffix("</label>");
@@ -252,13 +249,13 @@ public class ProjectEditPage extends AlgemeenPage
 		excludeerBezwaarRadio.setVisible(project.getType().equals(ProjectType.PROJECT));
 		form.add(excludeerBezwaarRadio);
 
-		List<Bevolkingsonderzoek> onderzoekKeuzes = Arrays.asList(Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA);
-		ScreenitListMultipleChoice<Bevolkingsonderzoek> excludeerOpenRondeDropDown = new ScreenitListMultipleChoice<Bevolkingsonderzoek>("excludeerOpenRonde",
+		var onderzoekKeuzes = Arrays.asList(Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA);
+		var excludeerOpenRondeDropDown = new ScreenitListMultipleChoice<Bevolkingsonderzoek>("excludeerOpenRonde",
 			new ListModel<>(onderzoekKeuzes), new EnumChoiceRenderer<>());
 		excludeerOpenRondeDropDown.setVisible(project.getType().equals(ProjectType.PROJECT));
 		form.add(excludeerOpenRondeDropDown);
 
-		ScreenitListMultipleChoice<Bevolkingsonderzoek> excludeerAfmeldingDropDown = new ScreenitListMultipleChoice<Bevolkingsonderzoek>("excludeerAfmelding",
+		var excludeerAfmeldingDropDown = new ScreenitListMultipleChoice<Bevolkingsonderzoek>("excludeerAfmelding",
 			new ListModel<>(onderzoekKeuzes), new EnumChoiceRenderer<>());
 		excludeerAfmeldingDropDown.setEnabled(magSelectiePopulatieGegevensAanpassen);
 		excludeerAfmeldingDropDown.setVisible(project.getType().equals(ProjectType.PROJECT));
@@ -267,7 +264,7 @@ public class ProjectEditPage extends AlgemeenPage
 		maakProjectParameterPanelAan();
 		form.add(parametersPanel);
 
-		TextArea<String> area = ComponentHelper.newTextArea("opmerkingen", 255);
+		var area = ComponentHelper.newTextArea("opmerkingen", 255);
 		form.add(area);
 
 		add(new IndicatingAjaxLink<Void>("annuleren")
@@ -284,17 +281,17 @@ public class ProjectEditPage extends AlgemeenPage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-				Project project = form.getModelObject();
-				Date startDatum = project.getStartDatum();
-				Date eindDatum = project.getEindDatum();
-				Date eindeInstroom = project.getEindeInstroom();
+				var format = new SimpleDateFormat("dd-MM-yyyy");
+				var project = form.getModelObject();
+				var startDatum = project.getStartDatum();
+				var eindDatum = project.getEindDatum();
+				var eindeInstroom = project.getEindeInstroom();
 				if (eindeInstroom == null || eindeInstroom.after(startDatum) && eindeInstroom.before(eindDatum))
 				{
-					boolean heeftWarningsOfErrors = false;
+					var heeftWarningsOfErrors = false;
 					if (project.getGroepen() != null)
 					{
-						for (ProjectGroep groep : project.getGroepen())
+						for (var groep : project.getGroepen())
 						{
 							if (!ProjectUtil.hasParameterSet(project, ProjectParameterKey.COLON_UITNODIGEN_PRIORITEIT))
 							{
@@ -340,9 +337,9 @@ public class ProjectEditPage extends AlgemeenPage
 
 	private void maakProjectParameterPanelAan()
 	{
-		IModel<Project> model = (IModel<Project>) getDefaultModel();
-		Project project = model.getObject();
-		EditProjectParametersPanel nieuwParametersPanel = new EditProjectParametersPanel("parameters", model, gekozenBevolkingsonderzoeken);
+		var model = (IModel<Project>) getDefaultModel();
+		var project = model.getObject();
+		var nieuwParametersPanel = new EditProjectParametersPanel("parameters", model, gekozenBevolkingsonderzoeken);
 		nieuwParametersPanel.setOutputMarkupId(true);
 		nieuwParametersPanel.setVisible(project.getType().equals(ProjectType.PROJECT));
 
@@ -355,7 +352,7 @@ public class ProjectEditPage extends AlgemeenPage
 
 	private WebMarkupContainer getMedewerkersContainer(Organisatie organisatie)
 	{
-		WebMarkupContainer medewerkersContainer = new WebMarkupContainer("medewerkersContainer");
+		var medewerkersContainer = new WebMarkupContainer("medewerkersContainer");
 		medewerkersContainer.setOutputMarkupId(true);
 
 		List<OrganisatieMedewerker> lijstMetMogelijkeMedewerkers = new ArrayList<OrganisatieMedewerker>();
@@ -364,7 +361,7 @@ public class ProjectEditPage extends AlgemeenPage
 			lijstMetMogelijkeMedewerkers = organisatie.getOrganisatieMedewerkers();
 		}
 
-		ScreenitDropdown<OrganisatieMedewerker> contactPersoonDropDown = new ScreenitDropdown<OrganisatieMedewerker>("contactpersoon",
+		var contactPersoonDropDown = new ScreenitDropdown<OrganisatieMedewerker>("contactpersoon",
 			new SimpleListHibernateModel<>(lijstMetMogelijkeMedewerkers), new IChoiceRenderer<OrganisatieMedewerker>()
 		{
 			@Override
@@ -392,7 +389,7 @@ public class ProjectEditPage extends AlgemeenPage
 		});
 		contactPersoonDropDown.setRequired(true);
 		medewerkersContainer.add(contactPersoonDropDown);
-		ScreenitListMultipleChoice<OrganisatieMedewerker> medewerkersMulti = new ScreenitListMultipleChoice<OrganisatieMedewerker>("medewerkers",
+		var medewerkersMulti = new ScreenitListMultipleChoice<OrganisatieMedewerker>("medewerkers",
 			new SimpleListHibernateModel<>(lijstMetMogelijkeMedewerkers), new IChoiceRenderer<OrganisatieMedewerker>()
 		{
 			@Override

@@ -70,7 +70,7 @@ public class BatchStatusPanel extends BatchBvoFilterPanel
 		container = new WebMarkupContainer("container");
 		container.setOutputMarkupId(true);
 		addOrReplace(container);
-		boolean error = false;
+		var error = false;
 		final List<JobType> jobQueue = new ArrayList<>();
 		try
 		{
@@ -110,14 +110,15 @@ public class BatchStatusPanel extends BatchBvoFilterPanel
 			{
 				item.add(new Label("bvoLabel", Bevolkingsonderzoek.getAfkortingen(item.getModelObject().getBevolkingsOnderzoeken())));
 				item.add(new EnumLabel<JobType>("job", item.getModelObject()));
-				boolean jobFound = false;
+				var jobFound = false;
 				if (batchServerStatussen != null)
 				{
-					top: for (BatchServerStatus status : batchServerStatussen)
+					top:
+					for (var status : batchServerStatussen)
 					{
-						for (Job job : status.getJobs())
+						for (var job : status.getJobs())
 						{
-							JobType jobType = JobType.valueOf(job.getJobName().toUpperCase());
+							var jobType = JobType.valueOf(job.getJobName().toUpperCase());
 							if (item.getModelObject().equals(jobType))
 							{
 								item.add(new Label("server", status.getInstanceName()));
@@ -180,9 +181,9 @@ public class BatchStatusPanel extends BatchBvoFilterPanel
 		{
 			status.getObject().add(getString("actief"));
 		}
-		for (int i = 0; i < jobQueue.size(); i++)
+		for (var i = 0; i < jobQueue.size(); i++)
 		{
-			JobType type = jobQueue.get(i);
+			var type = jobQueue.get(i);
 			if (jobType.equals(type))
 			{
 				status.getObject().add(new StringResourceModel("pending", this, Model.of()).setParameters(new Object[] { i + 1 }).getString());
@@ -195,10 +196,10 @@ public class BatchStatusPanel extends BatchBvoFilterPanel
 	{
 		List<JobType> jobs = new ArrayList<>();
 
-		for (JobType jobType : JobType.values())
+		for (var jobType : JobType.values())
 		{
-			Boolean heeftBVO = Boolean.FALSE;
-			for (Bevolkingsonderzoek bvo : Arrays.asList(jobType.getBevolkingsOnderzoeken()))
+			var heeftBVO = Boolean.FALSE;
+			for (var bvo : Arrays.asList(jobType.getBevolkingsOnderzoeken()))
 			{
 				if (getBatchJobZoekCriteria().getBevolkingsonderzoeken().contains(bvo) || getBatchJobZoekCriteria().getBevolkingsonderzoeken().isEmpty())
 				{

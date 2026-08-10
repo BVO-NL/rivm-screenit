@@ -41,7 +41,7 @@ import org.apache.wicket.model.IModel;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 @SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.TESTEN, bevolkingsonderzoekScopes = {
-	Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA})
+	Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 public class TestPostcodePage extends TestenBasePage
 {
 
@@ -51,7 +51,7 @@ public class TestPostcodePage extends TestenBasePage
 
 	public TestPostcodePage()
 	{
-		TestPostcode testPostcode = new TestPostcode();
+		var testPostcode = new TestPostcode();
 		postcodeModel = new CompoundPropertyModel<TestPostcode>(testPostcode);
 		Form<TestPostcode> form = new ScreenitForm<TestPostcode>("form", postcodeModel);
 
@@ -68,8 +68,8 @@ public class TestPostcodePage extends TestenBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				TestPostcode testPostcode = (TestPostcode) form.getModelObject();
-				double distance = BigDecimalUtil.berekenDistance(new BigDecimal(testPostcode.getOrgLatitude()), new BigDecimal(testPostcode.getOrgLongitude()),
+				var testPostcode = (TestPostcode) form.getModelObject();
+				var distance = BigDecimalUtil.berekenDistance(new BigDecimal(testPostcode.getOrgLatitude()), new BigDecimal(testPostcode.getOrgLongitude()),
 					new BigDecimal(testPostcode.getClientLatitude()), new BigDecimal(testPostcode.getClientLongitude()));
 				info("afstand berekend: " + distance + " km");
 			}

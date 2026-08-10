@@ -65,7 +65,7 @@ public class UploadImageFormComponent<T extends HibernateObject> extends Generic
 		this.whatToUpload = whatToUpload;
 		this.fileStoreLocation = fileStoreLocation;
 
-		final Form<Organisatie> form = new Form<>("uploadForm");
+		final var form = new Form<Organisatie>("uploadForm");
 		add(form);
 		form.add(new FileUploadField("fileUpload", fileUploads).add(whatToUpload.getValidator()));
 
@@ -75,14 +75,14 @@ public class UploadImageFormComponent<T extends HibernateObject> extends Generic
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				UploadDocument document = whatToUpload.getUploadDocument(UploadImageFormComponent.this.getModel());
+				var document = whatToUpload.getUploadDocument(UploadImageFormComponent.this.getModel());
 				setVisible(document != null && document.getActief());
 			}
 		};
 		labelBestandsNaam.setOutputMarkupId(true);
 		form.add(labelBestandsNaam);
 
-		boolean isBestaande = model.getObject().getId() != null;
+		var isBestaande = model.getObject().getId() != null;
 		form.add(new AjaxSubmitLink("uploaden")
 		{
 			@Override
@@ -98,8 +98,8 @@ public class UploadImageFormComponent<T extends HibernateObject> extends Generic
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				IModel<T> model = UploadImageFormComponent.this.getModel();
-				UploadDocument uploadDocument = whatToUpload.getUploadDocument(model);
+				var model = UploadImageFormComponent.this.getModel();
+				var uploadDocument = whatToUpload.getUploadDocument(model);
 				uploadDocument.setActief(false);
 				labelBestandsNaam.setVisible(false);
 				target.add(labelBestandsNaam);
@@ -111,7 +111,7 @@ public class UploadImageFormComponent<T extends HibernateObject> extends Generic
 			protected void onConfigure()
 			{
 				super.onConfigure();
-				UploadDocument document = whatToUpload.getUploadDocument(UploadImageFormComponent.this.getModel());
+				var document = whatToUpload.getUploadDocument(UploadImageFormComponent.this.getModel());
 				setVisible(magVerwijderdWorden && isBestaande && document != null && document.getActief());
 			}
 
@@ -129,9 +129,9 @@ public class UploadImageFormComponent<T extends HibernateObject> extends Generic
 	{
 		if (hasFile())
 		{
-			IModel<T> model = UploadImageFormComponent.this.getModel();
-			UploadDocument oudUploadDocument = whatToUpload.getUploadDocument(model);
-			UploadDocument nieuwUploadDocument = whatToUpload.setUploadDocument(model);
+			var model = UploadImageFormComponent.this.getModel();
+			var oudUploadDocument = whatToUpload.getUploadDocument(model);
+			var nieuwUploadDocument = whatToUpload.setUploadDocument(model);
 
 			whatToUpload.setContentType(nieuwUploadDocument, fileUploads);
 			createFileInTmp(target, nieuwUploadDocument);

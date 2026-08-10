@@ -132,8 +132,8 @@ public class MammaBeeldenInzienPage extends AbstractMammaBeoordelenPage
 	private void maakRondesContainer()
 	{
 		List<AbstractBEAccordionPanel<?>> rondePanels = new ArrayList<>();
-		boolean isFirstRound = true;
-		for (MammaOnderzoek onderzoek : onderzoekenModel.getObject())
+		var isFirstRound = true;
+		for (var onderzoek : onderzoekenModel.getObject())
 		{
 			AbstractBEAccordionPanel<?> panel;
 			if (onderzoek.getLaatsteBeoordeling() != null && MammaBeoordelingStatus.isUitslagStatus(onderzoek.getLaatsteBeoordeling().getStatus()))
@@ -174,8 +174,8 @@ public class MammaBeeldenInzienPage extends AbstractMammaBeoordelenPage
 
 	private void updateModels()
 	{
-		Client volgendeClient = hibernateService.get(Client.class, clientenIds.get(0));
-		List<MammaOnderzoek> volgendeOnderzoeken = onderzoekService.getOnderzoekenMetBeelden(volgendeClient);
+		var volgendeClient = hibernateService.get(Client.class, clientenIds.get(0));
+		var volgendeOnderzoeken = onderzoekService.getOnderzoekenMetBeelden(volgendeClient);
 		onderzoekenModel = ModelUtil.listRModel(volgendeOnderzoeken);
 		laatsteOnderzoekModel = new SimpleHibernateModel<>(MammaOnderzoek.class, volgendeOnderzoeken.get(0).getId());
 		logService.logGebeurtenis(LogGebeurtenis.INZIEN_BEELDEN_PORTFOLIO, ScreenitSession.get().getIngelogdAccount(), volgendeClient);

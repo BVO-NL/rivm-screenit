@@ -96,7 +96,7 @@ public class GbaVerslagPanel extends GenericPanel<GbaVerwerkingsLog>
 					.setContentDisposition(ContentDisposition.ATTACHMENT)
 					.setCacheDuration(Duration.ZERO)
 					.setFileName(System.currentTimeMillis() + "-" + item.getModelObject().getNaam());
-				ResourceLink<Void> resourceLink = new ResourceLink<>("resource", resource);
+				var resourceLink = new ResourceLink<Void>("resource", resource);
 				resourceLink.add(new Label("naam"));
 				item.add(resourceLink);
 			}
@@ -131,7 +131,7 @@ public class GbaVerslagPanel extends GenericPanel<GbaVerwerkingsLog>
 		}
 		else if (toegangLevel == ToegangLevel.REGIO && ScreenitSession.get().getScreeningOrganisatie() != null)
 		{
-			for (GbaVerwerkingEntry entry : model.getObject().getEntries())
+			for (var entry : model.getObject().getEntries())
 			{
 				if (entry.getScreeningOrganisatie().equals(ScreenitSession.get().getScreeningOrganisatie().getId()))
 				{
@@ -160,7 +160,7 @@ public class GbaVerslagPanel extends GenericPanel<GbaVerwerkingsLog>
 
 	private IModel<List<GbaFoutRegel>> filterFouten(List<GbaFoutRegel> fouten)
 	{
-		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_GBA_VERWERKING_VERSLAG);
+		var toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_GBA_VERWERKING_VERSLAG);
 		if (toegangLevel == ToegangLevel.LANDELIJK)
 		{
 			return new SimpleListHibernateModel<>(fouten);
@@ -168,7 +168,7 @@ public class GbaVerslagPanel extends GenericPanel<GbaVerwerkingsLog>
 		else if (toegangLevel == ToegangLevel.REGIO && ScreenitSession.get().getScreeningOrganisatie() != null)
 		{
 			List<GbaFoutRegel> gefilterd = new ArrayList<>();
-			for (GbaFoutRegel foutRegel : fouten)
+			for (var foutRegel : fouten)
 			{
 				if (foutRegel.getClient() == null)
 				{
@@ -176,7 +176,7 @@ public class GbaVerslagPanel extends GenericPanel<GbaVerwerkingsLog>
 				}
 				else
 				{
-					Client client = hibernateService.load(Client.class, foutRegel.getClient());
+					var client = hibernateService.load(Client.class, foutRegel.getClient());
 					if (ScreenitSession.get().getScreeningOrganisatie().equals(client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie()))
 					{
 						gefilterd.add(foutRegel);

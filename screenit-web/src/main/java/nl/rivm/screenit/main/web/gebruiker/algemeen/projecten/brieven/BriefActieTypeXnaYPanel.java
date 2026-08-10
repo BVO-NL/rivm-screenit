@@ -52,7 +52,7 @@ public class BriefActieTypeXnaYPanel extends GenericPanel<ProjectBriefActie>
 
 		add(ComponentHelper.addTextField(this, "aantalDagen", true, 3, Integer.class, false).add(RangeValidator.minimum(Integer.valueOf(1))).setLabel(Model.of("Aantal dagen")));
 
-		ScreenitDropdown<BriefType> moment = new ScreenitDropdown<BriefType>("briefType", new ListModel<BriefType>(ProjectUtil.getBriefTypesWithVervanging(types)),
+		var moment = new ScreenitDropdown<BriefType>("briefType", new ListModel<BriefType>(ProjectUtil.getBriefTypesWithVervanging(types)),
 			new BriefTypeChoiceRenderer());
 		moment.setRequired(true);
 		moment.setLabel(Model.of("Brieftype"));

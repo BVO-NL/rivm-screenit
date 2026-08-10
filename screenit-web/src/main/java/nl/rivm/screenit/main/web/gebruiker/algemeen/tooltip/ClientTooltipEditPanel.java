@@ -57,8 +57,8 @@ public class ClientTooltipEditPanel extends GenericPanel<ClientTooltip>
 	public ClientTooltipEditPanel(String id, IModel<ClientTooltip> model)
 	{
 		super(id, model);
-		ToegangLevel toeganglevel = ScreenitSession.get().getToegangsLevel(Actie.AANPASSEN, Recht.CLIENT_TOOLTIP_BEHEER);
-		ScreenitForm<ClientTooltip> form = new ScreenitForm<ClientTooltip>("typeForm", getModel());
+		var toeganglevel = ScreenitSession.get().getToegangsLevel(Actie.AANPASSEN, Recht.CLIENT_TOOLTIP_BEHEER);
+		var form = new ScreenitForm<ClientTooltip>("typeForm", getModel());
 		form.add(new TextField<String>("titel").add(new StringValidator(1, 255)).setRequired(true));
 		form.add(new TextArea<String>("tekst").add(new StringValidator(1, 255)).setRequired(true));
 		form.add(new IndicatingAjaxSubmitLink("opslaan", form)
@@ -69,7 +69,7 @@ public class ClientTooltipEditPanel extends GenericPanel<ClientTooltip>
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				ClientTooltip tooltip = (ClientTooltip) form.getModelObject();
+				var tooltip = (ClientTooltip) form.getModelObject();
 				tooltip.setAangepast(dateSupplier.getDate());
 				tooltipService.saveOrUpdate(tooltip);
 				info("Client Tooltip is opgeslagen");
@@ -78,7 +78,7 @@ public class ClientTooltipEditPanel extends GenericPanel<ClientTooltip>
 			@Override
 			public boolean isVisible()
 			{
-				ToegangLevel toeganglevel = ScreenitSession.get().getToegangsLevel(Actie.AANPASSEN, Recht.CLIENT_TOOLTIP_BEHEER);
+				var toeganglevel = ScreenitSession.get().getToegangsLevel(Actie.AANPASSEN, Recht.CLIENT_TOOLTIP_BEHEER);
 				return toeganglevel != null && ToegangLevel.LANDELIJK.getNiveau() <= toeganglevel.getNiveau();
 			}
 		});

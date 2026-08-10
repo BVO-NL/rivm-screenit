@@ -23,6 +23,9 @@ package nl.rivm.screenit.webcommons.config;
 
 import java.io.IOException;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -30,9 +33,6 @@ import org.springframework.security.web.csrf.InvalidCsrfTokenException;
 import org.springframework.security.web.csrf.MissingCsrfTokenException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 public class CsrfCustomAccessDeniedHandler implements AccessDeniedHandler
 {
@@ -42,7 +42,7 @@ public class CsrfCustomAccessDeniedHandler implements AccessDeniedHandler
 		response.setStatus(HttpStatus.FORBIDDEN.value());
 		response.setContentType("application/json");
 
-		String message = "Onbekende fout";
+		var message = "Onbekende fout";
 		if (accessDeniedException instanceof InvalidCsrfTokenException)
 		{
 			message = "Het CSRF token mist in het request.";

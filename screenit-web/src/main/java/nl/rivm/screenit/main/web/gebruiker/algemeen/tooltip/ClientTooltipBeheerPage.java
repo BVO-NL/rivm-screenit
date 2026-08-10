@@ -85,7 +85,7 @@ public class ClientTooltipBeheerPage extends AlgemeenPage
 		{
 			super(id, new CompoundPropertyModel<>(model));
 
-			ScreenitDropdown<ClientTooltipType> typeSelectie = new ScreenitDropdown<>("type", Arrays.asList(ClientTooltipType.values()));
+			var typeSelectie = new ScreenitDropdown<ClientTooltipType>("type", Arrays.asList(ClientTooltipType.values()));
 			typeSelectie.setChoiceRenderer(new EnumChoiceRenderer<>(typeSelectie));
 			typeSelectie.add(new AjaxFormComponentUpdatingBehavior("change")
 			{
@@ -102,7 +102,7 @@ public class ClientTooltipBeheerPage extends AlgemeenPage
 							tooltip.setType(filter.getObject().getType());
 						}
 
-						ClientTooltipEditPanel editPanel = new ClientTooltipEditPanel("typeContainer", ModelUtil.cModel(tooltip));
+						var editPanel = new ClientTooltipEditPanel("typeContainer", ModelUtil.cModel(tooltip));
 						editPanel.setOutputMarkupPlaceholderTag(true);
 						typeContainer.replaceWith(editPanel);
 						typeContainer = editPanel;
@@ -112,7 +112,7 @@ public class ClientTooltipBeheerPage extends AlgemeenPage
 					}
 					else
 					{
-						WebMarkupContainer editPanel = new WebMarkupContainer("typeContainer");
+						var editPanel = new WebMarkupContainer("typeContainer");
 						editPanel.setOutputMarkupPlaceholderTag(true);
 						typeContainer.replaceWith(editPanel);
 						typeContainer = editPanel;

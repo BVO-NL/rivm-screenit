@@ -61,7 +61,7 @@ public class MammaVerslagRondePanel extends AbstractMammaRondePanel
 	private Panel bepaalVerslagPanel()
 	{
 		Panel verslagPanel;
-		MammaBeoordeling beoordeling = getModelObject();
+		var beoordeling = getModelObject();
 		if (MammaBeoordelingStatus.VERSLAG_MAKEN.equals(beoordeling.getStatus()) && beoordeling.getVerslagLezing() == null)
 		{
 			verslagPanel = new MammaVerslagKiesUitgangssituatiePanel("verslagPanel", getModel());
@@ -85,7 +85,7 @@ public class MammaVerslagRondePanel extends AbstractMammaRondePanel
 
 	void koppelNieuweLaesiesAanLezing(IModel<MammaLezing> lezingModel, List<LaesieDto> laesieDtos)
 	{
-		LaesieDtoMapper mapper = new LaesieDtoMapper();
+		var mapper = new LaesieDtoMapper();
 		mapper.koppelNieuweLaesiesAanLezing(mapper.laesieDtosToMammaLaesies(laesieDtos), lezingModel.getObject());
 	}
 

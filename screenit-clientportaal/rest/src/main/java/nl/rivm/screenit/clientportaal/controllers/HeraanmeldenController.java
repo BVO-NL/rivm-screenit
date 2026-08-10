@@ -26,9 +26,7 @@ import lombok.AllArgsConstructor;
 import nl.rivm.screenit.clientportaal.model.HeraanmeldenOptiesDto;
 import nl.rivm.screenit.clientportaal.services.HeraanmeldenService;
 import nl.rivm.screenit.exceptions.MammaStandplaatsVanPostcodeOnbekendException;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
-import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.service.ClientContactService;
 
@@ -56,16 +54,16 @@ public class HeraanmeldenController extends AbstractController
 	@GetMapping(value = "/{bevolkingsonderzoek}")
 	public ResponseEntity<HeraanmeldenOptiesDto> getHeraanmeldStatus(@PathVariable Bevolkingsonderzoek bevolkingsonderzoek, Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, getClientContactActieType(bevolkingsonderzoek)))
 		{
-			boolean magColonUitnodigingAanvragen = false;
-			boolean magColonIntakAfspraakInplannen = false;
+			var magColonUitnodigingAanvragen = false;
+			var magColonIntakAfspraakInplannen = false;
 
 			if (Bevolkingsonderzoek.COLON.equals(bevolkingsonderzoek))
 			{
-				ColonDossier colonDossier = client.getColonDossier();
+				var colonDossier = client.getColonDossier();
 				magColonUitnodigingAanvragen = clientContactService.magNieuweUitnodigingAanvragen(colonDossier, true);
 				magColonIntakAfspraakInplannen = clientContactService.magNieuweIntakeAfspraakMakenNaHeraanmelding(colonDossier);
 			}
@@ -78,7 +76,7 @@ public class HeraanmeldenController extends AbstractController
 	public ResponseEntity<String> saveHeraanmeldVerzoek(@PathVariable Bevolkingsonderzoek bevolkingsonderzoek, @PathVariable boolean wilNieuweUitnodigingOntvangen,
 		Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 		try
 		{
 			if (clientContactService.availableActiesBevatBenodigdeActie(client, getClientContactActieType(bevolkingsonderzoek)))

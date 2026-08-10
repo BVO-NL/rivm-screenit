@@ -82,10 +82,10 @@ public class ClientDoelgroepServiceImpl implements ClientDoelgroepService
 
 	private boolean behoortTotColonDoelgroep(Client client)
 	{
-		LocalDate geboortedatum = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum());
+		var geboortedatum = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum());
 
-		Integer minimaleLeeftijd = simplePreferenceService.getInteger(PreferenceKey.MINIMALE_LEEFTIJD_COLON.name());
-		Integer maximaleLeeftijd = simplePreferenceService.getInteger(PreferenceKey.MAXIMALE_LEEFTIJD_COLON.name());
+		var minimaleLeeftijd = simplePreferenceService.getInteger(PreferenceKey.MINIMALE_LEEFTIJD_COLON.name());
+		var maximaleLeeftijd = simplePreferenceService.getInteger(PreferenceKey.MAXIMALE_LEEFTIJD_COLON.name());
 		return clientIsOuderDanMinimaleLeeftijd(geboortedatum, Bevolkingsonderzoek.COLON, minimaleLeeftijd)
 			&& clientIsJongerDanMaximaleLeeftijd(geboortedatum, Bevolkingsonderzoek.COLON, maximaleLeeftijd + 1)
 			|| heeftDossierActiviteit(client.getColonDossier());
@@ -93,7 +93,7 @@ public class ClientDoelgroepServiceImpl implements ClientDoelgroepService
 
 	private boolean behoortTotCervixDoelgroep(Client client)
 	{
-		LocalDate geboortedatum = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum());
+		var geboortedatum = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum());
 
 		return clientIsJongerDanMaximaleLeeftijd(geboortedatum, Bevolkingsonderzoek.CERVIX, CervixLeeftijdcategorie._70.getLeeftijd())
 			&& clientIsOuderDanMinimaleLeeftijd(geboortedatum, Bevolkingsonderzoek.CERVIX, CervixLeeftijdcategorie.minimumLeeftijd())
@@ -109,8 +109,8 @@ public class ClientDoelgroepServiceImpl implements ClientDoelgroepService
 	@Override
 	public boolean behoortTotMammaLeeftijdDoelgroep(Client client)
 	{
-		LocalDate geboortedatum = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum());
-		boolean neemtDeel = client.getMammaDossier() != null && client.getMammaDossier().getDeelnamemodus() != Deelnamemodus.SELECTIEBLOKKADE;
+		var geboortedatum = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum());
+		var neemtDeel = client.getMammaDossier() != null && client.getMammaDossier().getDeelnamemodus() != Deelnamemodus.SELECTIEBLOKKADE;
 		return neemtDeel && clientIsJongerDanMaximaleLeeftijd(geboortedatum, Bevolkingsonderzoek.MAMMA,
 			simplePreferenceService.getInteger(PreferenceKey.MAMMA_MAXIMALE_LEEFTIJD.name()))
 			&& clientIsOuderDanMinimaleLeeftijd(geboortedatum, Bevolkingsonderzoek.MAMMA,
@@ -119,33 +119,33 @@ public class ClientDoelgroepServiceImpl implements ClientDoelgroepService
 
 	private boolean clientIsOuderDanMinimaleLeeftijd(LocalDate geboortedatum, Bevolkingsonderzoek bevolkingsonderzoek, int minimaleLeeftijdParameter)
 	{
-		LocalDate nu = currentDateSupplier.getLocalDate();
+		var nu = currentDateSupplier.getLocalDate();
 
 		if (Bevolkingsonderzoek.MAMMA.equals(bevolkingsonderzoek))
 		{
-			int geboortejaar = geboortedatum.getYear();
+			var geboortejaar = geboortedatum.getYear();
 
-			int geboortejaarBijMinimaleLeeftijd = nu.minusYears(minimaleLeeftijdParameter).getYear();
+			var geboortejaarBijMinimaleLeeftijd = nu.minusYears(minimaleLeeftijdParameter).getYear();
 			return geboortejaar <= geboortejaarBijMinimaleLeeftijd;
 		}
 
-		LocalDate geboortedatumBijMinimaleLeeftijd = nu.minusYears(minimaleLeeftijdParameter);
+		var geboortedatumBijMinimaleLeeftijd = nu.minusYears(minimaleLeeftijdParameter);
 
 		return geboortedatum.isBefore(geboortedatumBijMinimaleLeeftijd);
 	}
 
 	private boolean clientIsJongerDanMaximaleLeeftijd(LocalDate geboortedatum, Bevolkingsonderzoek bevolkingsonderzoek, int maximaleLeeftijdParameter)
 	{
-		LocalDate nu = currentDateSupplier.getLocalDate();
+		var nu = currentDateSupplier.getLocalDate();
 
 		if (Bevolkingsonderzoek.MAMMA.equals(bevolkingsonderzoek))
 		{
-			int geboortejaar = geboortedatum.getYear();
-			int geboortejaarBijMaximaleLeeftijd = nu.minusYears(maximaleLeeftijdParameter).getYear() - 1;
+			var geboortejaar = geboortedatum.getYear();
+			var geboortejaarBijMaximaleLeeftijd = nu.minusYears(maximaleLeeftijdParameter).getYear() - 1;
 			return geboortejaar >= geboortejaarBijMaximaleLeeftijd;
 		}
 
-		LocalDate geboortedatumBijMaximaleLeeftijd = nu.minusYears(maximaleLeeftijdParameter);
+		var geboortedatumBijMaximaleLeeftijd = nu.minusYears(maximaleLeeftijdParameter);
 
 		return geboortedatum.isAfter(geboortedatumBijMaximaleLeeftijd);
 	}
@@ -154,7 +154,7 @@ public class ClientDoelgroepServiceImpl implements ClientDoelgroepService
 	public List<Bevolkingsonderzoek> totWelkeBevolkingsonderzoekenHoortDezeClient(Client client)
 	{
 		List<Bevolkingsonderzoek> onderzoeken = new ArrayList<>();
-		for (Bevolkingsonderzoek onderzoek : Bevolkingsonderzoek.values())
+		for (var onderzoek : Bevolkingsonderzoek.values())
 		{
 			if (client == null || behoortTotDoelgroep(client, onderzoek))
 			{

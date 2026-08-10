@@ -110,7 +110,7 @@ public class MammaHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 			@Override
 			protected IModel<String> getContentStringModel()
 			{
-				String formatted = String.format(super.getContentStringModel().getObject(), getSelectedHuisarts().getPraktijknaam(), getHuisarts().getPraktijknaam());
+				var formatted = String.format(super.getContentStringModel().getObject(), getSelectedHuisarts().getPraktijknaam(), getHuisarts().getPraktijknaam());
 				return Model.of(formatted);
 			}
 
@@ -151,7 +151,7 @@ public class MammaHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 
 	private void refreshContainer(AjaxRequestTarget target, boolean visible)
 	{
-		WebMarkupContainer container = maakHuisartsBerichtContainer(visible);
+		var container = maakHuisartsBerichtContainer(visible);
 		huisartsBerichtContainer.replaceWith(container);
 		huisartsBerichtContainer = container;
 		target.add(huisartsBerichtContainer);
@@ -159,7 +159,7 @@ public class MammaHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 
 	private WebMarkupContainer maakHuisartsBerichtContainer(boolean visible)
 	{
-		WebMarkupContainer container = new WebMarkupContainer("huisartsBerichtContainer");
+		var container = new WebMarkupContainer("huisartsBerichtContainer");
 		container.setVisible(visible);
 		container.setOutputMarkupId(true);
 		container.setOutputMarkupPlaceholderTag(true);
@@ -168,9 +168,9 @@ public class MammaHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 		container.add(new EnumLabel<MammaHuisartsBerichtStatus>("mammaHuisartsBericht.status"));
 		container.add(new Label("mammaHuisartsBericht.statusDatum"));
 
-		EnovationHuisarts huisarts = getSelectedHuisarts();
+		var huisarts = getSelectedHuisarts();
 		BaseHuisartsModel<?> huisartsModel = new EnovationHuisartsModel(huisarts);
-		HuisartsInfoPanel result = new HuisartsInfoPanel("huisartsInfo", huisartsModel);
+		var result = new HuisartsInfoPanel("huisartsInfo", huisartsModel);
 		result.setOutputMarkupId(true);
 		result.setOutputMarkupPlaceholderTag(true);
 		result.setVisible(huisarts != null);
@@ -196,7 +196,7 @@ public class MammaHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 
 	private HuisartsZoekenPanel maakHuisartsZoekenPanel()
 	{
-		HuisartsZoekenPanel result = new HuisartsZoekenPanel("huisartsZoeken", false)
+		var result = new HuisartsZoekenPanel("huisartsZoeken", false)
 		{
 			@Override
 			protected void onHuisartsGekozen(AjaxRequestTarget target, EnovationHuisarts huisarts)
@@ -242,9 +242,9 @@ public class MammaHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 
 	private void verstuurHuisartsBericht(MammaHuisartsBericht huidigBericht)
 	{
-		MammaHuisartsBericht verstuurdBericht = huisartsBerichtService.verstuurHuisartsBericht(huidigBericht.getBeoordeling(), getSelectedHuisarts(),
+		var verstuurdBericht = huisartsBerichtService.verstuurHuisartsBericht(huidigBericht.getBeoordeling(), getSelectedHuisarts(),
 			huidigBericht.getBerichtType(), true);
-		MammaHuisartsBerichtStatus status = verstuurdBericht.getStatus();
+		var status = verstuurdBericht.getStatus();
 		switch (status)
 		{
 		case AANGEMAAKT:
@@ -262,8 +262,8 @@ public class MammaHuisartsberichtDetailsPanel extends AbstractGebeurtenisDetailP
 
 	private boolean heeftRechtOpnieuwVersturen()
 	{
-		boolean laatstVerstuurdeHuisartsbericht = HuisartsBerichtenUtil.isLaatstVerstuurdeHuisartsbericht(getHuisartsBericht());
-		boolean permission = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_HUISARTSBERICHT_OPNIEUW_VERZENDEN, Actie.AANPASSEN,
+		var laatstVerstuurdeHuisartsbericht = HuisartsBerichtenUtil.isLaatstVerstuurdeHuisartsbericht(getHuisartsBericht());
+		var permission = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_HUISARTSBERICHT_OPNIEUW_VERZENDEN, Actie.AANPASSEN,
 			getHuisartsBericht().getClient());
 		return laatstVerstuurdeHuisartsbericht && permission;
 	}

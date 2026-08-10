@@ -94,34 +94,34 @@ public class CervixBetalingOverzichtPage extends CervixScreeningBasePage
 		betaalopdrachtModel = ModelUtil
 			.cModel(verrichtingService.createBetaalOpdracht(organisatie, boekregels));
 
-		Form<CervixBetaalopdracht> form = new Form<CervixBetaalopdracht>("form", betaalopdrachtModel);
+		var form = new Form<CervixBetaalopdracht>("form", betaalopdrachtModel);
 		add(form);
 
 		laboratoriumBetaalopdrachtRegels = getAlleLaboratoriumBetaalRegels(betaalopdrachtModel.getObject());
 
 		ComponentHelper.addTextField(form, "omschrijving", true, 255, false);
 
-		ListView<CervixBetaalopdrachtRegel> laboratoriumListView = new ListView<CervixBetaalopdrachtRegel>("labs",
+		var laboratoriumListView = new ListView<CervixBetaalopdrachtRegel>("labs",
 			laboratoriumBetaalopdrachtRegels)
 		{
 			@Override
 			protected void populateItem(ListItem<CervixBetaalopdrachtRegel> listItem)
 			{
-				CervixBetaalopdrachtRegel regel = listItem.getModelObject();
-				BMHKLaboratorium laboratorium = regel.getLaboratorium();
+				var regel = listItem.getModelObject();
+				var laboratorium = regel.getLaboratorium();
 				listItem.add(new Label("naam", Model.of(laboratorium.getNaam() + " - " + laboratorium.getIban().toUpperCase())));
 
 				laboratoriumBetaalRegelSpecificaties = getBetaalRegelSpecificatiesVoorLab(laboratorium, betaalopdrachtModel.getObject());
 
-				ListView<CervixBetaalopdrachtRegelSpecificatie> listOpdrachtRegels = new ListView<CervixBetaalopdrachtRegelSpecificatie>("betaalopdrachtregels",
+				var listOpdrachtRegels = new ListView<CervixBetaalopdrachtRegelSpecificatie>("betaalopdrachtregels",
 					laboratoriumBetaalRegelSpecificaties)
 				{
 
 					@Override
 					protected void populateItem(ListItem<CervixBetaalopdrachtRegelSpecificatie> listItem)
 					{
-						CervixBetaalopdrachtRegelSpecificatie spec = listItem.getModelObject();
-						CervixBetaalopdrachtRegel opdrachtRegel = spec.getBetaalopdrachtRegel();
+						var spec = listItem.getModelObject();
+						var opdrachtRegel = spec.getBetaalopdrachtRegel();
 						listItem.add(new Label("tenaamstelling", Model.of(opdrachtRegel.getNaarTenaamstelling())));
 						listItem.add(new Label("naarIban", Model.of(opdrachtRegel.getNaarIban())));
 						listItem.add(new EnumLabel<>("type", spec.getTariefType()));
@@ -164,9 +164,9 @@ public class CervixBetalingOverzichtPage extends CervixScreeningBasePage
 				{
 					try
 					{
-						CervixBetaalopdracht opdracht = form.getModelObject();
+						var opdracht = form.getModelObject();
 						betalingService.archiveerBestaandeOpdrachten(opdracht.getScreeningOrganisatie());
-						Long opdrachtId = betalingService.opslaanBetaalopdracht(opdracht, getIngelogdeOrganisatieMedewerker());
+						var opdrachtId = betalingService.opslaanBetaalopdracht(opdracht, getIngelogdeOrganisatieMedewerker());
 						betalingService.genereerCervixBetalingsSpecificatieEnSepaBestand(opdrachtId);
 						setResponsePage(CervixBetalingSepaBestandenPage.class);
 						ScreenitSession.get().info(getString("sepa.bestand.genereren"));
@@ -187,7 +187,7 @@ public class CervixBetalingOverzichtPage extends CervixScreeningBasePage
 
 	private IModel<List<CervixBetaalopdrachtRegelSpecificatie>> getBetaalRegelSpecificatiesVoorLab(BMHKLaboratorium bmhkLaboratorium, CervixBetaalopdracht opdracht)
 	{
-		List<CervixBetaalopdrachtRegelSpecificatie> regels = opdracht.getBetaalopdrachtRegels().stream()
+		var regels = opdracht.getBetaalopdrachtRegels().stream()
 			.filter(b -> b.getLaboratorium() != null && b.getLaboratorium().equals(bmhkLaboratorium))
 			.map(CervixBetaalopdrachtRegel::getSpecificaties).flatMap(Collection::stream)
 			.collect(Collectors.toList());
@@ -196,7 +196,7 @@ public class CervixBetalingOverzichtPage extends CervixScreeningBasePage
 
 	private IModel<List<CervixBetaalopdrachtRegel>> getAlleLaboratoriumBetaalRegels(CervixBetaalopdracht opdracht)
 	{
-		List<CervixBetaalopdrachtRegel> regels = opdracht.getBetaalopdrachtRegels().stream()
+		var regels = opdracht.getBetaalopdrachtRegels().stream()
 			.filter(b -> b.getLaboratorium() != null)
 			.sorted((o1, o2) -> o1.getNaarTenaamstelling().compareTo(o2.getNaarTenaamstelling()))
 			.collect(Collectors.toList());
@@ -205,7 +205,7 @@ public class CervixBetalingOverzichtPage extends CervixScreeningBasePage
 
 	private IModel<List<CervixBetaalopdrachtRegelSpecificatie>> getHuisartsBetaalregelSpecificaties(CervixBetaalopdracht opdracht)
 	{
-		List<CervixBetaalopdrachtRegelSpecificatie> regels = opdracht.getBetaalopdrachtRegels().stream()
+		var regels = opdracht.getBetaalopdrachtRegels().stream()
 			.filter(b -> b.getHuisartsLocatie() != null)
 			.sorted((o1, o2) -> o1.getNaarTenaamstelling().compareTo(o2.getNaarTenaamstelling()))
 			.map(CervixBetaalopdrachtRegel::getSpecificaties).flatMap(Collection::stream)
@@ -215,18 +215,18 @@ public class CervixBetalingOverzichtPage extends CervixScreeningBasePage
 
 	private WebMarkupContainer getHuisartsenContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("huisartsenContainer");
+		var container = new WebMarkupContainer("huisartsenContainer");
 		huisartsenBetaalRegelSpecificaties = getHuisartsBetaalregelSpecificaties(betaalopdrachtModel.getObject());
-		boolean zijnErHuisartsGegevens = huisartsenBetaalRegelSpecificaties.getObject().size() > 0;
+		var zijnErHuisartsGegevens = huisartsenBetaalRegelSpecificaties.getObject().size() > 0;
 
-		ListView<CervixBetaalopdrachtRegelSpecificatie> huisartsenRegelsListView = new ListView<CervixBetaalopdrachtRegelSpecificatie>("ḧuisartsRegels",
+		var huisartsenRegelsListView = new ListView<CervixBetaalopdrachtRegelSpecificatie>("ḧuisartsRegels",
 			huisartsenBetaalRegelSpecificaties)
 		{
 			@Override
 			protected void populateItem(ListItem<CervixBetaalopdrachtRegelSpecificatie> listItem)
 			{
-				CervixBetaalopdrachtRegelSpecificatie spec = listItem.getModelObject();
-				CervixBetaalopdrachtRegel regel = spec.getBetaalopdrachtRegel();
+				var spec = listItem.getModelObject();
+				var regel = spec.getBetaalopdrachtRegel();
 				listItem.add(new Label("tenaamstelling", Model.of(regel.getNaarTenaamstelling())));
 				listItem.add(new Label("naarIban", Model.of(regel.getNaarIban())));
 				listItem.add(new EnumLabel<>("type", spec.getTariefType()));

@@ -68,7 +68,7 @@ public abstract class OrganisatieDocumentPopupPanel extends GenericPanel<UploadD
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 
-				UploadDocument nieuwDocument = (UploadDocument) getForm().getModelObject();
+				var nieuwDocument = (UploadDocument) getForm().getModelObject();
 				nieuwDocument.setActief(Boolean.TRUE);
 				try
 				{

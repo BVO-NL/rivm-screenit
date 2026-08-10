@@ -30,7 +30,6 @@ import nl.rivm.screenit.batch.service.MammaHL7CreateMessageService;
 import nl.rivm.screenit.dto.mamma.MammaHL7v24OrmBerichtTriggerMetClientDto;
 import nl.rivm.screenit.dto.mamma.MammaHL7v24OrmBerichtTriggerMetKwaliteitsopnameDto;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7OnderzoeksCode;
 import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
@@ -47,8 +46,6 @@ import org.springframework.stereotype.Service;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.DataTypeException;
-import ca.uhn.hl7v2.model.v24.datatype.CX;
-import ca.uhn.hl7v2.model.v24.datatype.XPN;
 import ca.uhn.hl7v2.model.v24.message.ADT_AXX;
 import ca.uhn.hl7v2.model.v24.message.ORM_O01;
 import ca.uhn.hl7v2.model.v24.segment.MRG;
@@ -73,7 +70,7 @@ public class MammaHL7CreateMessageServiceImpl implements MammaHL7CreateMessageSe
 	@Override
 	public ORM_O01 maakClientORMBericht(MammaHL7v24OrmBerichtTriggerMetClientDto triggerDto, Client client) throws IOException, HL7Exception
 	{
-		ORM_O01 ormBericht = createBaseOrmMessage(triggerDto.getStatus(), client);
+		var ormBericht = createBaseOrmMessage(triggerDto.getStatus(), client);
 		buildOBRSegment(ormBericht.getORDER().getORDER_DETAIL().getOBR(), triggerDto);
 		if (triggerDto.getStatus() == MammaHL7v24ORMBerichtStatus.DELETE)
 		{
@@ -94,7 +91,7 @@ public class MammaHL7CreateMessageServiceImpl implements MammaHL7CreateMessageSe
 		{
 			LOG.error("Accessionnumber " + hl7BerichtTrigger.getAccessionNumber() + " is langer dan 16 karakters");
 		}
-		ORM_O01 ormBericht = createOrm_o01();
+		var ormBericht = createOrm_o01();
 		buildKwaliteitsopnamePIDSegment(ormBericht.getPATIENT().getPID(), hl7BerichtTrigger);
 		buildORCSegment(ormBericht.getORDER().getORC(), hl7BerichtTrigger.getAccessionNumber());
 		buildKwaliteitsopnameOBRSegment(ormBericht.getORDER().getORDER_DETAIL().getOBR(), hl7BerichtTrigger);
@@ -103,7 +100,7 @@ public class MammaHL7CreateMessageServiceImpl implements MammaHL7CreateMessageSe
 
 	private ORM_O01 createOrm_o01() throws HL7Exception, IOException
 	{
-		ORM_O01 ormBericht = new ORM_O01();
+		var ormBericht = new ORM_O01();
 		ormBericht.initQuickstart("ORM", "O01", "P");
 		buildMessageHeader(ormBericht.getMSH());
 		return ormBericht;
@@ -111,7 +108,7 @@ public class MammaHL7CreateMessageServiceImpl implements MammaHL7CreateMessageSe
 
 	private ORM_O01 createBaseOrmMessage(MammaHL7v24ORMBerichtStatus status, Client client) throws HL7Exception, IOException
 	{
-		ORM_O01 ormBericht = createOrm_o01();
+		var ormBericht = createOrm_o01();
 		buildPIDSegment(ormBericht.getPATIENT().getPID(), client);
 		return ormBericht;
 	}
@@ -119,7 +116,7 @@ public class MammaHL7CreateMessageServiceImpl implements MammaHL7CreateMessageSe
 	@Override
 	public ADT_AXX maakADTBerichtPersoonsgegevensGewijzigd(Client client) throws IOException, HL7Exception
 	{
-		ADT_AXX adtBericht = new ADT_AXX();
+		var adtBericht = new ADT_AXX();
 		adtBericht.initQuickstart("ADT", "A08", "P");
 		buildMessageHeader(adtBericht.getMSH());
 		buildPIDSegment(adtBericht.getPID(), client);
@@ -129,10 +126,10 @@ public class MammaHL7CreateMessageServiceImpl implements MammaHL7CreateMessageSe
 	@Override
 	public ADT_AXX maakADTBerichtGewijzigdBsn(Client client, String oudBsn, String nieuweBsn) throws IOException, HL7Exception
 	{
-		ADT_AXX adtBericht = new ADT_AXX();
+		var adtBericht = new ADT_AXX();
 		adtBericht.initQuickstart("ADT", "A40", "P");
 
-		Terser t = new Terser(adtBericht);
+		var t = new Terser(adtBericht);
 		t.set("/MSH-9-3", "ADT_A40");
 		buildMessageHeader(adtBericht.getMSH());
 		buildPIDSegment(adtBericht.getPATIENT().getPID(), client, nieuweBsn);
@@ -153,7 +150,7 @@ public class MammaHL7CreateMessageServiceImpl implements MammaHL7CreateMessageSe
 
 	private void buildMergeSegment(MRG mrg, String bsn) throws DataTypeException
 	{
-		CX cx = mrg.getMrg1_PriorPatientIdentifierList(0);
+		var cx = mrg.getMrg1_PriorPatientIdentifierList(0);
 		cx.getCx1_ID().setValue(bsn);
 		cx.getCx4_AssigningAuthority().getHd1_NamespaceID().setValue("NLMINBIZA");
 		cx.getCx5_IdentifierTypeCode().setValue("NNNLD");
@@ -161,7 +158,7 @@ public class MammaHL7CreateMessageServiceImpl implements MammaHL7CreateMessageSe
 
 	private void buildPIDSegment(PID pid, Client client, String nieuweBsn) throws DataTypeException
 	{
-		Persoon persoon = client.getPersoon();
+		var persoon = client.getPersoon();
 
 		pid.getSetIDPID().setValue("1");
 
@@ -171,7 +168,7 @@ public class MammaHL7CreateMessageServiceImpl implements MammaHL7CreateMessageSe
 		pid.getPid3_PatientIdentifierList(0).getCx4_AssigningAuthority().getHd1_NamespaceID().setValue("NLMINBIZA");
 		pid.getPid3_PatientIdentifierList(0).getCx5_IdentifierTypeCode().setValue("NNNLD");
 
-		XPN patientGegevens = pid.getPid5_PatientName(0);
+		var patientGegevens = pid.getPid5_PatientName(0);
 		patientGegevens.getGivenName().setValue(NaamUtil.getVoorlettersClient(client));
 		patientGegevens.getFamilyName().getSurname().setValue(NaamUtil.getTussenvoegselEnEigenAchternaam(client.getPersoon()));
 		patientGegevens.getFamilyName().getOwnSurname().setValue(persoon.getAchternaam());
@@ -206,7 +203,7 @@ public class MammaHL7CreateMessageServiceImpl implements MammaHL7CreateMessageSe
 		pid.getPid3_PatientIdentifierList(0).getCx4_AssigningAuthority().getHd1_NamespaceID().setValue("LRCB");
 		pid.getPid3_PatientIdentifierList(0).getCx5_IdentifierTypeCode().setValue("NNNLD");
 
-		XPN patientGegevens = pid.getPid5_PatientName(0);
+		var patientGegevens = pid.getPid5_PatientName(0);
 		patientGegevens.getGivenName().setValue("DUMMY");
 		patientGegevens.getFamilyName().getSurname().setValue(hl7BerichtTrigger.getScreeningseenheidCode());
 		patientGegevens.getFamilyName().getOwnSurnamePrefix().setValue("");

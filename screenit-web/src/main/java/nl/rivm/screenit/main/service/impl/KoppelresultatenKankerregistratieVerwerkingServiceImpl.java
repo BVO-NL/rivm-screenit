@@ -27,7 +27,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import jakarta.persistence.Column;
@@ -35,7 +34,6 @@ import jakarta.persistence.Column;
 import nl.rivm.screenit.main.service.IntervalcarcinoomProcessdataVerwerkingService;
 import nl.rivm.screenit.main.service.impl.KoppelresultatenKankerregistratieVerwerkingContext.ColonKoppelresultatenKankerregistratieHeaderMapping;
 import nl.rivm.screenit.model.colon.ColonKoppelresultaatKankerregistratie;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.service.HibernateService;
@@ -67,27 +65,27 @@ public class KoppelresultatenKankerregistratieVerwerkingServiceImpl implements I
 
 		try
 		{
-			String bvo = context.getColumnValue(ColonKoppelresultatenKankerregistratieHeaderMapping.BVO);
+			var bvo = context.getColumnValue(ColonKoppelresultatenKankerregistratieHeaderMapping.BVO);
 			if ("DK".equals(StringUtils.trimToEmpty(bvo)) && context.getBevolkingsonderzoek().equals(Bevolkingsonderzoek.COLON))
 			{
-				String uitnodigingsNummer = context.getColumnValue(ColonKoppelresultatenKankerregistratieHeaderMapping.UITNODIGINGSNUMMER);
+				var uitnodigingsNummer = context.getColumnValue(ColonKoppelresultatenKankerregistratieHeaderMapping.UITNODIGINGSNUMMER);
 				Map<String, Long> parameters = new HashMap<>();
 				parameters.put("uitnodigingsId", Long.valueOf(uitnodigingsNummer));
-				List<ColonUitnodiging> uitnodigingen = hibernateService.getByParameters(ColonUitnodiging.class, parameters);
+				var uitnodigingen = hibernateService.getByParameters(ColonUitnodiging.class, parameters);
 
 				if (uitnodigingen != null && uitnodigingen.size() == 1)
 				{
-					ColonUitnodiging uitnodiging = uitnodigingen.get(0);
-					ColonScreeningRonde screeningRonde = uitnodiging.getScreeningRonde();
-					ColonKoppelresultaatKankerregistratie koppelresultaatKankerregistratie = new ColonKoppelresultaatKankerregistratie();
+					var uitnodiging = uitnodigingen.get(0);
+					var screeningRonde = uitnodiging.getScreeningRonde();
+					var koppelresultaatKankerregistratie = new ColonKoppelresultaatKankerregistratie();
 					koppelresultaatKankerregistratie.setScreeningsRonde(screeningRonde);
 					koppelresultaatKankerregistratie.setUploadedFile(context.getFile());
-					for (ColonKoppelresultatenKankerregistratieHeaderMapping m : ColonKoppelresultatenKankerregistratieHeaderMapping.values())
+					for (var m : ColonKoppelresultatenKankerregistratieHeaderMapping.values())
 					{
-						String fieldName = m.getFieldName();
+						var fieldName = m.getFieldName();
 						if (StringUtils.isNotBlank(fieldName))
 						{
-							Field field = FieldUtils.getDeclaredField(ColonKoppelresultaatKankerregistratie.class, fieldName, true);
+							var field = FieldUtils.getDeclaredField(ColonKoppelresultaatKankerregistratie.class, fieldName, true);
 							PropertyUtils.setProperty(koppelresultaatKankerregistratie, fieldName, convert(context.getColumnValue(m), field));
 						}
 					}
@@ -122,7 +120,7 @@ public class KoppelresultatenKankerregistratieVerwerkingServiceImpl implements I
 			}
 			else if (field.getType().equals(Date.class))
 			{
-				SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+				var format = new SimpleDateFormat("dd-MM-yyyy");
 				format.setLenient(false);
 				if (columnValue.length() != 10)
 				{
@@ -149,7 +147,7 @@ public class KoppelresultatenKankerregistratieVerwerkingServiceImpl implements I
 		}
 		else
 		{
-			Column annotation = field.getAnnotation(Column.class);
+			var annotation = field.getAnnotation(Column.class);
 			if (annotation != null)
 			{
 				if (!annotation.nullable())

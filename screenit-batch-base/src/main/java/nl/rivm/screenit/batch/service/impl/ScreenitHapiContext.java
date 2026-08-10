@@ -55,7 +55,7 @@ public class ScreenitHapiContext
 		if (utf8Instance == null)
 		{
 			utf8Instance = new DefaultHapiContext();
-			MinLowerLayerProtocol mllp = new MinLowerLayerProtocol();
+			var mllp = new MinLowerLayerProtocol();
 			mllp.setCharset(Charset.UTF_8.value());
 			utf8Instance.setLowerLayerProtocol(mllp);
 
@@ -69,7 +69,7 @@ public class ScreenitHapiContext
 		if (isoCharsetInstance == null)
 		{
 			isoCharsetInstance = new DefaultHapiContext();
-			MinLowerLayerProtocol mllp = new MinLowerLayerProtocol();
+			var mllp = new MinLowerLayerProtocol();
 			mllp.setCharset("ISO-8859-1");
 			isoCharsetInstance.setLowerLayerProtocol(mllp);
 

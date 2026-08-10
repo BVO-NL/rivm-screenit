@@ -21,6 +21,7 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +33,7 @@ import nl.rivm.screenit.model.messagequeue.Message_;
 import nl.rivm.screenit.repository.algemeen.MessageRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.MessageService;
+import nl.rivm.screenit.specification.algemeen.MessageSpecification;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,8 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static nl.rivm.screenit.specification.algemeen.MessageSpecification.filterContext;
-import static nl.rivm.screenit.specification.algemeen.MessageSpecification.heeftType;
+import static nl.rivm.screenit.specification.algemeen.MessageSpecification.heeftTypeEnContext;
 
 @Slf4j
 @Service
@@ -64,14 +65,14 @@ public class MessageServiceImpl implements MessageService
 
 	@Override
 	@Transactional
-	public Message queueMessage(MessageType type, Object content)
+	public Message queueMessage(MessageType type, Serializable content)
 	{
 		return queueMessage(type, content, null);
 	}
 
 	@Override
 	@Transactional
-	public Message queueMessage(MessageType type, Object content, String context)
+	public Message queueMessage(MessageType type, Serializable content, String context)
 	{
 		try
 		{
@@ -99,13 +100,23 @@ public class MessageServiceImpl implements MessageService
 	@Override
 	public Optional<Message> getOldestMessage(MessageType type)
 	{
-		return messageRepository.findFirst(heeftType(type), Sort.by(Sort.Order.asc(Message_.ID)));
+		return messageRepository.findFirst(heeftTypeEnContext(type, null), Sort.by(Sort.Order.asc(Message_.ID)));
 	}
 
 	@Override
 	public List<Message> fetchMessages(MessageType type, String context, int maxFetchSize)
 	{
-		return messageRepository.findAll(heeftType(type).and(filterContext(context)), PageRequest.of(0, maxFetchSize, Sort.by(Sort.Order.asc(Message_.ID)))).getContent();
+		return messageRepository.findAll(heeftTypeEnContext(type, context), PageRequest.of(0, maxFetchSize, Sort.by(Sort.Order.asc(Message_.ID)))).getContent();
+	}
+
+	@Override
+	public List<Message> fetchMessagesGroterDanId(MessageType type, String context, Long vanafMessageIdExclusief, int maxFetchSize)
+	{
+		return messageRepository.findAll(
+				heeftTypeEnContext(type, context)
+					.and(MessageSpecification.filterMessageIdGroterDan(vanafMessageIdExclusief)),
+				PageRequest.of(0, maxFetchSize, Sort.by(Sort.Order.asc(Message_.ID))))
+			.getContent();
 	}
 
 	@Override
@@ -122,6 +133,21 @@ public class MessageServiceImpl implements MessageService
 	@Override
 	public Long fetchQueueSize(MessageType type, String context)
 	{
-		return messageRepository.count(heeftType(type).and(filterContext(context)));
+		return messageRepository.count(heeftTypeEnContext(type, context));
 	}
+
+	@Override
+	@Transactional
+	public void updateMessageContent(Message message, Serializable contentDto)
+	{
+		try
+		{
+			message.setContent(objectMapper.writeValueAsString(contentDto));
+		}
+		catch (JsonProcessingException e)
+		{
+			throw new IllegalArgumentException(e.getMessage(), e);
+		}
+	}
+
 }

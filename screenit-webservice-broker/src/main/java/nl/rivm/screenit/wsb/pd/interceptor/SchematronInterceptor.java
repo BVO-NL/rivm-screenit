@@ -230,13 +230,13 @@ public class SchematronInterceptor extends AbstractSoapInterceptor
 
 			LOG.info("Running pre-process transform #1");
 			var schematronInputStream = new FileInputStream(schematronLocation + "/" + projectVersionPath + "/" + type);
-			byte[] interim1 = transformStep(closeables, tf, schematronInputStream, "/schematron-transform/iso_dsdl_include.xsl");
+			var interim1 = transformStep(closeables, tf, schematronInputStream, "/schematron-transform/iso_dsdl_include.xsl");
 
 			LOG.info("Running pre-process transform #2");
-			byte[] interim2 = transformStep(closeables, tf, new ByteArrayInputStream(interim1), "/schematron-transform/iso_abstract_expand.xsl");
+			var interim2 = transformStep(closeables, tf, new ByteArrayInputStream(interim1), "/schematron-transform/iso_abstract_expand.xsl");
 
 			LOG.info("Transforming schema to XSLT");
-			byte[] interim3 = transformStep(closeables, tf, new ByteArrayInputStream(interim2), "/schematron-transform/iso_svrl_for_xslt2.xsl");
+			var interim3 = transformStep(closeables, tf, new ByteArrayInputStream(interim2), "/schematron-transform/iso_svrl_for_xslt2.xsl");
 
 			return interim3;
 		}
@@ -416,8 +416,8 @@ public class SchematronInterceptor extends AbstractSoapInterceptor
 			break;
 		}
 
-		String[] splittedContext = projectVersionContext.split(",");
-		for (int i = 1; i < splittedContext.length; i++)
+		var splittedContext = projectVersionContext.split(",");
+		for (var i = 1; i < splittedContext.length; i++)
 		{
 			var schematronEntry = splittedContext[i];
 			if (schematronEntry.contains(keyword))

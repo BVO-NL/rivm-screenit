@@ -41,7 +41,7 @@ public class TestMammaNieuweRondeMetOpenUitnodigingAction extends TestMammaVervo
 	@Override
 	public void execute()
 	{
-		for (Client client : clienten)
+		for (var client : clienten)
 		{
 			baseTestTimelineService.nieuweRondeMetOpenUitnodiging(client, verstuurHl7Berichten.getObject());
 		}

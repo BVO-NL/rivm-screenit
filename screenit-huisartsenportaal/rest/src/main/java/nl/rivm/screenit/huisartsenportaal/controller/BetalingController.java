@@ -23,10 +23,11 @@ package nl.rivm.screenit.huisartsenportaal.controller;
 
 import java.io.FileInputStream;
 
+import jakarta.validation.Valid;
+
 import lombok.SneakyThrows;
 
 import nl.rivm.screenit.huisartsenportaal.dto.BetalingZoekObjectDto;
-import nl.rivm.screenit.huisartsenportaal.dto.BetalingenTotalenDto;
 import nl.rivm.screenit.huisartsenportaal.exception.ValidatieException;
 import nl.rivm.screenit.huisartsenportaal.service.BetalingService;
 import nl.rivm.screenit.huisartsenportaal.validator.BetalingenValidator;
@@ -44,8 +45,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("betaling")
@@ -71,7 +70,7 @@ public class BetalingController extends BaseController
 		{
 			throw new ValidatieException(result.getAllErrors());
 		}
-		BetalingenTotalenDto betalingenTotalenDto = betalingService.getBetalingen(getIngelogdeHuisarts(), betalingZoekObjectDto);
+		var betalingenTotalenDto = betalingService.getBetalingen(getIngelogdeHuisarts(), betalingZoekObjectDto);
 		return new ResponseEntity(betalingenTotalenDto, HttpStatus.OK);
 	}
 

@@ -24,7 +24,6 @@ package nl.rivm.screenit.service.mamma;
 import nl.rivm.screenit.document.BaseDocumentCreator;
 
 import com.aspose.words.Document;
-import com.aspose.words.MailMerge;
 import com.aspose.words.MailMergeCleanupOptions;
 import com.aspose.words.net.System.Data.DataSet;
 
@@ -39,7 +38,7 @@ public class MammaGeenBeoordelingMogelijkBriefCreator extends BaseDocumentCreato
 	@Override
 	public Document fillExecuteWithRegions(Document document) throws Exception
 	{
-		MailMerge mailMerge = document.getMailMerge();
+		var mailMerge = document.getMailMerge();
 		mailMerge.setCleanupOptions(MailMergeCleanupOptions.REMOVE_UNUSED_REGIONS);
 		mailMerge.executeWithRegions(dataSet);
 		return document;

@@ -82,6 +82,8 @@ public final class DateUtil
 
 	public static final DateTimeFormatter LOCAL_DATE_WEERGAVE_CLIENTPORTAAL_WEEK_FORMAT = DateTimeFormatter.ofPattern("d MMMM yyyy", LOCALE_NL);
 
+	public static final DateTimeFormatter LOCAL_DATE_FORMAT_YYYYMMDD = DateTimeFormatter.ofPattern(Constants.DATE_FORMAT_YYYYMMDD);
+
 	public static final Date BEGIN_OF_TIME = parseDateForPattern("01-01-1900", Constants.DEFAULT_DATE_FORMAT);
 
 	public static final Date END_OF_TIME = parseDateForPattern("01-01-4000", Constants.DEFAULT_DATE_FORMAT);
@@ -178,7 +180,7 @@ public final class DateUtil
 
 		if (startDate.getTime() > endDate.getTime())
 		{
-			Date temp = startDate;
+			var temp = startDate;
 			startDate = endDate;
 			endDate = temp;
 		}
@@ -219,7 +221,7 @@ public final class DateUtil
 
 		if (dayOfWeekStartDate == DayOfWeek.SATURDAY || dayOfWeekStartDate == DayOfWeek.SUNDAY)
 		{
-			int daysToAdd = 8 - dayOfWeekStartDate.getValue();
+			var daysToAdd = 8 - dayOfWeekStartDate.getValue();
 			startDate = startDate.plusDays(daysToAdd);
 			dayOfWeekStartDate = startDate.getDayOfWeek();
 		}
@@ -573,7 +575,7 @@ public final class DateUtil
 
 	public static String getWeergaveDatumClientportaal(LocalDateTime datum)
 	{
-		String weergaveDatum = datum.format(LOCAL_DATE_TIME_WEERGAVE_CLIENTPORTAAL_FORMAT_INCL_DAG);
+		var weergaveDatum = datum.format(LOCAL_DATE_TIME_WEERGAVE_CLIENTPORTAAL_FORMAT_INCL_DAG);
 		return StringUtils.capitalize(weergaveDatum);
 	}
 

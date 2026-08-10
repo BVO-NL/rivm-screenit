@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -89,7 +90,9 @@ import nl.rivm.screenit.model.logging.colon.ColonNieuwFitAanvraagLogEvent;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAfspraakReservering;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
+import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
+import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.MammaUitstel;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingOpschortenReden;
@@ -102,10 +105,10 @@ import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.algemeen.ClientContactRepository;
 import nl.rivm.screenit.service.BaseAfmeldService;
+import nl.rivm.screenit.service.BaseBezwaarService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseGbaVraagService;
 import nl.rivm.screenit.service.BaseOverdrachtPersoonsgegevensService;
-import nl.rivm.screenit.service.BezwaarService;
 import nl.rivm.screenit.service.BriefHerdrukkenService;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.ClientDoelgroepService;
@@ -191,7 +194,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	private BaseAfmeldService baseAfmeldService;
 
 	@Autowired
-	private BezwaarService bezwaarService;
+	private BaseBezwaarService bezwaarService;
 
 	@Autowired
 	private ColonBaseUitnodigingService colonUitnodigingsService;
@@ -1726,19 +1729,14 @@ public class ClientContactServiceImpl implements ClientContactService
 	@Override
 	public boolean heeftOpenMammaAfspraak(Client client)
 	{
-		MammaAfspraak laatsteAfspraak;
-		if (client != null && client.getMammaDossier().getLaatsteScreeningRonde() != null
-			&& client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging() != null
-			&& client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak() != null)
-		{
-			laatsteAfspraak = client.getMammaDossier().getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak();
-
-			return laatsteAfspraak.getStatus() == MammaAfspraakStatus.GEPLAND && laatsteAfspraak.getVanaf().compareTo(currentDateSupplier.getDate()) >= 0;
-		}
-		else
-		{
-			return false;
-		}
+		return Optional.ofNullable(client)
+			.map(Client::getMammaDossier)
+			.map(MammaDossier::getLaatsteScreeningRonde)
+			.map(MammaScreeningRonde::getLaatsteUitnodiging)
+			.map(MammaUitnodiging::getLaatsteAfspraak)
+			.filter(laatsteAfspraak -> laatsteAfspraak.getStatus() == MammaAfspraakStatus.GEPLAND)
+			.map(laatsteAfspraak -> laatsteAfspraak.getVanaf().compareTo(currentDateSupplier.getDate()) >= 0)
+			.orElse(false);
 	}
 
 	@Override

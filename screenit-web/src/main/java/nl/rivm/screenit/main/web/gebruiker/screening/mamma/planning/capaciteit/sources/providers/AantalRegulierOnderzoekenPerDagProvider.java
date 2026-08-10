@@ -24,8 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.
 import java.time.LocalDate;
 import java.util.Date;
 
-import nl.rivm.screenit.dto.mamma.planning.PlanningDagDto;
-import nl.rivm.screenit.dto.mamma.planning.PlanningWeekDto;
 import nl.rivm.screenit.main.web.component.fullcalendar.event.Event;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.capaciteit.sources.ScreenITEventSourceFactory;
 import nl.rivm.screenit.util.DateUtil;
@@ -42,14 +40,14 @@ public class AantalRegulierOnderzoekenPerDagProvider extends AbstractScreenITEve
 	@Override
 	void createEvents(Date start, Date end)
 	{
-		PlanningWeekDto weekDto = screenITEventSourceFactory.getWeekDto();
+		var weekDto = screenITEventSourceFactory.getWeekDto();
 		var werkdag = DateUtil.toLocalDate(start);
-		for (int i = 0; i < 7; i++)
+		for (var i = 0; i < 7; i++)
 		{
-			Event event = new Event();
-			final LocalDate werkdagDate = LocalDate.of(werkdag.getYear(), werkdag.getMonth(), werkdag.getDayOfMonth());
+			var event = new Event();
+			final var werkdagDate = LocalDate.of(werkdag.getYear(), werkdag.getMonth(), werkdag.getDayOfMonth());
 			long totaalVanDag = 0;
-			PlanningDagDto planningDagDto = weekDto.dagen.stream()
+			var planningDagDto = weekDto.dagen.stream()
 				.filter(d -> d.datum.equals(werkdagDate))
 				.findFirst().orElse(null);
 			if (planningDagDto != null)

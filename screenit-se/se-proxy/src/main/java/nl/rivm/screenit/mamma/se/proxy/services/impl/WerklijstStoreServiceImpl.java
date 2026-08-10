@@ -108,7 +108,7 @@ public class WerklijstStoreServiceImpl implements WerklijstStoreService
 	@Override
 	public void removeNietAfgerondeWerklijstItem(String sopInstanceUid)
 	{
-		MppsRecord mppsRecord = actieveMppsRecordsBySopInstanceUid.remove(sopInstanceUid);
+		var mppsRecord = actieveMppsRecordsBySopInstanceUid.remove(sopInstanceUid);
 		if (afgerondeMppsRecordsByAccessionNumber.containsKey(mppsRecord.getAccessionNumber()))
 		{
 			afgerondeMppsRecordsByAccessionNumber.get(mppsRecord.getAccessionNumber()).add(mppsRecord);
@@ -127,14 +127,14 @@ public class WerklijstStoreServiceImpl implements WerklijstStoreService
 			return false;
 		}
 
-		List<MppsRecord> mppsRecords = afgerondeMppsRecordsByAccessionNumber.get(accessionNumber);
+		var mppsRecords = afgerondeMppsRecordsByAccessionNumber.get(accessionNumber);
 
 		if (mppsRecords == null)
 		{
 			return false;
 		}
 
-		for (MppsRecord mppsRecord : mppsRecords)
+		for (var mppsRecord : mppsRecords)
 		{
 			if (Amputatie.LINKERBORST.equals(zijde) && mppsRecord.hasBeeldenLinks())
 			{

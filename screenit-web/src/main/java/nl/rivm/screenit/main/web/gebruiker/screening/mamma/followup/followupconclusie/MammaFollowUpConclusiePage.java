@@ -38,14 +38,9 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.followup.followupradi
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
-import nl.rivm.screenit.model.mamma.MammaLezing;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.enums.MammaBIRADSWaarde;
-import nl.rivm.screenit.model.mamma.enums.MammaFollowUpConclusieStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaZijde;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
@@ -108,12 +103,12 @@ public class MammaFollowUpConclusiePage extends AbstractMammaFollowUpPage
 
 	private void voegConclusieFormToe(MammaScreeningRonde screeningRonde)
 	{
-		ScreenitForm<MammaScreeningRonde> conclusieForm = new ScreenitForm<>("conclusieForm");
+		var conclusieForm = new ScreenitForm<MammaScreeningRonde>("conclusieForm");
 		add(conclusieForm);
 
 		conclusieEnumModel = new Model<>(initieleConclusieKeuze(screeningRonde));
 
-		WebMarkupContainer statusContainer = new WebMarkupContainer("conclusieContainer");
+		var statusContainer = new WebMarkupContainer("conclusieContainer");
 		statusContainer.setOutputMarkupId(true);
 		conclusieForm.add(statusContainer);
 
@@ -154,7 +149,7 @@ public class MammaFollowUpConclusiePage extends AbstractMammaFollowUpPage
 			@Override
 			protected AjaxLink<String> createButton(String id, IModel<MammaFollowUpConclusieChoice> model)
 			{
-				AjaxLink<String> button = super.createButton(id, model);
+				var button = super.createButton(id, model);
 				if (MammaFollowUpConclusieChoice.POSITIEF.equals(model.getObject()) && teTonenPaVerslagen().isEmpty())
 				{
 					button.setEnabled(false);
@@ -175,8 +170,8 @@ public class MammaFollowUpConclusiePage extends AbstractMammaFollowUpPage
 				}
 				else
 				{
-					MammaScreeningRonde screeningRonde = screeningRondeModel.getObject();
-					MammaFollowUpConclusieStatus conclusieStatus = followUpService.bepaalFollowUpConclusie(screeningRonde, conclusieEnumModel.getObject());
+					var screeningRonde = screeningRondeModel.getObject();
+					var conclusieStatus = followUpService.bepaalFollowUpConclusie(screeningRonde, conclusieEnumModel.getObject());
 					if (conclusieStatus != null)
 					{
 						followUpService.saveFollowUpConclusieStatus(screeningRonde, conclusieStatus, ScreenitSession.get().getIngelogdAccount());
@@ -212,7 +207,7 @@ public class MammaFollowUpConclusiePage extends AbstractMammaFollowUpPage
 
 	private void voegFollowUpVerslagenToe()
 	{
-		ListView<MammaFollowUpVerslag> followUpVerslagList = new ListView<>("followUpVerslagen", ModelUtil.listRModel(teTonenPaVerslagen()))
+		var followUpVerslagList = new ListView<>("followUpVerslagen", ModelUtil.listRModel(teTonenPaVerslagen()))
 		{
 			@Override
 			protected void populateItem(ListItem<MammaFollowUpVerslag> followUpVerslagListItem)
@@ -249,12 +244,12 @@ public class MammaFollowUpConclusiePage extends AbstractMammaFollowUpPage
 		add(DateLabel.forDatePattern("laatsteUitnodiging.laatsteAfspraak.onderzoek.creatieDatum", Constants.DEFAULT_DATE_FORMAT));
 		add(new EnumLabel<>("laatsteUitnodiging.laatsteAfspraak.onderzoek.laatsteBeoordeling.status"));
 
-		WebMarkupContainer biradsContainer = new WebMarkupContainer("biradsContainer");
-		MammaOnderzoek onderzoek = screeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak().getOnderzoek();
-		MammaBeoordeling beoordeling = onderzoek.getLaatsteBeoordeling();
-		MammaLezing verslagLezing = beoordeling != null ? beoordeling.getVerslagLezing() : null;
-		MammaBIRADSWaarde biradsLinks = verslagLezing != null ? verslagLezing.getBiradsLinks() : null;
-		MammaBIRADSWaarde biradsRechts = verslagLezing != null ? verslagLezing.getBiradsRechts() : null;
+		var biradsContainer = new WebMarkupContainer("biradsContainer");
+		var onderzoek = screeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak().getOnderzoek();
+		var beoordeling = onderzoek.getLaatsteBeoordeling();
+		var verslagLezing = beoordeling != null ? beoordeling.getVerslagLezing() : null;
+		var biradsLinks = verslagLezing != null ? verslagLezing.getBiradsLinks() : null;
+		var biradsRechts = verslagLezing != null ? verslagLezing.getBiradsRechts() : null;
 		biradsContainer.add(new Label("biradsLinks",
 			biradsLinks != null ? MammaScreeningRondeUtil.bepaalNaamBiradsWaarde(MammaZijde.LINKER_BORST, biradsLinks) : ""));
 		biradsContainer.add(new Label("biradsRechts",

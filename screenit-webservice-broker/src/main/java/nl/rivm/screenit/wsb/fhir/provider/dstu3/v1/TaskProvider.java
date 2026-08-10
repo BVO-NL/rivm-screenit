@@ -31,7 +31,6 @@ import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
-import ca.uhn.fhir.validation.ValidationResult;
 
 public class TaskProvider extends BaseResourceProvider
 {
@@ -45,13 +44,13 @@ public class TaskProvider extends BaseResourceProvider
 	@Create()
 	public MethodOutcome create(@ResourceParam LabaanvraagTask task)
 	{
-		FhirContext context = FhirContext.forDstu3();
-		ValidationResult result = getFhirValidator(context)
+		var context = FhirContext.forDstu3();
+		var result = getFhirValidator(context)
 			.validateWithResult(task);
 
 		if (result.isSuccessful()) 
 		{
-			LabaanvraagValidator labAanvraagValidator = new LabaanvraagValidator();
+			var labAanvraagValidator = new LabaanvraagValidator();
 			if (labAanvraagValidator.validate(task).isSuccesvol()) 
 			{
 				return new MethodOutcome()

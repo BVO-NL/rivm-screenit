@@ -77,7 +77,7 @@ public class CervixVervolgonderzoekJobListener extends BaseLogListener
 	protected LogEvent eindLogging(JobExecution jobExecution)
 	{
 		var context = jobExecution.getExecutionContext();
-		long aantal = context.getLong(CervixVervolgonderzoekConstants.VERVOLGONDERZOEK_AANTAL_KEY, 0);
+		var aantal = context.getLong(CervixVervolgonderzoekConstants.VERVOLGONDERZOEK_AANTAL_KEY, 0);
 
 		var rapportage = new CervixVervolgonderzoekRapportage();
 		rapportage.setDatumVerwerking(dateSupplier.getDate());

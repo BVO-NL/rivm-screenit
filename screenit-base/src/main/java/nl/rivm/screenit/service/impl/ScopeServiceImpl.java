@@ -23,7 +23,6 @@ package nl.rivm.screenit.service.impl;
  */
 
 import java.util.Arrays;
-import java.util.Collection;
 
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
@@ -58,8 +57,8 @@ public class ScopeServiceImpl implements ScopeService
 	@Override
 	public boolean isObjectInScope(Constraint constraintToCheck, Account account, PrincipalCollection principals)
 	{
-		boolean result = false;
-		ToegangLevel scope = getHoogsteToegangLevel(principals, constraintToCheck);
+		var result = false;
+		var scope = getHoogsteToegangLevel(principals, constraintToCheck);
 		if (scope == ToegangLevel.LANDELIJK)
 		{
 			result = true;
@@ -74,10 +73,10 @@ public class ScopeServiceImpl implements ScopeService
 			}
 			else if (scope == ToegangLevel.REGIO)
 			{
-				Client client = hibernateService.load(Client.class, constraintToCheck.getScopeObjectId());
+				var client = hibernateService.load(Client.class, constraintToCheck.getScopeObjectId());
 
-				ScreeningOrganisatie screeningOrganisatie = client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie();
-				OrganisatieMedewerker organisatieMedewerker = (OrganisatieMedewerker) account;
+				var screeningOrganisatie = client.getPersoon().getGbaAdres().getGbaGemeente().getScreeningOrganisatie();
+				var organisatieMedewerker = (OrganisatieMedewerker) account;
 
 				result = organisatieMedewerker.getOrganisatie().equals(screeningOrganisatie);
 			}
@@ -143,20 +142,20 @@ public class ScopeServiceImpl implements ScopeService
 	@Override
 	public ToegangLevel getHoogsteToegangLevel(PrincipalCollection principalCollection, Constraint constraintToCheck)
 	{
-		Permissie permissie = new Permissie();
+		var permissie = new Permissie();
 		permissie.setActie(constraintToCheck.getActie());
 		permissie.setRecht(constraintToCheck.getRecht());
 
 		ToegangLevel toegangLevel = null;
 
-		Collection<Permissie> perms = ApplicationContextProvider.getApplicationContext().getBean(ScreenitRealm.class).getPermissies(principalCollection);
+		var perms = ApplicationContextProvider.getApplicationContext().getBean(ScreenitRealm.class).getPermissies(principalCollection);
 		if (perms != null && !perms.isEmpty())
 		{
-			for (Permissie perm : perms)
+			for (var perm : perms)
 			{
 				if (perm.implies(permissie) && CollectionUtils.containsAny(Arrays.asList(perm.getRecht().getBevolkingsonderzoeken()), constraintToCheck.getBevolkingsonderzoek()))
 				{
-					ToegangLevel found = perm.getToegangLevel();
+					var found = perm.getToegangLevel();
 
 					if (toegangLevel == null || found.getNiveau() > toegangLevel.getNiveau())
 					{
@@ -172,20 +171,20 @@ public class ScopeServiceImpl implements ScopeService
 	@Override
 	public ToegangLevel getHoogsteToegangLevel(OrganisatieMedewerker organisatieMedewerker, Constraint constraintToCheck, boolean checkBvo)
 	{
-		Permissie permissie = new Permissie();
+		var permissie = new Permissie();
 		permissie.setActie(constraintToCheck.getActie());
 		permissie.setRecht(constraintToCheck.getRecht());
 
 		ToegangLevel toegangLevel = null;
 
-		Collection<Permissie> perms = ApplicationContextProvider.getApplicationContext().getBean(ScreenitRealm.class).getPermissies(organisatieMedewerker, checkBvo);
+		var perms = ApplicationContextProvider.getApplicationContext().getBean(ScreenitRealm.class).getPermissies(organisatieMedewerker, checkBvo);
 		if (perms != null && !perms.isEmpty())
 		{
-			for (Permissie perm : perms)
+			for (var perm : perms)
 			{
 				if (perm.implies(permissie))
 				{
-					ToegangLevel found = perm.getToegangLevel();
+					var found = perm.getToegangLevel();
 
 					if (toegangLevel == null || found.getNiveau() > toegangLevel.getNiveau())
 					{

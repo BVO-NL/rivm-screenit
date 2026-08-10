@@ -55,12 +55,12 @@ public abstract class BaseWachtwoordValidator<T> extends BaseValidator<T>
 		{
 			errors.reject("error.password.length.max", "Wachtwoord mag maximaal 255 tekens bevatten.");
 		}
-		String alfabetSequence = zoekSequenceInWachtwoord(ALFABET, wachtwoord.toLowerCase(), 5);
+		var alfabetSequence = zoekSequenceInWachtwoord(ALFABET, wachtwoord.toLowerCase(), 5);
 		if (alfabetSequence != null)
 		{
 			errors.reject("error.password.alfabet", "Wachtwoord bevat tekenreeks die niet is toegestaan: " + alfabetSequence);
 		}
-		String toetsenbordSequence = zoekSequenceInWachtwoord(TOETSENBORD, wachtwoord.toLowerCase(), 5);
+		var toetsenbordSequence = zoekSequenceInWachtwoord(TOETSENBORD, wachtwoord.toLowerCase(), 5);
 		if (toetsenbordSequence != null)
 		{
 			errors.reject("error.password.toetsenbord", "Wachtwoord bevat tekenreeks die niet is toegestaan: " + toetsenbordSequence);
@@ -73,12 +73,12 @@ public abstract class BaseWachtwoordValidator<T> extends BaseValidator<T>
 		{
 			return null;
 		}
-		for (int i = 0; i <= wachtwoord.length() - sequenceLengte; i++)
+		for (var i = 0; i <= wachtwoord.length() - sequenceLengte; i++)
 		{
-			int indexInPattern = pattern.indexOf(wachtwoord.charAt(i));
+			var indexInPattern = pattern.indexOf(wachtwoord.charAt(i));
 			if (indexInPattern >= 0)
 			{
-				for (int j = 0; j < sequenceLengte; j++)
+				for (var j = 0; j < sequenceLengte; j++)
 				{
 					if (pattern.length() - 1 < indexInPattern + j || wachtwoord.charAt(i + j) != pattern.charAt(indexInPattern + j))
 					{

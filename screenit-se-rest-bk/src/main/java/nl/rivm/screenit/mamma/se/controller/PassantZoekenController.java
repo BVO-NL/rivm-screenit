@@ -30,9 +30,7 @@ import nl.rivm.screenit.mamma.se.security.SEAccountResolverDelegate;
 import nl.rivm.screenit.mamma.se.service.PassantInschrijvenValidatorService;
 import nl.rivm.screenit.mamma.se.service.PassantValidatorResult;
 import nl.rivm.screenit.mamma.se.service.dtomapper.AfspraakDtoMapper;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
@@ -71,11 +69,11 @@ public class PassantZoekenController extends AuthorizedController
 		}
 		SEAccountResolverDelegate.setOrganisatieMedewerker(getOrganisatieMedewerker(request));
 
-		Client client = clientService.getClientByBsn(bsn);
+		var client = clientService.getClientByBsn(bsn);
 		if (client != null && client.getMammaDossier() != null && DateUtil.isGeboortedatumGelijk(geboortedatum, client))
 		{
-			MammaScreeningsEenheid screeningsEenheid = getScreeningsEenheid(request);
-			PassantValidatorResult validatorResult = passantInschrijvenValidatorService.isGeldigPassantScenario(client, currentDateSupplier.getLocalDate(), screeningsEenheid);
+			var screeningsEenheid = getScreeningsEenheid(request);
+			var validatorResult = passantInschrijvenValidatorService.isGeldigPassantScenario(client, currentDateSupplier.getLocalDate(), screeningsEenheid);
 			if (validatorResult == PassantValidatorResult.OK)
 			{
 				return ResponseEntity.ok(dtoMapper.createPassantDto(client.getMammaDossier()));

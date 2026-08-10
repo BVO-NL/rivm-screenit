@@ -71,33 +71,33 @@ public abstract class ColonIntakekamersEditPanel extends GenericPanel<ColonIntak
 	{
 		super.onInitialize();
 
-		final BootstrapDialog dialog = new BootstrapDialog("dialog");
+		final var dialog = new BootstrapDialog("dialog");
 		add(dialog);
 
 		var intakelocatie = getModelObject();
-		final Actie actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), intakelocatie,
+		final var actie = autorisatieService.getActieVoorOrganisatie(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), intakelocatie,
 			Recht.MEDEWERKER_BEHEER_CC_LOCATIES);
 
-		ScreenitForm<ColonIntakelocatie> form = new ScreenitForm<>("form");
+		var form = new ScreenitForm<ColonIntakelocatie>("form");
 		add(form);
 
-		final WebMarkupContainer refreshContainer = new WebMarkupContainer("refreshContainer");
+		final var refreshContainer = new WebMarkupContainer("refreshContainer");
 		refreshContainer.setOutputMarkupId(true);
 		form.add(refreshContainer);
-		ColonIntakekamer searchObject = new ColonIntakekamer();
+		var searchObject = new ColonIntakekamer();
 		searchObject.setActief(true);
 		final IModel<ColonIntakekamer> searchObjectModel = Model.of(searchObject);
 		header = new ActiefHeaderInFormPanel<>("actiefHeader", refreshContainer, searchObjectModel);
 		form.add(header);
 
-		ScreenitAjaxLink kamerToevoegen = new ScreenitAjaxLink("kamerToevoegen")
+		var kamerToevoegen = new ScreenitAjaxLink("kamerToevoegen")
 		{
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				ColonIntakelocatie intakelocatie = ColonIntakekamersEditPanel.this.getModelObject();
-				ColonIntakekamer kamer = new ColonIntakekamer();
+				var intakelocatie = ColonIntakekamersEditPanel.this.getModelObject();
+				var kamer = new ColonIntakekamer();
 				kamer.setNaam("");
 				kamer.setActief(true);
 				kamer.setIntakelocatie(intakelocatie);
@@ -105,7 +105,7 @@ public abstract class ColonIntakekamersEditPanel extends GenericPanel<ColonIntak
 				if (Boolean.FALSE.equals(searchObjectModel.getObject().getActief()))
 				{
 					searchObjectModel.getObject().setActief(Boolean.TRUE);
-					ActiefHeaderInFormPanel<ColonIntakekamer> newHeader = new ActiefHeaderInFormPanel<>("actiefHeader", refreshContainer, searchObjectModel);
+					var newHeader = new ActiefHeaderInFormPanel<ColonIntakekamer>("actiefHeader", refreshContainer, searchObjectModel);
 					header.replaceWith(newHeader);
 					header = newHeader;
 					target.add(header);
@@ -121,16 +121,16 @@ public abstract class ColonIntakekamersEditPanel extends GenericPanel<ColonIntak
 			@Override
 			protected void populateItem(ListItem<ColonIntakekamer> item)
 			{
-				Boolean kamerActief = item.getModelObject().getActief();
-				Boolean searchActief = searchObjectModel.getObject().getActief();
-				boolean visible = searchActief == null
+				var kamerActief = item.getModelObject().getActief();
+				var searchActief = searchObjectModel.getObject().getActief();
+				var visible = searchActief == null
 					|| Boolean.TRUE.equals(searchActief) && !Boolean.FALSE.equals(kamerActief)
 					|| Boolean.FALSE.equals(searchActief) && Boolean.FALSE.equals(kamerActief);
 
 				item.setVisible(visible);
 
-				boolean magVerwijderen = actie != null && actie.getNiveau() >= Actie.VERWIJDEREN.getNiveau();
-				boolean magAanpassen = actie != null && actie.getNiveau() >= Actie.AANPASSEN.getNiveau();
+				var magVerwijderen = actie != null && actie.getNiveau() >= Actie.VERWIJDEREN.getNiveau();
+				var magAanpassen = actie != null && actie.getNiveau() >= Actie.AANPASSEN.getNiveau();
 
 				item.add(new TextField<>("naamEdit", new CompoundPropertyModel<>(new PropertyModel<>(item.getModel(), "naam"))).setRequired(true).setLabel(Model.of("Naam kamer"))
 					.setEnabled(magAanpassen));
@@ -157,12 +157,12 @@ public abstract class ColonIntakekamersEditPanel extends GenericPanel<ColonIntak
 			}
 		};
 		refreshContainer.add(kamers);
-		ScreenitAjaxLink opslaan = new ScreenitAjaxLink("opslaan")
+		var opslaan = new ScreenitAjaxLink("opslaan")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				ColonIntakelocatie intakelocatie = ColonIntakekamersEditPanel.this.getModelObject();
+				var intakelocatie = ColonIntakekamersEditPanel.this.getModelObject();
 				var activeKamers = new ArrayList<ColonIntakekamer>();
 				for (var kamer : intakelocatie.getKamers())
 				{
@@ -174,7 +174,7 @@ public abstract class ColonIntakekamersEditPanel extends GenericPanel<ColonIntak
 				Set<String> kamers = new HashSet<String>();
 				for (var kamer : activeKamers)
 				{
-					String kamerStringToUpper = kamer.getNaam().toUpperCase();
+					var kamerStringToUpper = kamer.getNaam().toUpperCase();
 					kamers.add(kamerStringToUpper);
 				}
 
@@ -189,7 +189,7 @@ public abstract class ColonIntakekamersEditPanel extends GenericPanel<ColonIntak
 			}
 
 		};
-		boolean magAanpassen = actie != null && actie.getNiveau() >= Actie.AANPASSEN.getNiveau();
+		var magAanpassen = actie != null && actie.getNiveau() >= Actie.AANPASSEN.getNiveau();
 		opslaan.setVisible(magAanpassen);
 		form.add(opslaan);
 		form.setDefaultButton(opslaan);

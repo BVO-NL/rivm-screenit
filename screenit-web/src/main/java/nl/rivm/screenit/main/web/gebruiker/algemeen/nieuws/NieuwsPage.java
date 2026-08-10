@@ -28,7 +28,6 @@ import java.util.List;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.AlgemeenPage;
-import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.nieuws.MedewerkerNieuwsItem;
 import nl.rivm.screenit.model.nieuws.NieuwsItem;
 import nl.rivm.screenit.service.HibernateService;
@@ -62,26 +61,26 @@ public class NieuwsPage extends AlgemeenPage
 	{
 		super.onInitialize();
 
-		Medewerker medewerker = ((ScreenitSession) getSession()).getIngelogdeOrganisatieMedewerker().getMedewerker();
+		var medewerker = ((ScreenitSession) getSession()).getIngelogdeOrganisatieMedewerker().getMedewerker();
 
-		WebMarkupContainer nieuwsContainer = new WebMarkupContainer("nieuws");
-		WebMarkupContainer geenNieuwsContainer = new WebMarkupContainer("geenNieuws");
+		var nieuwsContainer = new WebMarkupContainer("nieuws");
+		var geenNieuwsContainer = new WebMarkupContainer("geenNieuws");
 
-		List<Long> nieuwsItemIdsMedewerker = nieuwsService.getNieuwsItemIdsMedewerker(medewerker);
+		var nieuwsItemIdsMedewerker = nieuwsService.getNieuwsItemIdsMedewerker(medewerker);
 		List<NieuwsItem> nieuwsItemsMedewerker = new ArrayList<>();
-		for (Long nieuwItemId : nieuwsItemIdsMedewerker)
+		for (var nieuwItemId : nieuwsItemIdsMedewerker)
 		{
 			nieuwsItemsMedewerker.add(hibernateService.load(NieuwsItem.class, nieuwItemId));
 		}
 		IModel<List<NieuwsItem>> nieuwsItemsMedewerkerModel = ModelUtil.listRModel(nieuwsItemsMedewerker);
 		if (nieuwsItemsMedewerkerModel.getObject() != null && !nieuwsItemsMedewerkerModel.getObject().isEmpty())
 		{
-			ListView<NieuwsItem> nieuwsItemForms = new ListView<NieuwsItem>("nieuwsItem", nieuwsItemsMedewerkerModel)
+			var nieuwsItemForms = new ListView<NieuwsItem>("nieuwsItem", nieuwsItemsMedewerkerModel)
 			{
 				@Override
 				protected void populateItem(ListItem<NieuwsItem> item)
 				{
-					EditForm nieuwsItemForm = new EditForm("form", ModelUtil.ccModel(item.getModelObject()));
+					var nieuwsItemForm = new EditForm("form", ModelUtil.ccModel(item.getModelObject()));
 					item.add(nieuwsItemForm);
 				}
 			};
@@ -112,30 +111,30 @@ public class NieuwsPage extends AlgemeenPage
 		{
 			super.onInitialize();
 
-			Label titel = new Label("titel");
-			MultiLineLabel tekst = new MultiLineLabel("tekst");
+			var titel = new Label("titel");
+			var tekst = new MultiLineLabel("tekst");
 
-			String gewijzigdText = "";
-			NieuwsItem nieuwsItem = (NieuwsItem) getDefaultModelObject();
+			var gewijzigdText = "";
+			var nieuwsItem = (NieuwsItem) getDefaultModelObject();
 			if (nieuwsItem.getGewijzigd() != null)
 			{
-				SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+				var format = new SimpleDateFormat("dd-MM-yyyy");
 				gewijzigdText = "Gewijzigd op " + format.format(nieuwsItem.getGewijzigd());
 			}
-			Label gewijzigd = new Label("gewijzigd", gewijzigdText);
+			var gewijzigd = new Label("gewijzigd", gewijzigdText);
 
-			AjaxSubmitLink gelezen = new AjaxSubmitLink("gelezen")
+			var gelezen = new AjaxSubmitLink("gelezen")
 			{
 
 				@Override
 				protected void onSubmit(AjaxRequestTarget target)
 				{
-					Medewerker medewerker = ((ScreenitSession) getSession()).getIngelogdeOrganisatieMedewerker().getMedewerker();
+					var medewerker = ((ScreenitSession) getSession()).getIngelogdeOrganisatieMedewerker().getMedewerker();
 
-					NieuwsItem formNieuwsItem = (NieuwsItem) EditForm.this.getDefaultModelObject();
+					var formNieuwsItem = (NieuwsItem) EditForm.this.getDefaultModelObject();
 
 					MedewerkerNieuwsItem medewerkerNieuwsItem = null;
-					for (MedewerkerNieuwsItem item : medewerker.getMedewerkerNieuwsItems())
+					for (var item : medewerker.getMedewerkerNieuwsItems())
 					{
 						if (item.getNieuwsItem().equals(formNieuwsItem))
 						{

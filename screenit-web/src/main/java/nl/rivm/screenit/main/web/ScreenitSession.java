@@ -92,9 +92,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ThreadContext;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -245,7 +243,7 @@ public class ScreenitSession extends WebSession
 
 	public boolean isSignedIn()
 	{
-		Subject currentUser = SecurityUtils.getSubject();
+		var currentUser = SecurityUtils.getSubject();
 		return currentUser.isAuthenticated();
 	}
 
@@ -253,7 +251,7 @@ public class ScreenitSession extends WebSession
 	public void replaceSession()
 	{
 
-		Subject currentUser = SecurityUtils.getSubject();
+		var currentUser = SecurityUtils.getSubject();
 		currentUser.getSession().stop();
 		super.replaceSession();
 		currentUser.getSession(true);
@@ -261,16 +259,16 @@ public class ScreenitSession extends WebSession
 
 	public void logout()
 	{
-		Subject currentUser = SecurityUtils.getSubject();
+		var currentUser = SecurityUtils.getSubject();
 		currentUser.logout();
 		this.invalidate();
 	}
 
 	public Page login(String gebruikersnaam, String plainWachtwoord, String yubikeyOTP)
 	{
-		SecurityManager securityManager = SecurityUtils.getSecurityManager();
+		var securityManager = SecurityUtils.getSecurityManager();
 		uziPasTokenAfgekeurd = false;
-		YubikeyToken token = new YubikeyToken(gebruikersnaam, plainWachtwoord, yubikeyOTP);
+		var token = new YubikeyToken(gebruikersnaam, plainWachtwoord, yubikeyOTP);
 		Page result = null;
 		Medewerker medewerker = null;
 		try
@@ -284,7 +282,7 @@ public class ScreenitSession extends WebSession
 
 			securityManager.authenticate(token);
 
-			String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDateMidnight());
+			var meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDateMidnight());
 			if (meldingNavActiefVanafEnTotEnMet != null)
 			{
 				error(meldingNavActiefVanafEnTotEnMet);
@@ -316,9 +314,9 @@ public class ScreenitSession extends WebSession
 
 	public Page login(String gebruikersnaam, String plainWachtwoord)
 	{
-		SecurityManager securityManager = SecurityUtils.getSecurityManager();
+		var securityManager = SecurityUtils.getSecurityManager();
 		uziPasTokenAfgekeurd = false;
-		UsernamePasswordToken token = new UsernamePasswordToken(gebruikersnaam, plainWachtwoord);
+		var token = new UsernamePasswordToken(gebruikersnaam, plainWachtwoord);
 		Page result = null;
 		Medewerker medewerker = null;
 		try
@@ -333,7 +331,7 @@ public class ScreenitSession extends WebSession
 
 			securityManager.authenticate(token);
 
-			String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDateMidnight());
+			var meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDateMidnight());
 			if (meldingNavActiefVanafEnTotEnMet != null)
 			{
 				error(meldingNavActiefVanafEnTotEnMet);
@@ -374,7 +372,7 @@ public class ScreenitSession extends WebSession
 		{
 			authenticatieService.unlockAccount(medewerker);
 
-			List<OrganisatieMedewerker> organisatieMedewerkers = authenticatieService.getActieveOrganisatieMedewerkers(medewerker);
+			var organisatieMedewerkers = authenticatieService.getActieveOrganisatieMedewerkers(medewerker);
 			if (organisatieMedewerkers.isEmpty())
 			{
 
@@ -386,7 +384,7 @@ public class ScreenitSession extends WebSession
 			else if (organisatieMedewerkers.size() == 1)
 			{
 
-				OrganisatieMedewerker inTeLoggenOrganisatieMedewerker = organisatieMedewerkers.get(0);
+				var inTeLoggenOrganisatieMedewerker = organisatieMedewerkers.get(0);
 				result = getPageForOrganisatieMedewerker(inTeLoggenOrganisatieMedewerker);
 			}
 			else
@@ -411,8 +409,8 @@ public class ScreenitSession extends WebSession
 
 	public void login(OrganisatieMedewerker organisatieMedewerker)
 	{
-		Subject currentUser = SecurityUtils.getSubject();
-		OrganisatieMedewerkerToken token = new OrganisatieMedewerkerToken(organisatieMedewerker.getId());
+		var currentUser = SecurityUtils.getSubject();
+		var token = new OrganisatieMedewerkerToken(organisatieMedewerker.getId());
 		token.setUserAgent(WebSession.get().getClientInfo().getUserAgent());
 		if (ingelogdMetZorgId)
 		{
@@ -469,7 +467,7 @@ public class ScreenitSession extends WebSession
 			}
 			catch (InstantiationException | IllegalAccessException | NullPointerException e)
 			{
-				String msg = "";
+				var msg = "";
 				if (e.getMessage() != null)
 				{
 					msg += e.getMessage();
@@ -477,12 +475,12 @@ public class ScreenitSession extends WebSession
 				msg += "\n" + e.getClass().getName();
 				if (e.getStackTrace() != null)
 				{
-					int logDiepte = e.getStackTrace().length;
+					var logDiepte = e.getStackTrace().length;
 					if (logDiepte > 6)
 					{
 						logDiepte = 6;
 					}
-					for (int i = 0; i < logDiepte; i++)
+					for (var i = 0; i < logDiepte; i++)
 					{
 						msg += "\n\t at " + e.getStackTrace()[i];
 					}
@@ -495,9 +493,9 @@ public class ScreenitSession extends WebSession
 
 	private Class<? extends WebPage> getHomePage()
 	{
-		for (MedewerkerHoofdMenuItem hoofdMenuItem : MedewerkerHoofdMenuItem.values())
+		for (var hoofdMenuItem : MedewerkerHoofdMenuItem.values())
 		{
-			Class<? extends MedewerkerBasePage> targetPage = MedewerkerMenuItem.getTargetPageClass(hoofdMenuItem.getMenuItem());
+			var targetPage = MedewerkerMenuItem.getTargetPageClass(hoofdMenuItem.getMenuItem());
 			if (targetPage != null && getAuthorizationStrategy().isInstantiationAuthorized(targetPage))
 			{
 				return targetPage;
@@ -510,7 +508,7 @@ public class ScreenitSession extends WebSession
 
 	private void getError(Medewerker inTeLoggenMedewerker, String gebruikersnaam)
 	{
-		Integer foutieveAanmeldpogingenTimeout = preferenceService.getInteger(PreferenceKey.FOUTIEVE_AANMELDPOGINGEN_TIMEOUT.name());
+		var foutieveAanmeldpogingenTimeout = preferenceService.getInteger(PreferenceKey.FOUTIEVE_AANMELDPOGINGEN_TIMEOUT.name());
 		if (foutieveAanmeldpogingenTimeout == null)
 		{
 			foutieveAanmeldpogingenTimeout = 30;
@@ -561,7 +559,7 @@ public class ScreenitSession extends WebSession
 
 	public Organisatie getOrganisatie()
 	{
-		Account ingelogdAccount = getIngelogdAccount();
+		var ingelogdAccount = getIngelogdAccount();
 		Organisatie organisatie = null;
 		if (ingelogdAccount instanceof OrganisatieMedewerker organisatieMedewerker)
 		{
@@ -583,12 +581,12 @@ public class ScreenitSession extends WebSession
 
 	public ColonIntakelocatie getIntakelocatie()
 	{
-		Organisatie organisatie = getOrganisatie();
+		var organisatie = getOrganisatie();
 		if (ColonIntakelocatie.class.isAssignableFrom(Hibernate.getClass(organisatie)))
 		{
 			if (!(organisatie instanceof ColonIntakelocatie))
 			{
-				HibernateProxy hibernateProxy = (HibernateProxy) organisatie;
+				var hibernateProxy = (HibernateProxy) organisatie;
 				organisatie = (ColonIntakelocatie) hibernateProxy.getHibernateLazyInitializer().getImplementation();
 			}
 			return (ColonIntakelocatie) organisatie;
@@ -598,7 +596,7 @@ public class ScreenitSession extends WebSession
 
 	public OrganisatieMedewerker getIngelogdeOrganisatieMedewerker()
 	{
-		Account account = getIngelogdAccount();
+		var account = getIngelogdAccount();
 		if (account instanceof OrganisatieMedewerker)
 		{
 			return (OrganisatieMedewerker) account;
@@ -616,7 +614,7 @@ public class ScreenitSession extends WebSession
 		accountId = account != null ? account.getId() : null;
 		accountClass = account != null ? HibernateHelper.getDeproxiedClass(account) : null;
 
-		OrganisatieMedewerker organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		var organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
 		if (organisatieMedewerker != null)
 		{
 			LOG.info("OrganisatieMedewerker (id: '{}') is aan het inloggen namens {}. (Gid: '{}')", organisatieMedewerker.getId(),
@@ -642,7 +640,7 @@ public class ScreenitSession extends WebSession
 
 	public boolean checkPermission(Recht recht, Actie actie, HibernateObject scopeObject)
 	{
-		Constraint constraintToCheck = new Constraint();
+		var constraintToCheck = new Constraint();
 		constraintToCheck.setRecht(recht);
 		constraintToCheck.setActie(actie);
 		constraintToCheck.setBevolkingsonderzoek(getOnderzoeken());
@@ -664,7 +662,7 @@ public class ScreenitSession extends WebSession
 	@Override
 	public void detach()
 	{
-		for (ZoekStatus status : zoekStatussen.values())
+		for (var status : zoekStatussen.values())
 		{
 			ModelUtil.nullSafeDetach(status);
 		}
@@ -697,8 +695,8 @@ public class ScreenitSession extends WebSession
 	{
 		this.ingelogdMetZorgId = true;
 		uzipasMeldingen = new ArrayList<>();
-		UziToken uziToken = new UziToken(uziCertInfo.getUziCode());
-		SecurityManager securityManager = SecurityUtils.getSecurityManager();
+		var uziToken = new UziToken(uziCertInfo.getUziCode());
+		var securityManager = SecurityUtils.getSecurityManager();
 
 		try
 		{
@@ -717,7 +715,7 @@ public class ScreenitSession extends WebSession
 			{
 				authenticatieService.unlockAccount(medewerker);
 
-				List<OrganisatieMedewerker> organisatieMedewerkers = authenticatieService.getActieveOrganisatieMedewerkers(medewerker);
+				var organisatieMedewerkers = authenticatieService.getActieveOrganisatieMedewerkers(medewerker);
 				if (organisatieMedewerkers.isEmpty())
 				{
 
@@ -729,7 +727,7 @@ public class ScreenitSession extends WebSession
 				else if (organisatieMedewerkers.size() == 1)
 				{
 
-					OrganisatieMedewerker inTeLoggenOrganisatieMedewerker = organisatieMedewerkers.get(0);
+					var inTeLoggenOrganisatieMedewerker = organisatieMedewerkers.get(0);
 					if (getPageForOrganisatieMedewerker(inTeLoggenOrganisatieMedewerker) == null)
 					{
 						uzipasMeldingen.add("Niet genoeg rechten om in te loggen");
@@ -745,7 +743,7 @@ public class ScreenitSession extends WebSession
 			}
 			if (uzipasMeldingen.isEmpty())
 			{
-				String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDateMidnight());
+				var meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDateMidnight());
 				if (meldingNavActiefVanafEnTotEnMet != null)
 				{
 					uzipasMeldingen.add(meldingNavActiefVanafEnTotEnMet);
@@ -810,7 +808,7 @@ public class ScreenitSession extends WebSession
 
 	public void setZoekObject(String key, IModel<?> zoekObject)
 	{
-		ZoekStatus status = getZoekStatus(key);
+		var status = getZoekStatus(key);
 		status.setZoekObject(zoekObject);
 	}
 
@@ -821,7 +819,7 @@ public class ScreenitSession extends WebSession
 
 	private ZoekStatus getZoekStatus(String key)
 	{
-		ZoekStatus status = zoekStatussen.get(key);
+		var status = zoekStatussen.get(key);
 		if (status == null)
 		{
 			status = new ZoekStatus();
@@ -837,7 +835,7 @@ public class ScreenitSession extends WebSession
 
 	public List<Bevolkingsonderzoek> getOnderzoeken()
 	{
-		OrganisatieMedewerker organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		var organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
 		if (organisatieMedewerker != null && CollectionUtils.isNotEmpty(organisatieMedewerker.getBevolkingsonderzoeken()))
 		{
 			return Bevolkingsonderzoek.sort(new ArrayList<>(organisatieMedewerker.getBevolkingsonderzoeken()));
@@ -850,7 +848,7 @@ public class ScreenitSession extends WebSession
 
 	public ToegangLevel getToegangsLevel(Actie actie, Recht recht)
 	{
-		Constraint constraintToCheck = new Constraint();
+		var constraintToCheck = new Constraint();
 		constraintToCheck.setActie(actie);
 		constraintToCheck.setRecht(recht);
 		constraintToCheck.setBevolkingsonderzoek(getOnderzoeken());
@@ -859,7 +857,7 @@ public class ScreenitSession extends WebSession
 
 	public ToegangLevel getToegangsLevel(OrganisatieMedewerker organisatieMedewerker, Actie actie, Recht recht, boolean checkBvo)
 	{
-		Constraint constraintToCheck = new Constraint();
+		var constraintToCheck = new Constraint();
 		constraintToCheck.setActie(actie);
 		constraintToCheck.setRecht(recht);
 		return scopeService.getHoogsteToegangLevel(organisatieMedewerker, constraintToCheck, checkBvo);
@@ -887,7 +885,7 @@ public class ScreenitSession extends WebSession
 	public Page getUzipasPage(boolean fromUitwisselportaal)
 	{
 		this.fromUitwisselportaal = fromUitwisselportaal;
-		Account ingelogdAccount = getIngelogdAccount();
+		var ingelogdAccount = getIngelogdAccount();
 		if (ingelogdAccount instanceof OrganisatieMedewerker)
 		{
 			return login(null, ((OrganisatieMedewerker) ingelogdAccount).getMedewerker());
@@ -911,7 +909,7 @@ public class ScreenitSession extends WebSession
 		if (fileUpload != null)
 		{
 			uploadDocument = new UploadDocument();
-			File tempFile = fileUpload.writeToTempFile();
+			var tempFile = fileUpload.writeToTempFile();
 			tempFile.deleteOnExit();
 			uploadDocument.setFile(tempFile);
 			uploadDocument.setActief(true);
@@ -927,7 +925,7 @@ public class ScreenitSession extends WebSession
 	{
 		getZorgIdSession().clear();
 		uziPasTokenAfgekeurd = false;
-		for (File tempFile : tempFiles)
+		for (var tempFile : tempFiles)
 		{
 			FileUtils.deleteQuietly(tempFile);
 		}
@@ -941,7 +939,7 @@ public class ScreenitSession extends WebSession
 
 	public MammobridgeRole wijzigMammaIDS7Role(MammobridgeRole role)
 	{
-		MammobridgeRole oudeRole = getMammaHuidigeIDS7Role();
+		var oudeRole = getMammaHuidigeIDS7Role();
 		this.mammaHuidigeIDS7Role = role;
 
 		return oudeRole;
@@ -975,11 +973,11 @@ public class ScreenitSession extends WebSession
 	{
 		if (constraint.checkScope() && constraint.organisatieTypeScopes().length > 0)
 		{
-			Organisatie organisatie = getOrganisatie();
-			boolean valtBinnenOrganisatieTypeScopes = false;
+			var organisatie = getOrganisatie();
+			var valtBinnenOrganisatieTypeScopes = false;
 			if (organisatie != null)
 			{
-				for (OrganisatieType type : constraint.organisatieTypeScopes())
+				for (var type : constraint.organisatieTypeScopes())
 				{
 					if (organisatie.getOrganisatieType().equals(type))
 					{

@@ -26,8 +26,6 @@ import lombok.AllArgsConstructor;
 import nl.rivm.screenit.clientportaal.model.colon.ColonFitStatusDto;
 import nl.rivm.screenit.clientportaal.services.colon.ColonFitService;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.colon.ColonDossier;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.colon.ColonScreeningsrondeService;
 
@@ -48,15 +46,15 @@ public class ColonFitServiceImpl implements ColonFitService
 	@Override
 	public ColonFitStatusDto getFitStatus(Client client)
 	{
-		ColonDossier colonDossier = client.getColonDossier();
-		ColonScreeningRonde laatsteScreeningRonde = colonDossier.getLaatsteScreeningRonde();
+		var colonDossier = client.getColonDossier();
+		var laatsteScreeningRonde = colonDossier.getLaatsteScreeningRonde();
 
 		if (laatsteScreeningRonde == null)
 		{
 			return null;
 		}
 
-		boolean maxAantalFitAanvragenBereikt = screeningsrondeService.heeftMaxAantalFitAanvragenBereikt(laatsteScreeningRonde);
+		var maxAantalFitAanvragenBereikt = screeningsrondeService.heeftMaxAantalFitAanvragenBereikt(laatsteScreeningRonde);
 
 		return new ColonFitStatusDto(maxAantalFitAanvragenBereikt);
 	}

@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.retourzending;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -109,7 +108,7 @@ public class RetourzendingHandmatigVerwerkenPage extends RetourzendingBasePage
 			@Override
 			protected void processScannedInput(AjaxRequestTarget target)
 			{
-				String uitnodigingId = getScanInput();
+				var uitnodigingId = getScanInput();
 				if (StringUtils.isNotBlank(uitnodigingId) && StringUtils.isNumeric(uitnodigingId))
 				{
 					if (!new ColonUitnodigingsIdValidator().valideerUitnodiging(target, uitnodigingId)
@@ -138,7 +137,7 @@ public class RetourzendingHandmatigVerwerkenPage extends RetourzendingBasePage
 			{
 				Map<String, Long> parameters = new HashMap<>();
 				parameters.put("uitnodigingsId", Long.parseLong(uitnodigingId));
-				Class<U> uitnodigingClass = (Class<U>) ((ParameterizedType) UitnodigingsIdValidator.this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+				var uitnodigingClass = (Class<U>) ((ParameterizedType) UitnodigingsIdValidator.this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 				uitnodiging = hibernateService.getUniqueByParameters(uitnodigingClass, parameters);
 			}
 			catch (WrongClassException e)
@@ -178,7 +177,7 @@ public class RetourzendingHandmatigVerwerkenPage extends RetourzendingBasePage
 		@Override
 		protected boolean isUitnodigingValide(ColonUitnodiging uitnodiging)
 		{
-			String errorString = retourzendingService.isValideColonUitnodiging(uitnodiging);
+			var errorString = retourzendingService.isValideColonUitnodiging(uitnodiging);
 			if (errorString == null)
 			{
 				return true;
@@ -197,7 +196,7 @@ public class RetourzendingHandmatigVerwerkenPage extends RetourzendingBasePage
 		@Override
 		protected boolean isUitnodigingValide(CervixUitnodiging uitnodiging)
 		{
-			String errorString = retourzendingService.isValideCervixUitnodiging(uitnodiging);
+			var errorString = retourzendingService.isValideCervixUitnodiging(uitnodiging);
 			if (errorString == null)
 			{
 				return true;
@@ -223,7 +222,7 @@ public class RetourzendingHandmatigVerwerkenPage extends RetourzendingBasePage
 
 			this.uitnodingModel = model;
 
-			Form<U> statusForm = new Form<>("statusForm", new CompoundPropertyModel<>(model));
+			var statusForm = new Form<U>("statusForm", new CompoundPropertyModel<>(model));
 			add(statusForm);
 			statusForm.add(new AjaxLink<Void>("opnieuw")
 			{
@@ -237,8 +236,8 @@ public class RetourzendingHandmatigVerwerkenPage extends RetourzendingBasePage
 				}
 			});
 
-			List<RetourredenAfhandeling> retourRedenAfhandelingen = hibernateService.loadAll(RetourredenAfhandeling.class);
-			List<String> retourRedenen = retourRedenAfhandelingen.stream().map(RetourredenAfhandeling::getRetourReden).collect(Collectors.toList());
+			var retourRedenAfhandelingen = hibernateService.loadAll(RetourredenAfhandeling.class);
+			var retourRedenen = retourRedenAfhandelingen.stream().map(RetourredenAfhandeling::getRetourReden).collect(Collectors.toList());
 
 			statusForm.add(new ScreenitDropdown<>("retourzendingReden", retourRedenen, new ChoiceRenderer<>())
 				.setNullValid(false).setRequired(true));
@@ -251,7 +250,7 @@ public class RetourzendingHandmatigVerwerkenPage extends RetourzendingBasePage
 				@Override
 				protected void onSubmit(AjaxRequestTarget target)
 				{
-					U uitnodiging = uitnodingModel.getObject();
+					var uitnodiging = uitnodingModel.getObject();
 					retourzendingService.verwerkRetourzendingHandmatig(getIngelogdeOrganisatieMedewerker(), uitnodiging, uitnodiging.getRetourzendingReden());
 
 					info(getString("message.gegevensopgeslagen"));

@@ -69,7 +69,7 @@ public class MammaBrievenGenererenPartitioner extends AbstractBrievenGenererenPa
 	@Override
 	protected void fillingData(Map<String, ExecutionContext> partities, ScreeningOrganisatie organisatie)
 	{
-		for (BriefType briefType : getBriefTypes())
+		for (var briefType : getBriefTypes())
 		{
 			if (briefType.getVerzendendeOrganisatieType() != OrganisatieType.SCREENINGSORGANISATIE)
 			{
@@ -84,7 +84,7 @@ public class MammaBrievenGenererenPartitioner extends AbstractBrievenGenererenPa
 
 				partitionBuilders(partities, organisatie.getId(), briefType, true, null, true, isEersteRondeBrief);
 
-				for (Long standplaatsId : getStandplaatsenIdsMetBrief(briefService.isOverbruggingssituatieParagonStarted() ? null : organisatie, briefType))
+				for (var standplaatsId : getStandplaatsenIdsMetBrief(briefService.isOverbruggingssituatieParagonStarted() ? null : organisatie, briefType))
 				{
 
 					partitionBuilders(partities, organisatie.getId(), briefType, true, standplaatsId, false, isEersteRondeBrief);

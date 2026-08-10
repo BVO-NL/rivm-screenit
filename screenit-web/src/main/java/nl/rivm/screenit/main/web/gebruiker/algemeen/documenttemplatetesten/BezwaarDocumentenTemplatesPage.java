@@ -39,7 +39,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.MergeFieldTestType;
 import nl.rivm.screenit.model.enums.Recht;
-import nl.rivm.screenit.service.BezwaarService;
+import nl.rivm.screenit.service.BaseBezwaarService;
 
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
@@ -59,14 +59,14 @@ import com.aspose.words.Document;
 public class BezwaarDocumentenTemplatesPage extends BaseDocumentTemplateTestenPage
 {
 	@SpringBean
-	private BezwaarService bezwaarService;
+	private BaseBezwaarService bezwaarService;
 
 	private List<BezwaarGroupViewWrapper> wrappers;
 
 	@Override
 	protected List<BriefType> getVisibleBriefTypes()
 	{
-		List<BriefType> briefTypes = BriefType.CLIENT_BEZWAAR_BRIEVEN;
+		var briefTypes = BriefType.CLIENT_BEZWAAR_BRIEVEN;
 		if (mergeFieldModel.getObject() != null)
 		{
 			briefTypes = zichtbareBriefTypesMetMergeField(briefTypes, mergeFieldModel.getObject());

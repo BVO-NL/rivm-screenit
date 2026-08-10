@@ -47,7 +47,7 @@ public enum UploadOrganisatieImageType implements UploadImageType<Organisatie>
 			@Override
 			public UploadDocument setUploadDocument(IModel<Organisatie> model)
 			{
-				UploadDocument uploadDocument = createNieuwUploadDocument();
+				var uploadDocument = createNieuwUploadDocument();
 				getScreningOrganisatie(model).setLogo(uploadDocument);
 				return uploadDocument;
 			}
@@ -76,7 +76,7 @@ public enum UploadOrganisatieImageType implements UploadImageType<Organisatie>
 			@Override
 			public UploadDocument setUploadDocument(IModel<Organisatie> model)
 			{
-				UploadDocument uploadDocument = createNieuwUploadDocument();
+				var uploadDocument = createNieuwUploadDocument();
 				getScreningOrganisatie(model).setLogoBrief(uploadDocument);
 				return uploadDocument;
 			}
@@ -105,7 +105,7 @@ public enum UploadOrganisatieImageType implements UploadImageType<Organisatie>
 			@Override
 			public UploadDocument setUploadDocument(IModel<Organisatie> model)
 			{
-				UploadDocument uploadDocument = createNieuwUploadDocument();
+				var uploadDocument = createNieuwUploadDocument();
 				getScreningOrganisatie(model).setBestuurSign(uploadDocument);
 				return uploadDocument;
 			}
@@ -134,7 +134,7 @@ public enum UploadOrganisatieImageType implements UploadImageType<Organisatie>
 			@Override
 			public UploadDocument setUploadDocument(IModel<Organisatie> model)
 			{
-				UploadDocument uploadDocument = createNieuwUploadDocument();
+				var uploadDocument = createNieuwUploadDocument();
 				getScreningOrganisatie(model).setRcmdlSign(uploadDocument);
 				return uploadDocument;
 			}
@@ -163,7 +163,7 @@ public enum UploadOrganisatieImageType implements UploadImageType<Organisatie>
 			@Override
 			public UploadDocument setUploadDocument(IModel<Organisatie> model)
 			{
-				UploadDocument uploadDocument = createNieuwUploadDocument();
+				var uploadDocument = createNieuwUploadDocument();
 				getScreningOrganisatie(model).setKwaliteitslogo(uploadDocument);
 				return uploadDocument;
 			}
@@ -192,7 +192,7 @@ public enum UploadOrganisatieImageType implements UploadImageType<Organisatie>
 			@Override
 			public UploadDocument setUploadDocument(IModel<Organisatie> model)
 			{
-				UploadDocument uploadDocument = createNieuwUploadDocument();
+				var uploadDocument = createNieuwUploadDocument();
 				getBMHKLaboratorium(model).setHandtekeningMedischMircobioloog(uploadDocument);
 				return uploadDocument;
 			}
@@ -221,7 +221,7 @@ public enum UploadOrganisatieImageType implements UploadImageType<Organisatie>
 			@Override
 			public UploadDocument setUploadDocument(IModel<Organisatie> model)
 			{
-				UploadDocument uploadDocument = createNieuwUploadDocument();
+				var uploadDocument = createNieuwUploadDocument();
 				getBMHKLaboratorium(model).setHandtekeningPatholoog(uploadDocument);
 				return uploadDocument;
 			}
@@ -270,7 +270,7 @@ public enum UploadOrganisatieImageType implements UploadImageType<Organisatie>
 
 	private static UploadDocument createNieuwUploadDocument()
 	{
-		UploadDocument uploadDocument = new UploadDocument();
+		var uploadDocument = new UploadDocument();
 		uploadDocument.setActief(true);
 		return uploadDocument;
 	}

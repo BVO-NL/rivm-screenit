@@ -136,7 +136,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 		huisarts.setGebruikersnaamHuisartsenPortaal(dto.getUsername());
 		huisarts.setEmail(dto.getEmail());
 		huisarts.setMutatiedatum(mutatieDatum);
-		Medewerker medewerker = huisarts.getOrganisatieMedewerkers().get(0).getMedewerker();
+		var medewerker = huisarts.getOrganisatieMedewerkers().get(0).getMedewerker();
 		medewerker.setAchternaam(dto.getAchternaam());
 		medewerker.setTussenvoegsel(dto.getTussenvoegsel());
 		medewerker.setVoorletters(dto.getVoorletters());
@@ -166,7 +166,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 	@Override
 	public String getPraktijkNaam(Medewerker medewerker)
 	{
-		String builder = "Praktijk van "
+		var builder = "Praktijk van "
 			+ NaamUtil.getTussenvoegselEnAchternaam(medewerker);
 		return builder;
 	}
@@ -264,7 +264,10 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 		adres.setHuisnummerToevoeging(dto.getHuisnummertoevoeging());
 		adres.setWoonplaats(setWoonplaats(dto.getWoonplaats()));
 		adres.setPostcode(dto.getPostcode());
-		adres.setGbaGemeente(adres.getWoonplaats().getGemeente());
+		if (adres.getWoonplaats() != null)
+		{
+			adres.setGbaGemeente(adres.getWoonplaats().getGemeente());
+		}
 		huisartsAdresRepository.save(adres);
 		return adres;
 	}
@@ -291,7 +294,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 	public void updateHuisarts(HuisartsDto huisartsDto)
 	{
 		var mutatieDatum = currentDateSupplier.getDate();
-		CervixHuisarts arts = updateAndGetHuisarts(huisartsDto, mutatieDatum);
+		var arts = updateAndGetHuisarts(huisartsDto, mutatieDatum);
 	}
 
 	@Override

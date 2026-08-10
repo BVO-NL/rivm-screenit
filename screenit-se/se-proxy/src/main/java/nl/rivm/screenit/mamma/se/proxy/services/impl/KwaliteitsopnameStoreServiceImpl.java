@@ -39,7 +39,7 @@ public class KwaliteitsopnameStoreServiceImpl implements KwaliteitsopnameStoreSe
 
 	synchronized public int geefVolgnrUit(int mammograafnummer)
 	{
-		Integer laatstUitgegevenVolgnr = laatstUitgegevenVolgnrByMammograafnr.get(mammograafnummer);
+		var laatstUitgegevenVolgnr = laatstUitgegevenVolgnrByMammograafnr.get(mammograafnummer);
 		Integer result = laatstUitgegevenVolgnr != null ? laatstUitgegevenVolgnr + 1 : 1;
 		if (result > 99)
 		{

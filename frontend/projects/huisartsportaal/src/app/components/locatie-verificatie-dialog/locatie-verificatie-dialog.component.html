@@ -1,0 +1,36 @@
+<!--
+  ========================LICENSE_START=================================
+  huisartsportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog titel="Locatie verifiëren">
+  <div body>
+    <p>Voer hier de verificatiecode in die u voor de betreffende locatie heeft ontvangen op uw zorgmailadres. Na het verifiëren kunt u laboratoriumformulieren aanvragen en
+      huisartsberichten ontvangen.</p>
+    <form [formGroup]="verificatieForm">
+      <ds-input label="Locatienaam" formControlName="locatieNaam"/>
+      <ds-input label="Zorgmail klantnummer" formControlName="zorgmailKlantnummer"/>
+      <ds-input label="Verificatiecode" formControlName="verificatieCode"/>
+    </form>
+  </div>
+  <div buttons class="gap-2 display-flex">
+    <button ds-button-secondary (click)="herzendMail()" data-testid="herzend_mail_button">Herzend verificatiemail</button>
+    <button ds-button-secondary (click)="sluiten()" data-testid="sluiten_button">Sluiten</button>
+    <button ds-button-primary (click)="verifieerLocatie()" [disabled]="verificatieForm.invalid" data-testid="verifieer_locatie_button">Verifiëren</button>
+  </div>
+</app-base-dialog>

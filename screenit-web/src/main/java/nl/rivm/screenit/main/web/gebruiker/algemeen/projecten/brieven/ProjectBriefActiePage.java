@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.brieven;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
@@ -135,9 +134,9 @@ public class ProjectBriefActiePage extends ProjectBasePage
 			public void onConfigure()
 			{
 				super.onConfigure();
-				Project project = getModelObject();
-				Date eindDatum = project.getEindDatum();
-				Date nu = currentDateSupplier.getDate();
+				var project = getModelObject();
+				var eindDatum = project.getEindDatum();
+				var nu = currentDateSupplier.getDate();
 				setVisible(!eindDatum.before(nu));
 			}
 
@@ -150,7 +149,7 @@ public class ProjectBriefActiePage extends ProjectBasePage
 
 	private WebMarkupContainer getBriefActieContainer()
 	{
-		WebMarkupContainer briefActieContainer = new WebMarkupContainer("briefActieContainer");
+		var briefActieContainer = new WebMarkupContainer("briefActieContainer");
 		briefActieContainer.setOutputMarkupId(true);
 		List<IColumn<ProjectBriefActie, String>> columns = new ArrayList<>();
 		columns.add(new EnumPropertyColumn<ProjectBriefActie, String, ProjectBriefActieType>(Model.of("Soort"), TYPE, TYPE));
@@ -165,7 +164,7 @@ public class ProjectBriefActiePage extends ProjectBasePage
 
 		columns.add(new PropertyColumn<>(Model.of("Naam"), DOCUMENT + "." + NAAM, DOCUMENT + "." + NAAM));
 
-		FileValidator validator = new FileValidator(FileType.WORD_NIEUW);
+		var validator = new FileValidator(FileType.WORD_NIEUW);
 		columns.add(new UploadDocumentColumn<>(Model.of("Uploaden"), DOCUMENT, briefActieContainer, validator)
 		{
 
@@ -190,8 +189,8 @@ public class ProjectBriefActiePage extends ProjectBasePage
 					hibernateService.saveOrUpdate(object);
 					info("bestand succesvol geupload");
 
-					Project project = object.getProject();
-					String melding = getString(EnumStringUtil.getPropertyString(project.getType())) + ": " + project.getNaam() +
+					var project = object.getProject();
+					var melding = getString(EnumStringUtil.getPropertyString(project.getType())) + ": " + project.getNaam() +
 						" Briefsoort: " + getString(EnumStringUtil.getPropertyString(object.getType()));
 
 					if (object.getBriefType() != null)
@@ -224,7 +223,7 @@ public class ProjectBriefActiePage extends ProjectBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<ProjectBriefActie>> cellItem, String componentId, IModel<ProjectBriefActie> rowModel)
 			{
-				ProjectBriefActie actie = rowModel.getObject();
+				var actie = rowModel.getObject();
 				if (actie.getDocument() != null)
 				{
 					cellItem.add(new NavigeerNaarCellPanel<>(componentId, rowModel)
@@ -259,23 +258,23 @@ public class ProjectBriefActiePage extends ProjectBasePage
 			{
 				hibernateService.saveOrUpdate(actiefObject);
 
-				WebMarkupContainer container = getBriefActieContainer();
+				var container = getBriefActieContainer();
 				ProjectBriefActiePage.this.actieContainer.replaceWith(container);
 				ProjectBriefActiePage.this.actieContainer = container;
 				target.add(ProjectBriefActiePage.this.actieContainer);
 
-				Project project = actiefObject.getProject();
-				String typebrief = getString(EnumStringUtil.getPropertyString(actiefObject.getType()));
+				var project = actiefObject.getProject();
+				var typebrief = getString(EnumStringUtil.getPropertyString(actiefObject.getType()));
 
-				ProjectBriefActie projectBriefActie = briefActieModel.getObject();
+				var projectBriefActie = briefActieModel.getObject();
 				if (projectBriefActie.getProject().getType().equals(ProjectType.BRIEFPROJECT))
 				{
-					String melding = typebrief + " geinactiveerd van Briefproject: " + project.getNaam();
+					var melding = typebrief + " geinactiveerd van Briefproject: " + project.getNaam();
 					logService.logGebeurtenis(LogGebeurtenis.BRIEFPROJECT_BRIEF_ACTIE_GEINACTIVEERD, ScreenitSession.get().getIngelogdAccount(), melding);
 				}
 				else
 				{
-					String melding = typebrief + " geinactiveerd van Project: " + project.getNaam();
+					var melding = typebrief + " geinactiveerd van Project: " + project.getNaam();
 					logService.logGebeurtenis(LogGebeurtenis.PROJECT_BRIEF_ACTIE_GEINACTIVEERD, ScreenitSession.get().getIngelogdAccount(), melding);
 				}
 
@@ -289,7 +288,7 @@ public class ProjectBriefActiePage extends ProjectBasePage
 			}
 		});
 
-		ScreenitDataTable<ProjectBriefActie, String> dataTable = new ScreenitDataTable<>("projectBriefacties", columns,
+		var dataTable = new ScreenitDataTable<>("projectBriefacties", columns,
 			new BriefActieDataProvider(briefActieModel), 10, Model.of("briefacties"))
 		{
 			@Override

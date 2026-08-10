@@ -21,11 +21,9 @@ package nl.rivm.screenit.huisartsenportaal.util;
  * =========================LICENSE_END==================================
  */
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -37,7 +35,7 @@ public class DateUtil
 
 	public static String formatForPattern(String pattern, Date date)
 	{
-		DateTimeFormatter df = DateTimeFormatter.ofPattern(pattern);
+		var df = DateTimeFormatter.ofPattern(pattern);
 		return df.format(toLocalDateTime(date));
 	}
 
@@ -47,8 +45,8 @@ public class DateUtil
 		{
 			return null;
 		}
-		ZonedDateTime atStartOfDay = localDate.atStartOfDay(SCREENIT_DEFAULT_ZONE);
-		Instant instant = atStartOfDay.toInstant();
+		var atStartOfDay = localDate.atStartOfDay(SCREENIT_DEFAULT_ZONE);
+		var instant = atStartOfDay.toInstant();
 
 		return Date.from(instant);
 	}
@@ -59,8 +57,8 @@ public class DateUtil
 		{
 			return null;
 		}
-		ZonedDateTime atZone = localDateTime.atZone(SCREENIT_DEFAULT_ZONE);
-		Instant instant = atZone.toInstant();
+		var atZone = localDateTime.atZone(SCREENIT_DEFAULT_ZONE);
+		var instant = atZone.toInstant();
 
 		return Date.from(instant);
 	}

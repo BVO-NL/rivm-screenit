@@ -72,7 +72,7 @@ public class ScreenitDateTimePropertyColumn<T, S> extends ClickablePropertyColum
 	public IModel<Object> getDataModel(IModel<T> embeddedModel)
 	{
 		Object object = embeddedModel.getObject();
-		PropertyModel<T> model = new PropertyModel<>(object, getPropertyExpression());
+		var model = new PropertyModel<T>(object, getPropertyExpression());
 		Date date = null;
 
 		Object modelObject = model.getObject();

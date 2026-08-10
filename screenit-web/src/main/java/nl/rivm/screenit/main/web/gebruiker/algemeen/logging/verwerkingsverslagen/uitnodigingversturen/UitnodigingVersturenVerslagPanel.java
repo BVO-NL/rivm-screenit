@@ -59,7 +59,7 @@ public class UitnodigingVersturenVerslagPanel extends GenericPanel<ColonSelectie
 			@Override
 			public List<ColonSelectieRapportageEntry> getObject()
 			{
-				List<ColonSelectieRapportageEntry> selectieRapportageEntries = model.getObject().getEntries();
+				var selectieRapportageEntries = model.getObject().getEntries();
 
 				selectieRapportageEntries = new ArrayList<>(Collections2.filter(selectieRapportageEntries, new Predicate<ColonSelectieRapportageEntry>()
 				{
@@ -94,7 +94,7 @@ public class UitnodigingVersturenVerslagPanel extends GenericPanel<ColonSelectie
 			@Override
 			public List<ColonSelectieRapportageProjectGroepEntry> getObject()
 			{
-				List<ColonSelectieRapportageProjectGroepEntry> selectieRapportageEntries = model.getObject().getProjectGroepen();
+				var selectieRapportageEntries = model.getObject().getProjectGroepen();
 				selectieRapportageEntries = new ArrayList<>(selectieRapportageEntries);
 
 				selectieRapportageEntries = new ArrayList<>(Collections2.filter(selectieRapportageEntries, new Predicate<ColonSelectieRapportageProjectGroepEntry>()

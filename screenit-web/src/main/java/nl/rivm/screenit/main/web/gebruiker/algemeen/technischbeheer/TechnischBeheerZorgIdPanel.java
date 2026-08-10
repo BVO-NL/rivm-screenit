@@ -42,7 +42,7 @@ public class TechnischBeheerZorgIdPanel extends BaseTechnischBeheerParametersPan
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
 
 		form.add(new TextField<>("internalZorgidCallbackurl", String.class).setRequired(true));
 		form.add(new TextField<>("internalZorgidServerurl", String.class).setRequired(true));

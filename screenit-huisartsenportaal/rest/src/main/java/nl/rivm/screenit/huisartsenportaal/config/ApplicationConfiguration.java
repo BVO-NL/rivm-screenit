@@ -70,7 +70,7 @@ public class ApplicationConfiguration
 	{
 		return (String username) ->
 		{
-			Huisarts huisarts = huisartsRepository.findByGebruikersnaam(username);
+			var huisarts = huisartsRepository.findByGebruikersnaam(username);
 			if (huisarts == null && NumberUtils.isDigits(username) && username.indexOf("0") != 0)
 			{
 				var huisartsportaalId = Long.parseLong(username);

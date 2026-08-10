@@ -71,7 +71,7 @@ public class MammaVisitatieOnderzoekInzienPage extends AbstractMammaBeoordelenPa
 	{
 		List<AbstractMammaRondePanel> rondePanels = new ArrayList<>();
 
-		MammaVisitatieOnderzoek visitatieOnderzoek = hibernateService.load(MammaVisitatieOnderzoek.class,
+		var visitatieOnderzoek = hibernateService.load(MammaVisitatieOnderzoek.class,
 			onderzoekenIdMapping.get(beoordelingModel.getObject().getId()));
 		huidigeRondePanel = new MammaVisitatieBesprekenHuidigeRondePanel("rondeItem", ModelUtil.sModel(beoordelingModel.getObject()),
 			ModelUtil.sModel(visitatieOnderzoek));

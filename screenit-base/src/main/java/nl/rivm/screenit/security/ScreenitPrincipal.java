@@ -71,8 +71,8 @@ public class ScreenitPrincipal implements Serializable
 	@Override
 	public int hashCode()
 	{
-		final int prime = 31;
-		int result = 1;
+		final var prime = 31;
+		var result = 1;
 		result = prime * result + ((accountClass == null) ? 0 : accountClass.hashCode());
 		result = prime * result + ((accountId == null) ? 0 : accountId.hashCode());
 		return result;
@@ -93,7 +93,7 @@ public class ScreenitPrincipal implements Serializable
 		{
 			return false;
 		}
-		ScreenitPrincipal other = (ScreenitPrincipal) obj;
+		var other = (ScreenitPrincipal) obj;
 		if (accountClass == null)
 		{
 			if (other.accountClass != null)

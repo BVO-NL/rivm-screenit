@@ -182,7 +182,7 @@ public class ColonFitAnalyseResultaatSetVerwerkingWriter implements ItemWriter<C
 		var colonUitnodiging = fitRegistratie.getUitnodiging();
 		if (colonUitnodiging != null)
 		{
-			String trackTraceId = colonUitnodiging.getTrackTraceId();
+			var trackTraceId = colonUitnodiging.getTrackTraceId();
 			if (trackTraceId != null && (trackTraceId.startsWith("16859/") || trackTraceId.startsWith("17531/")))
 			{
 				LOG.info("FIT (id: '{}') is aangepast naar status verwijderd (Incident Inpakcentrum)", fitRegistratie.getId());

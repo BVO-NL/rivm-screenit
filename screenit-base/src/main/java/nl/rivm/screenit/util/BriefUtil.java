@@ -22,8 +22,11 @@ package nl.rivm.screenit.util;
  */
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import jakarta.persistence.EntityManager;
 
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.Client;
@@ -38,11 +41,14 @@ import nl.rivm.screenit.model.cervix.CervixRegioBrief;
 import nl.rivm.screenit.model.colon.ColonBrief;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.model.envers.ScreenitRevisionEntity;
 import nl.rivm.screenit.model.mamma.MammaBrief;
 import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectClient;
+import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Hibernate;
 
 public class BriefUtil
@@ -64,14 +70,14 @@ public class BriefUtil
 
 	public static boolean isOngunstigeUitslagBrief(ColonBrief bestaandeBrief)
 	{
-		BriefType briefType = bestaandeBrief.getBriefType();
+		var briefType = bestaandeBrief.getBriefType();
 		return briefType.equals(BriefType.COLON_UITNODIGING_INTAKE) || briefType.equals(BriefType.COLON_INTAKE_AFMELDING)
 			|| briefType.equals(BriefType.COLON_INTAKE_GEWIJZIGD);
 	}
 
 	public static boolean isUitslagBrief(ColonBrief bestaandeBrief)
 	{
-		BriefType briefType = bestaandeBrief.getBriefType();
+		var briefType = bestaandeBrief.getBriefType();
 		return isOngunstigeUitslagBrief(bestaandeBrief) || briefType.equals(BriefType.COLON_GUNSTIGE_UITSLAG) || briefType.equals(BriefType.COLON_UITSLAGBRIEF_EXTRA_MONSTER);
 	}
 
@@ -126,12 +132,16 @@ public class BriefUtil
 
 	public static Brief setTegenhouden(Brief brief, boolean tegenhouden)
 	{
-		brief = getBriefVoorPrintStatus(brief);
 		if (brief != null)
 		{
 			brief.setTegenhouden(tegenhouden);
 		}
-		return brief;
+		var afdrukbaarBrief = getBriefVoorPrintStatus(brief);
+		if (afdrukbaarBrief != null)
+		{
+			afdrukbaarBrief.setTegenhouden(tegenhouden);
+		}
+		return afdrukbaarBrief;
 	}
 
 	public static boolean isTegengehouden(Brief brief)
@@ -151,7 +161,7 @@ public class BriefUtil
 			brief = (Brief) Hibernate.unproxy(brief);
 			if (brief instanceof ClientBrief<?, ?, ?> clientBrief)
 			{
-				ProjectBrief projectBrief = clientBrief.getProjectBrief();
+				var projectBrief = clientBrief.getProjectBrief();
 				if (projectBrief != null)
 				{
 					brief = projectBrief;
@@ -193,12 +203,12 @@ public class BriefUtil
 		var briefVoorPrintStatus = getBriefVoorPrintStatus(brief);
 		return briefVoorPrintStatus != null && briefVoorPrintStatus.getVerstuurdVoorAfdrukkenOp() != null ?
 			DateUtil.toUtilDate(briefVoorPrintStatus.getVerstuurdVoorAfdrukkenOp()) :
-			isAfgedrukteMigratieBrief(briefVoorPrintStatus) ? briefVoorPrintStatus.getCreatieDatum() : null;
+			isAfgedrukteMigratieOfDirectPrintenBrief(briefVoorPrintStatus) ? briefVoorPrintStatus.getCreatieDatum() : null;
 	}
 
 	public static boolean isVerstuurdVoorAfdrukken(Brief brief)
 	{
-		return isAfgedrukteMigratieBrief(brief) || getVerstuurdVoorAfdrukkenMoment(brief) != null;
+		return isAfgedrukteMigratieOfDirectPrintenBrief(brief) || getVerstuurdVoorAfdrukkenMoment(brief) != null;
 	}
 
 	public static boolean isGegenereerd(Brief brief)
@@ -211,9 +221,48 @@ public class BriefUtil
 		return false;
 	}
 
-	private static boolean isAfgedrukteMigratieBrief(Brief brief)
+	private static boolean isAfgedrukteMigratieOfDirectPrintenBrief(Brief brief)
 	{
-		return isGegenereerd(brief) && getBriefVoorPrintStatus(brief).getMergedBrieven() == null;
+		return isGegenereerd(brief) && getBriefVoorPrintStatus(brief).getMergedBrieven() == null && isMigratieOfDirectPrintenBrief(brief);
+	}
+
+	private static boolean isMigratieOfDirectPrintenBrief(Brief brief)
+	{
+		brief = getBriefVoorPrintStatus(brief);
+		if (brief == null)
+		{
+			return false;
+		}
+		var entityHistory = EntityAuditUtil.getEntityHistory(brief, ApplicationContextProvider.getApplicationContext().getBean(EntityManager.class), false);
+		if (CollectionUtils.isEmpty(entityHistory))
+		{
+			return true;
+		}
+		var eersteGegenereerdeRevisieInfo = entityHistory.stream()
+			.sorted(Comparator.comparingLong(BriefUtil::geefRevisieTimestamp))
+			.filter(BriefUtil::isGegenereerdeRevisie)
+			.findFirst()
+			.map(EntityAuditUtil::getRevisionInfo)
+			.orElse(null);
+
+		return isGebruikerOfClientRevisie(eersteGegenereerdeRevisieInfo);
+	}
+
+	private static long geefRevisieTimestamp(Object auditRow)
+	{
+		var revisionInfo = EntityAuditUtil.getRevisionInfo(auditRow);
+		return revisionInfo != null ? revisionInfo.getTimestamp() : Long.MAX_VALUE;
+	}
+
+	private static boolean isGegenereerdeRevisie(Object auditRow)
+	{
+		var revisieBrief = EntityAuditUtil.<Brief> getRevisionEntity(auditRow);
+		return revisieBrief != null && revisieBrief.isGegenereerd();
+	}
+
+	private static boolean isGebruikerOfClientRevisie(ScreenitRevisionEntity revisionInfo)
+	{
+		return revisionInfo != null && (revisionInfo.getClient() != null || revisionInfo.getOrganisatieMedewerker() != null);
 	}
 
 	public static BezwaarBrief maakBezwaarBrief(Client client, BriefType type, Date creatieMoment, boolean vragenOmHandtekening)
@@ -291,6 +340,17 @@ public class BriefUtil
 	public static String maakKenmerk(Brief brief)
 	{
 		return brief != null && brief.getId() != null ? "K" + Long.toHexString(brief.getId()).toUpperCase() : null;
+	}
+
+	public static String maakTestParagonKenmerk()
+	{
+		return "T" + Long.toHexString(System.currentTimeMillis()).toUpperCase();
+	}
+
+	public static String maakParagonKenmerk(Brief brief)
+	{
+		var briefKenmerk = maakKenmerk(brief);
+		return (briefKenmerk != null ? briefKenmerk : "") + "=" + Long.toHexString(System.currentTimeMillis()).toUpperCase();
 	}
 
 	public static boolean isTegenhoudenMogelijk(Brief brief)

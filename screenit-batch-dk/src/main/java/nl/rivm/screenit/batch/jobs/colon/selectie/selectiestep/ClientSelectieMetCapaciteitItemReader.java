@@ -102,13 +102,13 @@ public class ClientSelectieMetCapaciteitItemReader extends AbstractClientSelecti
 	{
 		var projectGroepen = projectService.getActieveProjectGroepenVoorUitnodigingDK();
 
-		Integer minimaleLeeftijd = preferenceService.getInteger(PreferenceKey.MINIMALE_LEEFTIJD_COLON.name());
+		var minimaleLeeftijd = preferenceService.getInteger(PreferenceKey.MINIMALE_LEEFTIJD_COLON.name());
 		if (minimaleLeeftijd == null)
 		{
 			throw new IllegalStateException("Minimale leeftijd colonscreening op de parameterisatie pagina is niet gezet.");
 		}
 
-		Integer maximaleLeeftijd = preferenceService.getInteger(PreferenceKey.MAXIMALE_LEEFTIJD_COLON.name());
+		var maximaleLeeftijd = preferenceService.getInteger(PreferenceKey.MAXIMALE_LEEFTIJD_COLON.name());
 		if (maximaleLeeftijd == null)
 		{
 			throw new IllegalStateException("Maximale leeftijd colonscreening op de parameterisatie pagina is niet gezet");
@@ -138,7 +138,7 @@ public class ClientSelectieMetCapaciteitItemReader extends AbstractClientSelecti
 		{
 			for (var uitnodigingsgebied : uitnodigingsgebieden)
 			{
-				int capaciteitToevoegingOfOver = uitnodigingsgebied.getUitnodigingscapaciteitToevoegingOfOver();
+				var capaciteitToevoegingOfOver = uitnodigingsgebied.getUitnodigingscapaciteitToevoegingOfOver();
 				if (capaciteitToevoegingOfOver > 0 || uitnodigingsgebied.isLeeglopendGebied())
 				{
 					var gewijzigdGebiedEntry = new ColonSelectieRapportageGewijzigdGebiedEntry();

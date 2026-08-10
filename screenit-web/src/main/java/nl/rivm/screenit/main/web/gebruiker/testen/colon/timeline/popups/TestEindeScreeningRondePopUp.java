@@ -51,10 +51,10 @@ public class TestEindeScreeningRondePopUp extends AbstractTestBasePopupPanel
 	@Override
 	protected void opslaan()
 	{
-		Boolean eindeScreeningRondeBoolean = eindeScreeningRonde.getObject();
+		var eindeScreeningRondeBoolean = eindeScreeningRonde.getObject();
 		if (Boolean.TRUE.equals(eindeScreeningRondeBoolean))
 		{
-			for (Client client : getModelObject())
+			for (var client : getModelObject())
 			{
 				colonTestTimelineService.naarEindeVanRonde(client);
 			}

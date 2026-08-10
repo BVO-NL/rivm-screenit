@@ -88,7 +88,7 @@ public class TestCervixGeanalyseerdOpHpvPopup extends TestCervixUitnodigingenLab
 			break;
 		}
 
-		for (CervixUitnodiging uitnodiging : getCurrentUitnodigingen())
+		for (var uitnodiging : getCurrentUitnodigingen())
 		{
 			baseTestTimelineService.geanalyseerdOpHpv(uitnodiging, hpvBeoordelingsWaarde, laboratoriumModel.getObject(), hpvResultValues);
 		}

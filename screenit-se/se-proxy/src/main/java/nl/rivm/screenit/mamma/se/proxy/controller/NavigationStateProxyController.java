@@ -23,7 +23,6 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
 
 import java.io.IOException;
 
-import nl.rivm.screenit.mamma.se.proxy.model.LogischeSessie;
 import nl.rivm.screenit.mamma.se.proxy.model.NavigatieDto;
 import nl.rivm.screenit.mamma.se.proxy.services.LogischeSessieService;
 
@@ -56,9 +55,9 @@ public class NavigationStateProxyController
 		throws IOException
 	{
 		navigationAction = navigationAction.replace("type", "navigatieType");
-		NavigatieDto navigatie = objectMapper.readValue(navigationAction, NavigatieDto.class);
+		var navigatie = objectMapper.readValue(navigationAction, NavigatieDto.class);
 
-		LogischeSessie logischeSessie = logischeSessieService.getLogischeSessieMetIdentificatie(yubikeyIdentificatie);
+		var logischeSessie = logischeSessieService.getLogischeSessieMetIdentificatie(yubikeyIdentificatie);
 
 		if (logischeSessie == null)
 		{

@@ -36,7 +36,7 @@ public abstract class MammaScreeningBasePage extends MedewerkerBasePage
 
 	public void wijzigIDS7Role(MammobridgeRole role)
 	{
-		MammobridgeRole oudeRole = ScreenitSession.get().wijzigMammaIDS7Role(role);
+		var oudeRole = ScreenitSession.get().wijzigMammaIDS7Role(role);
 		if (!role.equals(oudeRole))
 		{
 

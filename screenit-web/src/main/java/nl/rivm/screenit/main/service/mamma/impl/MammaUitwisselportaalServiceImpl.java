@@ -109,18 +109,18 @@ public class MammaUitwisselportaalServiceImpl implements MammaUitwisselportaalSe
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void maakDownloadVerzoek(List<MammaOnderzoek> onderzoeken, OrganisatieMedewerker ingelogdeOrganisatieMedewerker) throws IOException
 	{
-		Client client = beoordelingService.getClientVanBeoordeling(onderzoeken.get(0).getLaatsteBeoordeling());
+		var client = beoordelingService.getClientVanBeoordeling(onderzoeken.get(0).getLaatsteBeoordeling());
 		logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITWISSELPORTAAL_DOWNLOAD, ingelogdeOrganisatieMedewerker, client,
 			"Downloadverzoek aangemaakt");
-		MammaDownloadOnderzoekenVerzoek verzoek = new MammaDownloadOnderzoekenVerzoek();
+		var verzoek = new MammaDownloadOnderzoekenVerzoek();
 		verzoek.setAangemaaktDoor(ingelogdeOrganisatieMedewerker);
 		verzoek.setAangemaaktOp(dateSupplier.getDate());
 		verzoek.setStatus(BestandStatus.NOG_TE_VERWERKEN);
 		verzoek.setGewijzigdOp(verzoek.getAangemaaktOp());
 		hibernateService.saveOrUpdate(verzoek);
-		for (MammaOnderzoek onderzoek : onderzoeken)
+		for (var onderzoek : onderzoeken)
 		{
-			MammaDownloadOnderzoek downloadOnderzoek = new MammaDownloadOnderzoek();
+			var downloadOnderzoek = new MammaDownloadOnderzoek();
 			downloadOnderzoek.setOnderzoek(onderzoek);
 			downloadOnderzoek.setVerzoek(verzoek);
 			downloadOnderzoek.setStatus(BestandStatus.NOG_TE_VERWERKEN);
@@ -133,13 +133,13 @@ public class MammaUitwisselportaalServiceImpl implements MammaUitwisselportaalSe
 
 	private void createEmptyFile(MammaDownloadOnderzoekenVerzoek verzoek) throws IOException
 	{
-		File f = File.createTempFile("dummy", ".zip"); 
-		UploadDocument document = new UploadDocument();
+		var f = File.createTempFile("dummy", ".zip"); 
+		var document = new UploadDocument();
 		document.setActief(true);
 		document.setContentType("application/zip");
 		document.setFile(f);
 
-		String zipNaam = "onderzoekData-"
+		var zipNaam = "onderzoekData-"
 			+ verzoek.getOnderzoeken().get(0).getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient().getPersoon().getBsn()
 			+ "-"
 			+ new SimpleDateFormat(Constants.DATE_FORMAT_YYYYMMDDHHMMSS).format(new Date())
@@ -167,7 +167,7 @@ public class MammaUitwisselportaalServiceImpl implements MammaUitwisselportaalSe
 			verzoek.setStatus(BestandStatus.NOG_TE_VERWERKEN);
 			verzoek.setGewijzigdOp(dateSupplier.getDate());
 			hibernateService.saveOrUpdate(verzoek);
-			for (MammaDownloadOnderzoek onderzoek : verzoek.getOnderzoeken())
+			for (var onderzoek : verzoek.getOnderzoeken())
 			{
 				onderzoek.setStatus(BestandStatus.NOG_TE_VERWERKEN);
 				onderzoek.setStatusMelding(null);
@@ -219,7 +219,7 @@ public class MammaUitwisselportaalServiceImpl implements MammaUitwisselportaalSe
 	{
 		if (downloadOnderzoekenVerzoek.getOnderzoeken() != null && !downloadOnderzoekenVerzoek.getOnderzoeken().isEmpty())
 		{
-			Client client = baseBeoordelingService.getClientVanBeoordeling(downloadOnderzoekenVerzoek.getOnderzoeken().get(0).getOnderzoek().getLaatsteBeoordeling());
+			var client = baseBeoordelingService.getClientVanBeoordeling(downloadOnderzoekenVerzoek.getOnderzoeken().get(0).getOnderzoek().getLaatsteBeoordeling());
 			return BezwaarUtil.isBezwaarActiefVoor(client, BezwaarType.GEEN_DIGITALE_UITWISSELING_MET_HET_ZIEKENHUIS, Bevolkingsonderzoek.MAMMA);
 		}
 		return false;
@@ -231,13 +231,13 @@ public class MammaUitwisselportaalServiceImpl implements MammaUitwisselportaalSe
 	{
 		verzoek.setGedownloadOp(dateSupplier.getDate());
 		hibernateService.saveOrUpdate(verzoek);
-		MammaOnderzoek onderzoek = verzoek.getOnderzoeken().get(0).getOnderzoek();
-		MammaScreeningRonde laatsteScreeningRondeMetUitslag = screeningrondeService
+		var onderzoek = verzoek.getOnderzoeken().get(0).getOnderzoek();
+		var laatsteScreeningRondeMetUitslag = screeningrondeService
 			.getLaatsteScreeningRondeMetUitslag(onderzoek.getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient());
 		if (getFollowUpRadiologieVerslag(laatsteScreeningRondeMetUitslag, ingelogdeOrganisatieMedewerker) == null
 			&& ArrayUtils.contains(RADIOLOGIE_VERSLAG_ORGANISATIE_TYPES, ingelogdeOrganisatieMedewerker.getOrganisatie().getOrganisatieType()))
 		{
-			MammaFollowUpRadiologieVerslag radiologieVerslag = new MammaFollowUpRadiologieVerslag();
+			var radiologieVerslag = new MammaFollowUpRadiologieVerslag();
 			laatsteScreeningRondeMetUitslag.getFollowUpRadiologieVerslagen().add(radiologieVerslag);
 			radiologieVerslag.setScreeningRonde(laatsteScreeningRondeMetUitslag);
 			radiologieVerslag.setAangemaaktIn(ingelogdeOrganisatieMedewerker.getOrganisatie());
@@ -245,7 +245,7 @@ public class MammaUitwisselportaalServiceImpl implements MammaUitwisselportaalSe
 			radiologieVerslag.setInformatieBeschikbaar(true);
 			hibernateService.saveOrUpdateAll(radiologieVerslag, laatsteScreeningRondeMetUitslag);
 		}
-		Client client = beoordelingService.getClientVanBeoordeling(onderzoek.getLaatsteBeoordeling());
+		var client = beoordelingService.getClientVanBeoordeling(onderzoek.getLaatsteBeoordeling());
 		logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITWISSELPORTAAL_DOWNLOAD, ingelogdeOrganisatieMedewerker, client,
 			"ZIP bestand is gedownload");
 	}

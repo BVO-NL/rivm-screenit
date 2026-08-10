@@ -22,7 +22,6 @@ package nl.rivm.screenit.batch.jobs.brieven;
  */
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseLogListener;
@@ -52,8 +51,8 @@ public abstract class AbstractBrievenGenererenListener extends BaseLogListener
 	protected void beforeStarting(JobExecution jobExecution)
 	{
 		var map = new HashMap<Long, Integer>();
-		List<ScreeningOrganisatie> screeningOrganisaties = hibernateService.loadAll(ScreeningOrganisatie.class);
-		for (ScreeningOrganisatie org : screeningOrganisaties)
+		var screeningOrganisaties = hibernateService.loadAll(ScreeningOrganisatie.class);
+		for (var org : screeningOrganisaties)
 		{
 			map.put(org.getId(), 0);
 		}

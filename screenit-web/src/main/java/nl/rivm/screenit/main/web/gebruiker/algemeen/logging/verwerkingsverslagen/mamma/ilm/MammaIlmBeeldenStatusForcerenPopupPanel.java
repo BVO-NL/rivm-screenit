@@ -68,8 +68,8 @@ public abstract class MammaIlmBeeldenStatusForcerenPopupPanel extends GenericPan
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaIlmBeeldenStatusRapportageEntry entry = getModelObject();
-				boolean geforceerd = baseIlmService.forceerIlmStatusVerwijderd(entry, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+				var entry = getModelObject();
+				var geforceerd = baseIlmService.forceerIlmStatusVerwijderd(entry, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				if (geforceerd)
 				{
 					info(getString("geforceerd.true"));

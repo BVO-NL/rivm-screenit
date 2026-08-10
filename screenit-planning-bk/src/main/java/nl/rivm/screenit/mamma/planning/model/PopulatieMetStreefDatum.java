@@ -45,7 +45,7 @@ public class PopulatieMetStreefDatum implements Comparable<PopulatieMetStreefDat
 
 	public static PopulatieMetStreefDatum voorUitstelClient(PlanningClient client)
 	{
-		PopulatieMetStreefDatum populatieMetStreefDatum = new PopulatieMetStreefDatum();
+		var populatieMetStreefDatum = new PopulatieMetStreefDatum();
 		populatieMetStreefDatum.voorUitstelClient = true;
 		populatieMetStreefDatum.clienten.add(client);
 		populatieMetStreefDatum.uitnodigingStreefDatum = client.getUitstelStreefDatum();
@@ -55,7 +55,7 @@ public class PopulatieMetStreefDatum implements Comparable<PopulatieMetStreefDat
 	@Override
 	public int compareTo(PopulatieMetStreefDatum populatieMetStreefDatum)
 	{
-		int compareTo = populatieMetStreefDatum.isUitgenodigd().compareTo(isUitgenodigd());
+		var compareTo = populatieMetStreefDatum.isUitgenodigd().compareTo(isUitgenodigd());
 		if (compareTo != 0)
 		{
 			return compareTo;

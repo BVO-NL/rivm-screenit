@@ -25,7 +25,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.project;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +43,6 @@ import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.base.ZoekenContextMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.INaam;
-import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -127,7 +125,7 @@ public class ProjectOverzicht extends AlgemeenPage
 		addNieuwProjectDropDown();
 
 		setDefaultModel(new CompoundPropertyModel<>(projectZoekModel));
-		ScreenitForm<Project> form = new ScreenitForm<Project>("form", (IModel<Project>) getDefaultModel());
+		var form = new ScreenitForm<Project>("form", (IModel<Project>) getDefaultModel());
 		add(form);
 
 		form.add(new FilterBvoPanel<Project>("bvoFilterContainer", form.getModel(), false));
@@ -141,7 +139,7 @@ public class ProjectOverzicht extends AlgemeenPage
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				ScreenitSession.get().setZoekObject(ProjectOverzicht.class, form.getModel());
-				WebMarkupContainer container = getProjectenTable();
+				var container = getProjectenTable();
 				projectContainer.replaceWith(container);
 				projectContainer = container;
 				target.add(projectContainer);
@@ -159,8 +157,8 @@ public class ProjectOverzicht extends AlgemeenPage
 
 	private void addNieuwProjectDropDown()
 	{
-		List<ProjectType> projectTypesMetRecht = projectService.getProjectTypes(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), Actie.TOEVOEGEN, true);
-		ListView<ProjectType> nieuwProjectTypes = new ListView<ProjectType>("nieuwProjectTypes", projectTypesMetRecht)
+		var projectTypesMetRecht = projectService.getProjectTypes(ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), Actie.TOEVOEGEN, true);
+		var nieuwProjectTypes = new ListView<ProjectType>("nieuwProjectTypes", projectTypesMetRecht)
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -168,7 +166,7 @@ public class ProjectOverzicht extends AlgemeenPage
 			@Override
 			protected void populateItem(final ListItem<ProjectType> item)
 			{
-				AjaxLink<Void> nieuwProject = new AjaxLink<Void>("nieuwProject")
+				var nieuwProject = new AjaxLink<Void>("nieuwProject")
 				{
 
 					private static final long serialVersionUID = 1L;
@@ -176,7 +174,7 @@ public class ProjectOverzicht extends AlgemeenPage
 					@Override
 					public void onClick(AjaxRequestTarget target)
 					{
-						Project project = new Project();
+						var project = new Project();
 						project.setType(item.getModelObject());
 						setResponsePage(new ProjectEditPage(ModelUtil.cModel(project)));
 					}
@@ -190,7 +188,7 @@ public class ProjectOverzicht extends AlgemeenPage
 		};
 		add(nieuwProjectTypes);
 
-		WebMarkupContainer caret = new WebMarkupContainer("caret");
+		var caret = new WebMarkupContainer("caret");
 		caret.setVisible(!projectTypesMetRecht.isEmpty() && projectTypesMetRecht.size() > 1);
 
 		Label toevoegenDropdownTekst;
@@ -208,7 +206,7 @@ public class ProjectOverzicht extends AlgemeenPage
 		{
 			nieuwProjectTypes.setVisible(false);
 
-			IndicatingAjaxLink<Project> dropDownKnop = new IndicatingAjaxLink<Project>("toevoegenDropdown", ModelUtil.cModel(new Project()))
+			var dropDownKnop = new IndicatingAjaxLink<Project>("toevoegenDropdown", ModelUtil.cModel(new Project()))
 			{
 
 				private static final long serialVersionUID = 1L;
@@ -216,7 +214,7 @@ public class ProjectOverzicht extends AlgemeenPage
 				@Override
 				public void onClick(AjaxRequestTarget target)
 				{
-					Project project = new Project();
+					var project = new Project();
 					project.setType(projectTypesMetRecht.get(0));
 					setResponsePage(new ProjectEditPage(ModelUtil.cModel(project)));
 				}
@@ -228,7 +226,7 @@ public class ProjectOverzicht extends AlgemeenPage
 		}
 		else
 		{
-			Button toevoegen = new Button("toevoegenDropdown");
+			var toevoegen = new Button("toevoegenDropdown");
 			toevoegen.add(toevoegenDropdownTekst);
 			toevoegen.add(caret);
 
@@ -241,9 +239,9 @@ public class ProjectOverzicht extends AlgemeenPage
 
 	private WebMarkupContainer getProjectenTable()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("projectenContainer");
+		var container = new WebMarkupContainer("projectenContainer");
 		container.setOutputMarkupId(true);
-		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		var format = new SimpleDateFormat("dd-MM-yyyy");
 
 		List<IColumn<Project, String>> columns = new ArrayList<IColumn<Project, String>>();
 		columns.add(new AbstractColumn<Project, String>(Model.of("Bvo"))
@@ -267,9 +265,9 @@ public class ProjectOverzicht extends AlgemeenPage
 			@Override
 			public void populateItem(Item<ICellPopulator<Project>> cellItem, String componentId, IModel<Project> rowModel)
 			{
-				StringBuilder soLabel = new StringBuilder();
+				var soLabel = new StringBuilder();
 				rowModel.getObject().getScreeningOrganisaties();
-				for (Organisatie organisatie : rowModel.getObject().getScreeningOrganisaties())
+				for (var organisatie : rowModel.getObject().getScreeningOrganisaties())
 				{
 					soLabel.append(organisatie.getNaam());
 					soLabel.append(",");
@@ -292,7 +290,7 @@ public class ProjectOverzicht extends AlgemeenPage
 			@Override
 			public void populateItem(Item<ICellPopulator<Project>> cellItem, String componentId, IModel<Project> rowModel)
 			{
-				Date vandaag = currentDateSupplier.getDate();
+				var vandaag = currentDateSupplier.getDate();
 				cellItem.add(new EnumLabel<ProjectStatus>(componentId, ProjectUtil.getStatus(rowModel.getObject(), vandaag)));
 			}
 
@@ -302,7 +300,7 @@ public class ProjectOverzicht extends AlgemeenPage
 		toegangLevelHashMap.put(ProjectType.PROJECT, toegangLevelProjectOverzicht);
 		toegangLevelHashMap.put(ProjectType.BRIEFPROJECT, toegangLevelBriefprojectOverzicht);
 
-		ScreenitDataTable<Project, String> dataTable = new ScreenitDataTable<Project, String>("projecten", columns,
+		var dataTable = new ScreenitDataTable<Project, String>("projecten", columns,
 			new ProjectDataProvider(projectZoekModel, toegangLevelHashMap), 10, new Model<String>("Projecten"))
 		{
 

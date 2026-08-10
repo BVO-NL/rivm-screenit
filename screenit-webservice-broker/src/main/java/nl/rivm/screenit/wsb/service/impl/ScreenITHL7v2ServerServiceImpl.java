@@ -82,7 +82,7 @@ public class ScreenITHL7v2ServerServiceImpl implements ScreenITHL7v2ServerServic
 		{
 			LOG.info("IMS ORM server wordt opgezet, op poort: {}", incomingORMIMSPort);
 			Application handler = new MammaHL7v24Handler(ORM_O01.class, MammaBeeldenOntvangenService.class);
-			ApplicationWrapper wrapper = new ApplicationWrapper(handler);
+			var wrapper = new ApplicationWrapper(handler);
 			createServer(wrapper, incomingORMIMSPort);
 			LOG.info("IMS ORM server is aangemaakt.");
 		}
@@ -98,7 +98,7 @@ public class ScreenITHL7v2ServerServiceImpl implements ScreenITHL7v2ServerServic
 		{
 			LOG.info("IMS ILM ORM server wordt opgezet, op poort: {}", incomingILMPort);
 			Application handler = new MammaHL7v24Handler(ORM_O01.class, MammaBeeldenVerwijderdService.class);
-			ApplicationWrapper wrapper = new ApplicationWrapper(handler);
+			var wrapper = new ApplicationWrapper(handler);
 			createServer(wrapper, incomingILMPort);
 			LOG.info("IMS ILM ORM server is aangemaakt.");
 		}
@@ -114,7 +114,7 @@ public class ScreenITHL7v2ServerServiceImpl implements ScreenITHL7v2ServerServic
 		{
 			LOG.info("HPV HL7v251 server wordt opgezet, op poort: {}", incomingHpvPort);
 			Application handler = new CervixHpvHL7v251Handler(OUL_R22.class);
-			ApplicationWrapper wrapper = new ApplicationWrapper(handler);
+			var wrapper = new ApplicationWrapper(handler);
 			createServer(wrapper, incomingHpvPort);
 			LOG.info("HPV HL7v251 server is aangemaakt.");
 		}
@@ -126,7 +126,7 @@ public class ScreenITHL7v2ServerServiceImpl implements ScreenITHL7v2ServerServic
 
 	private void createServer(ApplicationWrapper wrapper, int port)
 	{
-		SimpleServer server = new SimpleServer(port);
+		var server = new SimpleServer(port);
 		server.registerApplication(wrapper);
 		server.start();
 		LOG.info("HL7v2 server is gestart op poort " + port);

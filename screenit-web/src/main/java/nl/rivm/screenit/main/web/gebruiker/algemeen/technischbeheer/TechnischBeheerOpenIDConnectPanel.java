@@ -41,7 +41,7 @@ public class TechnischBeheerOpenIDConnectPanel extends BaseTechnischBeheerParame
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
 
 		form.add(new TextField<>("internalOpenidConnectIdpKeystorepassword", String.class).setRequired(true));
 		form.add(new TextField<>("internalOpenidConnectIdpKeystore", String.class).setRequired(true));

@@ -32,7 +32,6 @@ import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.components.Te
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.popups.AbstractTestBasePopupPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonOnderzoeksVariant;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -76,7 +75,7 @@ public class TestScreeningRondePopUp extends AbstractTestBasePopupPanel
 		super(id, clientModel);
 		int aantalRondesUitnodigingsbriefZonderFit = simplePreferenceService.getInteger(PreferenceKey.COLON_AANTAL_RONDES_UITNODIGINGSBRIEF_ZONDER_FIT.name());
 
-		boolean magUitnodigingMetFitMaken = ColonScreeningRondeUtil.magUitnodigingMetFitMaken(clientModel.getObject().get(0).getColonDossier(),
+		var magUitnodigingMetFitMaken = ColonScreeningRondeUtil.magUitnodigingMetFitMaken(clientModel.getObject().get(0).getColonDossier(),
 			aantalRondesUitnodigingsbriefZonderFit);
 
 		List<TestTimeLineDossierTijdstip> redenen = new ArrayList<>();
@@ -116,15 +115,15 @@ public class TestScreeningRondePopUp extends AbstractTestBasePopupPanel
 
 	private boolean isErEenVooraankondiging()
 	{
-		ColonDossier dossier = getModelObject().get(0).getColonDossier();
+		var dossier = getModelObject().get(0).getColonDossier();
 		return dossier.getVooraankondiging() != null;
 	}
 
 	@Override
 	protected void opslaan()
 	{
-		TestTimeLineDossierTijdstip tijdStip = dossierTijdStipModel.getObject();
-		for (Client client : getModelObject())
+		var tijdStip = dossierTijdStipModel.getObject();
+		for (var client : getModelObject())
 		{
 			colonTestTimeLineService.maakNieuweScreeningRonde(client, tijdStip, onderzoeksVariantModel.getObject());
 		}

@@ -47,14 +47,14 @@ public class MammaUitnodigenRapportagePanel extends GenericPanel<MammaUitnodigen
 	public MammaUitnodigenRapportagePanel(String id, IModel<MammaUitnodigenRapportage> model)
 	{
 		super(id, model);
-		MammaUitnodigenRapportage uitnodigenRapportage = model.getObject();
+		var uitnodigenRapportage = model.getObject();
 
 		var rapportagesPerRegio = splitsRapportagePerRegio(uitnodigenRapportage);
 
 		add(DateLabel.forDatePattern("datumVerwerking", new Model<>(uitnodigenRapportage.getDatumVerwerking()), "dd-MM-yyyy HH:mm:ss"));
 
-		RepeatingView repeatingView = new RepeatingView("soTables");
-		ToegangLevel toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_MAMMA_UITNODIGEN_VERWERKING_VERSLAG);
+		var repeatingView = new RepeatingView("soTables");
+		var toegangLevel = ScreenitSession.get().getToegangsLevel(Actie.INZIEN, Recht.MEDEWERKER_MAMMA_UITNODIGEN_VERWERKING_VERSLAG);
 
 		if (toegangLevel == ToegangLevel.LANDELIJK)
 		{
@@ -62,7 +62,7 @@ public class MammaUitnodigenRapportagePanel extends GenericPanel<MammaUitnodigen
 		}
 		else
 		{
-			ScreeningOrganisatie screeningOrganisatie = ScreenitSession.get().getScreeningOrganisatie();
+			var screeningOrganisatie = ScreenitSession.get().getScreeningOrganisatie();
 			var regioRapportage = rapportagesPerRegio.get(screeningOrganisatie);
 			if (regioRapportage != null)
 			{
@@ -98,7 +98,7 @@ public class MammaUitnodigenRapportagePanel extends GenericPanel<MammaUitnodigen
 
 	private void splitsIntervalRapportages(MammaUitnodigenRapportage uitnodigenRapportage, Map<ScreeningOrganisatie, RegioRapportage> rapportagesPerRegio)
 	{
-		for (MammaIntervalUitnodigenRapportage intervalRapportage : uitnodigenRapportage.getIntervalUitnodigenRapportages())
+		for (var intervalRapportage : uitnodigenRapportage.getIntervalUitnodigenRapportages())
 		{
 			var regioRapportage = getOrCreateRapportageVoorRegio(rapportagesPerRegio, intervalRapportage.getScreeningOrganisatie());
 			regioRapportage.intervalRapportage = intervalRapportage;

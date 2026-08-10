@@ -298,7 +298,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 			@Override
 			protected DatePicker<Date> newDatePicker(String wicketId, IModel<Date> model)
 			{
-				DatePicker<Date> datePicker = ComponentHelper.newDatePicker(wicketId, model);
+				var datePicker = ComponentHelper.newDatePicker(wicketId, model);
 				datePicker.setLabel(new Model<>("Datum/tijd vanaf"));
 				return datePicker;
 			}
@@ -311,7 +311,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 					@Override
 					protected TextField<Integer> getHoursField()
 					{
-						TextField<Integer> hours = super.getHoursField();
+						var hours = super.getHoursField();
 						hours.setLabel(new Model<>("Datum/tijd vanaf uren"));
 						return hours;
 					}
@@ -319,7 +319,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 					@Override
 					protected TextField<Integer> getMinutesField()
 					{
-						TextField<Integer> minutes = super.getMinutesField();
+						var minutes = super.getMinutesField();
 						minutes.setLabel(new Model<>("Datum/tijd vanaf minuten"));
 						return minutes;
 					}
@@ -327,8 +327,8 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 					@Override
 					public void convertInput()
 					{
-						Integer h = getHoursField().getConvertedInput();
-						Integer m = getMinutesField().getConvertedInput();
+						var h = getHoursField().getConvertedInput();
+						var m = getMinutesField().getConvertedInput();
 
 						if (h != null && m != null)
 						{
@@ -710,7 +710,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 		var opslaanObjecten = new EnumMap<>(ExtraOpslaanKey.class);
 		if (nieuweAfspraakModel != null)
 		{
-			ColonIntakeAfspraak nieuweAfspraak = nieuweAfspraakModel.getObject();
+			var nieuweAfspraak = nieuweAfspraakModel.getObject();
 			if (nieuweAfspraak != null)
 			{
 				if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_INTAKE_WIJZIGEN_ANDER_BRIEF, Actie.AANPASSEN))

@@ -41,7 +41,7 @@ public interface PlanningScreeningRondeRepository extends BaseJpaRepository<Mamm
 	@Query("""
 		SELECT dossier.id AS id, MAX(ronde.creatieDatum) AS datum
 		FROM MammaScreeningRonde ronde
-			JOIN ronde.dossier dossier
+			JOIN MammaDossier dossier ON dossier = ronde.dossier
 		WHERE ronde.id <> dossier.laatsteScreeningRonde.id
 		GROUP BY dossier.id""")
 	Stream<Tuple> findVorigeScreeningRondeDatumPerDossier();

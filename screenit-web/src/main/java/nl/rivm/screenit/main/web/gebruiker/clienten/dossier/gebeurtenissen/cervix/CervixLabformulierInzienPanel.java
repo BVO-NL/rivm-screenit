@@ -30,7 +30,6 @@ import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
-import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixHpvBeoordelingWaarde;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -66,16 +65,16 @@ public class CervixLabformulierInzienPanel extends AbstractGebeurtenisDetailPane
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		CervixUitnodiging uitnodiging = (CervixUitnodiging) Hibernate.unproxy(getModelObject().getUitnodiging());
+		var uitnodiging = (CervixUitnodiging) Hibernate.unproxy(getModelObject().getUitnodiging());
 
-		CervixUitstrijkje uitstrijkje = CervixMonsterUtil.getUitstrijkje(uitnodiging.getMonster());
-		CervixLabformulier labformulier = (CervixLabformulier) Hibernate.unproxy(uitstrijkje.getLabformulier());
-		String objid = labformulier.getObjid();
+		var uitstrijkje = CervixMonsterUtil.getUitstrijkje(uitnodiging.getMonster());
+		var labformulier = (CervixLabformulier) Hibernate.unproxy(uitstrijkje.getLabformulier());
+		var objid = labformulier.getObjid();
 		add(new Label("monsterId", uitstrijkje.getMonsterId() + ""));
 		add(new Label("huisarts", getHuisartsInfo(labformulier)));
 		add(new EnumLabel<>("status", labformulier.getStatus()));
 
-		boolean magHpvMinInzien = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_INZIEN_FORMULIER_NA_HPVMIN, Actie.INZIEN);
+		var magHpvMinInzien = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_INZIEN_FORMULIER_NA_HPVMIN, Actie.INZIEN);
 		var isFormulierDigitaal = labformulier.getDigitaal();
 		if (labformulier.getDatumGewist() == null || magHpvMinInzien)
 		{
@@ -112,7 +111,7 @@ public class CervixLabformulierInzienPanel extends AbstractGebeurtenisDetailPane
 
 	private String getHuisartsInfo(CervixLabformulier labformulier)
 	{
-		String huistartsInfo = "";
+		var huistartsInfo = "";
 		CervixHuisarts huisarts = null;
 		if (labformulier.getHuisartsLocatie() != null)
 		{

@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.beoordelen;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import nl.rivm.screenit.main.model.mamma.MammaImsUserSessionType;
 import nl.rivm.screenit.main.service.mamma.MammaBeoordelingService;
@@ -45,7 +44,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.beoordelen.popup.M
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDto;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDtoMapper;
 import nl.rivm.screenit.mamma.imsapi.model.FhirUserSession;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -54,10 +52,6 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaLezing;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.MammaUitnodiging;
-import nl.rivm.screenit.model.mamma.enums.MammaAmputatie;
 import nl.rivm.screenit.model.mamma.enums.MammaBIRADSWaarde;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingOpschortenReden;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
@@ -139,11 +133,11 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 
 	private void createBeoordelingFormulier(IModel<MammaLezing> lezingModel, WebMarkupContainer content)
 	{
-		MammaLezingParameters lezingParameters = maakLezingParameters(getModelObject());
+		var lezingParameters = maakLezingParameters(getModelObject());
 
-		ScreenitForm<MammaLezing> form = new ScreenitForm<>("birads_form");
+		var form = new ScreenitForm<MammaLezing>("birads_form");
 
-		BeperktBeoordeelbaarPanel beperktBeoordeelbaarPanel = new BeperktBeoordeelbaarPanel("beperktBeoordeelbaarPanel", lezingModel, false);
+		var beperktBeoordeelbaarPanel = new BeperktBeoordeelbaarPanel("beperktBeoordeelbaarPanel", lezingModel, false);
 
 		form.add(new MammaBiradsKeuzePanel("biradskeuze", lezingModel, lezingParameters)
 		{
@@ -154,9 +148,9 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 			}
 		});
 
-		WebMarkupContainer biradsOpmerkingContainer = new WebMarkupContainer("biradsOpmerkingContainer");
+		var biradsOpmerkingContainer = new WebMarkupContainer("biradsOpmerkingContainer");
 		form.add(biradsOpmerkingContainer);
-		TextArea<String> opmerkingTextArea = new TextArea<>("biradsOpmerking");
+		var opmerkingTextArea = new TextArea<String>("biradsOpmerking");
 		tuneTextArea(biradsOpmerkingContainer, opmerkingTextArea, lezingParameters.isInzien(), false);
 
 		createOpschortVelden(lezingParameters, form);
@@ -171,9 +165,9 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 
 		createOpslaanCallbackAjaxBehavior();
 
-		LaesieDtoMapper mapper = new LaesieDtoMapper();
+		var mapper = new LaesieDtoMapper();
 		laesieDtos = new ListModel<>(mapper.lezingToLaesieDtos(lezingModel.getObject()));
-		MammaAmputatie amputatie = beoordelingPanel.getModelObject().getOnderzoek().getAmputatie();
+		var amputatie = beoordelingPanel.getModelObject().getOnderzoek().getAmputatie();
 		form.add(new MammaLaesiesAfbeeldingPanel("afbeelding", laesieDtos, false, lezingModel.getObject().getId(), amputatie));
 
 		content.add(form);
@@ -184,7 +178,7 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 			protected void updateAjaxAttributes(AjaxRequestAttributes attributes)
 			{
 				super.updateAjaxAttributes(attributes);
-				AjaxCallListener myAjaxCallListener = new AjaxCallListener();
+				var myAjaxCallListener = new AjaxCallListener();
 				myAjaxCallListener.onBefore("logOnAfrondenClick();");
 				attributes.getAjaxCallListeners().add(myAjaxCallListener);
 			}
@@ -205,15 +199,15 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 				}
 				else
 				{
-					MammaLezing lezing = MammaBeoordelenLezingPanel.this.getModelObject();
+					var lezing = MammaBeoordelenLezingPanel.this.getModelObject();
 
-					MammaBeoordeling beoordeling = beoordelingPanel.getModelObject();
+					var beoordeling = beoordelingPanel.getModelObject();
 					if (heeftAfwijkingen()
 						&& (MammaBeoordelingStatus.EERSTE_LEZING.equals(beoordeling.getStatus()) || MammaBeoordelingStatus.TWEEDE_LEZING.equals(beoordeling.getStatus()))
 						&& lezing.getBeperktBeoordeelbaarReden() == null
 						&& MammaBeoordelingOpschortenReden.NIET_OPSCHORTEN.equals(beoordeling.getOpschortReden()))
 					{
-						Client client = baseBeoordelingService.getClientVanBeoordeling(beoordelingPanel.getModelObject());
+						var client = baseBeoordelingService.getClientVanBeoordeling(beoordelingPanel.getModelObject());
 						lezingService.logPopupPreBirads(client, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), lezing,
 							prePopupBiradsWaardeLinks, prePopupBiradsWaardeRechts);
 					}
@@ -252,33 +246,33 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 
 	private void createOpschortVelden(MammaLezingParameters lezingParameters, ScreenitForm<MammaLezing> form)
 	{
-		WebMarkupContainer opschortRedenContainer = new WebMarkupContainer("opschortRedenContainer");
+		var opschortRedenContainer = new WebMarkupContainer("opschortRedenContainer");
 		opschortRedenContainer.setOutputMarkupPlaceholderTag(true);
 		opschortRedenContainer.setOutputMarkupId(true);
-		MammaScreeningRonde ronde = beoordelingPanel.getModelObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde();
-		Optional<MammaBeoordeling> opgeschorteBeoordeling = baseBeoordelingService.zoekOpgeschorteBeoordelingInRonde(ronde,
+		var ronde = beoordelingPanel.getModelObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde();
+		var opgeschorteBeoordeling = baseBeoordelingService.zoekOpgeschorteBeoordelingInRonde(ronde,
 			MammaBeoordelingOpschortenReden.AANVULLENDE_BEELDEN_NODIG_SE, MammaBeoordelingOpschortenReden.PRIORS_VAN_BUITEN_BVO);
 		opschortRedenContainer.setEnabled(opgeschorteBeoordeling.isEmpty());
 		form.add(opschortRedenContainer);
 
-		Label opschortRedenTekstLabel = new Label("prevOpschortRedenTekst", opgeschorteBeoordeling.map(MammaBeoordeling::getOpschortRedenTekst).orElse(null));
+		var opschortRedenTekstLabel = new Label("prevOpschortRedenTekst", opgeschorteBeoordeling.map(MammaBeoordeling::getOpschortRedenTekst).orElse(null));
 		opschortRedenTekstLabel.setVisible(opgeschorteBeoordeling.isPresent());
 		opschortRedenContainer.add(opschortRedenTekstLabel);
 
-		WebMarkupContainer opschortRedenTekstContainer = new WebMarkupContainer("opschortRedenTekstContainer");
+		var opschortRedenTekstContainer = new WebMarkupContainer("opschortRedenTekstContainer");
 		opschortRedenTekstContainer.setOutputMarkupPlaceholderTag(true);
 		opschortRedenTekstContainer.setOutputMarkupId(true);
 		opschortRedenTekstContainer.setVisible(false);
 		opschortRedenContainer.add(opschortRedenTekstContainer);
 
-		MammaBeoordeling beoordeling = beoordelingPanel.getModelObject();
+		var beoordeling = beoordelingPanel.getModelObject();
 
-		List<MammaBeoordelingOpschortenReden> opschortRedenen = beoordelingService.getMogelijkeOpschortRedenen(beoordeling, getModelObject().getLezingType());
-		ScreenitDropdown<MammaBeoordelingOpschortenReden> opschortenReden = new ScreenitDropdown<>("opschortReden",
+		var opschortRedenen = beoordelingService.getMogelijkeOpschortRedenen(beoordeling, getModelObject().getLezingType());
+		var opschortenReden = new ScreenitDropdown<MammaBeoordelingOpschortenReden>("opschortReden",
 			new CompoundPropertyModel<>(new PropertyModel<>(beoordelingPanel.getModel(), "opschortReden")), opschortRedenen, new EnumChoiceRenderer<>());
 
-		boolean isNietInzien = !lezingParameters.isInzien();
-		boolean alleenNietOpschortenMogelijk = opschortRedenen.size() == 1 && opschortRedenen.get(0) == MammaBeoordelingOpschortenReden.NIET_OPSCHORTEN;
+		var isNietInzien = !lezingParameters.isInzien();
+		var alleenNietOpschortenMogelijk = opschortRedenen.size() == 1 && opschortRedenen.get(0) == MammaBeoordelingOpschortenReden.NIET_OPSCHORTEN;
 
 		opschortenReden.setEnabled(isNietInzien && !alleenNietOpschortenMogelijk);
 		opschortRedenContainer.add(opschortenReden);
@@ -288,8 +282,8 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				MammaBeoordeling beoordeling = beoordelingPanel.getModelObject();
-				boolean beoordelingNietOpschorten = beoordeling.getOpschortReden().equals(MammaBeoordelingOpschortenReden.NIET_OPSCHORTEN);
+				var beoordeling = beoordelingPanel.getModelObject();
+				var beoordelingNietOpschorten = beoordeling.getOpschortReden().equals(MammaBeoordelingOpschortenReden.NIET_OPSCHORTEN);
 				opschortRedenTekstContainer.setVisible(isNietInzien && !beoordelingNietOpschorten);
 				if (beoordelingNietOpschorten)
 				{
@@ -299,21 +293,21 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 			}
 		});
 
-		TextArea<String> opschortenRedenTekst = new TextArea<>("opschortRedenTekst",
+		var opschortenRedenTekst = new TextArea<String>("opschortRedenTekst",
 			new CompoundPropertyModel<>(new PropertyModel<>(beoordelingPanel.getModel(), "opschortRedenTekst")));
 		tuneTextArea(opschortRedenTekstContainer, opschortenRedenTekst, lezingParameters.isInzien(), true);
 	}
 
 	private void createRedenenFotobesprekingVelden(ScreenitForm<MammaLezing> form, boolean alleenLezen)
 	{
-		ScreenitListMultipleChoice<MammaLezingRedenenFotobesprekingRadioloog> redenenFotobesprekingRadioloogSelector = new ScreenitListMultipleChoice<>(
+		var redenenFotobesprekingRadioloogSelector = new ScreenitListMultipleChoice<MammaLezingRedenenFotobesprekingRadioloog>(
 			"redenenFotobesprekingRadioloog",
 			Arrays.asList(MammaLezingRedenenFotobesprekingRadioloog.values()),
 			new EnumChoiceRenderer<>());
 		redenenFotobesprekingRadioloogSelector.setEnabled(!alleenLezen);
 		form.add(redenenFotobesprekingRadioloogSelector);
 
-		ScreenitListMultipleChoice<MammaLezingRedenenFotobesprekingMbber> redenenFotobesprekingMbberSelector = new ScreenitListMultipleChoice<>("redenenFotobesprekingMbber",
+		var redenenFotobesprekingMbberSelector = new ScreenitListMultipleChoice<MammaLezingRedenenFotobesprekingMbber>("redenenFotobesprekingMbber",
 			Arrays.asList(MammaLezingRedenenFotobesprekingMbber.values()),
 			new EnumChoiceRenderer<>());
 		redenenFotobesprekingMbberSelector.setEnabled(!alleenLezen);
@@ -348,7 +342,7 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 
 	private MammaLezingParameters maakLezingParameters(MammaLezing lezing)
 	{
-		boolean verslagNogNietDefinitief = lezing.getBeoordeling() == null
+		var verslagNogNietDefinitief = lezing.getBeoordeling() == null
 			|| !MammaBeoordelingStatus.VERSLAG_MAKEN.equals(lezing.getBeoordeling().getStatus());
 		var onderzoek = beoordelingPanel.getModelObject().getOnderzoek();
 		return new MammaLezingParameters()
@@ -365,11 +359,11 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 			@Override
 			protected void respond(AjaxRequestTarget target)
 			{
-				String paramValue = getComponent().getRequest().getRequestParameters().getParameterValue(MAMMA_BRIDGE_IMAGES_SEEN_RESPONSE_OBJECT_STRING).toString();
+				var paramValue = getComponent().getRequest().getRequestParameters().getParameterValue(MAMMA_BRIDGE_IMAGES_SEEN_RESPONSE_OBJECT_STRING).toString();
 				try
 				{
-					FhirUserSession userSession = imsService.parseFhirMessage(paramValue);
-					String reply = userSession.getContext().getLayoutImages().getRequestLayoutsImagesSeenCurrentFocus().getReply();
+					var userSession = imsService.parseFhirMessage(paramValue);
+					var reply = userSession.getContext().getLayoutImages().getRequestLayoutsImagesSeenCurrentFocus().getReply();
 					if (checkIfClientEnAccessionNumberValid(userSession))
 					{
 						if ("true".equalsIgnoreCase(reply) || "false".equalsIgnoreCase(reply))
@@ -401,17 +395,17 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 
 	private boolean checkIfClientEnAccessionNumberValid(FhirUserSession userSession)
 	{
-		MammaOnderzoek onderzoek = beoordelingPanel.getModelObject().getOnderzoek();
-		String userSessionBsn = userSession.getFocus().getPatient().getIdentifier().getValue();
-		String userSessionStudyId = userSession.getFocus().getImagingStudy().getAccession().getValue();
-		MammaUitnodiging uitnodiging = onderzoek.getAfspraak().getUitnodiging();
-		Client client = uitnodiging.getBrief().getClient();
-		String bsn = client.getPersoon().getBsn();
-		String accessionNumber = uitnodiging.getScreeningRonde().getUitnodigingsNr().toString();
-		boolean clientEnOnderzoekGelijk = bsn.equals(userSessionBsn) && accessionNumber.equals(userSessionStudyId);
+		var onderzoek = beoordelingPanel.getModelObject().getOnderzoek();
+		var userSessionBsn = userSession.getFocus().getPatient().getIdentifier().getValue();
+		var userSessionStudyId = userSession.getFocus().getImagingStudy().getAccession().getValue();
+		var uitnodiging = onderzoek.getAfspraak().getUitnodiging();
+		var client = uitnodiging.getBrief().getClient();
+		var bsn = client.getPersoon().getBsn();
+		var accessionNumber = uitnodiging.getScreeningRonde().getUitnodigingsNr().toString();
+		var clientEnOnderzoekGelijk = bsn.equals(userSessionBsn) && accessionNumber.equals(userSessionStudyId);
 		if (!clientEnOnderzoekGelijk)
 		{
-			String error = String.format(
+			var error = String.format(
 				"IMS all images seen onderzoek of client is niet gelijk aan openstaande onderzoek of client in Screenit. IMS gaf client %s met onderzoek %s, ScreenIT heeft client met onderzoek %s open.",
 				userSessionBsn, userSessionStudyId, accessionNumber);
 			logService.logGebeurtenis(LogGebeurtenis.MAMMA_BE_IMS_HTTP_FOUT, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), client, error, Bevolkingsonderzoek.MAMMA);
@@ -421,7 +415,7 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 
 	private void lezingOpslaan(AjaxRequestTarget target, boolean allImagesSeen)
 	{
-		IModel<MammaLezing> lezingModel = getModel();
+		var lezingModel = getModel();
 		if ((heeftAfwijkingen() || !allImagesSeen) && lezingNietOpgeslagen())
 		{
 			prePopupBiradsWaardeLinks = getModelObject().getBiradsLinks();

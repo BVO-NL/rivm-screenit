@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.enums;
  * =========================LICENSE_END==================================
  */
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1241,11 +1240,11 @@ public enum BriefType
 
 		List<Bevolkingsonderzoek> filterBvos = new ArrayList<>(Arrays.asList(bvoFilter));
 		Collections.sort(filterBvos);
-		for (BriefType type : values())
+		for (var type : values())
 		{
 			List<Bevolkingsonderzoek> briefTypeBvos = new ArrayList<>(Arrays.asList(type.getOnderzoeken()));
 			Collections.sort(briefTypeBvos);
-			boolean isOrganisatieType = organisatieType.equals(type.getVerzendendeOrganisatieType());
+			var isOrganisatieType = organisatieType.equals(type.getVerzendendeOrganisatieType());
 			if (isOrganisatieType && !exactMatch && !CollectionUtils.intersection(briefTypeBvos, filterBvos).isEmpty() || 
 				isOrganisatieType && exactMatch && briefTypeBvos.equals(filterBvos))
 			{
@@ -1258,7 +1257,7 @@ public enum BriefType
 	public static List<BriefType> getBriefTypesMetOrganisatieType(OrganisatieType organisatieType)
 	{
 		List<BriefType> briefTypes = new ArrayList<>();
-		for (BriefType type : values())
+		for (var type : values())
 		{
 			if (organisatieType.equals(type.getVerzendendeOrganisatieType()))
 			{
@@ -1357,11 +1356,11 @@ public enum BriefType
 
 	public boolean isActief()
 	{
-		boolean isActief = true;
+		var isActief = true;
 		try
 		{
-			Field f = getClass().getField(name());
-			Deprecated d = f.getAnnotation(Deprecated.class);
+			var f = getClass().getField(name());
+			var d = f.getAnnotation(Deprecated.class);
 			isActief = d == null;
 		}
 		catch (NoSuchFieldException | SecurityException ignored)

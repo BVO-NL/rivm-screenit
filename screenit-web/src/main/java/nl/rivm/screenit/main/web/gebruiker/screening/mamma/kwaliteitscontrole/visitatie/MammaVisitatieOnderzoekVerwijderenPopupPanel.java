@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.v
 
 import nl.rivm.screenit.main.service.mamma.MammaKwaliteitscontroleService;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.mamma.MammaVisitatieOnderzoek;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
@@ -57,8 +56,8 @@ public abstract class MammaVisitatieOnderzoekVerwijderenPopupPanel extends Gener
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaVisitatieOnderzoek visitatieOnderzoek = getModelObject();
-				Persoon persoon = visitatieOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
+				var visitatieOnderzoek = getModelObject();
+				var persoon = visitatieOnderzoek.getBeoordeling().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient()
 					.getPersoon();
 				if (visitatieOnderzoek.getId() != null)
 				{
@@ -70,7 +69,7 @@ public abstract class MammaVisitatieOnderzoekVerwijderenPopupPanel extends Gener
 					catch (Exception e)
 					{
 						warn(String.format(getString("error"), persoon.getBsn(), DateUtil.getGeboortedatum(persoon),
-								e instanceof IllegalStateException ? e.getMessage() : getString("error.onbekend")));
+							e instanceof IllegalStateException ? e.getMessage() : getString("error.onbekend")));
 					}
 				}
 				else

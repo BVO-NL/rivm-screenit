@@ -44,9 +44,9 @@ public class SQLQueryUtil
 	public static Map<String, Object> inExpressionParametersEnum(String baseParamName, List<? extends Enum<?>> enums)
 	{
 		Map<String, Object> inParams = new HashMap<>();
-		for (int i = 0; i < enums.size(); i++)
+		for (var i = 0; i < enums.size(); i++)
 		{
-			String key = baseParamName + i;
+			var key = baseParamName + i;
 			inParams.put(key, enums.get(i).name());
 		}
 		return inParams;
@@ -55,9 +55,9 @@ public class SQLQueryUtil
 	public static Map<String, Object> inExpressionParametersLong(String baseParamName, List<Long> longs)
 	{
 		Map<String, Object> inParams = new HashMap<>();
-		for (int i = 0; i < longs.size(); i++)
+		for (var i = 0; i < longs.size(); i++)
 		{
-			String key = baseParamName + i;
+			var key = baseParamName + i;
 			inParams.put(key, longs.get(i));
 		}
 		return inParams;

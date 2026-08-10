@@ -27,9 +27,6 @@ import nl.rivm.screenit.clientportaal.controllers.AbstractController;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.cervix.CervixBrief;
-import nl.rivm.screenit.model.cervix.CervixDossier;
-import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
-import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.service.BriefHerdrukkenService;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.ClientService;
@@ -58,7 +55,7 @@ public class CervixHerdrukkenController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> vraagHerdrukAan(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.CERVIX_HERDRUK))
 		{
@@ -70,11 +67,11 @@ public class CervixHerdrukkenController extends AbstractController
 
 	private CervixBrief getCervixBriefLaatstVerstuurdeUitnodiging(Client client)
 	{
-		CervixDossier cervixDossier = client.getCervixDossier();
-		CervixScreeningRonde laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
-		CervixUitnodiging laatsteAfgedrukteUitstrijkjeUitnodiging = clientService.getLaatstVerstuurdeUitnodiging(laatsteScreeningRonde, false);
+		var cervixDossier = client.getCervixDossier();
+		var laatsteScreeningRonde = cervixDossier.getLaatsteScreeningRonde();
+		var laatsteAfgedrukteUitstrijkjeUitnodiging = clientService.getLaatstVerstuurdeUitnodiging(laatsteScreeningRonde, false);
 
-		CervixBrief cervixBrief = laatsteAfgedrukteUitstrijkjeUitnodiging.getBrief();
+		var cervixBrief = laatsteAfgedrukteUitstrijkjeUitnodiging.getBrief();
 		cervixBrief.setAangevraagdeHerdruk(true);
 		return cervixBrief;
 	}

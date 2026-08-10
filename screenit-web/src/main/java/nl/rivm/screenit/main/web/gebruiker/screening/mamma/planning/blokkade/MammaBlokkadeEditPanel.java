@@ -23,9 +23,10 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.blokkade;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import jakarta.annotation.Nullable;
 
 import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
 import nl.rivm.screenit.main.service.mamma.MammaScreeningsEenheidService;
@@ -34,7 +35,6 @@ import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
-import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.helper.HibernateMagicNumber;
@@ -61,9 +61,6 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
-
-import jakarta.annotation.Nullable;
 
 import static nl.rivm.screenit.util.DateUtil.LOCAL_DATE_FORMAT;
 
@@ -91,12 +88,12 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 		super(id, blokkadeModel);
 		this.screeningsEenheidModel = screeningsEenheidModel;
 
-		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
-		boolean magAanpassen = ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
+		var ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
+		var magAanpassen = ingelogdNamensRegio != null && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN);
 
 		if (blokkadeModel == null)
 		{
-			MammaBlokkade blokkade = new MammaBlokkade();
+			var blokkade = new MammaBlokkade();
 			setModel(ModelUtil.cModel(blokkade));
 			blokkade = getModelObject();
 			blokkade.setActief(true);
@@ -107,7 +104,7 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 			}
 		}
 
-		BootstrapDialog dialog = new BootstrapDialog("dialog");
+		var dialog = new BootstrapDialog("dialog");
 		add(dialog);
 
 		add(new AjaxLink<Void>("close")
@@ -121,26 +118,42 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 			}
 		});
 
-		ScreeningOrganisatie sessionSO = ScreenitSession.get().getScreeningOrganisatie();
+		var sessionSO = ScreenitSession.get().getScreeningOrganisatie();
 		form = new Form("form");
 		form.setEnabled(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_PLANNING, Actie.AANPASSEN) && sessionSO != null);
 		add(form);
 
-		ScreenitDropdown<MammaBlokkadeType> type = new ScreenitDropdown<>("type", Arrays.asList(MammaBlokkadeType.values()),
+		var type = new ScreenitDropdown<MammaBlokkadeType>("type", Arrays.asList(MammaBlokkadeType.values()),
 			new EnumChoiceRenderer<>());
 		form.add(type);
 
 		addOrReplaceBlokkadeTypeSpecifics(null, getModelObject().getType());
 
-		DatePicker<Date> vanaf = ComponentHelper.newDatePicker("vanaf");
+		var vanaf = ComponentHelper.newDatePicker("vanaf");
 		vanaf.setDisabled(!magAanpassen);
 		form.add(vanaf.setRequired(true));
 
-		DatePicker<Date> totEnMet = ComponentHelper.newDatePicker("totEnMet");
+		var totEnMet = ComponentHelper.newDatePicker("totEnMet");
+		totEnMet.setOutputMarkupId(true);
 		totEnMet.setDisabled(!magAanpassen);
 		form.add(totEnMet.setRequired(true));
 
 		form.add(new DependantDateValidator(vanaf, totEnMet, DependantDateValidator.Operator.AFTER));
+
+		vanaf.add(new AjaxFormComponentUpdatingBehavior("change")
+		{
+			@Override
+			protected void onUpdate(AjaxRequestTarget target)
+			{
+				var vanafDatum = vanaf.getModelObject();
+				if (vanafDatum == null)
+				{
+					return;
+				}
+				totEnMet.setModelObject(vanafDatum);
+				target.add(totEnMet);
+			}
+		});
 
 		ComponentHelper.addTextArea(form, "reden", false, HibernateMagicNumber.L4096, false);
 
@@ -149,7 +162,7 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				MammaBlokkade blokkade = MammaBlokkadeEditPanel.this.getModelObject();
+				var blokkade = MammaBlokkadeEditPanel.this.getModelObject();
 				blokkade.setRegio(null);
 				blokkade.setScreeningsEenheid(null);
 				blokkade.setStandplaats(null);
@@ -172,7 +185,7 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 			}
 		});
 
-		final ConfirmingIndicatingAjaxSubmitLink inActiveren = new ConfirmingIndicatingAjaxSubmitLink("inActiveren", dialog,
+		final var inActiveren = new ConfirmingIndicatingAjaxSubmitLink("inActiveren", dialog,
 			"popupOverlapMeldingInactiveren")
 		{
 			private static final long serialVersionUID = 1L;
@@ -182,7 +195,7 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 			@Override
 			protected boolean skipConfirmation()
 			{
-				StringBuilder errorMessage = maakErrorMessage(MammaBlokkadeEditPanel.this.getModelObject());
+				var errorMessage = maakErrorMessage(MammaBlokkadeEditPanel.this.getModelObject());
 				if (errorMessage.length() > 0)
 				{
 					this.errorMessage = errorMessage;
@@ -200,7 +213,7 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaBlokkade blokkade = MammaBlokkadeEditPanel.this.getModelObject();
+				var blokkade = MammaBlokkadeEditPanel.this.getModelObject();
 				blokkade.setActief(!blokkade.getActief());
 				baseBlokkadeService.saveOrUpdate(blokkade, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				blokkadeGewijzigd(target);
@@ -220,7 +233,7 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 			@Override
 			protected boolean skipConfirmation()
 			{
-				StringBuilder errorMessage = maakErrorMessage(MammaBlokkadeEditPanel.this.getModelObject());
+				var errorMessage = maakErrorMessage(MammaBlokkadeEditPanel.this.getModelObject());
 				if (errorMessage.length() > 0)
 				{
 					this.errorMessage = errorMessage;
@@ -246,15 +259,15 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 
 	private void addOrReplaceBlokkadeTypeSpecifics(AjaxRequestTarget target, MammaBlokkadeType blokkadeType)
 	{
-		WebMarkupContainer regioContainer = new WebMarkupContainer("regioContainer");
-		WebMarkupContainer screeningsEenheidContainer = new WebMarkupContainer("screeningsEenheidContainer");
-		WebMarkupContainer standplaatsContainer = new WebMarkupContainer("standplaatsContainer");
+		var regioContainer = new WebMarkupContainer("regioContainer");
+		var screeningsEenheidContainer = new WebMarkupContainer("screeningsEenheidContainer");
+		var standplaatsContainer = new WebMarkupContainer("standplaatsContainer");
 
 		regioContainer.setOutputMarkupId(true);
 		screeningsEenheidContainer.setOutputMarkupId(true);
 		standplaatsContainer.setOutputMarkupId(true);
 
-		ScreeningOrganisatie sessionSO = ScreenitSession.get().getScreeningOrganisatie();
+		var sessionSO = ScreenitSession.get().getScreeningOrganisatie();
 
 		switch (blokkadeType)
 		{
@@ -267,7 +280,7 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 		case SCREENINGS_EENHEID:
 			if (screeningsEenheidModel == null)
 			{
-				ScreenitDropdown<MammaScreeningsEenheid> screeningsEenheid = new ScreenitDropdown<>("screeningsEenheid",
+				var screeningsEenheid = new ScreenitDropdown<MammaScreeningsEenheid>("screeningsEenheid",
 					ModelUtil.listRModel(screeningsEenheidService.getActieveScreeningsEenhedenVoorScreeningOrganisatie(sessionSO)), new ChoiceRenderer<>("naam"));
 				screeningsEenheidContainer.add(screeningsEenheid.setRequired(true));
 				screeningsEenheidContainer.add(new EmptyPanel("screeningsEenheid.naam"));
@@ -299,8 +312,8 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 
 	private StringBuilder maakErrorMessage(MammaBlokkade blokkade)
 	{
-		final SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-		StringBuilder errorMessage = new StringBuilder();
+		final var format = new SimpleDateFormat("dd-MM-yyyy");
+		var errorMessage = new StringBuilder();
 
 		var screeningsEenheidDateSetMap = afspraakService.getAfspraakDatums(blokkade);
 		if (!screeningsEenheidDateSetMap.isEmpty())
@@ -313,7 +326,7 @@ public abstract class MammaBlokkadeEditPanel extends GenericPanel<MammaBlokkade>
 			}
 		}
 
-		List<MammaBlokkade> overlappendeBlokkades = baseBlokkadeService.getOverlappendeBlokkadesVanZelfdeType(blokkade);
+		var overlappendeBlokkades = baseBlokkadeService.getOverlappendeBlokkadesVanZelfdeType(blokkade);
 		if (CollectionUtils.isNotEmpty(overlappendeBlokkades))
 		{
 			if (errorMessage.length() > 0)

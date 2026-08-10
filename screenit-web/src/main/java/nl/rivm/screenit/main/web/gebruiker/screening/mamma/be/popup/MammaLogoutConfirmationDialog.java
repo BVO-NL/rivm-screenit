@@ -39,7 +39,7 @@ public abstract class MammaLogoutConfirmationDialog extends GenericPanel<Boolean
 	protected MammaLogoutConfirmationDialog(String id, boolean heeftVerslagenTeBevestigen, boolean heeftOnderzoekenInWerklijst)
 	{
 		super(id);
-		AjaxLink<Void> bevestigingLezingenBtn = new AjaxLink<Void>("bevestigenLezingen")
+		var bevestigingLezingenBtn = new AjaxLink<Void>("bevestigenLezingen")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)
@@ -66,7 +66,7 @@ public abstract class MammaLogoutConfirmationDialog extends GenericPanel<Boolean
 			}
 		});
 
-		WebMarkupContainer verslagOpenSection = new WebMarkupContainer("verslagenOpWerklijstMelding");
+		var verslagOpenSection = new WebMarkupContainer("verslagenOpWerklijstMelding");
 		verslagOpenSection.setVisible(heeftOnderzoekenInWerklijst);
 		add(verslagOpenSection);
 	}

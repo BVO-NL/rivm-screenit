@@ -108,7 +108,7 @@ public class BriefBeheerPage extends AlgemeenPage
 		zoekCriteria = Model.of(new BriefDefinitiesFilter());
 		zoekCriteria.getObject().setBevolkingsonderzoeken(ScreenitSession.get().getOnderzoeken());
 		zoekCriteria.getObject().setBrievenNietMeerInGebruikOokTonen(Boolean.FALSE);
-		final WebMarkupContainer brievenContainer = new WebMarkupContainer("brievenContainer");
+		final var brievenContainer = new WebMarkupContainer("brievenContainer");
 		brievenContainer.setOutputMarkupId(true);
 		add(brievenContainer);
 		final var uploadHeaderContainer = new WebMarkupContainer("uploadHeader");
@@ -172,7 +172,7 @@ public class BriefBeheerPage extends AlgemeenPage
 				item.add(new UploadDocumentLink("download", new PropertyModel<>(item.getModel(), "document"), true)
 					.setVisible(item.getModelObject().getDocument() != null));
 
-				Form<Void> uploadForm = new Form<>("uploadForm");
+				var uploadForm = new Form<Void>("uploadForm");
 				uploadForm.setFileMaxSize(Bytes.kilobytes(700));
 				uploadForm.add(new FileUploadField("fileUpload", files).add(new FileValidator(FileType.WORD_NIEUW)).setRequired(true));
 				uploadForm.add(new AjaxSubmitLink("uploaden")
@@ -187,7 +187,7 @@ public class BriefBeheerPage extends AlgemeenPage
 
 							try
 							{
-								List<Project> projecten = projectService.getAllProjectenWhereProjectBriefActieHasBriefType(item.getModelObject().getBriefType());
+								var projecten = projectService.getAllProjectenWhereProjectBriefActieHasBriefType(item.getModelObject().getBriefType());
 								var uploadDocument = ScreenitSession.get().fileUploadToUploadDocument(fileUpload);
 								if (!projecten.isEmpty())
 								{

@@ -57,7 +57,7 @@ public class ColonFitAnalyseResultaatSetVerwerkingVerslagPanel extends GenericPa
 
 		add(DateLabel.forDatePattern("rapportage.datumVerwerking", "dd-MM-yyyy HH:mm:ss"));
 
-		List<ColonFitAnalyseResultaatSetVerwerkingRapportageEntry> verwerkingen = model.getObject().getRapportage().getAnalyseResultaatSets();
+		var verwerkingen = model.getObject().getRapportage().getAnalyseResultaatSets();
 
 		if (LogGebeurtenis.COLON_JOB_FIT_ANALYSE_RESULTATEN_OPSLAAN_AFGEROND.equals(logGebeurtenis))
 		{
@@ -77,12 +77,12 @@ public class ColonFitAnalyseResultaatSetVerwerkingVerslagPanel extends GenericPa
 			@Override
 			protected void populateItem(ListItem<ColonFitAnalyseResultaatSetVerwerkingRapportageEntry> item)
 			{
-				ColonFitAnalyseResultaatSet bestand = hibernateService.get(ColonFitAnalyseResultaatSet.class, item.getModelObject().getFitAnalyseResultaatSetId());
+				var bestand = hibernateService.get(ColonFitAnalyseResultaatSet.class, item.getModelObject().getFitAnalyseResultaatSetId());
 				if (bestand != null)
 				{
 					if (StringUtils.isNotBlank(bestand.getPathBestand()))
 					{
-						DownloadLink downloadLink = new DownloadLink("resource", new File(bestand.getPathBestand()), bestand.getNaamBestand());
+						var downloadLink = new DownloadLink("resource", new File(bestand.getPathBestand()), bestand.getNaamBestand());
 						downloadLink.add(new Label("bestandsNaam", bestand.getNaamBestand()));
 						item.add(downloadLink);
 					}
@@ -116,10 +116,10 @@ public class ColonFitAnalyseResultaatSetVerwerkingVerslagPanel extends GenericPa
 
 	private Long getAantalTotaalIngelezen(List<ColonFitAnalyseResultaatSetVerwerkingRapportageEntry> verwerkingen)
 	{
-		Long totaal = Long.valueOf(0);
+		var totaal = Long.valueOf(0);
 		if (CollectionUtils.isNotEmpty(verwerkingen))
 		{
-			for (ColonFitAnalyseResultaatSetVerwerkingRapportageEntry entry : verwerkingen)
+			for (var entry : verwerkingen)
 			{
 				totaal += getAantalIngelezen(entry);
 			}
@@ -129,7 +129,7 @@ public class ColonFitAnalyseResultaatSetVerwerkingVerslagPanel extends GenericPa
 
 	private Integer getAantalIngelezen(ColonFitAnalyseResultaatSetVerwerkingRapportageEntry entry)
 	{
-		ColonFitAnalyseResultaatSet bestand = hibernateService.get(ColonFitAnalyseResultaatSet.class, entry.getFitAnalyseResultaatSetId());
+		var bestand = hibernateService.get(ColonFitAnalyseResultaatSet.class, entry.getFitAnalyseResultaatSetId());
 		if (bestand != null && !ColonFitAnalyseResultaatSetStatus.NIET_VOLLEDIG_INGELEZEN.equals(bestand.getStatus()))
 		{
 			return bestand.getUitslagen().size();
@@ -139,10 +139,10 @@ public class ColonFitAnalyseResultaatSetVerwerkingVerslagPanel extends GenericPa
 
 	private Long getAantalTotaalResultaten(List<ColonFitAnalyseResultaatSetVerwerkingRapportageEntry> verwerkingen)
 	{
-		Long totaal = Long.valueOf(0);
+		var totaal = Long.valueOf(0);
 		if (CollectionUtils.isNotEmpty(verwerkingen))
 		{
-			for (ColonFitAnalyseResultaatSetVerwerkingRapportageEntry entry : verwerkingen)
+			for (var entry : verwerkingen)
 			{
 				totaal += entry.getAantalVerwerkingen();
 			}

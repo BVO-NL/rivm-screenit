@@ -130,7 +130,7 @@ public class TestHL7BerichtPanel extends Panel
 		form.setOutputMarkupId(true);
 		add(form);
 
-		ScreenitDropdown<TestHL7BerichtTypeEnum> berichtTypeDropdown = new ScreenitDropdown<>("berichtType", Arrays.asList(TestHL7BerichtTypeEnum.values()),
+		var berichtTypeDropdown = new ScreenitDropdown<TestHL7BerichtTypeEnum>("berichtType", Arrays.asList(TestHL7BerichtTypeEnum.values()),
 			new EnumChoiceRenderer<>());
 		testBerichtTypeModel = Model.of(TestHL7BerichtTypeEnum.DK_FIT_HTTP);
 		berichtTypeDropdown.setNullValid(false);

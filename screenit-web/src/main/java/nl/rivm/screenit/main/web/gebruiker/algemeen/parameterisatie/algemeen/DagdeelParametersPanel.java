@@ -54,7 +54,7 @@ public class DagdeelParametersPanel extends BasePrimaireParametersPanel
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
 
 		var dummyDatum = LocalDate.of(2022, 01, 01);
 

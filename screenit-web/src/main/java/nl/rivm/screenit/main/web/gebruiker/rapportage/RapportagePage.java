@@ -53,8 +53,8 @@ public class RapportagePage extends MedewerkerBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				final String ssoUrl = idpService.createWebFocusSsoUrl(getIngelogdeOrganisatieMedewerker());
-				final String javaScriptString = String.format("window.open('%s', '_blank')", ssoUrl);
+				final var ssoUrl = idpService.createWebFocusSsoUrl(getIngelogdeOrganisatieMedewerker());
+				final var javaScriptString = String.format("window.open('%s', '_blank')", ssoUrl);
 				target.appendJavaScript(javaScriptString);
 			}
 		};

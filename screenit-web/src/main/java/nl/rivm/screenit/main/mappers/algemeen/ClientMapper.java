@@ -52,7 +52,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 
-@Mapper(config = ScreenitMapperConfig.class)
+@Mapper(config = ScreenitMapperConfig.class, uses = { OnderzoeksresultatenActieMapper.class })
 public interface ClientMapper
 {
 	@Mappings({
@@ -91,7 +91,8 @@ public interface ClientMapper
 		@Mapping(target = "tijdelijkAdresVolledig", source = "client", qualifiedByName = "getTijdelijkAdresVolledig"),
 		@Mapping(target = "postadres", source = "client", qualifiedByName = "getPostadres"),
 		@Mapping(target = "screeningsorganisatie", source = "persoon.gbaAdres.gbaGemeente.screeningOrganisatie.naam"),
-		@Mapping(target = "actief", source = "client", qualifiedByName = "isActief")
+		@Mapping(target = "actief", source = "client", qualifiedByName = "isActief"),
+		@Mapping(target = "onderzoeksresultatenActies", source = "onderzoeksresultatenActies")
 	})
 	ClientDto clientToClientDto(Client client, @Context ClientService clientService);
 

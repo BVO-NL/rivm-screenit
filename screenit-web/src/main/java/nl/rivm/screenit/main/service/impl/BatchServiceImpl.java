@@ -27,7 +27,17 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+
+import jakarta.jms.DeliveryMode;
+import jakarta.jms.Destination;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.QueueBrowser;
+import jakarta.jms.Session;
+import jakarta.jms.TemporaryQueue;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,17 +71,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.core.SessionCallback;
 import org.springframework.stereotype.Service;
-
-import jakarta.jms.DeliveryMode;
-import jakarta.jms.Destination;
-import jakarta.jms.JMSException;
-import jakarta.jms.Message;
-import jakarta.jms.ObjectMessage;
-import jakarta.jms.QueueBrowser;
-import jakarta.jms.Session;
-import jakarta.jms.TemporaryQueue;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @Slf4j
 @Service
@@ -128,7 +127,7 @@ public class BatchServiceImpl implements BatchService
 					Enumeration<Message> enumeration = browser.getEnumeration();
 					while (enumeration.hasMoreElements())
 					{
-						Message message = enumeration.nextElement();
+						var message = enumeration.nextElement();
 						if (message instanceof ObjectMessage objectMessage)
 						{
 							if (objectMessage.getObject() instanceof BatchServerStatus)
@@ -163,7 +162,7 @@ public class BatchServiceImpl implements BatchService
 			public Boolean doInJms(Session session) throws JMSException
 			{
 
-				TemporaryQueue temporaryQueue = session.createTemporaryQueue();
+				var temporaryQueue = session.createTemporaryQueue();
 				try
 				{
 
@@ -190,7 +189,7 @@ public class BatchServiceImpl implements BatchService
 							Enumeration<Message> enumeration = browser.getEnumeration();
 							while (enumeration.hasMoreElements())
 							{
-								Message message = enumeration.nextElement();
+								var message = enumeration.nextElement();
 								if (message instanceof ObjectMessage objectMessage)
 								{
 									if (objectMessage.getObject() instanceof BatchServerStatus)
@@ -222,13 +221,13 @@ public class BatchServiceImpl implements BatchService
 	@Override
 	public List<Trigger> getScheduledTriggers() throws UncategorizedJmsException
 	{
-		List<Trigger> result = jmsTemplate.execute(new SessionCallback<List<Trigger>>()
+		var result = jmsTemplate.execute(new SessionCallback<List<Trigger>>()
 		{
 			@Override
 			public List<Trigger> doInJms(Session session) throws JMSException
 			{
-				TemporaryQueue temporaryQueue = session.createTemporaryQueue();
-				Future<Message> message = asyncMessageReceiver.receiveMessage(temporaryQueue, 10000L);
+				var temporaryQueue = session.createTemporaryQueue();
+				var message = asyncMessageReceiver.receiveMessage(temporaryQueue, 10000L);
 				try
 				{
 					jmsTemplate.send(quartzDestination, new BatchMessageCreator(temporaryQueue)
@@ -243,7 +242,7 @@ public class BatchServiceImpl implements BatchService
 
 					Thread.sleep(2000);
 
-					Message receivedMessage = message.get();
+					var receivedMessage = message.get();
 					if (receivedMessage instanceof ObjectMessage objectMessage)
 					{
 						if (objectMessage.getObject() instanceof GetTriggersResponse getTriggersResponse)
@@ -270,14 +269,14 @@ public class BatchServiceImpl implements BatchService
 	@Override
 	public Date addTrigger(final Trigger trigger, OrganisatieMedewerker organisatieMedewerker)
 	{
-		Date result = jmsTemplate.execute(new SessionCallback<Date>()
+		var result = jmsTemplate.execute(new SessionCallback<Date>()
 		{
 			@Override
 			public Date doInJms(Session session) throws JMSException
 			{
-				TemporaryQueue temporaryQueue = session.createTemporaryQueue();
+				var temporaryQueue = session.createTemporaryQueue();
 				LOG.trace("temp queue: " + temporaryQueue.getQueueName());
-				Future<Message> message = asyncMessageReceiver.receiveMessage(temporaryQueue, 10000L);
+				var message = asyncMessageReceiver.receiveMessage(temporaryQueue, 10000L);
 
 				try
 				{
@@ -295,7 +294,7 @@ public class BatchServiceImpl implements BatchService
 					protected Message createMessageSpecifiek(Session session) throws JMSException
 					{
 						LOG.trace("addTrigger: createMessage");
-						AddTriggerRequest addTriggerRequest = new AddTriggerRequest();
+						var addTriggerRequest = new AddTriggerRequest();
 						addTriggerRequest.setTrigger(trigger);
 
 						return ActiveMQHelper.getActiveMqObjectMessage(addTriggerRequest);
@@ -327,8 +326,8 @@ public class BatchServiceImpl implements BatchService
 
 		if (organisatieMedewerker != null)
 		{
-			LogEvent logEvent = new LogEvent();
-			String logMelding = getTriggerForMelding(trigger);
+			var logEvent = new LogEvent();
+			var logMelding = getTriggerForMelding(trigger);
 			if (result == null)
 			{
 				logEvent.setLevel(Level.ERROR);
@@ -342,8 +341,8 @@ public class BatchServiceImpl implements BatchService
 
 	private String getTriggerForMelding(final Trigger trigger)
 	{
-		String triggerNaam = trigger.getTriggerNaam();
-		String logMelding = "Job type: " + trigger.getJobType();
+		var triggerNaam = trigger.getTriggerNaam();
+		var logMelding = "Job type: " + trigger.getJobType();
 		if (StringUtils.isNotBlank(triggerNaam))
 		{
 			logMelding += ", Trigger key: " + triggerNaam;
@@ -356,14 +355,14 @@ public class BatchServiceImpl implements BatchService
 	public Boolean removeTrigger(final String triggerNaam, OrganisatieMedewerker organisatieMedewerker)
 	{
 		LOG.trace("removeTrigger");
-		Boolean result = jmsTemplate.execute(new SessionCallback<Boolean>()
+		var result = jmsTemplate.execute(new SessionCallback<Boolean>()
 		{
 
 			@Override
 			public Boolean doInJms(Session session) throws JMSException
 			{
-				TemporaryQueue temporaryQueue = session.createTemporaryQueue();
-				Future<Message> message = asyncMessageReceiver.receiveMessage(temporaryQueue, 10000L);
+				var temporaryQueue = session.createTemporaryQueue();
+				var message = asyncMessageReceiver.receiveMessage(temporaryQueue, 10000L);
 
 				try
 				{
@@ -381,7 +380,7 @@ public class BatchServiceImpl implements BatchService
 					protected Message createMessageSpecifiek(Session session) throws JMSException
 					{
 						LOG.trace("removeTrigger: createMessage");
-						RemoveTriggerRequest removeTriggerRequest = new RemoveTriggerRequest();
+						var removeTriggerRequest = new RemoveTriggerRequest();
 						removeTriggerRequest.setTriggerNaam(triggerNaam);
 
 						return ActiveMQHelper.getActiveMqObjectMessage(removeTriggerRequest);
@@ -412,8 +411,8 @@ public class BatchServiceImpl implements BatchService
 
 		});
 
-		LogEvent logEvent = new LogEvent();
-		String logMelding = "Trigger key: " + triggerNaam;
+		var logEvent = new LogEvent();
+		var logMelding = "Trigger key: " + triggerNaam;
 		if (!Boolean.TRUE.equals(result))
 		{
 			logEvent.setLevel(Level.ERROR);
@@ -430,7 +429,7 @@ public class BatchServiceImpl implements BatchService
 	{
 		List<?> list = entityManager.createNativeQuery(BatchQueue.SQL_GET_QUEUE).getResultList();
 		List<JobType> jobTypes = new ArrayList<>();
-		for (Object object : list)
+		for (var object : list)
 		{
 			jobTypes.add(JobType.valueOf(object.toString()));
 		}
@@ -449,7 +448,7 @@ public class BatchServiceImpl implements BatchService
 		@Override
 		public final Message createMessage(Session session) throws JMSException
 		{
-			Message message = createMessageSpecifiek(session);
+			var message = createMessageSpecifiek(session);
 			message.setJMSReplyTo(replyQueue);
 			message.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
 			return message;
@@ -457,7 +456,7 @@ public class BatchServiceImpl implements BatchService
 
 		protected Message createMessageSpecifiek(Session session) throws JMSException
 		{
-			Message message = session.createMessage();
+			var message = session.createMessage();
 			return message;
 		}
 	}

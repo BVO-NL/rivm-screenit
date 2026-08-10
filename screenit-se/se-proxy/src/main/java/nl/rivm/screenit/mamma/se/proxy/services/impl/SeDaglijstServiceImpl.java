@@ -45,7 +45,6 @@ import nl.rivm.screenit.mamma.se.proxy.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -75,7 +74,7 @@ public class SeDaglijstServiceImpl implements SeDaglijstService
 	@Override
 	public String getDaglijst(LocalDate datum)
 	{
-		String daglijst = daglijstCache.get(datum);
+		var daglijst = daglijstCache.get(datum);
 		if (daglijst == null)
 		{
 			getDaglijstGeforceerd(datum);
@@ -88,10 +87,10 @@ public class SeDaglijstServiceImpl implements SeDaglijstService
 	{
 		synchronized (transactionQueueService.getDaglijstEnTransactieLock())
 		{
-			ResponseEntity<String> responseEntity = daglijstRequest(opTeHalenDag);
+			var responseEntity = daglijstRequest(opTeHalenDag);
 			if (responseEntity != null && HttpStatus.OK.equals(responseEntity.getStatusCode()))
 			{
-				String daglijst = responseEntity.getBody();
+				var daglijst = responseEntity.getBody();
 				cacheDaglijst(opTeHalenDag, daglijst);
 				LOG.info("Daglijst van [{}] succesvol binnengehaald van SE-REST-BK (bodysize: {})", opTeHalenDag, daglijst != null ? daglijst.length() : 0);
 				return daglijstCache.get(opTeHalenDag);
@@ -110,7 +109,7 @@ public class SeDaglijstServiceImpl implements SeDaglijstService
 
 	private ResponseEntity<String> daglijstRequest(LocalDate datum)
 	{
-		RequestEntity.BodyBuilder requestBuilder = proxyService
+		var requestBuilder = proxyService
 			.getProxyRequestEntity(RequestTypeCentraal.GET_DAGLIJST.getPathPostfix() + "/" + datum.format(DateTimeFormatter.ISO_DATE), HttpMethod.GET);
 		return proxyService.sendUncheckedProxyRequest(requestBuilder.build(), String.class);
 	}
@@ -127,7 +126,7 @@ public class SeDaglijstServiceImpl implements SeDaglijstService
 	@Override
 	public void voegVerwerkteTransactionDtoToe(LocalDate dag, String transactionDto)
 	{
-		LinkedBlockingDeque<String> dagVerwerkteTransactionDtos = transactiesVerwerktDoorCentraalNaCachenDaglijst.getOrDefault(dag, new LinkedBlockingDeque<>());
+		var dagVerwerkteTransactionDtos = transactiesVerwerktDoorCentraalNaCachenDaglijst.getOrDefault(dag, new LinkedBlockingDeque<>());
 		dagVerwerkteTransactionDtos.add(transactionDto);
 		transactiesVerwerktDoorCentraalNaCachenDaglijst.put(dag, dagVerwerkteTransactionDtos);
 	}
@@ -135,7 +134,7 @@ public class SeDaglijstServiceImpl implements SeDaglijstService
 	@Override
 	public List<String> getDaglijstMutaties(LocalDate datum)
 	{
-		List<String> nogTeVerwerkenTransacties = transactionQueueService.getPendingTransactionDtos(datum);
+		var nogTeVerwerkenTransacties = transactionQueueService.getPendingTransactionDtos(datum);
 		List<String> verwerktEnTeVerwerkenTransacties = new ArrayList<>(transactiesVerwerktDoorCentraalNaCachenDaglijst.getOrDefault(datum, new LinkedBlockingDeque<>()));
 		verwerktEnTeVerwerkenTransacties.addAll(nogTeVerwerkenTransacties);
 		return verwerktEnTeVerwerkenTransacties;
@@ -150,7 +149,7 @@ public class SeDaglijstServiceImpl implements SeDaglijstService
 
 	private void haalDaglijstEnBroadcast(LocalDate opTeHalenDag)
 	{
-		String daglijstResponse = getDaglijstGeforceerd(opTeHalenDag);
+		var daglijstResponse = getDaglijstGeforceerd(opTeHalenDag);
 		if (daglijstResponse != null && DateUtil.isVandaag(opTeHalenDag))
 		{
 			webSocketProxyService.broadcast(WebsocketBerichtType.DAGLIJST_UPDATE.name());
@@ -160,17 +159,17 @@ public class SeDaglijstServiceImpl implements SeDaglijstService
 	@Override
 	public void haalDaglijstenOp()
 	{
-		Integer daglijstOphalenVoorDagen = configuratieService.getConfiguratieIntegerValue(SeConfiguratieKey.SE_DAGLIJST_OPHALEN_VOOR_DAGEN);
+		var daglijstOphalenVoorDagen = configuratieService.getConfiguratieIntegerValue(SeConfiguratieKey.SE_DAGLIJST_OPHALEN_VOOR_DAGEN);
 		LOG.info("Schoon cache van daglijsten en verwerkte transacties op en haal daglijst voor gisteren, vandaag en {} dag(en) in de toekomst op van SE-REST-BK",
 			daglijstOphalenVoorDagen);
 		achtergrondRequestService.verwijderAlleOpTeHalenDaglijsten();
 
-		List<LocalDate> teVerversenDagen = teVerversenDaglijsten(daglijstOphalenVoorDagen);
+		var teVerversenDagen = teVerversenDaglijsten(daglijstOphalenVoorDagen);
 
 		daglijstCache.entrySet().removeIf(entry -> !teVerversenDagen.contains(entry.getKey()));
 		transactiesVerwerktDoorCentraalNaCachenDaglijst.entrySet().removeIf(entry -> !teVerversenDagen.contains(entry.getKey()));
 
-		for (LocalDate teVerversenDag : teVerversenDagen)
+		for (var teVerversenDag : teVerversenDagen)
 		{
 			achtergrondRequestService.queueDaglijstRequest(teVerversenDag, this::haalDaglijstEnBroadcast);
 		}
@@ -180,11 +179,11 @@ public class SeDaglijstServiceImpl implements SeDaglijstService
 	private List<LocalDate> teVerversenDaglijsten(Integer daglijstOphalenVoorDagen)
 	{
 		List<LocalDate> teVerversenDagen = new ArrayList<>();
-		LocalDate vandaag = DateUtil.getCurrentDateTime().toLocalDate();
-		LocalDate gisteren = vandaag.minusDays(1);
+		var vandaag = DateUtil.getCurrentDateTime().toLocalDate();
+		var gisteren = vandaag.minusDays(1);
 
 		teVerversenDagen.add(gisteren);
-		for (int i = 0; i <= daglijstOphalenVoorDagen; i++)
+		for (var i = 0; i <= daglijstOphalenVoorDagen; i++)
 		{
 			teVerversenDagen.add(vandaag.plusDays(i));
 		}

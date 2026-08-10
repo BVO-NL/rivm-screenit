@@ -23,19 +23,17 @@ package nl.rivm.screenit.main.web.security;
 
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.security.Constraint;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 @Slf4j
 public class SecurityConstraintInterceptor implements HandlerInterceptor
@@ -46,7 +44,7 @@ public class SecurityConstraintInterceptor implements HandlerInterceptor
 	{
 		if (handler instanceof HandlerMethod handlerMethod)
 		{
-			SecurityConstraint securityConstraint = handlerMethod.getMethodAnnotation(SecurityConstraint.class);
+			var securityConstraint = handlerMethod.getMethodAnnotation(SecurityConstraint.class);
 
 			if (securityConstraint != null)
 			{
@@ -83,15 +81,15 @@ public class SecurityConstraintInterceptor implements HandlerInterceptor
 
 	private boolean checkPermissie(SecurityConstraint securityConstraint)
 	{
-		Subject currentUser = SecurityUtils.getSubject();
+		var currentUser = SecurityUtils.getSubject();
 		var permitted = false;
 		var constraint = new Constraint();
 		constraint.setActie(securityConstraint.actie());
 		constraint.setToegangLevel(securityConstraint.level());
 		constraint.setBevolkingsonderzoek(List.of(securityConstraint.bevolkingsonderzoekScopes()));
 
-		boolean isAny = securityConstraint.required().equals(Required.ANY);
-		for (Recht recht : securityConstraint.recht())
+		var isAny = securityConstraint.required().equals(Required.ANY);
+		for (var recht : securityConstraint.recht())
 		{
 			constraint.setRecht(recht);
 			permitted = currentUser.isPermitted(constraint);

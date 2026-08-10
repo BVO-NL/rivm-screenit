@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.service.algemeen.impl;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,29 +38,17 @@ import nl.rivm.screenit.main.service.algemeen.OverdrachtPersoonsgegevensService;
 import nl.rivm.screenit.main.util.CervixCisHistoryUtil;
 import nl.rivm.screenit.model.AanvraagBriefStatus;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.EnovationHuisarts;
 import nl.rivm.screenit.model.Persoon;
-import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.UploadDocument;
-import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
 import nl.rivm.screenit.model.berichten.Verslag;
-import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.cervix.CervixDossier;
-import nl.rivm.screenit.model.cervix.CervixHpvBeoordeling;
-import nl.rivm.screenit.model.cervix.CervixHuisarts;
-import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
-import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
-import nl.rivm.screenit.model.cervix.CervixZas;
-import nl.rivm.screenit.model.cervix.cis.CervixCISHistorieOngestructureerdRegel;
-import nl.rivm.screenit.model.colon.ColonConclusie;
 import nl.rivm.screenit.model.colon.ColonDossier;
-import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
@@ -77,13 +64,11 @@ import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
-import nl.rivm.screenit.model.mamma.enums.MammaGeenHuisartsOption;
-import nl.rivm.screenit.model.mamma.enums.MammaIdentificatiesoort;
 import nl.rivm.screenit.model.verslag.NullFlavourQuantity;
 import nl.rivm.screenit.model.verslag.Quantity;
 import nl.rivm.screenit.model.verslag.VraagElement;
+import nl.rivm.screenit.repository.algemeen.OverdrachtPersoonsgegevensRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -93,6 +78,7 @@ import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.service.mamma.MammaBaseLaesieService;
+import nl.rivm.screenit.specification.algemeen.OverdrachtPersoonsgegevensSpecification;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.rivm.screenit.util.StringUtil;
@@ -102,7 +88,6 @@ import nl.topicuszorg.hibernate.object.model.HibernateObject;
 import nl.topicuszorg.organisatie.model.Adres;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.apache.commons.beanutils.expression.Resolver;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -124,7 +109,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -158,10 +142,12 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private final ColonBaseFitService colonBaseFitService;
 
+	private final OverdrachtPersoonsgegevensRepository overdrachtPersoonsgegevensRepository;
+
 	@Override
-	public boolean heeftVerzoekZonderGegenereerdeBrief(Client client)
+	public boolean heeftOpenstaandVerzoek(Client client)
 	{
-		return briefService.clientHeeftOngegenereerdeBriefVanType(BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_AANVRAAG, client, AlgemeneBrief.class);
+		return overdrachtPersoonsgegevensRepository.exists(OverdrachtPersoonsgegevensSpecification.heeftOpenstaandVerzoek(client));
 	}
 
 	@Override
@@ -193,7 +179,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 	@Override
 	public void verstuurGeenHandtekeningBrief(OverdrachtPersoonsgegevens overdracht, Account ingelogdAccount)
 	{
-		AlgemeneBrief brief = briefService.maakAlgemeneBrief(overdracht.getClient(), BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_HANDTEKENING);
+		var brief = briefService.maakAlgemeneBrief(overdracht.getClient(), BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_HANDTEKENING);
 		overdracht.setGeenHandtekeningBrief(brief);
 		overdracht.setStatusDatum(currentDateSupplier.getDate());
 		hibernateService.saveOrUpdate(overdracht);
@@ -220,16 +206,16 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 			Workbook workbook = new XSSFWorkbook();
 
-			CreationHelper createHelper = workbook.getCreationHelper();
+			var createHelper = workbook.getCreationHelper();
 
-			CellStyle cellStyleDate = workbook.createCellStyle();
-			CellStyle cellStyleDateTime = workbook.createCellStyle();
+			var cellStyleDate = workbook.createCellStyle();
+			var cellStyleDateTime = workbook.createCellStyle();
 
 			cellStyleDate.setDataFormat(createHelper.createDataFormat().getFormat(Constants.DEFAULT_DATE_FORMAT));
 			cellStyleDateTime.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy HH:mm:ss"));
 
-			Client client = overdrachtPersoonsgegevens.getClient();
-			Persoon persoon = client.getPersoon();
+			var client = overdrachtPersoonsgegevens.getClient();
+			var persoon = client.getPersoon();
 			addClientGegevens(workbook, createHelper, cellStyleDate, persoon);
 			if (Boolean.TRUE.equals(overdrachtPersoonsgegevens.getDkGegevens()))
 			{
@@ -255,12 +241,12 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addBkGegevens(Workbook workbook, CellStyle cellStyleDateTime, MammaDossier mammaDossier)
 	{
-		Sheet sheet = workbook.createSheet(Bevolkingsonderzoek.MAMMA.getNaam());
+		var sheet = workbook.createSheet(Bevolkingsonderzoek.MAMMA.getNaam());
 		List<MammaScreeningRonde> rondes = new ArrayList<>(mammaDossier.getScreeningRondes());
 		rondes.sort(new PropertyComparator<>("creatieDatum", false, true));
 
 		addRow(sheet, "Doelgroep", StringUtil.enumName2readableString(mammaDossier.getDoelgroep().name()), null);
-		for (MammaScreeningRonde ronde : rondes)
+		for (var ronde : rondes)
 		{
 			addRow(sheet, "Ronde", rondeNummerService.geefRondeNummer(ronde), ronde.getCreatieDatum(), cellStyleDateTime);
 			addBkHuisarts(cellStyleDateTime, sheet, ronde);
@@ -272,14 +258,14 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addBkHuisarts(CellStyle cellStyleDateTime, Sheet sheet, MammaScreeningRonde ronde)
 	{
-		EnovationHuisarts huisarts = ronde.getHuisarts();
+		var huisarts = ronde.getHuisarts();
 		if (huisarts != null)
 		{
 			addRow(sheet, "Huisarts", getVolledigeHuisArtsTekst(huisarts), ronde.getDatumVastleggenHuisarts(), cellStyleDateTime);
 		}
 		else
 		{
-			MammaGeenHuisartsOption geenHuisartsOptie = ronde.getGeenHuisartsOptie();
+			var geenHuisartsOptie = ronde.getGeenHuisartsOptie();
 			if (geenHuisartsOptie != null)
 			{
 				addRow(sheet, "Huisarts", geenHuisartsOptie.name(), ronde.getDatumVastleggenHuisarts(), cellStyleDateTime);
@@ -289,10 +275,10 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addBkOnderzoeken(CellStyle cellStyleDateTime, Sheet sheet, MammaScreeningRonde ronde)
 	{
-		List<MammaUitnodiging> uitnodigingen = ronde.getUitnodigingen();
-		for (MammaUitnodiging uitnodiging : uitnodigingen)
+		var uitnodigingen = ronde.getUitnodigingen();
+		for (var uitnodiging : uitnodigingen)
 		{
-			for (MammaAfspraak afspraak : uitnodiging.getAfspraken())
+			for (var afspraak : uitnodiging.getAfspraken())
 			{
 				addBkAfspraakIdentificatie(cellStyleDateTime, sheet, afspraak);
 				addBkOnderzoekSe(cellStyleDateTime, sheet, afspraak);
@@ -305,7 +291,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 	{
 		if (beoordeling.getVerslagLezing() != null)
 		{
-			String laesieString = baseLaesieService.getAllLaesieTekstVoorVerslagLezing(beoordeling.getVerslagLezing());
+			var laesieString = baseLaesieService.getAllLaesieTekstVoorVerslagLezing(beoordeling.getVerslagLezing());
 			addRow(sheet, "Laesies", laesieString, beoordeling.getStatusDatum(), cellStyleDateTime);
 		}
 	}
@@ -314,9 +300,9 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 	{
 		if (baseBeoordelingService.heeftBeoordelingNevenbevindingen(beoordeling))
 		{
-			String nevenbevindingenString = baseBeoordelingService.getMammaLezingEnumsTekst(MammaLezing::getNevenbevindingen, beoordeling.getEersteLezing(),
+			var nevenbevindingenString = baseBeoordelingService.getMammaLezingEnumsTekst(MammaLezing::getNevenbevindingen, beoordeling.getEersteLezing(),
 				beoordeling.getTweedeLezing());
-			String nevenbevindingOpmerkingTekst = baseBeoordelingService.getNevenbevindingOpmerkingTekst("\n", beoordeling.getEersteLezing(), beoordeling.getTweedeLezing());
+			var nevenbevindingOpmerkingTekst = baseBeoordelingService.getNevenbevindingOpmerkingTekst("\n", beoordeling.getEersteLezing(), beoordeling.getTweedeLezing());
 			addRow(sheet, "Nevenbevindingen", nevenbevindingenString, beoordeling.getStatusDatum(), cellStyleDateTime);
 			if (nevenbevindingOpmerkingTekst != null)
 			{
@@ -329,7 +315,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 	{
 		if (onderzoek != null)
 		{
-			for (MammaBeoordeling beoordeling : onderzoek.getBeoordelingen())
+			for (var beoordeling : onderzoek.getBeoordelingen())
 			{
 				if (MammaBeoordelingStatus.isUitslagStatus(beoordeling.getStatus()))
 				{
@@ -368,8 +354,8 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addBkAfspraakIdentificatie(CellStyle cellStyleDateTime, Sheet sheet, MammaAfspraak afspraak)
 	{
-		String identificatienummer = afspraak.getIdentificatienummer();
-		MammaIdentificatiesoort identificatieSoort = afspraak.getIdentificatiesoort();
+		var identificatienummer = afspraak.getIdentificatienummer();
+		var identificatieSoort = afspraak.getIdentificatiesoort();
 		if (identificatieSoort != null)
 		{
 			addRow(sheet, "Identificatie",
@@ -393,10 +379,10 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addDkGegevens(Workbook workbook, CellStyle cellStyleDate, CellStyle cellStyleDateTime, ColonDossier dossier)
 	{
-		Sheet sheet = workbook.createSheet(Bevolkingsonderzoek.COLON.getNaam());
+		var sheet = workbook.createSheet(Bevolkingsonderzoek.COLON.getNaam());
 		List<ColonScreeningRonde> rondes = new ArrayList<>(dossier.getScreeningRondes());
 		rondes.sort(new PropertyComparator<>("creatieDatum", false, true));
-		for (ColonScreeningRonde ronde : rondes)
+		for (var ronde : rondes)
 		{
 			addRow(sheet, "Ronde", rondeNummerService.geefRondeNummer(ronde), ronde.getCreatieDatum(), cellStyleDateTime);
 			addDkHuisarts(cellStyleDateTime, sheet, ronde);
@@ -411,7 +397,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addDkHuisarts(CellStyle cellStyleDateTime, Sheet sheet, ColonScreeningRonde ronde)
 	{
-		EnovationHuisarts huisarts = ronde.getHuisarts();
+		var huisarts = ronde.getHuisarts();
 		if (huisarts != null)
 		{
 			addRow(sheet, "Huisarts", getVolledigeHuisArtsTekst(huisarts), ronde.getDatumVastleggenHuisarts(), cellStyleDateTime);
@@ -431,9 +417,9 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addIntakeConclusies(CellStyle cellStyleDate, CellStyle cellStyleDateTime, Sheet sheet, ColonScreeningRonde ronde)
 	{
-		for (ColonIntakeAfspraak afspraak : ronde.getAfspraken())
+		for (var afspraak : ronde.getAfspraken())
 		{
-			ColonConclusie conclusie = afspraak.getConclusie();
+			var conclusie = afspraak.getConclusie();
 			if (afspraak.getStatus() == ColonAfspraakStatus.UITGEVOERD && conclusie != null)
 			{
 				addRow(sheet, "Conclusie intake afspraak", conclusie.getType(), conclusie.getDatum(), cellStyleDateTime);
@@ -455,10 +441,10 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addBmhkGegevens(Workbook workbook, CellStyle cellStyleDateTime, CervixDossier dossier)
 	{
-		Sheet sheet = workbook.createSheet(Bevolkingsonderzoek.CERVIX.getNaam());
+		var sheet = workbook.createSheet(Bevolkingsonderzoek.CERVIX.getNaam());
 		List<CervixScreeningRonde> rondes = new ArrayList<>(dossier.getScreeningRondes());
 		rondes.sort(new PropertyComparator<>("creatieDatum", false, true));
-		for (CervixScreeningRonde ronde : rondes)
+		for (var ronde : rondes)
 		{
 			addRow(sheet, "Ronde", rondeNummerService.geefRondeNummer(ronde), ronde.getCreatieDatum(), cellStyleDateTime);
 			addBmhkUitslagen(cellStyleDateTime, sheet, ronde);
@@ -484,9 +470,9 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 	{
 		if (CervixMonsterUtil.isUitstrijkje(monster))
 		{
-			CervixUitstrijkje uitstrijkje = CervixMonsterUtil.getUitstrijkje(monster);
+			var uitstrijkje = CervixMonsterUtil.getUitstrijkje(monster);
 			addBmhkHuisarts(cellStyleDateTime, sheet, uitstrijkje);
-			CervixHpvBeoordeling beoordeling = uitstrijkje.getLaatsteHpvBeoordeling();
+			var beoordeling = uitstrijkje.getLaatsteHpvBeoordeling();
 			if (beoordeling != null && beoordeling.getHpvUitslag() != null)
 			{
 				addRow(sheet, "HPV uitslag (uitstrijkje)", beoordeling.getHpvUitslag().getNaam(), beoordeling.getAnalyseDatum(), cellStyleDateTime);
@@ -496,12 +482,12 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addBmhkHuisarts(CellStyle cellStyleDateTime, Sheet sheet, CervixUitstrijkje uitstrijkje)
 	{
-		CervixLabformulier labformulier = uitstrijkje.getLabformulier();
+		var labformulier = uitstrijkje.getLabformulier();
 		if (labformulier != null && labformulier.getHuisartsLocatie() != null)
 		{
-			CervixHuisartsLocatie huisartsLocatie = labformulier.getHuisartsLocatie();
-			CervixHuisarts huisarts = huisartsLocatie.getHuisarts();
-			String volledigeHuisartsTekst = "Huisarts: " + NaamUtil.getNaamHuisarts(huisarts) + ", Praktijk: " + huisarts.getNaam() + ", Adres: "
+			var huisartsLocatie = labformulier.getHuisartsLocatie();
+			var huisarts = huisartsLocatie.getHuisarts();
+			var volledigeHuisartsTekst = "Huisarts: " + NaamUtil.getNaamHuisarts(huisarts) + ", Praktijk: " + huisarts.getNaam() + ", Adres: "
 				+ AdresUtil.getVolledigeAdresString(huisartsLocatie.getLocatieAdres()) + ", Locatie: " + huisartsLocatie.getNaam();
 			addRow(sheet, "Uitstrijkend arts", volledigeHuisartsTekst, labformulier.getStatusDatum(), cellStyleDateTime);
 		}
@@ -511,8 +497,8 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 	{
 		if (CervixMonsterUtil.isZAS(monster))
 		{
-			CervixZas zas = CervixMonsterUtil.getZAS(monster);
-			CervixHpvBeoordeling beoordeling = zas.getLaatsteHpvBeoordeling();
+			var zas = CervixMonsterUtil.getZAS(monster);
+			var beoordeling = zas.getLaatsteHpvBeoordeling();
 			if (beoordeling != null && beoordeling.getHpvUitslag() != null)
 			{
 				addRow(sheet, "HPV uitslag (ZAS)", beoordeling.getHpvUitslag().getNaam(), beoordeling.getAnalyseDatum(), cellStyleDateTime);
@@ -530,7 +516,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addVerslagRow(CellStyle cellStyleDateTime, Sheet sheet, Verslag<?, ?> verslag)
 	{
-		OntvangenCdaBericht ontvangenBericht = verslag.getOntvangenBericht();
+		var ontvangenBericht = verslag.getOntvangenBericht();
 		var verslagContent = verslag.getVerslagContent();
 		if (verslagContent != null)
 		{
@@ -556,24 +542,24 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 			try
 			{
-				Date ontvangen = verslag.getDatumVerwerkt();
+				var ontvangen = verslag.getDatumVerwerkt();
 				if (ontvangenBericht != null)
 				{
 					ontvangen = ontvangenBericht.getOntvangen();
 				}
-				ObjectMapper mapper = new ObjectMapper();
+				var mapper = new ObjectMapper();
 				mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 				mapper.addMixInAnnotations(Object.class, MixInByPropName.class);
 				mapper.setSerializationInclusion(Include.NON_EMPTY);
 				mapper.setPropertyNamingStrategy(new ReplaceNamingStrategy());
 				mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-				SimpleModule simpleModule = new SimpleModule("SimpleModule", Version.unknownVersion());
+				var simpleModule = new SimpleModule("SimpleModule", Version.unknownVersion());
 				simpleModule.addSerializer(Date.class, new DateJsonSerializer());
 				simpleModule.addSerializer(Boolean.class, new BooleanJsonSerializer());
 				simpleModule.addSerializer(Quantity.class, new QuantityJsonSerializer());
 				simpleModule.addSerializer(NullFlavourQuantity.class, new NullFlavourQuantityJsonSerializer());
 				mapper.registerModule(simpleModule);
-				ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+				var writer = mapper.writerWithDefaultPrettyPrinter();
 
 				addRow(sheet, label, writer.writeValueAsString(Hibernate.unproxy(verslagContent)), ontvangen,
 					cellStyleDateTime);
@@ -589,8 +575,8 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 	{
 		if (radiologieVerslag.getIngevoerdOp() != null)
 		{
-			String label = "Ontvangen follow-up radiologie verslag";
-			Date ingevoerdOp = radiologieVerslag.getIngevoerdOp();
+			var label = "Ontvangen follow-up radiologie verslag";
+			var ingevoerdOp = radiologieVerslag.getIngevoerdOp();
 			List<String> rowStrings = new ArrayList<>();
 			if (radiologieVerslag.getConclusieBirads() != null)
 			{
@@ -614,7 +600,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 			}
 			if (!rowStrings.isEmpty())
 			{
-				String row = String.join(", ", rowStrings);
+				var row = String.join(", ", rowStrings);
 				addRow(sheet, label, row, ingevoerdOp, cellStyleDateTime);
 			}
 		}
@@ -633,13 +619,13 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 		@Override
 		public String nameForGetterMethod(MapperConfig<?> config, AnnotatedMethod method, String defaultName)
 		{
-			Class<?> declaringClass = method.getDeclaringClass();
+			var declaringClass = method.getDeclaringClass();
 			if (HibernateObject.class.isAssignableFrom(declaringClass))
 			{
-				Field field = FieldUtils.getDeclaredField(declaringClass, defaultName, true);
+				var field = FieldUtils.getDeclaredField(declaringClass, defaultName, true);
 				if (field != null)
 				{
-					VraagElement annotation = field.getAnnotation(VraagElement.class);
+					var annotation = field.getAnnotation(VraagElement.class);
 					if (annotation != null && annotation.displayName() != null)
 					{
 						defaultName = annotation.displayName();
@@ -676,7 +662,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 		@Override
 		public void serialize(NullFlavourQuantity value, JsonGenerator gen, SerializerProvider serializers) throws IOException
 		{
-			String quantity = value.getValue();
+			var quantity = value.getValue();
 			if (value.getUnit() != null)
 			{
 				quantity += " " + value.getUnit();
@@ -696,7 +682,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 		@Override
 		public void serialize(Quantity value, JsonGenerator gen, SerializerProvider serializers) throws IOException
 		{
-			String quantity = value.getValue();
+			var quantity = value.getValue();
 			if (value.getUnit() != null)
 			{
 				quantity += " " + value.getUnit();
@@ -710,14 +696,14 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 	{
 		if (dossier.getCisHistorie() != null)
 		{
-			Map<String, List<CervixCISHistorieOngestructureerdRegel>> ongestructureerdeRegelsPerRonde = CervixCisHistoryUtil
+			var ongestructureerdeRegelsPerRonde = CervixCisHistoryUtil
 				.getOngestructureerdeRegelsPerRonde(dossier.getCisHistorie(), true);
-			List<String> rondeVolgorde = CervixCisHistoryUtil.getOrderdKeys(ongestructureerdeRegelsPerRonde, true);
+			var rondeVolgorde = CervixCisHistoryUtil.getOrderdKeys(ongestructureerdeRegelsPerRonde, true);
 			addRow(sheet, "CIS historie", null, null);
-			for (String ronde : rondeVolgorde)
+			for (var ronde : rondeVolgorde)
 			{
 				addRow(sheet, "Ronde", ronde, null);
-				for (CervixCISHistorieOngestructureerdRegel regel : ongestructureerdeRegelsPerRonde.get(ronde))
+				for (var regel : ongestructureerdeRegelsPerRonde.get(ronde))
 				{
 					addRow(sheet, "Regel", regel.getTekst(), regel.getDatum(), cellStyleDateTime);
 				}
@@ -727,7 +713,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addClientGegevens(Workbook workbook, CreationHelper createHelper, CellStyle cellStyleDate, Persoon persoon)
 	{
-		Sheet sheet = workbook.createSheet("Clientgegevens");
+		var sheet = workbook.createSheet("Clientgegevens");
 		addGbaPersoonGegevens(workbook, sheet, createHelper, cellStyleDate, persoon);
 
 		addGbaAdres(sheet, persoon);
@@ -739,7 +725,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addGbaPersoonGegevens(Workbook workbook, Sheet sheet, CreationHelper createHelper, CellStyle cellStyleDate, Persoon persoon)
 	{
-		CellStyle cellStyleGeboortedatum = workbook.createCellStyle();
+		var cellStyleGeboortedatum = workbook.createCellStyle();
 		addRow(sheet, "Bsn", persoon, "bsn", null);
 		addRow(sheet, "Anummer", persoon, "anummer", null);
 		addRow(sheet, "Geslachtsnaam", persoon, "achternaam", null);
@@ -747,7 +733,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 		addRow(sheet, "Voornamen", persoon, "voornaam", null);
 		addRow(sheet, "Naamgebruik", persoon, "naamGebruik", null);
 		addRow(sheet, "Adellijke titel", persoon, "titel", null);
-		String geboortedatumPattern = "dd-MM-yyyy";
+		var geboortedatumPattern = "dd-MM-yyyy";
 		if (persoon.getGeboortedatumPrecisie() != null)
 		{
 			geboortedatumPattern = persoon.getGeboortedatumPrecisie().getDatePattern();
@@ -765,7 +751,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addGbaAdres(Sheet sheet, Persoon persoon)
 	{
-		BagAdres gbaAdres = persoon.getGbaAdres();
+		var gbaAdres = persoon.getGbaAdres();
 		addAdres(sheet, gbaAdres, "BRP ");
 		addRow(sheet, "BRP Locatie beschrijving", gbaAdres, "locatieBeschrijving", null);
 		addRow(sheet, "BRP Gemeente", gbaAdres, "gbaGemeente.naam", null);
@@ -782,7 +768,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addTijdelijkAdres(Sheet sheet, Persoon persoon, CellStyle cellStyleDate)
 	{
-		TijdelijkAdres adres = persoon.getTijdelijkAdres();
+		var adres = persoon.getTijdelijkAdres();
 		if (adres != null)
 		{
 			addAdres(sheet, adres, "Tijdelijk ");
@@ -812,7 +798,7 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 	{
 		try
 		{
-			Object value = PropertyUtilsBean2.getInstance().getNestedProperty(rootObject, property);
+			var value = PropertyUtilsBean2.getInstance().getNestedProperty(rootObject, property);
 			if (value != null)
 			{
 				addRow(sheet, label, value, style);
@@ -826,10 +812,10 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addRow(Sheet sheet, String label, Object value, Date datumTijd, CellStyle dateStyle, CellStyle dateTimeStyle)
 	{
-		Row row = addRow(sheet, label, value, dateStyle);
+		var row = addRow(sheet, label, value, dateStyle);
 		if (datumTijd != null)
 		{
-			Cell cell = row.createCell(2);
+			var cell = row.createCell(2);
 			addCellValue(cell, datumTijd, dateTimeStyle);
 		}
 	}
@@ -841,8 +827,8 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private Row addRow(Sheet sheet, String label, Object value, CellStyle style)
 	{
-		Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-		Cell cell = row.createCell(0);
+		var row = sheet.createRow(sheet.getPhysicalNumberOfRows());
+		var cell = row.createCell(0);
 		addCellValue(cell, label, style);
 
 		cell = row.createCell(1);
@@ -900,10 +886,10 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 					bean.getClass() + "'");
 			}
 
-			Resolver resolver = getResolver();
+			var resolver = getResolver();
 			while (resolver.hasNested(name))
 			{
-				String next = resolver.next(name);
+				var next = resolver.next(name);
 				Object nestedBean;
 				if (bean instanceof Map)
 				{

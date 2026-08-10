@@ -23,6 +23,8 @@ package nl.rivm.screenit.main.web;
 
 import java.util.Locale;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.logging.log4j.util.Strings;
@@ -30,8 +32,6 @@ import org.apache.wicket.protocol.http.IResourceIsolationPolicy;
 import org.apache.wicket.protocol.http.OriginResourceIsolationPolicy;
 import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.http.WebRequest;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @Slf4j
 public class ScreenITOriginResourceIsolationPolicy extends OriginResourceIsolationPolicy
@@ -41,7 +41,7 @@ public class ScreenITOriginResourceIsolationPolicy extends OriginResourceIsolati
 	public IResourceIsolationPolicy.ResourceIsolationOutcome isRequestAllowed(HttpServletRequest request,
 		IRequestablePage targetPage)
 	{
-		String sourceUri = getSourceUri(request);
+		var sourceUri = getSourceUri(request);
 
 		if (sourceUri == null || sourceUri.isEmpty())
 		{
@@ -66,7 +66,7 @@ public class ScreenITOriginResourceIsolationPolicy extends OriginResourceIsolati
 
 	private String getSourceUri(HttpServletRequest containerRequest)
 	{
-		String sourceUri = containerRequest.getHeader(WebRequest.HEADER_ORIGIN);
+		var sourceUri = containerRequest.getHeader(WebRequest.HEADER_ORIGIN);
 		if (Strings.isEmpty(sourceUri))
 		{
 			sourceUri = containerRequest.getHeader(WebRequest.HEADER_REFERER);

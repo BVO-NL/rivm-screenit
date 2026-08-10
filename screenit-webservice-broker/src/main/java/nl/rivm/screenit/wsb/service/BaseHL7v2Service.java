@@ -55,10 +55,10 @@ public abstract class BaseHL7v2Service<T extends Message>
 
 	protected void logging(LogGebeurtenis logGebeurtenis, Level level, Organisatie organisatie, String melding, Bevolkingsonderzoek bvo)
 	{
-		LogEvent event = new LogEvent();
+		var event = new LogEvent();
 		event.setLevel(level);
 		event.setMelding(melding);
-		List<Organisatie> organisaties = addLandelijkeBeheerOrganisaties(new ArrayList<>());
+		var organisaties = addLandelijkeBeheerOrganisaties(new ArrayList<>());
 		if (organisatie != null)
 		{
 			organisaties.add(organisatie);

@@ -54,7 +54,7 @@ public class CdaVerslagErrorDownloadCdaPanel extends GenericPanel<BerichtOntvang
 			@Override
 			protected ResourceResponse newResourceResponse(Attributes attributes)
 			{
-				ResourceResponse response = new ResourceResponse();
+				var response = new ResourceResponse();
 				response.setFileName("bericht.xml");
 				response.setContentType("application/xml");
 				response.getHeaders().addHeader("Cache-Control", "no-cache");

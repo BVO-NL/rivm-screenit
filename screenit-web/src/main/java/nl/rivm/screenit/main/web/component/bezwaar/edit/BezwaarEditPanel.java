@@ -52,9 +52,9 @@ public class BezwaarEditPanel extends Panel
 			@Override
 			protected void populateItem(ListItem<BezwaarGroupViewWrapper> item)
 			{
-				BezwaarGroupViewWrapper wrapper = item.getModelObject();
+				var wrapper = item.getModelObject();
 
-				WebMarkupContainer container = new WebMarkupContainer("container");
+				var container = new WebMarkupContainer("container");
 				container.add(new Label("bvo", getString("Bevolkingsonderzoek." + wrapper.getKey())));
 
 				var bezwaren = new ListView<>("bezwaren", wrapper.getBezwaren())

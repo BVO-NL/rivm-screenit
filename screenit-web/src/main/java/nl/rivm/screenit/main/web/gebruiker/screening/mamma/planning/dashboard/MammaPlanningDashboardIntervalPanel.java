@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.dashboard;
 
 import java.math.BigDecimal;
 
-import nl.rivm.screenit.dto.mamma.planning.PlanningScreeningsEenheidMetaDataDto;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 import nl.rivm.screenit.util.BigDecimalUtil;
 
@@ -40,12 +39,12 @@ public class MammaPlanningDashboardIntervalPanel extends GenericPanel<MammaScree
 	public MammaPlanningDashboardIntervalPanel(String id, IModel<MammaScreeningsEenheid> model)
 	{
 		super(id, model);
-		PlanningScreeningsEenheidMetaDataDto metaDataDto = model.getObject().getMetaDataDto();
+		var metaDataDto = model.getObject().getMetaDataDto();
 
-		BigDecimal initieelInterval = BigDecimalUtil.roundToNearestHalf(metaDataDto.initieelIntervalMaanden);
+		var initieelInterval = BigDecimalUtil.roundToNearestHalf(metaDataDto.initieelIntervalMaanden);
 		add(intervalRood(initieelInterval, new Label("initieelInterval", initieelInterval)));
 
-		BigDecimal interval = BigDecimalUtil.roundToNearestHalf(metaDataDto.intervalMaanden);
+		var interval = BigDecimalUtil.roundToNearestHalf(metaDataDto.intervalMaanden);
 		add(intervalRood(initieelInterval, new Label("interval", interval)));
 	}
 

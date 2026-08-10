@@ -36,7 +36,6 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
 import org.wicketstuff.wiquery.core.javascript.JsQuery;
 import org.wicketstuff.wiquery.core.javascript.JsScope;
-import org.wicketstuff.wiquery.core.javascript.JsStatement;
 import org.wicketstuff.wiquery.core.javascript.JsUtils;
 
 public abstract class AjaxTimeField extends TimeField
@@ -65,23 +64,23 @@ public abstract class AjaxTimeField extends TimeField
 	{
 		response.render(JavaScriptHeaderItem.forReference(TimerResourceReference.get()));
 
-		String selector = String.format("#%s, #%s", getHoursField().getMarkupId(), getMinutesField()
+		var selector = String.format("#%s, #%s", getHoursField().getMarkupId(), getMinutesField()
 			.getMarkupId());
 
-		String label = JsUtils.doubleQuotes("trigger");
+		var label = JsUtils.doubleQuotes("trigger");
 
-		JsStatement stopTime = new JsQuery(getHoursField()).$().chain("stopTime", label);
+		var stopTime = new JsQuery(getHoursField()).$().chain("stopTime", label);
 
-		CharSequence function = behavior.getCallbackFunction(
+		var function = behavior.getCallbackFunction(
 			CallbackParameter.resolved(getHoursField().getInputName(), new JsQuery(
 				getHoursField()).$().chain("val").render(false).toString()),
 			CallbackParameter.resolved(getMinutesField().getInputName(), new JsQuery(getMinutesField()).$()
 				.chain("val").render(false).toString()));
 
-		JsStatement oneTime = new JsQuery(getHoursField()).$()
+		var oneTime = new JsQuery(getHoursField()).$()
 			.chain("oneTime", "500", label, function);
 
-		JsStatement query = new JsQuery().$(selector).chain(
+		var query = new JsQuery().$(selector).chain(
 			"keyup", JsScope.quickScope(String.format("%s%s", stopTime.render(), oneTime.render())).render());
 
 		response.render(OnDomReadyHeaderItem.forScript(query.render()));

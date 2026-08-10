@@ -39,8 +39,6 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatieBehee
 import nl.rivm.screenit.main.web.gebruiker.algemeen.organisatie.OrganisatiePaspoortPanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
-import nl.rivm.screenit.model.cervix.enums.CervixTariefType;
 import nl.rivm.screenit.model.cervix.facturatie.CervixLabTarief;
 import nl.rivm.screenit.model.cervix.facturatie.CervixTarief_;
 import nl.rivm.screenit.model.enums.Actie;
@@ -103,7 +101,7 @@ public class CervixLaboratoriumTarievenPage extends OrganisatieBeheer
 
 	public CervixLaboratoriumTarievenPage()
 	{
-		OrganisatieMedewerker organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		var organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
 		actie = autorisatieService.getActieVoorMedewerker(organisatieMedewerker, null, Recht.MEDEWERKER_CERVIX_LABORATORIUM_TARIEF);
 
 		labModel = ModelUtil.sModel((BMHKLaboratorium) ScreenitSession.get().getCurrentSelectedOrganisatie());
@@ -152,7 +150,7 @@ public class CervixLaboratoriumTarievenPage extends OrganisatieBeheer
 					@Override
 					protected void opslaan(AjaxRequestTarget target, String melding)
 					{
-						String infoMelding = "Tarief succesvol opgeslagen. ";
+						var infoMelding = "Tarief succesvol opgeslagen. ";
 						if (!melding.isEmpty())
 						{
 							infoMelding += " Bijgewerkte bestaande tarieven: " + melding + ". "
@@ -180,14 +178,14 @@ public class CervixLaboratoriumTarievenPage extends OrganisatieBeheer
 
 	private WebMarkupContainer getTarievenContainer()
 	{
-		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		var format = new SimpleDateFormat("dd-MM-yyyy");
 
-		WebMarkupContainer container = new WebMarkupContainer("tableContainer");
+		var container = new WebMarkupContainer("tableContainer");
 		container.setOutputMarkupPlaceholderTag(true);
 
 		List<IColumn<CervixLabTarief, String>> columns = new ArrayList<>();
 		var organisatie = ScreenitSession.get().getCurrentSelectedOrganisatie();
-		for (CervixTariefType type : betalingService.getTariefTypenVoorLaboratorium((BMHKLaboratorium) Hibernate.unproxy(organisatie)))
+		for (var type : betalingService.getTariefTypenVoorLaboratorium((BMHKLaboratorium) Hibernate.unproxy(organisatie)))
 		{
 			columns
 				.add(new BigDecimalPricePropertyColumn<>(new SimpleStringResourceModel(EnumStringUtil.getPropertyString(type)), type.getBedragProperty()));
@@ -202,7 +200,7 @@ public class CervixLaboratoriumTarievenPage extends OrganisatieBeheer
 				@Override
 				public void populateItem(Item<ICellPopulator<CervixLabTarief>> cellItem, String componentId, IModel<CervixLabTarief> rowModel)
 				{
-					CervixLabTarief tarief = rowModel.getObject();
+					var tarief = rowModel.getObject();
 					if (tarief.getGeldigVanafDatum().after(currentDateSupplier.getDate()))
 					{
 						cellItem.add(new AjaxImageCellPanel<>(componentId, rowModel, "icon-trash")
@@ -237,7 +235,7 @@ public class CervixLaboratoriumTarievenPage extends OrganisatieBeheer
 			});
 		}
 
-		ScreenitDataTable<CervixLabTarief, String> table = new ScreenitDataTable<>("table", columns,
+		var table = new ScreenitDataTable<CervixLabTarief, String>("table", columns,
 			new CervixLaboratoriumTarievenDataProvider(zoekObject), Model.of("Tarieven"));
 		container.add(table);
 
@@ -246,7 +244,7 @@ public class CervixLaboratoriumTarievenPage extends OrganisatieBeheer
 
 	private void replaceContainer(AjaxRequestTarget target)
 	{
-		WebMarkupContainer container = getTarievenContainer();
+		var container = getTarievenContainer();
 		tableContainer.replaceWith(container);
 		tableContainer = container;
 		target.add(container);

@@ -107,7 +107,7 @@ public class MammaOnderzoekServiceImpl implements MammaOnderzoekService
 
 	private Specification<MammaOnderzoek> filterOpLezingMetRedenenRadioloog(List<MammaLezingRedenenFotobesprekingRadioloog> redenenFotobespreking)
 	{
-		return CollectionUtils.isEmpty(redenenFotobespreking) ? null : (r, q, cb) ->
+		return CollectionUtils.isEmpty(redenenFotobespreking) ? Specification.unrestricted() : (r, q, cb) ->
 		{
 			var beoordelingJoin = join(r, MammaOnderzoek_.laatsteBeoordeling);
 			var eersteLezing = filterOpRedenenFotobesprekingRadioloog(redenenFotobespreking).toPredicate(join(beoordelingJoin, MammaBeoordeling_.eersteLezing, JoinType.LEFT), q,
@@ -124,7 +124,7 @@ public class MammaOnderzoekServiceImpl implements MammaOnderzoekService
 
 	private Specification<MammaOnderzoek> filterOpLezingMetRedenenMetMbber(List<MammaLezingRedenenFotobesprekingMbber> redenenFotobespreking)
 	{
-		return CollectionUtils.isEmpty(redenenFotobespreking) ? null : (r, q, cb) ->
+		return CollectionUtils.isEmpty(redenenFotobespreking) ? Specification.unrestricted() : (r, q, cb) ->
 		{
 			var beoordelingJoin = join(r, MammaOnderzoek_.laatsteBeoordeling, JoinType.LEFT);
 			var eersteLezing = filterOpRedenenFotobesprekingMbber(redenenFotobespreking).toPredicate(join(beoordelingJoin, MammaBeoordeling_.eersteLezing, JoinType.LEFT), q, cb);
@@ -139,7 +139,7 @@ public class MammaOnderzoekServiceImpl implements MammaOnderzoekService
 
 	private Specification<MammaOnderzoek> filterOpLezingMetRedenDoorverwijzing(List<MammaLaesieType> redenenDoorverwijzing)
 	{
-		return CollectionUtils.isEmpty(redenenDoorverwijzing) ? null : (r, q, cb) ->
+		return CollectionUtils.isEmpty(redenenDoorverwijzing) ? Specification.unrestricted() : (r, q, cb) ->
 		{
 			var beoordelingJoin = join(r, MammaOnderzoek_.laatsteBeoordeling, JoinType.LEFT);
 			var eersteLezing = filterOpLaesies(redenenDoorverwijzing).toPredicate(join(beoordelingJoin, MammaBeoordeling_.eersteLezing, JoinType.LEFT), q, cb);

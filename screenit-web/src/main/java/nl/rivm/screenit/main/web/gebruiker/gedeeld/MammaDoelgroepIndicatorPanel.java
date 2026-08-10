@@ -49,13 +49,13 @@ public class MammaDoelgroepIndicatorPanel extends Panel
 	public MammaDoelgroepIndicatorPanel(String id, MammaDossier dossier, boolean toonTehuis)
 	{
 		super(id);
-		boolean isMindervalideClient = false;
-		boolean isDubbeleTijdClient = false;
-		boolean isTehuisClient = false;
-		boolean isSuspectOfHoogRisico = false;
+		var isMindervalideClient = false;
+		var isDubbeleTijdClient = false;
+		var isTehuisClient = false;
+		var isSuspectOfHoogRisico = false;
 		if (dossier != null)
 		{
-			MammaDoelgroep doelgroep = dossier.getDoelgroep();
+			var doelgroep = dossier.getDoelgroep();
 			isMindervalideClient = MammaDoelgroep.MINDERVALIDE.equals(doelgroep);
 			isDubbeleTijdClient = MammaDoelgroep.DUBBELE_TIJD.equals(doelgroep);
 			isTehuisClient = dossier.getTehuis() != null;

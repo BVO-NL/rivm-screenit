@@ -24,7 +24,6 @@ package nl.rivm.screenit.mamma.planning.controller;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NavigableSet;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,7 +36,6 @@ import nl.rivm.screenit.mamma.planning.index.PlanningStandplaatsPeriodeIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningStandplaatsRondeIndex;
 import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsEenheid;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaats;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsRonde;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningDoorrekenenManager;
@@ -70,8 +68,8 @@ public class PlanningRouteController
 	public static PlanningStandplaatsPeriode decrementIndex(int index, int movedItemVolgNr, PlanningScreeningsEenheid screeningsEenheid)
 	{
 		List<PlanningStandplaatsPeriode> updatedPeriodes = new ArrayList<>();
-		NavigableSet<PlanningStandplaatsPeriode> standplaatsPeriodeNavigableSet = screeningsEenheid.getStandplaatsPeriodeNavigableSet();
-		for (PlanningStandplaatsPeriode periode : standplaatsPeriodeNavigableSet)
+		var standplaatsPeriodeNavigableSet = screeningsEenheid.getStandplaatsPeriodeNavigableSet();
+		for (var periode : standplaatsPeriodeNavigableSet)
 		{
 			if (periode.getScreeningsEenheidVolgNr() <= index && periode.getScreeningsEenheidVolgNr() > movedItemVolgNr)
 			{
@@ -85,7 +83,7 @@ public class PlanningRouteController
 	private static PlanningStandplaatsPeriode incrementIndex(int index, int movedItemVolgNr, PlanningScreeningsEenheid screeningsEenheid)
 	{
 		List<PlanningStandplaatsPeriode> updatedPeriodes = new ArrayList<>();
-		for (PlanningStandplaatsPeriode periode : screeningsEenheid.getStandplaatsPeriodeNavigableSet())
+		for (var periode : screeningsEenheid.getStandplaatsPeriodeNavigableSet())
 		{
 			if (periode.getScreeningsEenheidVolgNr() < movedItemVolgNr && periode.getScreeningsEenheidVolgNr() >= index)
 			{
@@ -98,8 +96,8 @@ public class PlanningRouteController
 
 	private static PlanningStandplaatsPeriode getHighestPeriode(List<PlanningStandplaatsPeriode> updatedPeriodes, PlanningStandplaatsPeriode currentHighestPeriode)
 	{
-		PlanningStandplaatsPeriode highestPeriode = currentHighestPeriode;
-		for (PlanningStandplaatsPeriode periode : updatedPeriodes)
+		var highestPeriode = currentHighestPeriode;
+		for (var periode : updatedPeriodes)
 		{
 			if (highestPeriode == null || highestPeriode.getScreeningsEenheidVolgNr() > periode.getScreeningsEenheidVolgNr())
 			{
@@ -113,7 +111,7 @@ public class PlanningRouteController
 	public List<PlanningStandplaatsPeriodeDto> get(@PathVariable Long screeningsEenheidId)
 	{
 		List<PlanningStandplaatsPeriodeDto> standplaatsPeriodeDtoList = new ArrayList<>();
-		for (PlanningStandplaatsPeriode standplaatsPeriode : PlanningScreeningsEenheidIndex.get(screeningsEenheidId).getStandplaatsPeriodeNavigableSet())
+		for (var standplaatsPeriode : PlanningScreeningsEenheidIndex.get(screeningsEenheidId).getStandplaatsPeriodeNavigableSet())
 		{
 			standplaatsPeriodeDtoList.add(PlanningMapper.from(standplaatsPeriode));
 		}
@@ -123,7 +121,7 @@ public class PlanningRouteController
 	@PutMapping
 	public void put(@RequestBody PlanningRouteWijzigenDto gewijzigdeStandplaatsPeriodeDto)
 	{
-		PlanningScreeningsEenheid screeningsEenheidNaar = PlanningScreeningsEenheidIndex.get(gewijzigdeStandplaatsPeriodeDto.screeningsEenheidId);
+		var screeningsEenheidNaar = PlanningScreeningsEenheidIndex.get(gewijzigdeStandplaatsPeriodeDto.screeningsEenheidId);
 
 		if (!gewijzigdeStandplaatsPeriodeMagConceptOverschrijven(gewijzigdeStandplaatsPeriodeDto))
 		{
@@ -139,8 +137,8 @@ public class PlanningRouteController
 				PlanningConstanten.plannenTotEnMetDatum); 
 			screeningsEenheidNaar.getStandplaatsPeriodeNavigableSet().add(standplaatsPeriode);
 
-			PlanningStandplaatsRonde standplaatsRonde = new PlanningStandplaatsRonde(null, null, null, null, false, null, BigDecimal.ZERO);
-			PlanningStandplaats standplaats = PlanningStandplaatsIndex.get(gewijzigdeStandplaatsPeriodeDto.standplaatsId);
+			var standplaatsRonde = new PlanningStandplaatsRonde(null, null, null, null, false, null, BigDecimal.ZERO);
+			var standplaats = PlanningStandplaatsIndex.get(gewijzigdeStandplaatsPeriodeDto.standplaatsId);
 			standplaatsRonde.setStandplaats(standplaats);
 			standplaatsRonde.getStandplaatsPeriodeNavigableSet().add(standplaatsPeriode);
 			standplaats.getStandplaatsRondeNavigableSet().add(standplaatsRonde);
@@ -157,9 +155,9 @@ public class PlanningRouteController
 			standplaatsPeriode = PlanningStandplaatsPeriodeIndex.get(gewijzigdeStandplaatsPeriodeDto.standplaatsPeriodeConceptId);
 		}
 
-		PlanningScreeningsEenheid screeningsEenheidVan = standplaatsPeriode.getScreeningsEenheid();
-		boolean blijftBinnenDeScreeningsEenheid = screeningsEenheidNaar.equals(screeningsEenheidVan);
-		NavigableSet<PlanningStandplaatsPeriode> standplaatsPeriodenVan = screeningsEenheidVan.getStandplaatsPeriodeNavigableSet();
+		var screeningsEenheidVan = standplaatsPeriode.getScreeningsEenheid();
+		var blijftBinnenDeScreeningsEenheid = screeningsEenheidNaar.equals(screeningsEenheidVan);
+		var standplaatsPeriodenVan = screeningsEenheidVan.getStandplaatsPeriodeNavigableSet();
 		if (!blijftBinnenDeScreeningsEenheid)
 		{
 			PlanningWijzigingen.getWijzigingenRoute(screeningsEenheidVan).setVanafStandplaatsPeriode(standplaatsPeriodenVan.higher(standplaatsPeriode));
@@ -188,9 +186,9 @@ public class PlanningRouteController
 			}
 			else
 			{
-				int index = getNieuwInitieelVolgNr(screeningsEenheidVan);
+				var index = getNieuwInitieelVolgNr(screeningsEenheidVan);
 				decrementIndex(index, oudeVolgNr, screeningsEenheidVan);
-				int totEnMetVolgnummer = screeningsEenheidNaar.getStandplaatsPeriodeNavigableSet().isEmpty() ? 0
+				var totEnMetVolgnummer = screeningsEenheidNaar.getStandplaatsPeriodeNavigableSet().isEmpty() ? 0
 					: screeningsEenheidNaar.getStandplaatsPeriodeNavigableSet().last().getScreeningsEenheidVolgNr() + 1;
 
 				gewijzigdVanafPeriode = incrementIndex(nieuweVolgNr, totEnMetVolgnummer, screeningsEenheidNaar);
@@ -220,21 +218,21 @@ public class PlanningRouteController
 	@PutMapping(value = "/splitsStandplaatsPeriode/{standplaatsPeriodeConceptId}")
 	public void splitsStandplaatsPeriode(@PathVariable UUID standplaatsPeriodeConceptId)
 	{
-		PlanningStandplaatsPeriode standplaatsPeriode = PlanningStandplaatsPeriodeIndex.get(standplaatsPeriodeConceptId);
-		PlanningScreeningsEenheid screeningsEenheid = standplaatsPeriode.getScreeningsEenheid();
+		var standplaatsPeriode = PlanningStandplaatsPeriodeIndex.get(standplaatsPeriodeConceptId);
+		var screeningsEenheid = standplaatsPeriode.getScreeningsEenheid();
 
-		Optional<PlanningStandplaatsPeriode> eersteStandplaatsPeriodeMetPrognose = getEersteStandplaatsPeriodeMetPrognoseGeenAfspraken(screeningsEenheid);
-		int volgNr = eersteStandplaatsPeriodeMetPrognose.isPresent() ? eersteStandplaatsPeriodeMetPrognose.get().getScreeningsEenheidVolgNr()
+		var eersteStandplaatsPeriodeMetPrognose = getEersteStandplaatsPeriodeMetPrognoseGeenAfspraken(screeningsEenheid);
+		var volgNr = eersteStandplaatsPeriodeMetPrognose.isPresent() ? eersteStandplaatsPeriodeMetPrognose.get().getScreeningsEenheidVolgNr()
 			: screeningsEenheid.getStandplaatsPeriodeNavigableSet().last().getScreeningsEenheidVolgNr() + 1;
 
 		incrementIndex(volgNr, screeningsEenheid.getStandplaatsPeriodeNavigableSet().last().getScreeningsEenheidVolgNr() + 1,
 			screeningsEenheid);
 
-		PlanningStandplaatsRonde standplaatsRonde = standplaatsPeriode.getStandplaatsRonde();
+		var standplaatsRonde = standplaatsPeriode.getStandplaatsRonde();
 
-		int volgNrInStandplaatsRonde = standplaatsPeriode.getStandplaatsRondeVolgNr() + 1;
+		var volgNrInStandplaatsRonde = standplaatsPeriode.getStandplaatsRondeVolgNr() + 1;
 
-		PlanningStandplaatsPeriode nieuweStandplaatsPeriode = new PlanningStandplaatsPeriode(null, volgNr, volgNrInStandplaatsRonde, dateSupplier.getLocalDate(), true,
+		var nieuweStandplaatsPeriode = new PlanningStandplaatsPeriode(null, volgNr, volgNrInStandplaatsRonde, dateSupplier.getLocalDate(), true,
 			PlanningConstanten.plannenTotEnMetDatum); 
 
 		standplaatsRonde.getStandplaatsPeriodeNavigableSet().add(nieuweStandplaatsPeriode);
@@ -251,13 +249,13 @@ public class PlanningRouteController
 
 	private int getNieuwInitieelVolgNr(PlanningScreeningsEenheid screeningsEenheid)
 	{
-		NavigableSet<PlanningStandplaatsPeriode> perioden = screeningsEenheid.getStandplaatsPeriodeNavigableSet();
+		var perioden = screeningsEenheid.getStandplaatsPeriodeNavigableSet();
 		return perioden.isEmpty() ? screeningsEenheid.getVolgNrOffset() : perioden.last().getScreeningsEenheidVolgNr() + 1;
 	}
 
 	private Optional<PlanningStandplaatsPeriode> getEersteStandplaatsPeriodeMetPrognoseGeenAfspraken(PlanningScreeningsEenheid screeningsEenheid)
 	{
-		NavigableSet<PlanningStandplaatsPeriode> standplaatsPeriodeNavigableSet = screeningsEenheid.getStandplaatsPeriodeNavigableSet();
+		var standplaatsPeriodeNavigableSet = screeningsEenheid.getStandplaatsPeriodeNavigableSet();
 		return standplaatsPeriodeNavigableSet.stream()
 			.filter(standplaatsPeriode -> standplaatsPeriode.getPrognose()
 				&& (standplaatsPeriode.getId() == null || !baseAfspraakService.heeftAfspraken(standplaatsPeriode.getId(), MammaAfspraakStatus.GEPLAND)))

@@ -94,7 +94,7 @@ public class MammaLezingPanel extends GenericPanel<MammaLezing>
 
 		form.add(new Label("beoordeling_type", getHuidigePanelType(lezingModel) != null ? getHuidigePanelType(lezingModel).getNaam() : ""));
 
-		boolean isAutoniem = !MammobridgeRole.anoniemeRollen().contains(ScreenitSession.get().getMammaHuidigeIDS7Role());
+		var isAutoniem = !MammobridgeRole.anoniemeRollen().contains(ScreenitSession.get().getMammaHuidigeIDS7Role());
 		form.add(new Label("beoordelaar.medewerker.voornaamAchternaam").setVisible(isAutoniem));
 
 		form.add(new MammaBiradsKeuzePanel("biradskeuze", lezingModel, lezingParameters));
@@ -151,9 +151,9 @@ public class MammaLezingPanel extends GenericPanel<MammaLezing>
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaLezing huidigeLezing = MammaLezingPanel.this.getModelObject();
-				MammaLezing discrepantieArbitrageLezing = parentPanel.getHuidigeLezingModel().getObject();
-				List<LaesieDto> laesieDtos = laesieDtoMapper.lezingToLaesieDtos(huidigeLezing);
+				var huidigeLezing = MammaLezingPanel.this.getModelObject();
+				var discrepantieArbitrageLezing = parentPanel.getHuidigeLezingModel().getObject();
+				var laesieDtos = laesieDtoMapper.lezingToLaesieDtos(huidigeLezing);
 				target.appendJavaScript(String.format("neemLezingOver('%1$s', '%2$s', '%3$s');", laesieDtoMapper.laesiesDtosToJson(laesieDtos),
 					mapOpmerkingToJsonString(huidigeLezing.getBiradsOpmerking() != null ? huidigeLezing.getBiradsOpmerking() : ""),
 					discrepantieArbitrageLezing.getId() != null ? discrepantieArbitrageLezing.getId() : UNSAVED_DEFAULT_LEZING_ID));
@@ -173,7 +173,7 @@ public class MammaLezingPanel extends GenericPanel<MammaLezing>
 	{
 		try
 		{
-			ObjectMapper objectMapper = new ObjectMapper();
+			var objectMapper = new ObjectMapper();
 			return objectMapper.writeValueAsString(opmerking);
 		}
 		catch (JsonProcessingException e)
@@ -220,7 +220,7 @@ public class MammaLezingPanel extends GenericPanel<MammaLezing>
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaLezing lezing = MammaLezingPanel.this.getModelObject();
+				var lezing = MammaLezingPanel.this.getModelObject();
 				panel.beoordelingNaarArbitrageEnOpslaan(lezing, target);
 			}
 		};
@@ -238,11 +238,11 @@ public class MammaLezingPanel extends GenericPanel<MammaLezing>
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaLezing lezing = MammaLezingPanel.this.getModelObject();
+				var lezing = MammaLezingPanel.this.getModelObject();
 				valideerBirads(lezing);
 				if (!hasErrorMessage())
 				{
-					List<LaesieDto> laesieDtoList = MammaLezingPanel.this.mammaAfbeeldingPanel.getModelObject();
+					var laesieDtoList = MammaLezingPanel.this.mammaAfbeeldingPanel.getModelObject();
 					panel.lezingOpslaan(lezing, target, laesieDtoList);
 				}
 			}
@@ -271,7 +271,7 @@ public class MammaLezingPanel extends GenericPanel<MammaLezing>
 
 	private void addLaesiesAfbeelding(IModel<MammaLezing> lezingModel, boolean alleenLezen, boolean metAfbeelding, MammaAmputatie amputatie)
 	{
-		LaesieDtoMapper mapper = new LaesieDtoMapper();
+		var mapper = new LaesieDtoMapper();
 		IModel<List<LaesieDto>> result = new ListModel<>(mapper.lezingToLaesieDtos(lezingModel.getObject()));
 
 		mammaAfbeeldingPanel = new MammaLaesiesAfbeeldingPanel("afbeelding", result, alleenLezen, lezingModel.getObject().getId(), false, amputatie);

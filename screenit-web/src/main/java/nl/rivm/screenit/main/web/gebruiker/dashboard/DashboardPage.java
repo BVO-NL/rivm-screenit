@@ -33,7 +33,6 @@ import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerHoofdMenuItem;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.batch.BvoZoekCriteria;
-import nl.rivm.screenit.model.dashboard.DashboardStatus;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Level;
@@ -75,7 +74,7 @@ public class DashboardPage extends MedewerkerBasePage
 
 	public void maakListView(AjaxRequestTarget target)
 	{
-		BvoZoekCriteria zoekCriteria = new BvoZoekCriteria();
+		var zoekCriteria = new BvoZoekCriteria();
 		zoekCriteria.setBevolkingsonderzoeken(ScreenitSession.get().getOnderzoeken());
 		zoekCriteria.setLoggingLevels(List.of(Level.values()));
 		if (ScreenitSession.get().isZoekObjectGezetForComponent(DashboardPage.class))
@@ -107,17 +106,17 @@ public class DashboardPage extends MedewerkerBasePage
 
 		});
 		var loggingLevels = dashboardZoekCriteria.getObject().getLoggingLevels();
-		List<DashboardStatus> statussen = dashboardService.getListOfDashboardStatussen(ScreenitSession.get().getOrganisatie(),
+		var statussen = dashboardService.getListOfDashboardStatussen(ScreenitSession.get().getOrganisatie(),
 			dashboardZoekCriteria.getObject().getBevolkingsonderzoeken(), loggingLevels);
 
 		List<PanelCreator> panels = new ArrayList<>();
 
-		for (DashboardStatus item : statussen)
+		for (var item : statussen)
 		{
 			panels.add(new DashboardStatusPanelCreator(ModelUtil.sModel(item)));
 		}
 
-		BootstrapCollapsePanel accordion = new BootstrapCollapsePanel("accordion", panels);
+		var accordion = new BootstrapCollapsePanel("accordion", panels);
 		accordion.setOutputMarkupId(true);
 		container.addOrReplace(accordion);
 

@@ -23,12 +23,12 @@ package nl.rivm.screenit.huisartsenportaal.config;
 
 import java.io.IOException;
 
-import org.springframework.web.filter.CommonsRequestLoggingFilter;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 public class HttpRequestResponseLoggingFilter extends CommonsRequestLoggingFilter
 {
@@ -43,9 +43,9 @@ public class HttpRequestResponseLoggingFilter extends CommonsRequestLoggingFilte
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException
 	{
 
-		boolean isFirstRequest = !isAsyncDispatch(request);
+		var isFirstRequest = !isAsyncDispatch(request);
 
-		boolean shouldLog = shouldLog(request);
+		var shouldLog = shouldLog(request);
 		if (shouldLog && isFirstRequest)
 		{
 			logger.debug(createMessage(request, "API Request [", "]"));

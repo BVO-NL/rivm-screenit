@@ -31,7 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.util.TiffUtil;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.ContentDisposition;
@@ -60,7 +59,7 @@ public class ScannedFormulierViewerResource extends AbstractResource
 	@Override
 	protected ResourceResponse newResourceResponse(Attributes attributes)
 	{
-		ResourceResponse response = new ResourceResponse();
+		var response = new ResourceResponse();
 
 		if (alsAttachement)
 		{
@@ -82,8 +81,8 @@ public class ScannedFormulierViewerResource extends AbstractResource
 			{
 				try
 				{
-					ByteArrayOutputStream out = new ByteArrayOutputStream();
-					PDDocument pdDocument = TiffUtil.tiffToPdfDocument(fileModel.getObject());
+					var out = new ByteArrayOutputStream();
+					var pdDocument = TiffUtil.tiffToPdfDocument(fileModel.getObject());
 					pdDocument.save(out);
 					pdDocument.close();
 

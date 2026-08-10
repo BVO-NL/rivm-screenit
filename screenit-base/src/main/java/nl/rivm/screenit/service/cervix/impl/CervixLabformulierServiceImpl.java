@@ -135,7 +135,7 @@ public class CervixLabformulierServiceImpl implements CervixLabformulierService
 			else
 			{
 
-				CervixUitstrijkje eerderUitstrijkje = labformulier.getUitstrijkje();
+				var eerderUitstrijkje = labformulier.getUitstrijkje();
 				if (eerderUitstrijkje != null)
 				{
 
@@ -149,7 +149,7 @@ public class CervixLabformulierServiceImpl implements CervixLabformulierService
 			}
 		}
 
-		CervixUitstrijkje eerderUitstrijkje = labformulier.getUitstrijkje();
+		var eerderUitstrijkje = labformulier.getUitstrijkje();
 		if (eerderUitstrijkje != null && !uitstrijkje.equals(eerderUitstrijkje))
 		{
 
@@ -169,7 +169,7 @@ public class CervixLabformulierServiceImpl implements CervixLabformulierService
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void koppelDigitaalLabformulier(CervixLabformulier labformulier)
 	{
-		CervixUitstrijkje uitstrijkje = labformulier.getUitstrijkje();
+		var uitstrijkje = labformulier.getUitstrijkje();
 		uitstrijkje.setLabformulier(labformulier);
 		uitstrijkje.setOntvangstScreeningRonde(screeningrondeService.getOntvangstRondeVoorMonster(uitstrijkje));
 		hibernateService.saveOrUpdate(labformulier);
@@ -222,7 +222,7 @@ public class CervixLabformulierServiceImpl implements CervixLabformulierService
 				}
 				else
 				{
-					CervixLabformulier anderLabformulier = uitstrijkje.getLabformulier();
+					var anderLabformulier = uitstrijkje.getLabformulier();
 					if (anderLabformulier != null && !labformulier.equals(anderLabformulier))
 					{
 						throw new IllegalStateException("ander.labformulier.gekoppeld");

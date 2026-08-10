@@ -51,7 +51,7 @@ public class InpakcentrumTechnischeLoggingRequestOutInterceptor implements Clien
 	public @NotNull ClientHttpResponse intercept(@NotNull HttpRequest request, byte @NotNull [] body, @NotNull ClientHttpRequestExecution execution) throws IOException
 	{
 		ClientHttpResponse responseCopy;
-		long exchangeId = 0L;
+		var exchangeId = 0L;
 		try
 		{
 			var requestBody = new String(body, StandardCharsets.UTF_8);

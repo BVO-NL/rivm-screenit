@@ -24,9 +24,7 @@ package nl.rivm.screenit.batch.jobs.generalis.projecten.brieven.aanmaakstep;
 import java.util.List;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ScreeningRonde;
-import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.model.project.ProjectBriefActieType;
 import nl.rivm.screenit.model.project.ProjectClient;
@@ -55,7 +53,7 @@ public class ProjectBrievenAanmaakWriter extends BaseWriter<ProjectBriefActie>
 	@Override
 	public void write(ProjectBriefActie item) throws Exception
 	{
-		List<ProjectClient> clienten = projectService.getValideClientenVanProject(item.getProject(), item);
+		var clienten = projectService.getValideClientenVanProject(item.getProject(), item);
 		switch (item.getType())
 		{
 		case DATUM:
@@ -73,7 +71,7 @@ public class ProjectBrievenAanmaakWriter extends BaseWriter<ProjectBriefActie>
 
 	private void createDatumBrieven(ProjectBriefActie actie, List<ProjectClient> clienten)
 	{
-		for (ProjectClient client : clienten)
+		for (var client : clienten)
 		{
 			if (!isDeBriefAlGegenereerdVoorDezeClient(client, actie) && ProjectUtil.isEinde1eCorrespondentieCheck(currentDateSupplier.getDate(), client))
 			{
@@ -89,10 +87,10 @@ public class ProjectBrievenAanmaakWriter extends BaseWriter<ProjectBriefActie>
 		{
 			verstuurdOp = verstuurdOp.minusDays(actie.getAantalDagen());
 		}
-		for (ProjectClient pClient : clienten)
+		for (var pClient : clienten)
 		{
-			Client client = pClient.getClient();
-			BriefType type = actie.getBriefType();
+			var client = pClient.getClient();
+			var type = actie.getBriefType();
 
 			ScreeningRonde laatsteCervixScreeningsRonde = null, laatsteColonScreeningsRonde = null, laatsteMammaScreeningsRonde = null;
 			if (client.getCervixDossier() != null)
@@ -113,12 +111,12 @@ public class ProjectBrievenAanmaakWriter extends BaseWriter<ProjectBriefActie>
 			for (var brief : briefService.getClientBrieven(client))
 			{
 				var screeningRonde = brief.getScreeningRonde();
-				boolean briefZonderRondeOfBijRondeClientDossiers = screeningRonde == null
+				var briefZonderRondeOfBijRondeClientDossiers = screeningRonde == null
 					|| screeningRonde.equals(laatsteCervixScreeningsRonde)
 					|| screeningRonde.equals(laatsteColonScreeningsRonde)
 					|| screeningRonde.equals(laatsteMammaScreeningsRonde);
 
-				boolean magXProjectBriefMaken = type.equals(brief.getBriefType()) && briefZonderRondeOfBijRondeClientDossiers
+				var magXProjectBriefMaken = type.equals(brief.getBriefType()) && briefZonderRondeOfBijRondeClientDossiers
 					&& !isDeBriefAlGegenereerdVoorDezeClient(pClient, actie) && ProjectUtil.isEinde1eCorrespondentieCheck(currentDateSupplier.getDate(), pClient);
 				if (actie.getType() == ProjectBriefActieType.XDAGENNAY)
 				{

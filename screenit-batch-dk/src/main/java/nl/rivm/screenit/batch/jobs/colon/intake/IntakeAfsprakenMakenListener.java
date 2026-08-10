@@ -65,7 +65,7 @@ public class IntakeAfsprakenMakenListener extends BaseLogListener
 	@Override
 	protected LogEvent getEindLogEvent()
 	{
-		String key = IntakeAfsprakenMakenConstants.RAPPORTAGEKEYINTAKE;
+		var key = IntakeAfsprakenMakenConstants.RAPPORTAGEKEYINTAKE;
 		var executionContext = this.getJobExecution().getExecutionContext();
 		if (executionContext.containsKey(key))
 		{
@@ -82,17 +82,17 @@ public class IntakeAfsprakenMakenListener extends BaseLogListener
 		{
 			var intakeMakenLogEvent = (IntakeMakenLogEvent) logEvent;
 
-			for (Throwable throwable : jobExecution.getAllFailureExceptions())
+			for (var throwable : jobExecution.getAllFailureExceptions())
 			{
 				intakeMakenLogEvent.getExceptionStackTrace().add(getStackTrace(throwable));
 				intakeMakenLogEvent.setLevel(Level.ERROR);
 			}
-			int gebruikteDagen = 0;
+			var gebruikteDagen = 0;
 			if (intakeMakenLogEvent.getBeginTijd() != null && intakeMakenLogEvent.getEindTijd() != null)
 			{
 				gebruikteDagen = DateUtil.aantalDagenVerschil(intakeMakenLogEvent.getBeginTijd(), intakeMakenLogEvent.getEindTijd());
 			}
-			String melding = String.format(
+			var melding = String.format(
 				"#%s clienten geselecteerd, #%s vrije sloten, #%s gebruikte dagen, #%s extra dagen, #%s extra pogingen, #%s boven max. afstand geplaatst",
 				intakeMakenLogEvent.getAantalClienten(), intakeMakenLogEvent.getAantalVrijesloten(), gebruikteDagen, intakeMakenLogEvent.getAantalExtraDagen(),
 				intakeMakenLogEvent.getAantalRondes(), intakeMakenLogEvent.getAantalBuitenMaximaleAfstand());

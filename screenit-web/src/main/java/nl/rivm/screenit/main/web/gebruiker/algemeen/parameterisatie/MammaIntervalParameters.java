@@ -82,7 +82,7 @@ public class MammaIntervalParameters extends GenericPanel<List<MammaUitnodigings
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				List<MammaUitnodigingsinterval> nieuweParameters = model.getObject();
+				var nieuweParameters = model.getObject();
 				parameterisatieService.saveMammaIntervalParameters(nieuweParameters, oudeParameters, ScreenitSession.get().getIngelogdAccount());
 				volgendeUitnodigingService.updateIntervalReferentieDatums();
 				setOudeParameters();

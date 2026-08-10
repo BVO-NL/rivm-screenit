@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.popup;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
-
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.PdfViewer;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.service.UploadDocumentService;
@@ -49,7 +47,7 @@ public abstract class LezingPdfDialogPanel extends GenericPanel<MammaLezing>
 			.filter(beoordeling -> beoordeling.getVerslagPdf() != null)
 			.ifPresent(beoordeling ->
 			{
-				File verslag = uploadDocumentService.load(beoordeling.getVerslagPdf());
+				var verslag = uploadDocumentService.load(beoordeling.getVerslagPdf());
 				add(new PdfViewer("verslagPdf", verslag, false));
 			});
 	}

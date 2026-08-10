@@ -21,6 +21,9 @@ package nl.rivm.screenit.main.jms.listener;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Session;
+
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.huisartsenportaal.dto.AanvraagDto;
@@ -32,9 +35,6 @@ import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
-
-import jakarta.jms.JMSException;
-import jakarta.jms.Session;
 
 @Slf4j
 @Component
@@ -49,7 +49,7 @@ public class HuisartsportaalListener implements SessionAwareMessageListener<Acti
 	{
 		try
 		{
-			String loginfo = "Synchronisatie bericht " + objectMessage.getJMSMessageID();
+			var loginfo = "Synchronisatie bericht " + objectMessage.getJMSMessageID();
 			Object object = objectMessage.getObject();
 
 			if (object instanceof AanvraagDto aanvraagDto)

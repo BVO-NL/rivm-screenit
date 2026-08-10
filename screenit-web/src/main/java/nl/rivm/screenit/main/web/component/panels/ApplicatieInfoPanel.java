@@ -58,10 +58,10 @@ public class ApplicatieInfoPanel extends Panel
 		add(new Label("buildTime", environmentInfoService.getBuildTime()));
 		add(new Label("name", applicationName));
 
-		WebMarkupContainer environmentContainer = new WebMarkupContainer("environmentContainer");
+		var environmentContainer = new WebMarkupContainer("environmentContainer");
 		environmentContainer.setOutputMarkupPlaceholderTag(Boolean.TRUE);
 
-		String omgevingTekst = omgevingTekst();
+		var omgevingTekst = omgevingTekst();
 		environmentContainer.add(new Label("environment", omgevingTekst).setVisible(StringUtils.isNotBlank(omgevingTekst)));
 		add(environmentContainer);
 
@@ -69,7 +69,7 @@ public class ApplicatieInfoPanel extends Panel
 
 	private String omgevingTekst()
 	{
-		String omgevingTekst = ApplicationEnvironment.PROD.getEnvNaam().equalsIgnoreCase(applicationEnvironment) ? null : applicationEnvironment;
+		var omgevingTekst = ApplicationEnvironment.PROD.getEnvNaam().equalsIgnoreCase(applicationEnvironment) ? null : applicationEnvironment;
 		return Stream.of(omgevingTekst, applicationInstance).filter(Objects::nonNull).collect(Collectors.joining(" - "));
 	}
 }

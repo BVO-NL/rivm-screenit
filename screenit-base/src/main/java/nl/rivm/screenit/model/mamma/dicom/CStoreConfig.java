@@ -49,7 +49,7 @@ public class CStoreConfig
 
 	public static CStoreConfig parse(String moveConnectionsString)
 	{
-		CStoreConfig result = new CStoreConfig();
+		var result = new CStoreConfig();
 		String moveConnections[] = moveConnectionsString.split(",");
 		result.scuConfig = SCPConfig.parse(moveConnections[0], "localhost", 11112);
 		result.scpConfig = SCPConfig.parse(moveConnections[1], "localhost", 11113);

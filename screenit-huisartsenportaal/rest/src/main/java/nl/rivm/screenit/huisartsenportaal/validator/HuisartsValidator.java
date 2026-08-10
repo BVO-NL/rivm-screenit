@@ -22,12 +22,9 @@ package nl.rivm.screenit.huisartsenportaal.validator;
  */
 
 import java.util.EnumSet;
-import java.util.List;
 
 import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
 import nl.rivm.screenit.huisartsenportaal.enums.CervixLocatieStatus;
-import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
-import nl.rivm.screenit.huisartsenportaal.model.Locatie;
 import nl.rivm.screenit.huisartsenportaal.model.enums.AanmeldStatus;
 import nl.rivm.screenit.huisartsenportaal.repository.LocatieCriteriaRepository;
 import nl.rivm.screenit.huisartsenportaal.util.CervixLocatieUtil;
@@ -47,8 +44,8 @@ public class HuisartsValidator extends BaseValidator<HuisartsDto>
 	@Override
 	public void validateTarget(HuisartsDto target, Errors errors)
 	{
-		Huisarts huisarts = getIngelogdeHuisarts();
-		List<Locatie> locaties = locatieCriteriaRepository.findByHuisartsAndStatussen(huisarts,
+		var huisarts = getIngelogdeHuisarts();
+		var locaties = locatieCriteriaRepository.findByHuisartsAndStatussen(huisarts,
 			EnumSet.of(CervixLocatieStatus.ACTIEF, CervixLocatieStatus.KLANTNUMMER_NIET_GEVERIFIEERD));
 		if (CollectionUtils.isEmpty(locaties) && !huisarts.getAanmeldStatus().equals(AanmeldStatus.GEREGISTREERD))
 		{
@@ -57,7 +54,7 @@ public class HuisartsValidator extends BaseValidator<HuisartsDto>
 
 		if (!CollectionUtils.isEmpty(locaties))
 		{
-			for (Locatie locatie : locaties)
+			for (var locatie : locaties)
 			{
 				if (!locatie.getStatus().equals(CervixLocatieStatus.INACTIEF) && !CervixLocatieUtil.isLocatieCompleet(locatie))
 				{

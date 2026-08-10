@@ -70,7 +70,7 @@ public class MammaFotobesprekingOnderzoekBesprekenPage extends AbstractMammaBeoo
 	{
 		List<AbstractMammaRondePanel> rondePanels = new ArrayList<>();
 
-		MammaFotobesprekingOnderzoek fotobesprekingOnderzoek = hibernateService.load(MammaFotobesprekingOnderzoek.class,
+		var fotobesprekingOnderzoek = hibernateService.load(MammaFotobesprekingOnderzoek.class,
 			onderzoekenIdMapping.get(beoordelingModel.getObject().getId()));
 		huidigeRondePanel = new MammaFotobesprekingBesprekenHuidigeRondePanel("rondeItem", ModelUtil.sModel(beoordelingModel.getObject()),
 			ModelUtil.sModel(fotobesprekingOnderzoek));

@@ -50,7 +50,7 @@ public enum PlanningClientZonderPostcodeReeksIndex
 
 	public static void putClient(PlanningClient client)
 	{
-		Set<PlanningClient> clienten = clientNavigableMap.computeIfAbsent(client.getPostcode(), k -> new HashSet<>());
+		var clienten = clientNavigableMap.computeIfAbsent(client.getPostcode(), k -> new HashSet<>());
 		clienten.add(client);
 
 		uncoveredPostcodesPerSoMap.get(client.getScreeningsOrganisatie()).add(client.getPostcode());
@@ -58,7 +58,7 @@ public enum PlanningClientZonderPostcodeReeksIndex
 
 	public static void removeClient(PlanningClient client)
 	{
-		Set<PlanningClient> clienten = clientNavigableMap.get(client.getPostcode());
+		var clienten = clientNavigableMap.get(client.getPostcode());
 		if (clienten != null)
 		{
 			clienten.remove(client);
@@ -80,7 +80,7 @@ public enum PlanningClientZonderPostcodeReeksIndex
 		else
 		{
 			NavigableSet<String> postcodes = new TreeSet<>();
-			for (NavigableSet<String> subPostcode : uncoveredPostcodesPerSoMap.values())
+			for (var subPostcode : uncoveredPostcodesPerSoMap.values())
 			{
 				postcodes.addAll(subPostcode);
 			}

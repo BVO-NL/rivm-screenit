@@ -85,7 +85,7 @@ public class MammaDiscrepantieNaarArbitrageListener extends BaseLogListener
 	private String getResultLoggingString(JobExecution jobExecution)
 	{
 		var context = jobExecution.getExecutionContext();
-		Set<String> radiologen = (Set<String>) jobExecution.getExecutionContext().get(MAMMA_RADIOLOGEN_BEOORDELINGEN_DOORGEZET_NAAR_ARBITRAGE);
+		var radiologen = (Set<String>) jobExecution.getExecutionContext().get(MAMMA_RADIOLOGEN_BEOORDELINGEN_DOORGEZET_NAAR_ARBITRAGE);
 		var aantalBeoordelingen = context.getLong(MAMMA_RADIOLOGEN_BEOORDELINGEN_DOORGEZET_NAAR_ARBITRAGE_AANTAL, 0L);
 
 		if (radiologen == null)

@@ -36,8 +36,8 @@ public class WebConfig
 	@Bean
 	public FilterRegistrationBean<PlanningControllerSynchronizedRequestFilter> synchronizedFilter()
 	{
-		FilterRegistrationBean<PlanningControllerSynchronizedRequestFilter> registrationBean
-			= new FilterRegistrationBean<>();
+		var registrationBean
+			= new FilterRegistrationBean<PlanningControllerSynchronizedRequestFilter>();
 
 		registrationBean.setFilter(new PlanningControllerSynchronizedRequestFilter());
 		registrationBean.addUrlPatterns("/*");
@@ -58,8 +58,8 @@ public class WebConfig
 	@Bean
 	public FilterRegistrationBean<PlanningControllerLoggingFilter> loggingFilter()
 	{
-		FilterRegistrationBean<PlanningControllerLoggingFilter> registrationBean
-			= new FilterRegistrationBean<>();
+		var registrationBean
+			= new FilterRegistrationBean<PlanningControllerLoggingFilter>();
 
 		registrationBean.setFilter(new PlanningControllerLoggingFilter());
 		registrationBean.addUrlPatterns("/*");

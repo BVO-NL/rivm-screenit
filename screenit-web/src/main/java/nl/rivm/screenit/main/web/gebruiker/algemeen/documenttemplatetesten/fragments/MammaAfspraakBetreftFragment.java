@@ -62,7 +62,7 @@ public class MammaAfspraakBetreftFragment extends DocumentTemplateTestenFieldsPa
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		List<String> literals = Arrays.asList(preferenceService.getString(PreferenceKey.MAMMA_AFSPRAAK_BETREFT_BEVESTIGING_TEKST.toString(), ""),
+		var literals = Arrays.asList(preferenceService.getString(PreferenceKey.MAMMA_AFSPRAAK_BETREFT_BEVESTIGING_TEKST.toString(), ""),
 			preferenceService.getString(PreferenceKey.MAMMA_AFSPRAAK_BETREFT_WIJZIGING_TEKST.toString(), ""));
 
 		add(getFormComponentDropDown(literals));

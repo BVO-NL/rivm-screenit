@@ -26,9 +26,7 @@ import java.util.Date;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.berichten.cda.MeldingOngeldigCdaBericht;
-import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.ClientService;
@@ -54,20 +52,20 @@ public abstract class BerichtInzienPanel extends GenericPanel<MeldingOngeldigCda
 	{
 		super(id, new CompoundPropertyModel<>(model));
 
-		BootstrapDialog confirmDialog = new BootstrapDialog("confirmDialog");
+		var confirmDialog = new BootstrapDialog("confirmDialog");
 		add(confirmDialog);
 		add(DateLabel.forDatePattern("ontvangenCdaBericht.ontvangen", "dd-MM-yyyy HH:mm:ss"));
 		add(new Label("ontvangenCdaBericht.berichtType.naam"));
 		add(new Label("melding"));
-		MeldingOngeldigCdaBericht cdaMelding = model.getObject();
-		OntvangenCdaBericht ontvangenCdaBericht = cdaMelding.getOntvangenCdaBericht();
+		var cdaMelding = model.getObject();
+		var ontvangenCdaBericht = cdaMelding.getOntvangenCdaBericht();
 		add(new MultiLineLabel("content", CdaTransformerHelper.cdaToHtml(ontvangenCdaBericht)).setEscapeModelStrings(false));
 
 		add(new Label("uitvoerendeOrganisatie.naam"));
 		add(new Label("uitvoerendeOrganisatie.organisatieType").setVisible(cdaMelding.getUitvoerendeOrganisatie() != null));
 		add(new Label("uitvoerder.naamVolledig").setVisible(cdaMelding.getUitvoerder() != null));
 		add(new Label("bsn"));
-		Client client = clientService.getClientByBsn(cdaMelding.getBsn());
+		var client = clientService.getClientByBsn(cdaMelding.getBsn());
 		Date geboortedatum = null;
 		if (client != null)
 		{
@@ -75,7 +73,7 @@ public abstract class BerichtInzienPanel extends GenericPanel<MeldingOngeldigCda
 		}
 		add(DateLabel.forDatePattern("geboortedatum", Model.of(geboortedatum), "dd-MM-yyyy"));
 
-		final boolean magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.VERWIJDEREN);
+		final var magVerwijderen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.VERWIJDEREN);
 		add(new ConfirmingIndicatingAjaxLink<MeldingOngeldigCdaBericht>("verwijderen", getModel(), confirmDialog, "ongeldigBerichtVerwijderen")
 		{
 
@@ -89,7 +87,7 @@ public abstract class BerichtInzienPanel extends GenericPanel<MeldingOngeldigCda
 
 		}.setVisible(magVerwijderen));
 
-		final boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.AANPASSEN)
+		final var magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_VERWERKEN_ONGELIDGE_BERICHTEN, Actie.AANPASSEN)
 			&& Boolean.TRUE.equals(getModelObject().getHerstelbaar());
 
 		add(new IndicatingAjaxLink<MeldingOngeldigCdaBericht>("opnieuwAanbieden")

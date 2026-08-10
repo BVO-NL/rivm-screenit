@@ -30,7 +30,6 @@ import nl.rivm.screenit.huisartsenportaal.dto.TokenDto;
 import nl.rivm.screenit.huisartsenportaal.dto.WachtwoordAanvragenDto;
 import nl.rivm.screenit.huisartsenportaal.dto.WachtwoordVergetenDto;
 import nl.rivm.screenit.huisartsenportaal.exception.ValidatieException;
-import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.service.AuthenticatieService;
 import nl.rivm.screenit.huisartsenportaal.service.HuisartsService;
 import nl.rivm.screenit.huisartsenportaal.service.SynchronisatieService;
@@ -82,7 +81,7 @@ public class AuthenticatieController extends BaseController
 			throw new ValidatieException(result.getAllErrors());
 		}
 
-		Huisarts huisarts = huisartsService.getHuisartsWith(wachtwoordDto);
+		var huisarts = huisartsService.getHuisartsWith(wachtwoordDto);
 		huisarts = authenticationService.wachtwoordVergeten(huisarts);
 		synchronisatieService.syncHuisarts(huisarts);
 

@@ -44,10 +44,10 @@ public class AantalBestandenUploadenValidator implements IValidator<List<FileUpl
 	@Override
 	public void validate(IValidatable<List<FileUpload>> validatable)
 	{
-		List<FileUpload> files = validatable.getValue();
+		var files = validatable.getValue();
 		if (CollectionUtils.isNotEmpty(files) && files.size() > aantalToegestaneBestanden)
 		{
-			ValidationError error = new ValidationError();
+			var error = new ValidationError();
 			error.addKey("AantalBestandenUploadenValidator");
 			error.setVariable("aantalTotaal", files.size());
 			error.setVariable("aantalToegestaan", aantalToegestaneBestanden);

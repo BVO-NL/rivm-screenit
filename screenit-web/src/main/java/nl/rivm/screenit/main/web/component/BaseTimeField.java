@@ -27,7 +27,6 @@ import nl.topicuszorg.wicket.input.converters.VoorloopNulConverter;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Session;
-import org.apache.wicket.core.request.ClientInfo;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -110,7 +109,7 @@ public class BaseTimeField<T> extends FormComponentPanel<T>
 
 	protected TimeZone getClientTimeZone()
 	{
-		ClientInfo info = Session.get().getClientInfo();
+		var info = Session.get().getClientInfo();
 		if (info instanceof WebClientInfo)
 		{
 			return ((WebClientInfo) info).getProperties().getTimeZone();

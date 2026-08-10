@@ -48,7 +48,6 @@ import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.enums.BevestigingsType;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.model.enums.SmsStatus;
-import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -94,18 +93,18 @@ public class AfspraakController extends AbstractController
 	@GetMapping("/standplaatsPlaatsen")
 	public ResponseEntity<List<String>> getStandplaatsPlaatsen(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN))
 		{
-			MammaAfspraakWijzigenFilterDto plaatsFilter = new MammaAfspraakWijzigenFilterDto();
+			var plaatsFilter = new MammaAfspraakWijzigenFilterDto();
 			plaatsFilter.setClient(client);
 			plaatsFilter.setBuitenRegio(false);
 			plaatsFilter.setVanaf(currentDateSupplier.getLocalDate());
 			plaatsFilter.setTotEnMet(currentDateSupplier.getLocalDate().plusYears(2));
 
-			long start = System.currentTimeMillis();
+			var start = System.currentTimeMillis();
 			try
 			{
 				return ResponseEntity.ok(standplaatsService.getStandplaatsPlaatsenVanActievePeriodes(plaatsFilter, false));
@@ -121,7 +120,7 @@ public class AfspraakController extends AbstractController
 	@PostMapping("/beschikbaarheid/plaats")
 	public ResponseEntity<List<LocalDate>> getDagenMetBeschikbaarheidViaPlaats(Authentication authentication, @RequestBody MammaBeschikbaarheidPlaatsOpvragenDto plaatsOpvragenDto)
 	{
-		long start = System.currentTimeMillis();
+		var start = System.currentTimeMillis();
 		try
 		{
 			return getResponseMetBeschikbareDagen(authentication, plaatsOpvragenDto.getPlaats(), null);
@@ -135,7 +134,7 @@ public class AfspraakController extends AbstractController
 	@GetMapping("/beschikbaarheid/afstand/{afstand}")
 	public ResponseEntity<List<LocalDate>> getDagenMetBeschikbaarheidViaAfstand(Authentication authentication, @PathVariable String afstand)
 	{
-		long start = System.currentTimeMillis();
+		var start = System.currentTimeMillis();
 		try
 		{
 			return getResponseMetBeschikbareDagen(authentication, null, afstand);
@@ -148,7 +147,7 @@ public class AfspraakController extends AbstractController
 
 	private ResponseEntity<List<LocalDate>> getResponseMetBeschikbareDagen(Authentication authentication, String plaats, String afstand)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN))
@@ -167,14 +166,14 @@ public class AfspraakController extends AbstractController
 			return ResponseEntity.badRequest().build();
 		}
 
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN))
 		{
-			MammaAfspraakWijzigenFilterDto filter = afspraakService.toAfspraakFilter(body, client, false);
+			var filter = afspraakService.toAfspraakFilter(body, client, false);
 
-			long start = System.currentTimeMillis();
+			var start = System.currentTimeMillis();
 			try
 			{
 				return ResponseEntity.ok()
@@ -194,14 +193,14 @@ public class AfspraakController extends AbstractController
 
 	public ResponseEntity<String> maakAfspraak(Authentication authentication, @RequestBody MammaAfspraakOptieDto afspraakOptie)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN))
 		{
-			ClientContactActie actie = new ClientContactActie();
+			var actie = new ClientContactActie();
 			actie.setType(ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN);
-			ClientContact contact = new ClientContact();
+			var contact = new ClientContact();
 			contact.getActies().add(actie);
 			contact.setClient(client);
 
@@ -246,7 +245,7 @@ public class AfspraakController extends AbstractController
 	@PostMapping("/bevestiging")
 	public ResponseEntity<String> maakAfspraakBevestiging(Authentication authentication, @RequestBody MammaAfspraakBevestigingDto afspraakBevestiging)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 		try
 		{
 			var opslaanObjecten = maakAfspraakBevestigingOpslaanObjecten(afspraakBevestiging, client);
@@ -320,8 +319,8 @@ public class AfspraakController extends AbstractController
 	@GetMapping("/huidige")
 	public ResponseEntity<MammaHuidigeAfspraakDto> getHuidigeAfspraak(Authentication authentication)
 	{
-		Client client = getClient(authentication);
-		MammaAfspraak huidigeAfspraak = MammaScreeningRondeUtil.getLaatsteAfspraak(client.getMammaDossier().getLaatsteScreeningRonde());
+		var client = getClient(authentication);
+		var huidigeAfspraak = MammaScreeningRondeUtil.getLaatsteAfspraak(client.getMammaDossier().getLaatsteScreeningRonde());
 
 		if (huidigeAfspraak != null && huidigeAfspraak.getStatus().equals(MammaAfspraakStatus.GEPLAND) && huidigeAfspraak.getVanaf().compareTo(currentDateSupplier.getDate()) >= 0)
 		{

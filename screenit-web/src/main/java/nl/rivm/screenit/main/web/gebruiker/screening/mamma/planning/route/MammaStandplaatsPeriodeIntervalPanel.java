@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.route;
  * =========================LICENSE_END==================================
  */
 
-import java.math.BigDecimal;
-
 import nl.rivm.screenit.dto.mamma.planning.PlanningStandplaatsPeriodeDto;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.dashboard.MammaPlanningDashboardIntervalPanel;
 import nl.rivm.screenit.util.BigDecimalUtil;
@@ -39,12 +37,12 @@ public abstract class MammaStandplaatsPeriodeIntervalPanel extends GenericPanel<
 	public MammaStandplaatsPeriodeIntervalPanel(String id, IModel<PlanningStandplaatsPeriodeDto> model)
 	{
 		super(id, model);
-		PlanningStandplaatsPeriodeDto standplaatsPeriodeDto = getModelObject();
+		var standplaatsPeriodeDto = getModelObject();
 
-		BigDecimal initieelInterval = BigDecimalUtil.roundToNearestHalf(standplaatsPeriodeDto.initieelIntervalMaanden);
+		var initieelInterval = BigDecimalUtil.roundToNearestHalf(standplaatsPeriodeDto.initieelIntervalMaanden);
 		add(MammaPlanningDashboardIntervalPanel.intervalRood(initieelInterval, new Label("initieelInterval", initieelInterval)));
 
-		BigDecimal interval = BigDecimalUtil.roundToNearestHalf(standplaatsPeriodeDto.intervalMaanden);
+		var interval = BigDecimalUtil.roundToNearestHalf(standplaatsPeriodeDto.intervalMaanden);
 		add(MammaPlanningDashboardIntervalPanel.intervalRood(interval, new Label("interval", interval)));
 	}
 }

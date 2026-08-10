@@ -23,7 +23,7 @@ package nl.rivm.screenit.batch.service;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.GbaStatus;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo107Bericht;
+import nl.rivm.screenit.model.vertrouwdverbonden.Vo107Bericht;
 
 public interface GbaVraagService
 {

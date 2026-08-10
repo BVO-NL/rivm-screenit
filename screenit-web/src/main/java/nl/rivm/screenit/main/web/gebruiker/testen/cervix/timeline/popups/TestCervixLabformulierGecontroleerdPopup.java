@@ -47,7 +47,7 @@ public class TestCervixLabformulierGecontroleerdPopup extends TestCervixUitnodig
 	@Override
 	protected void opslaan()
 	{
-		for (CervixUitnodiging uitnodiging : getCurrentUitnodigingen())
+		for (var uitnodiging : getCurrentUitnodigingen())
 		{
 			baseTestTimelineService.labformulierGecontroleerd(uitnodiging);
 		}

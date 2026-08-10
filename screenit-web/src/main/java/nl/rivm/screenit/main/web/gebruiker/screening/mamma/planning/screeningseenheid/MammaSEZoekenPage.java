@@ -81,7 +81,7 @@ public class MammaSEZoekenPage extends MammaPlanningBasePage
 	public MammaSEZoekenPage()
 	{
 		IModel<MammaScreeningsEenheidFilter> criteriaModel;
-		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
+		var ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
 
 		if (ScreenitSession.get().isZoekObjectGezetForComponent(MammaSEZoekenPage.class))
 		{
@@ -89,14 +89,14 @@ public class MammaSEZoekenPage extends MammaPlanningBasePage
 		}
 		else
 		{
-			MammaScreeningsEenheidFilter zoekObject = new MammaScreeningsEenheidFilter();
+			var zoekObject = new MammaScreeningsEenheidFilter();
 			zoekObject.setRegio(ingelogdNamensRegio);
 			zoekObject.setActief(true);
 			criteriaModel = new CompoundPropertyModel<>(zoekObject);
 		}
-		MammaSEDataProvider seDataProvider = new MammaSEDataProvider(criteriaModel);
+		var seDataProvider = new MammaSEDataProvider(criteriaModel);
 
-		final WebMarkupContainer refreshContainer = new WebMarkupContainer("refreshContainer");
+		final var refreshContainer = new WebMarkupContainer("refreshContainer");
 		refreshContainer.setOutputMarkupId(Boolean.TRUE);
 		add(refreshContainer);
 
@@ -120,7 +120,7 @@ public class MammaSEZoekenPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<MammaScreeningsEenheid> model)
 			{
-				MammaScreeningsEenheid screeningsEenheid = model.getObject();
+				var screeningsEenheid = model.getObject();
 				setResponsePage(new MammaSEEditPage(ModelUtil.ccModel(screeningsEenheid)));
 			}
 		});
@@ -130,8 +130,8 @@ public class MammaSEZoekenPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaScreeningsEenheid screeningsEenheid = new MammaScreeningsEenheid();
-				IModel<MammaScreeningsEenheid> model = ModelUtil.ccModel(screeningsEenheid);
+				var screeningsEenheid = new MammaScreeningsEenheid();
+				var model = ModelUtil.ccModel(screeningsEenheid);
 				screeningsEenheid = model.getObject();
 				screeningsEenheid.setIsMobiel(true);
 				screeningsEenheid.setHeeftLift(true);
@@ -150,13 +150,13 @@ public class MammaSEZoekenPage extends MammaPlanningBasePage
 
 		zoekForm.add(new TextField<>("screeningsEenheid.code"));
 		zoekForm.add(new TextField<>("screeningsEenheid.naam"));
-		ScreenitDropdown<ScreeningOrganisatie> regioComponent = new ScreenitDropdown<>("regio",
+		var regioComponent = new ScreenitDropdown<ScreeningOrganisatie>("regio",
 			ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class), false),
 			new ChoiceRenderer<>("naam"));
 		regioComponent.setVisible(ingelogdNamensRegio == null);
 		regioComponent.setNullValid(true);
 		zoekForm.add(regioComponent);
-		IndicatingAjaxSubmitLink zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
+		var zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)

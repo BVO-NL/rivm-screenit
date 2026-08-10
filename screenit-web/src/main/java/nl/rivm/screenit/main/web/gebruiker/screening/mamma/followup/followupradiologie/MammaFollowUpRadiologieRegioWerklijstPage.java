@@ -108,7 +108,7 @@ public class MammaFollowUpRadiologieRegioWerklijstPage extends AbstractMammaFoll
 		doorverwezenFilterOptieModel = Model.of(MammaFollowUpDoorverwezenFilterOptie.ALLES);
 		onderzoekJaar = Model.of();
 
-		MammaFollowUpRadiologieRegioProvider followUpDataRegioProvider = new MammaFollowUpRadiologieRegioProvider(
+		var followUpDataRegioProvider = new MammaFollowUpRadiologieRegioProvider(
 			ModelUtil.sModel(ScreenitSession.get().getScreeningOrganisatie()), doorverwezenFilterOptieModel, onderzoekJaar);
 
 		refreshContainer = new WebMarkupContainer("refreshContainer");
@@ -135,7 +135,7 @@ public class MammaFollowUpRadiologieRegioWerklijstPage extends AbstractMammaFoll
 					{
 						super.onOpslaan(ajaxRequestTarget);
 						MammaFollowUpOrganisatieDto followUpOrganisatieDto = iModel.getObject();
-						Organisatie organisatie = hibernateService.get(Organisatie.class, followUpOrganisatieDto.getOrganisatieId());
+						var organisatie = hibernateService.get(Organisatie.class, followUpOrganisatieDto.getOrganisatieId());
 						organisatie.setMammaRadiologieGebeld(currentDateSupplier.getDate());
 						hibernateService.saveOrUpdate(organisatie);
 						ajaxRequestTarget.add(refreshContainer);
@@ -145,7 +145,7 @@ public class MammaFollowUpRadiologieRegioWerklijstPage extends AbstractMammaFoll
 			}
 		});
 
-		ScreenitDataTable<MammaFollowUpOrganisatieRadiologieDto, String> table = new ScreenitDataTable<MammaFollowUpOrganisatieRadiologieDto, String>("resultaten", columns,
+		var table = new ScreenitDataTable<MammaFollowUpOrganisatieRadiologieDto, String>("resultaten", columns,
 			followUpDataRegioProvider,
 			10, Model.of("organisatie(s)"))
 		{
@@ -156,9 +156,9 @@ public class MammaFollowUpRadiologieRegioWerklijstPage extends AbstractMammaFoll
 			}
 		};
 
-		ScreenitForm zoekForm = new ScreenitForm("zoekForm");
+		var zoekForm = new ScreenitForm("zoekForm");
 
-		RadioChoice<MammaFollowUpDoorverwezenFilterOptie> doorverwezenFilter = new RadioChoice<>("doorverwezenFilter", doorverwezenFilterOptieModel,
+		var doorverwezenFilter = new RadioChoice<MammaFollowUpDoorverwezenFilterOptie>("doorverwezenFilter", doorverwezenFilterOptieModel,
 			Arrays.asList(MammaFollowUpDoorverwezenFilterOptie.values()),
 			new EnumChoiceRenderer<>(this));
 		doorverwezenFilter.setPrefix("<div class=\"span2\">\n" +
@@ -168,8 +168,8 @@ public class MammaFollowUpRadiologieRegioWerklijstPage extends AbstractMammaFoll
 
 		zoekForm.add(doorverwezenFilter);
 
-		IModel<List<Integer>> selecteerbareOnderzoekJaren = Model.ofList(getSelecteerbareOnderzoekJaren());
-		ScreenitDropdown<Integer> onderzoekJaarDropdown = new ScreenitDropdown<>("onderzoekJaarDropdown", this.onderzoekJaar, selecteerbareOnderzoekJaren);
+		var selecteerbareOnderzoekJaren = Model.ofList(getSelecteerbareOnderzoekJaren());
+		var onderzoekJaarDropdown = new ScreenitDropdown<Integer>("onderzoekJaarDropdown", this.onderzoekJaar, selecteerbareOnderzoekJaren);
 		onderzoekJaarDropdown.setNullValid(true);
 		zoekForm.add(onderzoekJaarDropdown);
 
@@ -192,8 +192,8 @@ public class MammaFollowUpRadiologieRegioWerklijstPage extends AbstractMammaFoll
 	private List<Integer> getSelecteerbareOnderzoekJaren()
 	{
 		List<Integer> selecteerbareOnderzoekJaren = new ArrayList<>();
-		int huidigJaar = currentDateSupplier.getLocalDate().getYear();
-		for (int selecteerbaarJaar = huidigJaar; selecteerbaarJaar > (huidigJaar - 4); selecteerbaarJaar--)
+		var huidigJaar = currentDateSupplier.getLocalDate().getYear();
+		for (var selecteerbaarJaar = huidigJaar; selecteerbaarJaar > (huidigJaar - 4); selecteerbaarJaar--)
 		{
 			selecteerbareOnderzoekJaren.add(selecteerbaarJaar);
 		}

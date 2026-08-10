@@ -47,7 +47,7 @@ public class TechnischBeheerSeParametersPanel extends BaseTechnischBeheerParamet
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
 
 		var sePingIntervalVeld = new TextField<>("internalMammaSePingInterval", Integer.class).setRequired(true).add(ValueValidator.minimum(500));
 		var sePongTimeoutVeld = new TextField<>("internalMammaSePongTimeout", Integer.class).setRequired(true).add(ValueValidator.minimum(500));

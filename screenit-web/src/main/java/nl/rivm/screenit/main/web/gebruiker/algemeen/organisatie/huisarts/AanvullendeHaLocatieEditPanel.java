@@ -56,7 +56,7 @@ public abstract class AanvullendeHaLocatieEditPanel extends GenericPanel<CervixH
 	{
 		super(id, model);
 
-		Form<CervixHuisartsLocatie> form = new Form<>("form", model);
+		var form = new Form<CervixHuisartsLocatie>("form", model);
 		add(form);
 
 		ComponentHelper.addTextField(form, "naam", true, 70, String.class, alleenInzien);
@@ -67,12 +67,12 @@ public abstract class AanvullendeHaLocatieEditPanel extends GenericPanel<CervixH
 		ComponentHelper.addTextField(form, "locatieAdres.straat", true, 43, String.class, alleenInzien);
 		ComponentHelper.addTextField(form, "locatieAdres.huisnummer", true, 10, Integer.class, alleenInzien);
 		ComponentHelper.addTextField(form, "locatieAdres.huisnummerToevoeging", false, 26, String.class, alleenInzien);
-		PostcodeField postcodeField = new PostcodeField("locatieAdres.postcode", String.class);
+		var postcodeField = new PostcodeField("locatieAdres.postcode", String.class);
 		postcodeField.setEnabled(!alleenInzien);
 		postcodeField.setRequired(true);
 		form.add(postcodeField);
 
-		List<Woonplaats> alleWoonplaatsen = hibernateService.loadAll(Woonplaats.class);
+		var alleWoonplaatsen = hibernateService.loadAll(Woonplaats.class);
 		form.add(new ScreenitDropdown<Woonplaats>("locatieAdres.woonplaats", new SimpleListHibernateModel<Woonplaats>(alleWoonplaatsen), new IChoiceRenderer<Woonplaats>()
 		{
 			@Override
@@ -106,7 +106,7 @@ public abstract class AanvullendeHaLocatieEditPanel extends GenericPanel<CervixH
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				CervixHuisartsLocatie locatie = (CervixHuisartsLocatie) form.getModelObject();
+				var locatie = (CervixHuisartsLocatie) form.getModelObject();
 				if (!cervixUitstrijkendArtsService.isAndereLocatieMetNaam(locatie))
 				{
 					cervixUitstrijkendArtsService.saveOrUpdateLocatie(locatie);

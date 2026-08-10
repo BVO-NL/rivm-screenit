@@ -1,0 +1,70 @@
+<!--
+  ========================LICENSE_START=================================
+  huisartsportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<ds-card cardTitle="Overzicht verrichtingen" [config]="cardConfig">
+  <app-verrichtingen-filter (filterChanged)="onFilterChanged($event)"/>
+  <table [dataSource]="dataSource()" ds-table matSort class="w-100">
+    <ng-container dsColumnDef="huisartsLocatie">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="huisartsLocatie.naam">Huisartslocatie</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.huisartsLocatie.naam }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="clientNaam">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="clientNaam">Naam cliënt</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.clientNaam }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="monsterId">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="monsterId">Monster-id</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.monsterId }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="datumUitstrijkje">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="datumUitstrijkje">Datum uitstrijkje</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.datumUitstrijkje | date: NL_DATE_FORMAT }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="verrichtingsDatum">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="verrichtingsDatum">Datum verrichting</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.verrichtingsDatum | date: NL_DATE_FORMAT }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="formulierOntvangstDatum">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="formulierOntvangstDatum">Ontvangst formulier</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.formulierOntvangstDatum | date: NL_DATE_FORMAT }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="regio">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="regio">Screeningsorganisatie</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.regio }}</td>
+    </ng-container>
+
+    <tr *dsRowDef="let row; columns: displayedColumns" ds-row></tr>
+    <tr *dsHeaderRowDef="displayedColumns" ds-header-row></tr>
+  </table>
+  <ds-paginator [totalNumberOfItems]="paginering().totaal"
+                [pageSize]="paginering().paginaGrootte"
+                [pageSizeOptions]="[10, 20, 50]"
+                (pageChanged)="handlePageChange($event)"
+                resultTitle="verrichtingen"/>
+  <ng-template ds-footer-actions-right>
+    <button (click)="exporteren()" ds-button-primary>Exporteren</button>
+  </ng-template>
+</ds-card>

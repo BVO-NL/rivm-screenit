@@ -34,7 +34,6 @@ import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
 @Slf4j
 public class TestCervixNieuweCISRonde0Popup extends TestCervixAbstractPopupPanel
@@ -49,14 +48,14 @@ public class TestCervixNieuweCISRonde0Popup extends TestCervixAbstractPopupPanel
 	{
 		super(id, clientModel);
 		this.creatiedatum = Model.of(currentDateSupplier.getDate());
-		DatePicker<Date> creatiedatumDatePicker = ComponentHelper.newDatePicker("creatiedatum", creatiedatum);
+		var creatiedatumDatePicker = ComponentHelper.newDatePicker("creatiedatum", creatiedatum);
 		add(creatiedatumDatePicker);
 	}
 
 	@Override
 	protected void opslaan()
 	{
-		for (Client client : getModelObject())
+		for (var client : getModelObject())
 		{
 			try
 			{

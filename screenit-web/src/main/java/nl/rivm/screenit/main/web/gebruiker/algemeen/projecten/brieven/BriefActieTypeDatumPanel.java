@@ -21,8 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.projecten.brieven;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Date;
-
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -32,7 +30,6 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.DateValidator;
-import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
 public class BriefActieTypeDatumPanel extends GenericPanel<ProjectBriefActie>
 {
@@ -43,7 +40,7 @@ public class BriefActieTypeDatumPanel extends GenericPanel<ProjectBriefActie>
 	{
 		super(id, model);
 
-		DatePicker<Date> datePicker = ComponentHelper.newDatePicker("datum");
+		var datePicker = ComponentHelper.newDatePicker("datum");
 		datePicker.setRequired(true);
 		datePicker.add(DateValidator.minimum(DateUtil.minDagen(currentDateSupplier.getDate(), 1)));
 		add(datePicker);

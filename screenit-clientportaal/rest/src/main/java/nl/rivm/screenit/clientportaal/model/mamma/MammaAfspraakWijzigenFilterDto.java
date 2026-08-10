@@ -65,7 +65,7 @@ public class MammaAfspraakWijzigenFilterDto implements IMammaAfspraakWijzigenFil
 
 	public static MammaAfspraakWijzigenFilterDto filterVoorOphalenAfsprakenBinnenPeriode(Client client, String plaats, String afstand, LocalDate vanaf, LocalDate totEnMet)
 	{
-		MammaAfspraakWijzigenFilterDto filterDto = new MammaAfspraakWijzigenFilterDto();
+		var filterDto = new MammaAfspraakWijzigenFilterDto();
 		filterDto.setClient(client);
 		filterDto.setVanaf(vanaf);
 		filterDto.setTotEnMet(totEnMet);
@@ -84,7 +84,7 @@ public class MammaAfspraakWijzigenFilterDto implements IMammaAfspraakWijzigenFil
 
 	public static MammaAfspraakWijzigenFilterDto filterVoorOphalenStandplaatsenViaPlaatsOfAfstand(String plaats, String afstand, LocalDate vanaf, LocalDate totEnMet)
 	{
-		MammaAfspraakWijzigenFilterDto filterDto = new MammaAfspraakWijzigenFilterDto();
+		var filterDto = new MammaAfspraakWijzigenFilterDto();
 		filterDto.setVanaf(vanaf);
 		filterDto.setTotEnMet(totEnMet);
 		if (StringUtils.isNotBlank(plaats))

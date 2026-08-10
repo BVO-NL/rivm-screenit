@@ -49,7 +49,7 @@ public class MammaBeFollowUpRadiologiePanel extends AbstractBEAccordionPanel<Mam
 	{
 		super.onInitialize();
 
-		ListView<MammaFollowUpRadiologieVerslag> followUpVerslagList = new ListView<MammaFollowUpRadiologieVerslag>("followUpRadiologieVerslagen", followUpVerslagen)
+		var followUpVerslagList = new ListView<MammaFollowUpRadiologieVerslag>("followUpRadiologieVerslagen", followUpVerslagen)
 		{
 			@Override
 			protected void populateItem(ListItem<MammaFollowUpRadiologieVerslag> followUpVerslagListItem)

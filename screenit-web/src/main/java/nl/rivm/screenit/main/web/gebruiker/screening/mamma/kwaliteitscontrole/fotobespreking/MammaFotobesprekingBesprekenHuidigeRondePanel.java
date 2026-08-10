@@ -31,7 +31,6 @@ import nl.rivm.screenit.main.web.component.ConfirmingIndicatingAjaxLink;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoordelenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.panels.MammaKwaliteitscontroleHuidigeRondePanel;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
@@ -82,7 +81,7 @@ public class MammaFotobesprekingBesprekenHuidigeRondePanel extends MammaKwalitei
 
 	private void addButton(WebMarkupContainer panelContainer, List<Component> buttons, final String id, MammaFotobesprekingOnderzoekStatus status)
 	{
-		ConfirmingIndicatingAjaxLink<Void> button = new ConfirmingIndicatingAjaxLink<Void>(id, ((MedewerkerBasePage) getPage()).getDialog(), "confirm.herbeoordelen")
+		var button = new ConfirmingIndicatingAjaxLink<Void>(id, ((MedewerkerBasePage) getPage()).getDialog(), "confirm.herbeoordelen")
 		{
 			private boolean bevestigingNietNodig = !ID_OPNIEUW_BEOORDELEN.equals(id);
 
@@ -90,7 +89,7 @@ public class MammaFotobesprekingBesprekenHuidigeRondePanel extends MammaKwalitei
 			protected void updateAjaxAttributes(AjaxRequestAttributes attributes)
 			{
 				super.updateAjaxAttributes(attributes);
-				AjaxCallListener myAjaxCallListener = new AjaxCallListener();
+				var myAjaxCallListener = new AjaxCallListener();
 				myAjaxCallListener.onBefore("logOnAfrondenClick();");
 				attributes.getAjaxCallListeners().add(myAjaxCallListener);
 			}
@@ -98,9 +97,9 @@ public class MammaFotobesprekingBesprekenHuidigeRondePanel extends MammaKwalitei
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				LogGebeurtenis logGebeurtenis = ID_BESPROKEN.equals(id) ? LogGebeurtenis.FOTOBESPREKING_BESPROKEN
+				var logGebeurtenis = ID_BESPROKEN.equals(id) ? LogGebeurtenis.FOTOBESPREKING_BESPROKEN
 					: ID_OPNIEUW_BEOORDELEN.equals(id) ? LogGebeurtenis.FOTOBESPREKING_OPNIEUW_BEOORDELEN
-					: null;
+					  : null;
 				if (logGebeurtenis != null)
 				{
 					logService.logGebeurtenis(
@@ -119,10 +118,10 @@ public class MammaFotobesprekingBesprekenHuidigeRondePanel extends MammaKwalitei
 
 		};
 
-		MammaFotobesprekingOnderzoek fotobesprekingOnderzoek = fotobesprekingOnderzoekModel.getObject();
+		var fotobesprekingOnderzoek = fotobesprekingOnderzoekModel.getObject();
 		if (fotobesprekingOnderzoek.getFotobespreking().getAfgerondOp() == null)
 		{
-			boolean heeftImsDesktopSyncRecht = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_IMS_KOPPELING, Actie.INZIEN);
+			var heeftImsDesktopSyncRecht = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_IMS_KOPPELING, Actie.INZIEN);
 			switch (fotobesprekingOnderzoek.getStatus())
 			{
 			case NIET_BESPROKEN:
@@ -158,7 +157,7 @@ public class MammaFotobesprekingBesprekenHuidigeRondePanel extends MammaKwalitei
 			}
 			catch (Exception e)
 			{
-				Persoon persoon = getModelObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient().getPersoon();
+				var persoon = getModelObject().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient().getPersoon();
 				LOG.error("Er is een fout opgetreden bij aanvraag herbeoordeling tijdens fotobespreking: ", e);
 				warn(String.format(getString("error.herbeoordelen"),
 					persoon.getBsn(),

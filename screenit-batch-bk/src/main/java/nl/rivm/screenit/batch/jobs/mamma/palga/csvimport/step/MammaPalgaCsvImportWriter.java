@@ -55,14 +55,14 @@ public class MammaPalgaCsvImportWriter implements ItemWriter<MammaPalgaCsvImport
 	{
 		var grondslag = MammaPalgaGrondslag.valueOf(jobExecution.getJobParameters().getString(JobStartParameter.MAMMA_PALGA_IMPORT.name()));
 
-		for (MammaPalgaCsvImportDto dto : chunk.getItems())
+		for (var dto : chunk.getItems())
 		{
 			if (dto.getRegelNummer() != HEADER_ROW && !dto.isFout())
 			{
-				String logMeldingPrefix = "#" + dto.getRegelNummer() + ": ";
+				var logMeldingPrefix = "#" + dto.getRegelNummer() + ": ";
 				try
 				{
-					String errorMessage = palgaService.verwerkImportDto(dto, grondslag);
+					var errorMessage = palgaService.verwerkImportDto(dto, grondslag);
 					if (errorMessage != null)
 					{
 						logMelding(logMeldingPrefix + errorMessage, null, dto);
@@ -101,9 +101,9 @@ public class MammaPalgaCsvImportWriter implements ItemWriter<MammaPalgaCsvImport
 			LOG.error(uitgebreideErrorMessage, e);
 		}
 
-		ExecutionContext executionContext = jobExecution.getExecutionContext();
+		var executionContext = jobExecution.getExecutionContext();
 
-		String melding = (getExecutionContext().containsKey(BatchConstants.MELDING) ? getExecutionContext().getString(BatchConstants.MELDING) + uitgebreideErrorMessage
+		var melding = (getExecutionContext().containsKey(BatchConstants.MELDING) ? getExecutionContext().getString(BatchConstants.MELDING) + uitgebreideErrorMessage
 			: "Er zijn een aantal fouten gevonden tijdens het uitvoeren van de import:<br>" + uitgebreideErrorMessage) + "<br>";
 		executionContext.putString(BatchConstants.MELDING, melding);
 		executionContext.put(BatchConstants.LEVEL, Level.WARNING);

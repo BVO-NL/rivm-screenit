@@ -27,7 +27,6 @@ import nl.rivm.screenit.main.service.mamma.MammaTestTimelineService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.TestMammaVervolgKeuzeAction;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.service.mamma.MammaBaseTestTimelineService;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
@@ -46,9 +45,9 @@ public class TestMammaBeoordelingStatusNaarUitslagOngunstigAction extends TestMa
 	@Override
 	public void execute()
 	{
-		for (Client client : clienten)
+		for (var client : clienten)
 		{
-			MammaBeoordeling beoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(client.getMammaDossier().getLaatsteScreeningRonde());
+			var beoordeling = MammaScreeningRondeUtil.getLaatsteBeoordeling(client.getMammaDossier().getLaatsteScreeningRonde());
 			if (MammaBeoordelingStatus.VERSLAG_GEREED.equals(beoordeling.getStatus()))
 			{
 				mammaTestTimelineService.verslagGoedkeurenDoorCE(beoordeling, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());

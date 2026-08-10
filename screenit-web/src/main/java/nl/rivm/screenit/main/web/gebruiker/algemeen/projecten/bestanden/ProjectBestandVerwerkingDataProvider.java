@@ -66,7 +66,7 @@ public class ProjectBestandVerwerkingDataProvider extends SortableDataProvider<P
 
 	private ProjectBestandVerwerkingEntry maakFilter()
 	{
-		ProjectBestandVerwerkingEntry entry = new ProjectBestandVerwerkingEntry();
+		var entry = new ProjectBestandVerwerkingEntry();
 		entry.setVerwerking(ModelUtil.nullSafeGet(verwerkingModel));
 		return entry;
 	}

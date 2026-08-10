@@ -73,7 +73,7 @@ public class MammaClientContactNaOpgeschortOnderzoekPage extends AbstractMammaCe
 	@Override
 	protected List<MedewerkerMenuItem> getContextMenuItems()
 	{
-		List<MedewerkerMenuItem> contextMenuItems = super.getContextMenuItems();
+		var contextMenuItems = super.getContextMenuItems();
 		contextMenuItems
 			.add(new MedewerkerMenuItem("label.tab.mammascreening.ce-onderbroken-onderzoeken-werklijst-client-contact", false, MammaClientContactNaOpgeschortOnderzoekPage.class));
 

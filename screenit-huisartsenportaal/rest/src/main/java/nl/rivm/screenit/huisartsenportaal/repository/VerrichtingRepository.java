@@ -21,7 +21,6 @@ package nl.rivm.screenit.huisartsenportaal.repository;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.huisartsenportaal.model.Overeenkomst;
 import nl.rivm.screenit.huisartsenportaal.model.Verrichting;
 
 public interface VerrichtingRepository extends BaseRepository<Verrichting>

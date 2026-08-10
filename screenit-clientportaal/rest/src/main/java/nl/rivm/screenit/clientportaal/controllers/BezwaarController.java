@@ -35,7 +35,7 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.rivm.screenit.service.BezwaarService;
+import nl.rivm.screenit.service.BaseBezwaarService;
 import nl.rivm.screenit.service.ClientContactService;
 
 import org.springframework.http.HttpStatus;
@@ -54,7 +54,7 @@ public class BezwaarController extends AbstractController
 {
 	private final ClientContactService clientContactService;
 
-	private final BezwaarService bezwaarService;
+	private final BaseBezwaarService bezwaarService;
 
 	private final BezwaarValidatieService bezwaarValidatieService;
 

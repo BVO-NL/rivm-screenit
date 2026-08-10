@@ -28,7 +28,6 @@ import java.util.List;
 
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.ScreenitForm;
-import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
@@ -48,11 +47,9 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -84,18 +81,18 @@ public class RetourzendingRedenBeheerPage extends RetourzendingBasePage
 
 	public RetourzendingRedenBeheerPage()
 	{
-		RetourredenAfhandeling retourredenAfhandeling = new RetourredenAfhandeling();
+		var retourredenAfhandeling = new RetourredenAfhandeling();
 		retourredenAfhandeling.setAfhandeling(RetourzendingAfhandelingType.NIEUWE_GBA_AANVRAAG);
 		retourredenAfhandelingModel = ModelUtil.cModel(retourredenAfhandeling);
 		retourRedenAfhandelingForm = new ScreenitForm<>("retourRedenAfhandelingForm", retourredenAfhandelingModel);
 		retourRedenAfhandelingForm.setOutputMarkupId(true);
 		add(retourRedenAfhandelingForm);
 
-		TextField<String> retourRedenTextField = ComponentHelper.newTextField("retourReden", 255, true);
+		var retourRedenTextField = ComponentHelper.newTextField("retourReden", 255, true);
 		retourRedenTextField.add(new ScreenitUniqueFieldValidator<>(RetourredenAfhandeling.class, retourredenAfhandeling.getRetourReden(), "retourReden", true));
 		retourRedenAfhandelingForm.add(retourRedenTextField);
 
-		final ScreenitDropdown<RetourzendingAfhandelingType> afhandelingenDropdown = ComponentHelper.newDropDownChoice("afhandeling",
+		final var afhandelingenDropdown = ComponentHelper.newDropDownChoice("afhandeling",
 			new ListModel<>(Arrays.asList(RetourzendingAfhandelingType.values())), new EnumChoiceRenderer<RetourzendingAfhandelingType>(), true);
 		afhandelingenDropdown.setOutputMarkupId(true);
 		retourRedenAfhandelingForm.add(afhandelingenDropdown);
@@ -111,7 +108,7 @@ public class RetourzendingRedenBeheerPage extends RetourzendingBasePage
 
 				hibernateService.saveOrUpdate(retourredenAfhandelingModel.getObject());
 				target.add(retourRedenAfhandelingForm, retourRedenAfhandelingTabel);
-				RetourredenAfhandeling retourredenAfhandeling = new RetourredenAfhandeling();
+				var retourredenAfhandeling = new RetourredenAfhandeling();
 				retourredenAfhandeling.setAfhandeling(retourredenAfhandelingModel.getObject().getAfhandeling());
 				retourredenAfhandelingModel.setObject(retourredenAfhandeling);
 			}
@@ -137,7 +134,7 @@ public class RetourzendingRedenBeheerPage extends RetourzendingBasePage
 					@Override
 					protected void onClick(AjaxRequestTarget target)
 					{
-						RetourredenAfhandeling retourredenAfhandeling = rowModel.getObject();
+						var retourredenAfhandeling = rowModel.getObject();
 						if (retourredenAfhandeling.getId() != null)
 						{
 							hibernateService.delete(retourredenAfhandeling);
@@ -161,8 +158,8 @@ public class RetourzendingRedenBeheerPage extends RetourzendingBasePage
 
 			private List<RetourredenAfhandeling> getRetourredenenSorted()
 			{
-				List<RetourredenAfhandeling> retourredenAfhandelingen = getRetourredenen();
-				SortParam<String> sortParam = getSort();
+				var retourredenAfhandelingen = getRetourredenen();
+				var sortParam = getSort();
 				if (sortParam != null && sortParam.getProperty() != null)
 				{
 					retourredenAfhandelingen.sort(new PropertyComparator<>(sortParam.getProperty(), true, sortParam.isAscending()));

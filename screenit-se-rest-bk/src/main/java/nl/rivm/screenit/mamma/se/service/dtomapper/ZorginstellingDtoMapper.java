@@ -33,7 +33,7 @@ public class ZorginstellingDtoMapper
 		{
 			return null;
 		}
-		ZorginstellingDto zorginstellingDto = new ZorginstellingDto();
+		var zorginstellingDto = new ZorginstellingDto();
 		zorginstellingDto.setNaam(organisatie.getNaam());
 		zorginstellingDto.setId(organisatie.getId());
 		return zorginstellingDto;

@@ -61,7 +61,7 @@ public abstract class PollingAbstractAjaxTimerBehavior extends AbstractAjaxTimer
 	protected void onUnbind()
 	{
 		super.onUnbind();
-		AjaxRequestTarget target = this.getComponent().getRequestCycle().find(AjaxRequestTarget.class).orElse(null);
+		var target = this.getComponent().getRequestCycle().find(AjaxRequestTarget.class).orElse(null);
 		setNotPolling(target);
 	}
 
@@ -69,7 +69,7 @@ public abstract class PollingAbstractAjaxTimerBehavior extends AbstractAjaxTimer
 	public void onRemove(Component component)
 	{
 		super.onRemove(component);
-		AjaxRequestTarget target = this.getComponent().getRequestCycle().find(AjaxRequestTarget.class).orElse(null);
+		var target = this.getComponent().getRequestCycle().find(AjaxRequestTarget.class).orElse(null);
 		setNotPolling(target);
 	}
 

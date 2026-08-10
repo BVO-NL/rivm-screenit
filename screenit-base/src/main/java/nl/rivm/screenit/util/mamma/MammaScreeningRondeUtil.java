@@ -27,7 +27,6 @@ import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.enums.MammaBIRADSWaarde;
 import nl.rivm.screenit.model.mamma.enums.MammaZijde;
 
@@ -50,7 +49,7 @@ public class MammaScreeningRondeUtil
 
 	public static MammaOnderzoek getOnderzoekVanLaatsteAfspraak(MammaScreeningRonde screeningRonde)
 	{
-		MammaAfspraak afspraak = getLaatsteAfspraak(screeningRonde);
+		var afspraak = getLaatsteAfspraak(screeningRonde);
 		if (afspraak != null)
 		{
 			return afspraak.getOnderzoek();
@@ -63,9 +62,9 @@ public class MammaScreeningRondeUtil
 		MammaOnderzoek result = null;
 		if (screeningRonde != null)
 		{
-			for (MammaUitnodiging uitnodiging : screeningRonde.getUitnodigingen())
+			for (var uitnodiging : screeningRonde.getUitnodigingen())
 			{
-				for (MammaAfspraak afspraak : uitnodiging.getAfspraken())
+				for (var afspraak : uitnodiging.getAfspraken())
 				{
 					if (afspraak.getOnderzoek() != null
 						&& (result == null || result.getCreatieDatum().compareTo(afspraak.getOnderzoek().getCreatieDatum()) < 0))
@@ -105,7 +104,7 @@ public class MammaScreeningRondeUtil
 
 	public static MammaBeoordeling getLaatsteBeoordeling(MammaScreeningRonde ronde)
 	{
-		MammaOnderzoek onderzoek = getLaatsteOnderzoek(ronde);
+		var onderzoek = getLaatsteOnderzoek(ronde);
 		return getLaatsteBeoordeling(onderzoek);
 	}
 
@@ -117,7 +116,7 @@ public class MammaScreeningRondeUtil
 
 	public static MammaAfspraak getAfspraakVanLaatsteOnderzoek(MammaDossier dossier)
 	{
-		MammaScreeningRonde laatsteScreeningRonde = dossier != null ? dossier.getLaatsteScreeningRonde() : null;
+		var laatsteScreeningRonde = dossier != null ? dossier.getLaatsteScreeningRonde() : null;
 		if (laatsteScreeningRonde != null && laatsteScreeningRonde.getLaatsteOnderzoek() != null)
 		{
 			return laatsteScreeningRonde.getLaatsteOnderzoek().getAfspraak();
@@ -127,7 +126,7 @@ public class MammaScreeningRondeUtil
 
 	public static MammaBeoordeling getLaatsteBeoordelingVanLaatsteOnderzoek(Client client)
 	{
-		MammaAfspraak afspraak = getAfspraakVanLaatsteOnderzoek(client.getMammaDossier());
+		var afspraak = getAfspraakVanLaatsteOnderzoek(client.getMammaDossier());
 		return afspraak != null ? getLaatsteBeoordeling(afspraak.getOnderzoek()) : null;
 	}
 

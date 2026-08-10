@@ -81,8 +81,8 @@ public class TestCervixZasAanvragenPopup extends TestCervixAbstractPopupPanel
 	@Override
 	protected void opslaan()
 	{
-		CervixTestTimeLineDossierTijdstip tijdStip = dossierTijdStipModel.getObject();
-		for (Client client : getModelObject())
+		var tijdStip = dossierTijdStipModel.getObject();
+		for (var client : getModelObject())
 		{
 			baseTestTimelineService.maakZasMonster(client, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), tijdStip, nieuweZas);
 		}

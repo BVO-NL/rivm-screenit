@@ -48,7 +48,7 @@ public abstract class DagEnDagdeelFilterPanel extends GenericPanel<MammaDagEnDag
 			@Override
 			protected void populateItem(ListItem<BeschikbareAfspraakDagen> dag)
 			{
-				Check<BeschikbareAfspraakDagen> check = new Check<>("checkboxDag", dag.getModel());
+				var check = new Check<BeschikbareAfspraakDagen>("checkboxDag", dag.getModel());
 				dag.add(check);
 				dag.add(new EnumLabel<>("labelDag", dag.getModelObject()));
 			}
@@ -68,7 +68,7 @@ public abstract class DagEnDagdeelFilterPanel extends GenericPanel<MammaDagEnDag
 			@Override
 			protected void populateItem(ListItem<Dagdeel> dagdeel)
 			{
-				Check<Dagdeel> check = new Check<>("checkboxDagdeel", dagdeel.getModel());
+				var check = new Check<Dagdeel>("checkboxDagdeel", dagdeel.getModel());
 				dagdeel.add(check);
 				dagdeel.add(new EnumLabel<>("labelDagdeel", dagdeel.getModelObject()));
 			}

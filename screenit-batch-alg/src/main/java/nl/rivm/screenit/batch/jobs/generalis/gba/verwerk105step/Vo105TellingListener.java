@@ -30,8 +30,8 @@ import nl.rivm.screenit.batch.jobs.generalis.gba.GbaConstants;
 import nl.rivm.screenit.model.RedenGbaVraag;
 import nl.rivm.screenit.model.enums.GbaVraagType;
 import nl.rivm.screenit.model.gba.GbaVerwerkingsLog;
+import nl.rivm.screenit.model.vertrouwdverbonden.Vo105Bericht;
 import nl.rivm.screenit.repository.algemeen.GbaVraagRepository;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo105Bericht;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.batch.core.ExitStatus;

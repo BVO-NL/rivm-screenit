@@ -76,7 +76,7 @@ public class MammaStandplaatsOpmerkingenPanel extends GenericPanel<MammaStandpla
 		opmerkingen = new WebMarkupContainer("opmerkingen");
 		opmerkingen.setOutputMarkupId(true);
 
-		MammaStandplaatsOpmerking searchObject = new MammaStandplaatsOpmerking();
+		var searchObject = new MammaStandplaatsOpmerking();
 		searchObject.setActief(true);
 		final IModel<MammaStandplaatsOpmerking> searchObjectModel = Model.of(searchObject);
 		opmerkingen.add(new ActiefHeaderPanel<>("actiefHeader", opmerkingen, searchObjectModel));
@@ -91,15 +91,15 @@ public class MammaStandplaatsOpmerkingenPanel extends GenericPanel<MammaStandpla
 				return list;
 			}
 		};
-		ListView<MammaStandplaatsOpmerking> list = new ListView<>("list", listModel)
+		var list = new ListView<>("list", listModel)
 		{
 			@Override
 			protected void populateItem(ListItem<MammaStandplaatsOpmerking> item)
 			{
-				MammaStandplaatsOpmerking opmerking = item.getModelObject();
-				Boolean searchActief = searchObjectModel.getObject().getActief();
-				Boolean opmerkingActief = opmerking.getActief();
-				boolean visible = false;
+				var opmerking = item.getModelObject();
+				var searchActief = searchObjectModel.getObject().getActief();
+				var opmerkingActief = opmerking.getActief();
+				var visible = false;
 				if (Boolean.TRUE.equals(searchActief) && !Boolean.FALSE.equals(opmerkingActief))
 				{
 					visible = true;
@@ -162,7 +162,7 @@ public class MammaStandplaatsOpmerkingenPanel extends GenericPanel<MammaStandpla
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				IModel<MammaStandplaatsOpmerking> nieuweOpmerking = ModelUtil.csModel(new MammaStandplaatsOpmerking());
+				var nieuweOpmerking = ModelUtil.csModel(new MammaStandplaatsOpmerking());
 				nieuweOpmerking.getObject().setActief(true);
 				editOpmerking(target, nieuweOpmerking);
 			}
@@ -178,7 +178,7 @@ public class MammaStandplaatsOpmerkingenPanel extends GenericPanel<MammaStandpla
 
 	private void editOpmerking(AjaxRequestTarget target, IModel<MammaStandplaatsOpmerking> opmerking)
 	{
-		WebMarkupContainer opmerkingContainer = new WebMarkupContainer("editOpmerkingContainer");
+		var opmerkingContainer = new WebMarkupContainer("editOpmerkingContainer");
 		opmerkingContainer.setOutputMarkupId(true);
 		editOpmerkingContainer.replaceWith(opmerkingContainer);
 		editOpmerkingContainer = opmerkingContainer;
@@ -197,15 +197,15 @@ public class MammaStandplaatsOpmerkingenPanel extends GenericPanel<MammaStandpla
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaStandplaats standplaats = (MammaStandplaats) MammaStandplaatsOpmerkingenPanel.this.getDefaultModelObject();
-				MammaStandplaatsOpmerking opmerking = (MammaStandplaatsOpmerking) opmerkingForm.getModelObject();
-				boolean changed = standplaatsService.saveOrUpdateStandplaatsOpmerking(opmerking, standplaats, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+				var standplaats = (MammaStandplaats) MammaStandplaatsOpmerkingenPanel.this.getDefaultModelObject();
+				var opmerking = (MammaStandplaatsOpmerking) opmerkingForm.getModelObject();
+				var changed = standplaatsService.saveOrUpdateStandplaatsOpmerking(opmerking, standplaats, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 				if (changed)
 				{
 					success(getString("message.gegevensopgeslagen"));
 				}
 				target.add(opmerkingen);
-				WebMarkupContainer invisibleopmerkingContainer = new WebMarkupContainer("editOpmerkingContainer");
+				var invisibleopmerkingContainer = new WebMarkupContainer("editOpmerkingContainer");
 				invisibleopmerkingContainer.setOutputMarkupPlaceholderTag(true);
 				invisibleopmerkingContainer.setVisible(false);
 				editOpmerkingContainer.replaceWith(invisibleopmerkingContainer);

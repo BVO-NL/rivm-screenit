@@ -55,13 +55,13 @@ public class MammaTestBulkDeelnamekansPanel extends Panel
 	{
 		super(id);
 
-		Form<Void> form = new Form<>("deelnamekansenForm");
+		var form = new Form<Void>("deelnamekansenForm");
 		add(form);
 
 		filesUploaded = new ListModel<>();
 		form.add(new FileUploadField("deelnamekansenFile", filesUploaded).add(new FileValidator(FileType.CSV)));
 
-		IndicatingAjaxButton uploadDeelnamekansen = new IndicatingAjaxButton("uploadDeelnamekansen")
+		var uploadDeelnamekansen = new IndicatingAjaxButton("uploadDeelnamekansen")
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -69,13 +69,13 @@ public class MammaTestBulkDeelnamekansPanel extends Panel
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				LOGGER.info("Upload deelnamekansen");
-				List<FileUpload> fileUploads = filesUploaded.getObject();
+				var fileUploads = filesUploaded.getObject();
 				if (CollectionUtils.isNotEmpty(fileUploads))
 				{
 					try
 					{
-						FileUpload fileUpload = fileUploads.get(0);
-						String message = testTimelineService.setDeelnamekansen(fileUpload.getInputStream());
+						var fileUpload = fileUploads.get(0);
+						var message = testTimelineService.setDeelnamekansen(fileUpload.getInputStream());
 						if (message.contains("Succesvol"))
 						{
 							info(message);

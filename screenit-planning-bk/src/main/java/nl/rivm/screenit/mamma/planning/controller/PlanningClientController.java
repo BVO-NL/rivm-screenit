@@ -25,8 +25,6 @@ import nl.rivm.screenit.dto.mamma.planning.PlanningRestConstants;
 import nl.rivm.screenit.dto.mamma.planning.PlanningVerzetClientenDto;
 import nl.rivm.screenit.mamma.planning.index.PlanningClientIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningStandplaatsIndex;
-import nl.rivm.screenit.mamma.planning.model.PlanningClient;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaats;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningDoorrekenenManager;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingen;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
@@ -51,14 +49,14 @@ public class PlanningClientController
 	@PutMapping
 	public void put(@RequestBody PlanningVerzetClientenDto verzetClientenDto)
 	{
-		MammaStandplaatsPeriode mammaStandplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class, verzetClientenDto.verzetStandplaatsPeriodeId);
-		PlanningStandplaats nieuweAfspraakStandplaats = PlanningStandplaatsIndex.get(mammaStandplaatsPeriode.getStandplaatsRonde().getStandplaats().getId());
+		var mammaStandplaatsPeriode = hibernateService.get(MammaStandplaatsPeriode.class, verzetClientenDto.verzetStandplaatsPeriodeId);
+		var nieuweAfspraakStandplaats = PlanningStandplaatsIndex.get(mammaStandplaatsPeriode.getStandplaatsRonde().getStandplaats().getId());
 
 		verzetClientenDto.clientIdSet.forEach(clientId ->
 		{
 
-			PlanningClient client = PlanningClientIndex.get(clientId);
-			PlanningStandplaats standplaats = client.getStandplaats();
+			var client = PlanningClientIndex.get(clientId);
+			var standplaats = client.getStandplaats();
 
 			if (standplaats != null)
 			{
@@ -66,14 +64,14 @@ public class PlanningClientController
 				PlanningWijzigingen.bepaalWijzigingen(standplaats);
 			}
 
-			PlanningStandplaats afspraakStandplaats = client.getAfspraakStandplaats();
+			var afspraakStandplaats = client.getAfspraakStandplaats();
 			if (afspraakStandplaats != null)
 			{
 				afspraakStandplaats.getTransportNaarSet().remove(client);
 				PlanningWijzigingen.bepaalWijzigingen(afspraakStandplaats);
 			}
 
-			PlanningStandplaats uitstelStandplaats = client.getUitstelStandplaats();
+			var uitstelStandplaats = client.getUitstelStandplaats();
 			if (uitstelStandplaats != null)
 			{
 				uitstelStandplaats.getTransportNaarSet().remove(client);

@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.parameterisatie.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.model.Parameterisatie;
 import nl.rivm.screenit.main.service.ParameterisatieService;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.parameterisatie.ParameterisatieBasePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
@@ -47,7 +46,7 @@ public class AlgemeenParameterisatiePage extends ParameterisatieBasePage
 
 	public AlgemeenParameterisatiePage()
 	{
-		Parameterisatie parameterisatie = parameterisatieService.loadParameterisatie();
+		var parameterisatie = parameterisatieService.loadParameterisatie();
 		add(new DagdeelParametersPanel("dagdeelTijden", new Model<>(parameterisatie)));
 		add(new BewaartermijnenPrimaireParametersPanel("bewaartermijnen", new Model<>(parameterisatie)));
 		add(new BrpParametersPanel("brpParameters", new Model<>(parameterisatie)));

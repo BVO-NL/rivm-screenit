@@ -30,13 +30,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.clientportaal.controllers.AbstractController;
 import nl.rivm.screenit.clientportaal.exception.NotValidException;
-import nl.rivm.screenit.clientportaal.model.mamma.MammaAfspraakWijzigenFilterDto;
 import nl.rivm.screenit.clientportaal.model.mamma.MammaAfspraakZoekFilterDto;
 import nl.rivm.screenit.clientportaal.model.mamma.MammaStandplaatsperiodeOptieDto;
 import nl.rivm.screenit.clientportaal.services.DatumValidatieService;
 import nl.rivm.screenit.clientportaal.services.mamma.MammaAfspraakService;
 import nl.rivm.screenit.clientportaal.services.mamma.MammaUitstelService;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
@@ -82,12 +80,12 @@ public class UitstelController extends AbstractController
 			return ResponseEntity.badRequest().build();
 		}
 
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN)
 			|| clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN))
 		{
-			MammaAfspraakWijzigenFilterDto filter = afspraakService.toAfspraakFilter(body, client, false);
+			var filter = afspraakService.toAfspraakFilter(body, client, false);
 
 			return ResponseEntity.ok().body(standplaatsService.getStandplaatsPeriodeMetAfstandDtos(client, filter, true).stream().distinct()
 				.map(standplaats -> uitstelService.toStandplaatsPeriodeOptie(standplaats, filter))
@@ -100,7 +98,7 @@ public class UitstelController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<String> maakUitstel(Authentication authentication, @RequestBody MammaStandplaatsperiodeOptieDto standplaatsPeriodeDto)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		var streefdatum = standplaatsPeriodeDto.getFilter().getVanaf();
 		if (datumValidatieService.datumIsInHetVerleden(streefdatum))

@@ -33,11 +33,8 @@ import lombok.RequiredArgsConstructor;
 import nl.rivm.screenit.dto.mamma.planning.PlanningAfspraakDrempelOverzichtDto;
 import nl.rivm.screenit.mamma.planning.model.PlanningClient;
 import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
-import nl.rivm.screenit.mamma.planning.model.PlanningPostcodeReeks;
-import nl.rivm.screenit.mamma.planning.model.PlanningPostcodeReeksRegio;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsOrganisatie;
 import nl.rivm.screenit.mamma.planning.model.PlanningStandplaats;
-import nl.rivm.screenit.mamma.planning.model.PlanningTehuis;
 import nl.rivm.screenit.mamma.planning.service.PlanningAfspraakDrempelOverzichtService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 
@@ -55,15 +52,15 @@ public class PlanningAfspraakDrempelOverzichtServiceImpl implements PlanningAfsp
 	{
 		Set<PlanningClient> clientSet = new HashSet<>();
 
-		for (PlanningPostcodeReeks postcodeReeks : standplaats.getPostcodeReeksSet())
+		for (var postcodeReeks : standplaats.getPostcodeReeksSet())
 		{
-			for (PlanningPostcodeReeksRegio postcodeReeksRegio : postcodeReeks.getPostcodeReeksRegios())
+			for (var postcodeReeksRegio : postcodeReeks.getPostcodeReeksRegios())
 			{
 				clientSet.addAll(postcodeReeksRegio.getClientSet());
 			}
 		}
 
-		for (PlanningTehuis tehuis : standplaats.getTehuisSet())
+		for (var tehuis : standplaats.getTehuisSet())
 		{
 			clientSet.addAll(tehuis.getClientSet());
 		}
@@ -78,9 +75,9 @@ public class PlanningAfspraakDrempelOverzichtServiceImpl implements PlanningAfsp
 
 	private PlanningAfspraakDrempelOverzichtDto getAfspraakDrempelOverzicht(Collection<PlanningClient> clientCollection)
 	{
-		int uitnodigenJaar = dateSupplier.getLocalDate().getYear();
+		var uitnodigenJaar = dateSupplier.getLocalDate().getYear();
 
-		PlanningAfspraakDrempelOverzichtDto deelnamekansDto = new PlanningAfspraakDrempelOverzichtDto();
+		var deelnamekansDto = new PlanningAfspraakDrempelOverzichtDto();
 		deelnamekansDto.vanafGeboortejaar = uitnodigenJaar - PlanningConstanten.totEnMetLeeftijd;
 		deelnamekansDto.totEnMetGeboortejaar = uitnodigenJaar - PlanningConstanten.vanafLeeftijd;
 
@@ -88,26 +85,26 @@ public class PlanningAfspraakDrempelOverzichtServiceImpl implements PlanningAfsp
 			.filter(client -> client.getUitnodigenVanafJaar() <= uitnodigenJaar && uitnodigenJaar <= client.getUitnodigenTotEnMetJaar())
 			.toList();
 
-		Long[] cdvTotaal = nieuweCumulatieveDeelnamekansVerdeling();
-		Long[] cdvVervolgRonde = nieuweCumulatieveDeelnamekansVerdeling();
-		Long[] cdvEersteRonde = nieuweCumulatieveDeelnamekansVerdeling();
-		Long[] cdvDubbeleTijd = nieuweCumulatieveDeelnamekansVerdeling();
-		Long[] cdvMindervalide = nieuweCumulatieveDeelnamekansVerdeling();
-		Long[] cdvTehuis = nieuweCumulatieveDeelnamekansVerdeling();
-		Long[] cdvSuspect = nieuweCumulatieveDeelnamekansVerdeling();
+		var cdvTotaal = nieuweCumulatieveDeelnamekansVerdeling();
+		var cdvVervolgRonde = nieuweCumulatieveDeelnamekansVerdeling();
+		var cdvEersteRonde = nieuweCumulatieveDeelnamekansVerdeling();
+		var cdvDubbeleTijd = nieuweCumulatieveDeelnamekansVerdeling();
+		var cdvMindervalide = nieuweCumulatieveDeelnamekansVerdeling();
+		var cdvTehuis = nieuweCumulatieveDeelnamekansVerdeling();
+		var cdvSuspect = nieuweCumulatieveDeelnamekansVerdeling();
 
-		Long[] cdvDrempelToepassenTotaal = nieuweCumulatieveDeelnamekansVerdeling();
-		Long[] cdvDrempelToepassenVervolgRonde = nieuweCumulatieveDeelnamekansVerdeling();
-		Long[] cdvDrempelToepassenEersteRonde = nieuweCumulatieveDeelnamekansVerdeling();
-		Long[] cdvDrempelToepassenDubbeleTijd = nieuweCumulatieveDeelnamekansVerdeling();
+		var cdvDrempelToepassenTotaal = nieuweCumulatieveDeelnamekansVerdeling();
+		var cdvDrempelToepassenVervolgRonde = nieuweCumulatieveDeelnamekansVerdeling();
+		var cdvDrempelToepassenEersteRonde = nieuweCumulatieveDeelnamekansVerdeling();
+		var cdvDrempelToepassenDubbeleTijd = nieuweCumulatieveDeelnamekansVerdeling();
 
-		BigDecimal somDeelnamekansenVervolgRonde = BigDecimal.ZERO;
-		BigDecimal somDeelnamekansenEersteRonde = BigDecimal.ZERO;
+		var somDeelnamekansenVervolgRonde = BigDecimal.ZERO;
+		var somDeelnamekansenEersteRonde = BigDecimal.ZERO;
 
-		for (PlanningClient client : clientCollection)
+		for (var client : clientCollection)
 		{
-			int cdvIndex = client.getDeelnamekans().movePointRight(2).intValue();
-			boolean drempelToepassen = true;
+			var cdvIndex = client.getDeelnamekans().movePointRight(2).intValue();
+			var drempelToepassen = true;
 
 			if (client.inTehuis())
 			{
@@ -184,14 +181,14 @@ public class PlanningAfspraakDrempelOverzichtServiceImpl implements PlanningAfsp
 
 	private Long[] nieuweCumulatieveDeelnamekansVerdeling()
 	{
-		Long[] cumulatieveVerdeling = new Long[MAX_CDV_INDEX + 1];
+		var cumulatieveVerdeling = new Long[MAX_CDV_INDEX + 1];
 		Arrays.fill(cumulatieveVerdeling, 0L);
 		return cumulatieveVerdeling;
 	}
 
 	private void voegToeCumulatieveVerdeling(Long[] cumulatieveDeelnamekansVerdeling, int cumulatieveDeelnamekansVerdelingIndex)
 	{
-		for (int i = cumulatieveDeelnamekansVerdelingIndex; i <= MAX_CDV_INDEX; i++)
+		for (var i = cumulatieveDeelnamekansVerdelingIndex; i <= MAX_CDV_INDEX; i++)
 		{
 			cumulatieveDeelnamekansVerdeling[i]++;
 		}

@@ -25,7 +25,6 @@ import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.colon.ColonBrief;
-import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.HeraanmeldenMergeVeldService;
 import nl.rivm.screenit.util.BriefUtil;
@@ -46,13 +45,13 @@ public class HeraanmeldenMergeVeldServiceImpl implements HeraanmeldenMergeVeldSe
 	@Override
 	public String getValueVanHeraanmeldenTekstKey(ClientBrief brief)
 	{
-		ClientBrief herdruk = BriefUtil.getHerdruk(brief);
+		var herdruk = BriefUtil.getHerdruk(brief);
 		if (herdruk != null)
 		{
 			return getValueVanHeraanmeldenTekstKey(herdruk);
 		}
 
-		PreferenceKey heraanmeldenTekstKey = getBriefPreferenceKey(brief);
+		var heraanmeldenTekstKey = getBriefPreferenceKey(brief);
 		if (heraanmeldenTekstKey != null)
 		{
 			return preferenceService.getString(heraanmeldenTekstKey.toString());
@@ -62,10 +61,10 @@ public class HeraanmeldenMergeVeldServiceImpl implements HeraanmeldenMergeVeldSe
 
 	private PreferenceKey getBriefPreferenceKey(ClientBrief clientBrief)
 	{
-		ClientBrief brief = (ClientBrief) Hibernate.unproxy(clientBrief);
+		var brief = (ClientBrief) Hibernate.unproxy(clientBrief);
 		if (brief instanceof ColonBrief colonBrief)
 		{
-			ColonFitRegistratie fitRegistratie = colonBrief.getFitRegistratie();
+			var fitRegistratie = colonBrief.getFitRegistratie();
 			return fitRegistratie != null ? fitRegistratie.getHeraanmeldenTekstKey() : null;
 		}
 		else if (brief instanceof CervixBrief cervixBrief)

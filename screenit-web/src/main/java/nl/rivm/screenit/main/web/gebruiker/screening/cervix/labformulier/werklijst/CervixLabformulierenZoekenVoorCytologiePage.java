@@ -75,7 +75,7 @@ public class CervixLabformulierenZoekenVoorCytologiePage extends CervixLabformul
 	@Override
 	protected boolean showEmptyTable(CervixLabformulierenFilter filter)
 	{
-		int filterCounter = 0;
+		var filterCounter = 0;
 		filterCounter += filter.getBsn() == null ? 0 : 1;
 		filterCounter += filter.getGeboortedatum() == null ? 0 : 1;
 		filterCounter += filter.getMonsterId() == null ? 0 : 1;

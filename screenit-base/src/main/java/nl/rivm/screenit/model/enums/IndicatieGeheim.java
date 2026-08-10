@@ -48,7 +48,7 @@ public enum IndicatieGeheim
 
 	public static IndicatieGeheim getByCode(String code)
 	{
-		for (IndicatieGeheim indicatieGeheim : IndicatieGeheim.values())
+		for (var indicatieGeheim : IndicatieGeheim.values())
 		{
 			if (indicatieGeheim.code.equals(code))
 			{

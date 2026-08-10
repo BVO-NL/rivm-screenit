@@ -30,7 +30,6 @@ import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.service.mamma.MammaBaseKansberekeningService;
 
 import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -72,18 +71,18 @@ public class MammaKansberekeningListener extends BaseLogListener
 	@Override
 	protected LogEvent eindLogging(JobExecution jobExecution)
 	{
-		ExecutionContext context = jobExecution.getExecutionContext();
+		var context = jobExecution.getExecutionContext();
 
-		long standplaatsRondeDeelnameGemiddelden = context.getLong(MammaKansberekeningConstants.STANDPLAATS_RONDE_DEELNAME_GEMIDDELDEN_KEY, 0);
-		long regioDeelnameGemiddelden = context.getLong(MammaKansberekeningConstants.REGIO_DEELNAME_GEMIDDELDEN_KEY, 0);
-		long standplaatsRondeOpkomstGemiddelden = context.getLong(MammaKansberekeningConstants.STANDPLAATS_RONDE_OPKOMST_GEMIDDELDEN_KEY, 0);
-		long regioOpkomstGemiddelden = context.getLong(MammaKansberekeningConstants.REGIO_OPKOMST_GEMIDDELDEN__KEY, 0);
-		long screeningRondeSamples = context.getLong(MammaKansberekeningConstants.SCREENING_RONDE_SAMPLES_KEY, 0);
-		long screeningRondeEvents = context.getLong(MammaKansberekeningConstants.SCREENING_RONDE_EVENTS_KEY, 0);
-		long afspraakSamples = context.getLong(MammaKansberekeningConstants.AFSPRAAK_SAMPLES_KEY, 0);
-		long afspraakEvents = context.getLong(MammaKansberekeningConstants.AFSPRAAK_EVENTS_KEY, 0);
+		var standplaatsRondeDeelnameGemiddelden = context.getLong(MammaKansberekeningConstants.STANDPLAATS_RONDE_DEELNAME_GEMIDDELDEN_KEY, 0);
+		var regioDeelnameGemiddelden = context.getLong(MammaKansberekeningConstants.REGIO_DEELNAME_GEMIDDELDEN_KEY, 0);
+		var standplaatsRondeOpkomstGemiddelden = context.getLong(MammaKansberekeningConstants.STANDPLAATS_RONDE_OPKOMST_GEMIDDELDEN_KEY, 0);
+		var regioOpkomstGemiddelden = context.getLong(MammaKansberekeningConstants.REGIO_OPKOMST_GEMIDDELDEN__KEY, 0);
+		var screeningRondeSamples = context.getLong(MammaKansberekeningConstants.SCREENING_RONDE_SAMPLES_KEY, 0);
+		var screeningRondeEvents = context.getLong(MammaKansberekeningConstants.SCREENING_RONDE_EVENTS_KEY, 0);
+		var afspraakSamples = context.getLong(MammaKansberekeningConstants.AFSPRAAK_SAMPLES_KEY, 0);
+		var afspraakEvents = context.getLong(MammaKansberekeningConstants.AFSPRAAK_EVENTS_KEY, 0);
 
-		LogEvent logEvent = super.eindLogging(jobExecution);
+		var logEvent = super.eindLogging(jobExecution);
 		logEvent.setMelding("Bijgewerkt" +
 			" screeningronde samples: " + screeningRondeSamples +
 			", screeningronde events: " + screeningRondeEvents +

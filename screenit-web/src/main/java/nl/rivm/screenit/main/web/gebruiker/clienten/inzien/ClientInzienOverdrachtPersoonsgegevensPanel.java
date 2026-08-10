@@ -30,7 +30,6 @@ import nl.rivm.screenit.main.util.BriefOmschrijvingUtil;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.popup.overdrachtpersoonsgegevens.OverdrachtGegevensAanvraagPopupPanel;
-import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -76,15 +75,15 @@ public class ClientInzienOverdrachtPersoonsgegevensPanel extends GenericPanel<Cl
 
 	private WebMarkupContainer addOrReplaceOverdrachtContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("gebeurtenissenContainer");
+		var container = new WebMarkupContainer("gebeurtenissenContainer");
 		container.setOutputMarkupPlaceholderTag(true);
 
-		Client client = getModelObject();
-		ArrayList<OverdrachtPersoonsgegevensDossierGebeurtenis> gebeurtenissen = new ArrayList<>();
+		var client = getModelObject();
+		var gebeurtenissen = new ArrayList<OverdrachtPersoonsgegevensDossierGebeurtenis>();
 
-		for (OverdrachtPersoonsgegevens overdracht : client.getOverdrachtPersoonsgegevensLijst())
+		for (var overdracht : client.getOverdrachtPersoonsgegevensLijst())
 		{
-			OverdrachtPersoonsgegevensDossierGebeurtenis gebeurtenis = new OverdrachtPersoonsgegevensDossierGebeurtenis(overdrachtOmschrijving(overdracht),
+			var gebeurtenis = new OverdrachtPersoonsgegevensDossierGebeurtenis(overdrachtOmschrijving(overdracht),
 				overdracht.getStatusDatum());
 			gebeurtenis.setDossierGebeurtenisType(DossierGebeurtenisType.OVERDRACHT_PERSOONSGEGEVENS);
 			gebeurtenis.setBron(dossierService.bepaalGebeurtenisBron(overdracht));
@@ -99,8 +98,8 @@ public class ClientInzienOverdrachtPersoonsgegevensPanel extends GenericPanel<Cl
 			@Override
 			protected void populateItem(ListItem<OverdrachtPersoonsgegevensDossierGebeurtenis> item)
 			{
-				OverdrachtPersoonsgegevensDossierGebeurtenis gebeurtenis = item.getModelObject();
-				WebMarkupContainer gebeurtenisContainer = new WebMarkupContainer("gebeurtenis");
+				var gebeurtenis = item.getModelObject();
+				var gebeurtenisContainer = new WebMarkupContainer("gebeurtenis");
 				gebeurtenisContainer.add(new Label("omschrijving", new PropertyModel<String>(gebeurtenis, "omschrijving")));
 				gebeurtenisContainer.add(DateLabel.forDatePattern("tijd", Model.of(gebeurtenis.getTijd()), "dd-MM-yyyy HH:mm:ss"));
 				gebeurtenisContainer.add(new EnumLabel<>("bron", Model.of(gebeurtenis.getBron())));
@@ -141,8 +140,12 @@ public class ClientInzienOverdrachtPersoonsgegevensPanel extends GenericPanel<Cl
 		switch (overdracht.getStatus())
 		{
 		case BRIEF:
-			StringBuilder omschrijving = new StringBuilder(getString("overdracht.aanvraag"));
-			Brief brief = overdracht.getGeenHandtekeningBrief() != null ? overdracht.getGeenHandtekeningBrief() : overdracht.getVerstuurdeAanvraagbrief();
+			var brief = overdracht.getGeenHandtekeningBrief() != null ? overdracht.getGeenHandtekeningBrief() : overdracht.getVerstuurdeAanvraagbrief();
+			if (brief == null)
+			{
+				return getString("overdracht.geen.brief.buitenland");
+			}
+			var omschrijving = new StringBuilder(getString("overdracht.aanvraag"));
 			BriefOmschrijvingUtil.addExtraOmschrijving(omschrijving, brief, this::getString);
 			return omschrijving.toString();
 		case BRIEF_ONTVANGEN:

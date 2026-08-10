@@ -63,8 +63,8 @@ public abstract class MammaTehuisAdresToevoegenPanel extends GenericPanel<MammaT
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				MammaTehuisAdres adres = locatieForm.getModelObject();
-				boolean isAdresAlGekoppeld = tehuisAdresService.isAdresAlGekoppeld(adres);
+				var adres = locatieForm.getModelObject();
+				var isAdresAlGekoppeld = tehuisAdresService.isAdresAlGekoppeld(adres);
 
 				if (isAdresAlGekoppeld)
 				{
@@ -76,7 +76,7 @@ public abstract class MammaTehuisAdresToevoegenPanel extends GenericPanel<MammaT
 					onClickOpslaan(target);
 				}
 
-				boolean zijnErClienten = tehuisAdresService.countClienten(adres.getTehuis(), MammaTehuisSelectie.TEHUIS_ADRES, adres) > 0;
+				var zijnErClienten = tehuisAdresService.countClienten(adres.getTehuis(), MammaTehuisSelectie.TEHUIS_ADRES, adres) > 0;
 				if (!zijnErClienten)
 				{
 					ScreenitSession.get().warn(getString("warn.geen.clienten.op.adres"));

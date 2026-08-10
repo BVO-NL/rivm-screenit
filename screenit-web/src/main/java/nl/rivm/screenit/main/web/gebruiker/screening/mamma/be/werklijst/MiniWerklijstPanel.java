@@ -56,7 +56,7 @@ public class MiniWerklijstPanel extends Panel
 	{
 		super(id);
 
-		MammaOnderzoekMiniWerklijstDataProvider<MammaBeoordeling> miniWerklijstDataProvider = new MammaOnderzoekMiniWerklijstDataProvider<>(huidigeBeoordelingId, beoordelingenIds,
+		var miniWerklijstDataProvider = new MammaOnderzoekMiniWerklijstDataProvider<MammaBeoordeling>(huidigeBeoordelingId, beoordelingenIds,
 			MammaBeoordeling.class);
 
 		List<IColumn<MammaBeoordeling, String>> columns = new ArrayList<>();
@@ -79,7 +79,7 @@ public class MiniWerklijstPanel extends Panel
 			{
 				if (getDataProvider() instanceof MammaOnderzoekMiniWerklijstDataProvider)
 				{
-					int openVerslag = ((MammaOnderzoekMiniWerklijstDataProvider) getDataProvider()).getOpenVerslag();
+					var openVerslag = ((MammaOnderzoekMiniWerklijstDataProvider) getDataProvider()).getOpenVerslag();
 
 					if (index == openVerslag)
 					{
@@ -92,7 +92,7 @@ public class MiniWerklijstPanel extends Panel
 			@Override
 			public Panel getCustomPanel(String id)
 			{
-				IModel<Integer> beoordeeldModel = new IModel<Integer>()
+				var beoordeeldModel = new IModel<Integer>()
 				{
 					@Override
 					public Integer getObject()
@@ -101,7 +101,7 @@ public class MiniWerklijstPanel extends Panel
 					}
 				};
 
-				IModel<Integer> teBeoordelenModel = new IModel<Integer>()
+				var teBeoordelenModel = new IModel<Integer>()
 				{
 					@Override
 					public Integer getObject()
@@ -117,7 +117,7 @@ public class MiniWerklijstPanel extends Panel
 			@Override
 			protected void onEvent(final AjaxRequestTarget target)
 			{
-				MammaBeoordeling beoordeling = clickedBeoordeling.getObject();
+				var beoordeling = clickedBeoordeling.getObject();
 				parent.gaNaarBeoordeling(beoordeling.getId(), target);
 			}
 		});

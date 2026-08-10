@@ -24,10 +24,10 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.retourzending;
 
 import java.util.Arrays;
 
-import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.main.web.component.SimpleStringResourceModel;
 import nl.rivm.screenit.model.enums.RetourzendingAfhandelingType;
 import nl.rivm.screenit.model.logging.RetourzendingLogEvent;
+import nl.rivm.screenit.util.EnumStringUtil;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -45,7 +45,7 @@ public class RetourzendingenVerwerkingsVerslagPanel extends GenericPanel<Retourz
 	{
 		super(id, model);
 
-		ListView<RetourzendingAfhandelingType> afhandelingLogListView = new ListView<RetourzendingAfhandelingType>("afhandelingLogListView",
+		var afhandelingLogListView = new ListView<RetourzendingAfhandelingType>("afhandelingLogListView",
 			Arrays.asList(RetourzendingAfhandelingType.values()))
 		{
 
@@ -54,7 +54,7 @@ public class RetourzendingenVerwerkingsVerslagPanel extends GenericPanel<Retourz
 			@Override
 			protected void populateItem(ListItem<RetourzendingAfhandelingType> item)
 			{
-				RetourzendingAfhandelingType value = item.getModelObject();
+				var value = item.getModelObject();
 				item.add(new Label("label", new SimpleStringResourceModel(EnumStringUtil.getPropertyString(value))));
 				item.add(new Label("aantal", new PropertyModel<Integer>(RetourzendingenVerwerkingsVerslagPanel.this.getModel(), value.getProperty())));
 			}

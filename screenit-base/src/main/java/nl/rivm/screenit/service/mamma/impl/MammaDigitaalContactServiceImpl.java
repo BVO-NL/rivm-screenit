@@ -21,7 +21,6 @@ package nl.rivm.screenit.service.mamma.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -111,8 +110,8 @@ public class MammaDigitaalContactServiceImpl implements MammaDigitaalContactServ
 		{
 			int termijn = preferenceService.getInteger(PreferenceKey.MAMMA_AFSPRAAK_SMS_HERINNERING_TERMIJN.name());
 
-			LocalDateTime volgendeDag = currentDateSupplier.getLocalDateTime().plusDays(1).withHour(7).withMinute(0);
-			LocalDateTime termijnDatum = currentDateSupplier.getLocalDateTime().plusHours(termijn);
+			var volgendeDag = currentDateSupplier.getLocalDateTime().plusDays(1).withHour(7).withMinute(0);
+			var termijnDatum = currentDateSupplier.getLocalDateTime().plusHours(termijn);
 
 			return baseAfspraakRepository.findTop250AfsprakenOmSmsTeVersturen(DateUtil.toUtilDate(volgendeDag), DateUtil.toUtilDate(termijnDatum));
 		}

@@ -21,7 +21,6 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
@@ -47,7 +46,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -79,7 +77,7 @@ public class TransactionQueueVerwerker extends Thread
 		HttpStatusCode responseStatusCode = null;
 		while (!HttpStatus.GATEWAY_TIMEOUT.equals(responseStatusCode) && statusService.isOnline() && persistableTransactionService.zijnErWachtendeTransacties())
 		{
-			PersistableTransaction transaction = persistableTransactionService.takeFirst();
+			var transaction = persistableTransactionService.takeFirst();
 			if (transaction != null)
 			{
 				synchronized (transactionQueueService.getDaglijstEnTransactieLock())
@@ -91,11 +89,11 @@ public class TransactionQueueVerwerker extends Thread
 					}
 					else
 					{
-						String transactionJSON = transaction.getTransactie();
+						var transactionJSON = transaction.getTransactie();
 
 						if (responseStatusCode.equals(HttpStatus.OK) || transaction.getClientId() == 0)
 						{
-							LocalDate afspraakDatum = new TransactionParser(transactionJSON).getAfspraakVanafDatum();
+							var afspraakDatum = new TransactionParser(transactionJSON).getAfspraakVanafDatum();
 							daglijstService.voegVerwerkteTransactionDtoToe(afspraakDatum, transactionJSON);
 							toevoegenAanVerstuurdeTransacties(transaction, transactionJSON);
 							persistableTransactionService.remove(transaction.getTransactionId());
@@ -119,16 +117,16 @@ public class TransactionQueueVerwerker extends Thread
 
 	private RequestEntity maakTransactionRequest(PersistableTransaction transaction)
 	{
-		RequestEntity.BodyBuilder requestBuilder = proxyService.getProxyRequestEntity("/transaction", HttpMethod.PUT);
+		var requestBuilder = proxyService.getProxyRequestEntity("/transaction", HttpMethod.PUT);
 		requestBuilder.header("TRANSACTIE_DATUMTIJD", DateTimeFormatter.ISO_DATE_TIME.format(transaction.getDatumTijd()));
 		return requestBuilder.body(transaction.getTransactie());
 	}
 
 	private HttpStatusCode executeTransaction(PersistableTransaction transaction)
 	{
-		String transactieJson = transaction.getTransactie();
+		var transactieJson = transaction.getTransactie();
 
-		ResponseEntity<String> result = proxyService.sendUncheckedProxyRequest(maakTransactionRequest(transaction), String.class);
+		var result = proxyService.sendUncheckedProxyRequest(maakTransactionRequest(transaction), String.class);
 
 		if (result.getStatusCode().equals(HttpStatus.OK))
 		{
@@ -154,9 +152,9 @@ public class TransactionQueueVerwerker extends Thread
 
 	private String transactieLogTekst(PersistableTransaction transaction)
 	{
-		TransactionParser transactionParser = new TransactionParser(transaction.getTransactie());
+		var transactionParser = new TransactionParser(transaction.getTransactie());
 
-		String logTekst = String.format("[transactieType: %s] [transactieTijd: %s] [clientId: %s] [uitnodigingsNr: %s] [medewerkercode: %s]",
+		var logTekst = String.format("[transactieType: %s] [transactieTijd: %s] [clientId: %s] [uitnodigingsNr: %s] [medewerkercode: %s]",
 			transactionParser.getTransactieType(), transaction.getDatumTijd(), transaction.getClientId(),
 			transactionParser.getUitnodigingsNr(), transactionParser.getMedewerkercode());
 
@@ -169,14 +167,14 @@ public class TransactionQueueVerwerker extends Thread
 
 	private void addGefaaldeTransactieLogToQueue(PersistableTransaction transactie)
 	{
-		TransactieDto transactieDto = new TransactieDto(
+		var transactieDto = new TransactieDto(
 			SETransactieType.LOG_GEBEURTENIS_SE,
 			transactie.getClientId(),
 			new TransactionParser(transactie.getTransactie()).getOrganisatieMedewerkerId(),
 			Collections.singletonList(new LogGefaaldeTransactieGebeurtenisAction(statusService.getSeCode())),
 			DateUtil.getCurrentDateTime().toLocalDate());
 
-		String json = TransactionSerializer.writeAsString(transactieDto);
+		var json = TransactionSerializer.writeAsString(transactieDto);
 		transactionQueueService.addTransactionToQueue(json, null);
 	}
 

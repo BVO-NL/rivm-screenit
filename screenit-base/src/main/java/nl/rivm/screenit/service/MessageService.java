@@ -21,6 +21,7 @@ package nl.rivm.screenit.service;
  * =========================LICENSE_END==================================
  */
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,9 +32,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface MessageService
 {
-	Message queueMessage(MessageType type, Object content);
+	Message queueMessage(MessageType type, Serializable content);
 
-	Message queueMessage(MessageType type, Object content, String context);
+	Message queueMessage(MessageType type, Serializable content, String context);
 
 	void dequeueMessage(Message message);
 
@@ -41,7 +42,11 @@ public interface MessageService
 
 	List<Message> fetchMessages(MessageType type, String context, int maxFetchSize);
 
+	List<Message> fetchMessagesGroterDanId(MessageType type, String context, Long vanafMessageIdExclusief, int maxFetchSize);
+
 	<T> T getContent(Message message) throws JsonProcessingException;
 
 	Long fetchQueueSize(MessageType type, String context);
+
+	void updateMessageContent(Message message, Serializable contentDto);
 }

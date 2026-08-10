@@ -32,7 +32,6 @@ import org.apache.activemq.command.ActiveMQTextMessage;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Slf4j
@@ -66,7 +65,7 @@ public class ActiveMQHelper
 
 	public static <T extends Serializable> ActiveMQTextMessage getActiveMqTextMessage(T object) throws JMSException
 	{
-		ObjectWriter writer = objectMapper.writer();
+		var writer = objectMapper.writer();
 		String text = null;
 		try
 		{

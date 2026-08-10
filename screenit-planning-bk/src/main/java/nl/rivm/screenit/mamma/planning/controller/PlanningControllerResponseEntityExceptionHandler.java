@@ -38,7 +38,7 @@ public class PlanningControllerResponseEntityExceptionHandler extends ResponseEn
 	@ExceptionHandler(value = { OpslaanVerwijderenTijdBlokException.class })
 	protected ResponseEntity<Object> handleConflict(OpslaanVerwijderenTijdBlokException ex, WebRequest request)
 	{
-		String bodyOfResponse = ex.getMessage() + ex.getAdditionalMessageInfo();
+		var bodyOfResponse = ex.getMessage() + ex.getAdditionalMessageInfo();
 		return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.CONFLICT, request);
 	}
 }

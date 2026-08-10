@@ -39,7 +39,7 @@ public class HuisartsDtoMapper
 		{
 			return null;
 		}
-		MammaHuisartsDto huisartsDto = new MammaHuisartsDto();
+		var huisartsDto = new MammaHuisartsDto();
 		huisartsDto.setId(enovationHuisarts.getId());
 		huisartsDto.setNaamHuisarts(NaamUtil.getNaamHuisarts(enovationHuisarts));
 		huisartsDto.setAchternaam(enovationHuisarts.getAchternaam());

@@ -194,17 +194,17 @@ public class ColonIntakekamerBeheer extends OrganisatieBeheer
 	private void addRoosterblokGrootteWijzigen()
 	{
 		Integer afspraakInMinuten = organisatieParameterService.getOrganisatieParameter(getCurrentSelectedOrganisatie(), OrganisatieParameterKey.COLON_DUUR_AFSPRAAK_IN_MINUTEN);
-		ScreenitForm<Integer> form = new ScreenitForm<>("form");
-		ArrayList<Integer> choices = new ArrayList<>();
-		for (int i = 5; i <= 60; i = i + 5)
+		var form = new ScreenitForm<Integer>("form");
+		var choices = new ArrayList<Integer>();
+		for (var i = 5; i <= 60; i = i + 5)
 		{
 			choices.add(i);
 		}
 		var model = Model.of(afspraakInMinuten);
-		ScreenitDropdown<Integer> dropDown = new ScreenitDropdown<>("duurAfspraakInMinuten", model, choices);
+		var dropDown = new ScreenitDropdown<Integer>("duurAfspraakInMinuten", model, choices);
 		dropDown.setRequired(true);
 		form.add(dropDown);
-		ScreenitAjaxLink opslaan = new ScreenitAjaxLink("opslaan")
+		var opslaan = new ScreenitAjaxLink("opslaan")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
@@ -227,15 +227,15 @@ public class ColonIntakekamerBeheer extends OrganisatieBeheer
 
 	private void addGeprognostiseerdeRoosterBlokken()
 	{
-		Form<ColonIntakelocatie> aantalGeprognRoosterBlokkenForm = new Form<>("aantalGeprognRoosterBlokkenForm",
+		var aantalGeprognRoosterBlokkenForm = new Form<ColonIntakelocatie>("aantalGeprognRoosterBlokkenForm",
 			ModelUtil.cModel((ColonIntakelocatie) getCurrentSelectedOrganisatie()));
 		add(aantalGeprognRoosterBlokkenForm);
 
-		TextField<Integer> aantalGeprognostiseerdeRoosterblokken = new TextField<Integer>("aantalGeprognostiseerdeRoosterblokken");
-		TextField<Integer> aantalGeprognostiseerdeRoosterblokkenVolgendJaar = new TextField<Integer>("aantalGeprognostiseerdeRoosterblokkenVolgendJaar");
+		var aantalGeprognostiseerdeRoosterblokken = new TextField<Integer>("aantalGeprognostiseerdeRoosterblokken");
+		var aantalGeprognostiseerdeRoosterblokkenVolgendJaar = new TextField<Integer>("aantalGeprognostiseerdeRoosterblokkenVolgendJaar");
 		aantalGeprognRoosterBlokkenForm.add(aantalGeprognostiseerdeRoosterblokken);
 		aantalGeprognRoosterBlokkenForm.add(aantalGeprognostiseerdeRoosterblokkenVolgendJaar);
-		ScreenitAjaxLink opslaan = new ScreenitAjaxLink("opslaan")
+		var opslaan = new ScreenitAjaxLink("opslaan")
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)

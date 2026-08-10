@@ -87,34 +87,34 @@ public class MammaKansberekeningScreeningRondeContext
 	{
 		geboorteDatum = DateUtil.toLocalDate(dossier.getClient().getPersoon().getGeboortedatum());
 
-		for (MammaScreeningRonde ronde : dossier.getScreeningRondes())
+		for (var ronde : dossier.getScreeningRondes())
 		{
 			screeningRondeNavigableMap.put(DateUtil.toLocalDate(ronde.getCreatieDatum()), ronde);
 
-			for (MammaUitnodiging uitnodiging : ronde.getUitnodigingen())
+			for (var uitnodiging : ronde.getUitnodigingen())
 			{
 				uitnodigingNavigableMap.put(DateUtil.toLocalDate(uitnodiging.getCreatieDatum()), uitnodiging);
 
-				for (MammaAfspraak afspraak : uitnodiging.getAfspraken())
+				for (var afspraak : uitnodiging.getAfspraken())
 				{
 					if (MammaAfspraakStatus.NIET_GEANNULEERD.contains(afspraak.getStatus()))
 					{
 						afspraakNavigableMap.put(DateUtil.toLocalDate(afspraak.getVanaf()), afspraak);
 
-						MammaOnderzoek onderzoek = afspraak.getOnderzoek();
+						var onderzoek = afspraak.getOnderzoek();
 						if (onderzoek != null && onderzoek.isDoorgevoerd())
 						{
 							onderzoekNavigableMap.put(DateUtil.toLocalDate(onderzoek.getAfgerondOp()), onderzoek);
 							screeningRondeMetOnderzoekSet.add(ronde);
 							afspraakMetOnderzoekSet.add(afspraak);
 
-							MammaMammografie mammografie = onderzoek.getMammografie();
+							var mammografie = onderzoek.getMammografie();
 							if (mammografie != null && mammografie.getAfgerondOp() != null)
 							{
 								mammografieNavigableMap.put(DateUtil.toLocalDate(mammografie.getAfgerondOp()), mammografie);
 							}
 
-							MammaBeoordeling laatsteBeoordeling = onderzoek.getLaatsteBeoordeling();
+							var laatsteBeoordeling = onderzoek.getLaatsteBeoordeling();
 							if (laatsteBeoordeling != null)
 							{
 								laatsteBeoordelingNavigableMap.put(DateUtil.toLocalDate(laatsteBeoordeling.getStatusDatum()), laatsteBeoordeling);

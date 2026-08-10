@@ -56,7 +56,7 @@ public class ZoekMetScannedInputPanel extends Panel
 		public ZoekMetScannedInputForm(String id)
 		{
 			super(id);
-			TextField<String> scanTextField = new TextField<>("scanField", scanInput);
+			var scanTextField = new TextField<String>("scanField", scanInput);
 			scanTextField.add(new FocusBehavior());
 			setOutputMarkupId(true);
 			add(scanTextField.add(new AjaxFormComponentUpdatingBehavior("keydown")
@@ -81,7 +81,7 @@ public class ZoekMetScannedInputPanel extends Panel
 						@Override
 						public CharSequence getPrecondition(Component component)
 						{
-							StringBuilder precondition = new StringBuilder();
+							var precondition = new StringBuilder();
 							precondition.append("var code= (attrs.event.keyCode ? attrs.event.keyCode : attrs.event.which);" + "if (code == 13){ return true; } return false;"
 								+ "attrs.event.preventDefault();");
 							return precondition.toString();
@@ -90,7 +90,7 @@ public class ZoekMetScannedInputPanel extends Panel
 				}
 			}));
 
-			AjaxSubmitLink submitLink = new AjaxSubmitLink("scannen")
+			var submitLink = new AjaxSubmitLink("scannen")
 			{
 				private static final long serialVersionUID = 1L;
 

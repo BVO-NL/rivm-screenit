@@ -28,7 +28,6 @@ import java.io.StringReader;
 import java.nio.charset.Charset;
 
 import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -37,7 +36,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import nl.rivm.screenit.model.berichten.VerslagProjectVersionMapping;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
-import nl.rivm.screenit.model.berichten.enums.VerslagGeneratie;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
 
 import org.apache.commons.io.input.ReaderInputStream;
@@ -58,7 +56,7 @@ public class CdaTransformerHelper
 		InputStream cdaXsltStream = null;
 		try
 		{
-			VerslagGeneratie verslagVersie = VerslagProjectVersionMapping.get().getGeneratie(projectVersion, verslagType);
+			var verslagVersie = VerslagProjectVersionMapping.get().getGeneratie(projectVersion, verslagType);
 			if (verslagVersie != null)
 			{
 				cdaXsltStream = CdaTransformerHelper.class.getResourceAsStream(verslagVersie.getXsltResource());
@@ -66,10 +64,10 @@ public class CdaTransformerHelper
 
 			Source cdaXsltSource = new StreamSource(cdaXsltStream);
 
-			TransformerFactory fact = TransformerFactory.newInstance();
-			Transformer transformer = fact.newTransformer(cdaXsltSource);
+			var fact = TransformerFactory.newInstance();
+			var transformer = fact.newTransformer(cdaXsltSource);
 
-			try (ByteArrayOutputStream resultStream = new ByteArrayOutputStream())
+			try (var resultStream = new ByteArrayOutputStream())
 			{
 				transformer.transform(documentSource, new StreamResult(resultStream));
 				return resultStream.toString();
@@ -99,9 +97,9 @@ public class CdaTransformerHelper
 
 	public static String cdaToHtml(OntvangenCdaBericht ontvangenCdaBericht)
 	{
-		String document = ontvangenCdaBericht.getXmlBericht();
-		String projectVersion = ontvangenCdaBericht.getProjectVersion();
-		VerslagType verslagType = ontvangenCdaBericht.getBerichtType().getVerslagType();
+		var document = ontvangenCdaBericht.getXmlBericht();
+		var projectVersion = ontvangenCdaBericht.getProjectVersion();
+		var verslagType = ontvangenCdaBericht.getBerichtType().getVerslagType();
 		if (document != null && !document.trim().isEmpty())
 		{
 			try

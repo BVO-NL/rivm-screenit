@@ -34,7 +34,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import nl.rivm.screenit.clientportaal.security.userdetails.ScreenitUserDetails;
 
 import org.slf4j.MDC;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class MDCLogFilter implements Filter
@@ -44,11 +43,11 @@ public class MDCLogFilter implements Filter
 	{
 		if (request instanceof HttpServletRequest)
 		{
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			var authentication = SecurityContextHolder.getContext().getAuthentication();
 
 			if (authentication != null)
 			{
-				Long accountId = ((ScreenitUserDetails) authentication.getPrincipal()).getClientId();
+				var accountId = ((ScreenitUserDetails) authentication.getPrincipal()).getClientId();
 				MDC.put("A", "C" + accountId);
 			}
 		}

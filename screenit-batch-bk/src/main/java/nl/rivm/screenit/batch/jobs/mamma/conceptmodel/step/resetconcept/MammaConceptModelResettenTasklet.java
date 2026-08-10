@@ -21,6 +21,8 @@ package nl.rivm.screenit.batch.jobs.mamma.conceptmodel.step.resetconcept;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.annotation.PostConstruct;
+
 import nl.rivm.screenit.dto.mamma.planning.PlanningRestConstants;
 import nl.rivm.screenit.util.rest.RestApiFactory;
 
@@ -32,9 +34,6 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-
-import jakarta.annotation.PostConstruct;
 
 @Component
 public class MammaConceptModelResettenTasklet implements Tasklet
@@ -56,7 +55,7 @@ public class MammaConceptModelResettenTasklet implements Tasklet
 	@Override
 	public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext)
 	{
-		RestTemplate restApi = RestApiFactory.create();
+		var restApi = RestApiFactory.create();
 		restApi.postForEntity(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/" + PlanningRestConstants.C_READMODEL, null, String.class);
 
 		return RepeatStatus.FINISHED;

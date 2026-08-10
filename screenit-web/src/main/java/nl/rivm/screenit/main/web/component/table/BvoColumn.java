@@ -22,8 +22,6 @@ package nl.rivm.screenit.main.web.component.table;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import nl.rivm.screenit.model.IBevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
@@ -47,8 +45,8 @@ public class BvoColumn<T extends IBevolkingsonderzoek> extends AbstractColumn<T,
 	@Override
 	public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel)
 	{
-		T object = rowModel.getObject();
-		List<Bevolkingsonderzoek> onderzoeken = object.getBevolkingsonderzoeken();
+		var object = rowModel.getObject();
+		var onderzoeken = object.getBevolkingsonderzoeken();
 		String labelTekst = null;
 		if (onderzoeken.isEmpty())
 		{

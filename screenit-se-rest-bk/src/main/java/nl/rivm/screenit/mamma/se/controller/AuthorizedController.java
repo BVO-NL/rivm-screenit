@@ -91,7 +91,7 @@ abstract class AuthorizedController
 
 	final protected OrganisatieMedewerker getOrganisatieMedewerker(HttpServletRequest request)
 	{
-		String accountId = getAccountId(request);
+		var accountId = getAccountId(request);
 		if (NumberUtils.isNumber(accountId))
 		{
 			return hibernateService.get(OrganisatieMedewerker.class, Long.parseLong(accountId));
@@ -101,7 +101,7 @@ abstract class AuthorizedController
 
 	final protected boolean isAuthorized(HttpServletRequest request, Recht recht)
 	{
-		String accountId = getAccountId(request);
+		var accountId = getAccountId(request);
 		if (NumberUtils.isNumber(accountId))
 		{
 			return seAutorisatieService.isGeautoriseerd(Long.parseLong(accountId), recht);
@@ -116,22 +116,22 @@ abstract class AuthorizedController
 
 	final protected ResponseEntity<ErrorDto> forbiddenResponse(String errorReferentie)
 	{
-		ErrorDto errorDto = new ErrorDto(errorReferentie);
+		var errorDto = new ErrorDto(errorReferentie);
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDto);
 	}
 
 	final protected ResponseEntity<ErrorDto> createErrorResponse(Exception ex)
 	{
-		String referentie = FoutmeldingsCodeUtil.getFoutmeldingsCode("SE_REST");
+		var referentie = FoutmeldingsCodeUtil.getFoutmeldingsCode("SE_REST");
 		LOG.error(referentie + ": " + ex.toString(), ex);
-		ErrorDto errorDto = new ErrorDto(referentie);
+		var errorDto = new ErrorDto(referentie);
 		return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
 
 	}
 
 	final protected ResponseEntity<ErrorDto> createUnauthorizedResponse()
 	{
-		String referentie = FoutmeldingsCodeUtil.getFoutmeldingsCode("SE_REST");
+		var referentie = FoutmeldingsCodeUtil.getFoutmeldingsCode("SE_REST");
 		LOG.error(referentie + ": Medewerker is niet geautoriseerd om de actie uit te voeren");
 		return forbiddenResponse(referentie);
 	}

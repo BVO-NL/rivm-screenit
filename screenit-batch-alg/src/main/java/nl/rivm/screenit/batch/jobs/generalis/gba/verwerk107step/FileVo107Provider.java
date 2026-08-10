@@ -49,7 +49,7 @@ public class FileVo107Provider implements IVo107Provider
 	@Override
 	public List<Vo107File> getVo107Files(GbaVerwerkingsLog verwerkingsLog)
 	{
-		String path = vo107File;
+		var path = vo107File;
 
 		if (fromClasspath)
 		{
@@ -57,10 +57,10 @@ public class FileVo107Provider implements IVo107Provider
 		}
 
 		List<Vo107File> files = new ArrayList<>();
-		File file = new File(path);
+		var file = new File(path);
 		if (file.isDirectory())
 		{
-			for (File subFile : file.listFiles())
+			for (var subFile : file.listFiles())
 			{
 				files.add(new Vo107ClasspathFile(subFile.getAbsolutePath()));
 			}

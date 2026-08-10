@@ -66,7 +66,7 @@ public enum CervixNietAnalyseerbaarReden implements INaam
 	public static List<CervixNietAnalyseerbaarReden> getMogelijkeRedenen(CervixMonsterType monsterType)
 	{
 		List<CervixNietAnalyseerbaarReden> redenen = new ArrayList<>();
-		for (CervixNietAnalyseerbaarReden reden : values())
+		for (var reden : values())
 		{
 			if (reden.getMonsterTypen().contains(monsterType))
 			{

@@ -75,8 +75,8 @@ public class OrganisatieMedewerker extends AbstractHibernateObject implements Ac
 	@Override
 	public int hashCode()
 	{
-		final int prime = 31;
-		int result = 1;
+		final var prime = 31;
+		var result = 1;
 		if (getId() != null)
 		{
 			result = prime * result + getId().hashCode();
@@ -93,7 +93,7 @@ public class OrganisatieMedewerker extends AbstractHibernateObject implements Ac
 	@Override
 	public boolean equals(Object obj)
 	{
-		boolean returnValue = true;
+		var returnValue = true;
 		if (obj == null)
 		{
 			returnValue = false;
@@ -104,7 +104,7 @@ public class OrganisatieMedewerker extends AbstractHibernateObject implements Ac
 		}
 		else
 		{
-			OrganisatieMedewerker other = (OrganisatieMedewerker) obj;
+			var other = (OrganisatieMedewerker) obj;
 			if (getId() == null)
 			{
 				if (other.getId() != null)

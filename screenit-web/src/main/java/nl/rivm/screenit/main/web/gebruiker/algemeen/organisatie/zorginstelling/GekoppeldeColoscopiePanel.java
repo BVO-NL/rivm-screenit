@@ -49,15 +49,15 @@ public class GekoppeldeColoscopiePanel<T extends Organisatie> extends GenericPan
 	{
 		super.onInitialize();
 
-		List<ColonIntakelocatie> coloscopiesCentrums = organisatieService.getChildrenOrganisaties(getModelObject(), ColonIntakelocatie.class);
-		List<ColoscopieLocatie> coloscopiesLocaties = organisatieService.getChildrenOrganisaties(getModelObject(), ColoscopieLocatie.class);
+		var coloscopiesCentrums = organisatieService.getChildrenOrganisaties(getModelObject(), ColonIntakelocatie.class);
+		var coloscopiesLocaties = organisatieService.getChildrenOrganisaties(getModelObject(), ColoscopieLocatie.class);
 		add(new Label("coloscopieLocaties", stringLocaties(coloscopiesLocaties)));
 		add(new Label("intakeLocaties", stringLocaties(coloscopiesCentrums)));
 	}
 
 	protected String stringLocaties(List<? extends Organisatie> organisaties)
 	{
-		List<String> organisatieNamen = organisaties.stream().map(Organisatie::getNaam).collect(Collectors.toList());
+		var organisatieNamen = organisaties.stream().map(Organisatie::getNaam).collect(Collectors.toList());
 		return !organisatieNamen.isEmpty() ? String.join(", ", organisatieNamen) : "Er zijn geen locaties gekoppeld";
 	}
 }

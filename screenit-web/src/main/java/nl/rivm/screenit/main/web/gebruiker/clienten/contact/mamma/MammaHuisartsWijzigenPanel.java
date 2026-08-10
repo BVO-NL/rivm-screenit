@@ -74,7 +74,7 @@ public class MammaHuisartsWijzigenPanel extends AbstractClientContactActiePanel<
 
 	private WebMarkupContainer maakHuisartsPanel()
 	{
-		MammaHuisartsBeheerPanel huisartsPanel = new MammaHuisartsBeheerPanel("huisartsPanel", screeningRondeModel, dialog)
+		var huisartsPanel = new MammaHuisartsBeheerPanel("huisartsPanel", screeningRondeModel, dialog)
 		{
 			@Override
 			protected void onHuisartsGekozen(AjaxRequestTarget target, EnovationHuisarts huisarts, MammaGeenHuisartsOption geenHuisartsOptie)
@@ -95,7 +95,7 @@ public class MammaHuisartsWijzigenPanel extends AbstractClientContactActiePanel<
 
 	private void onHuisartsGekozen(AjaxRequestTarget target, EnovationHuisarts huisarts, MammaGeenHuisartsOption geenHuisartsOptie)
 	{
-		MammaScreeningRonde screeningRonde = screeningRondeModel.getObject();
+		var screeningRonde = screeningRondeModel.getObject();
 		screeningRonde.setHuisarts(huisarts);
 		screeningRonde.setGeenHuisartsOptie(geenHuisartsOptie);
 		huisartsContainer.addOrReplace(maakHuisartsPanel());
@@ -106,7 +106,7 @@ public class MammaHuisartsWijzigenPanel extends AbstractClientContactActiePanel<
 	@Override
 	public Map<ExtraOpslaanKey, Object> getOpslaanObjecten()
 	{
-		Map<ExtraOpslaanKey, Object> opslaanObjecten = super.getOpslaanObjecten();
+		var opslaanObjecten = super.getOpslaanObjecten();
 		opslaanObjecten.put(ExtraOpslaanKey.MAMMA_HUISARTS, screeningRondeModel.getObject());
 		return opslaanObjecten;
 	}
@@ -115,7 +115,7 @@ public class MammaHuisartsWijzigenPanel extends AbstractClientContactActiePanel<
 	public void validate()
 	{
 		super.validate();
-		MammaScreeningRonde screeningRonde = screeningRondeModel.getObject();
+		var screeningRonde = screeningRondeModel.getObject();
 		var isHuisartsGewijzigd = StringUtils.isNotBlank(
 			EntityAuditUtil.getDiffFieldsToLatestVersion(screeningRonde, hibernateService.getHibernateSession(), "geenHuisartsOptie", "huisarts"));
 

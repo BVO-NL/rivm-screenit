@@ -125,7 +125,7 @@ public class BriefServiceImpl implements BriefService
 
 		var briefClass = (Class<B>) clientBriefClass;
 
-		List<BriefType> types = heraanmelding ? List.of(
+		var types = heraanmelding ? List.of(
 			BriefType.CERVIX_HERAANMELDING_AANVRAAG, BriefType.CERVIX_HERAANMELDING_HANDTEKENING, BriefType.CERVIX_HERAANMELDING_BEVESTIGING,
 			BriefType.COLON_HERAANMELDING_AANVRAAG, BriefType.COLON_HERAANMELDING_HANDTEKENING, BriefType.COLON_HERAANMELDING_BEVESTIGING,
 			BriefType.MAMMA_HERAANMELDING_BEVESTIGING
@@ -193,7 +193,8 @@ public class BriefServiceImpl implements BriefService
 		{
 			acties.add(BriefActie.TEGENHOUDEN);
 		}
-		if (BriefUtil.isTegengehouden(brief))
+		if (BriefUtil.isTegengehouden(brief) && ScreenitSession.get()
+			.checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_OPNIEUW_KLAARZETTEN, Actie.AANPASSEN))
 		{
 			acties.add(BriefActie.ACTIVEREN);
 		}

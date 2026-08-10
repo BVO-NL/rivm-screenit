@@ -21,18 +21,15 @@ package nl.rivm.screenit.wsb.service.mamma.impl;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
-import nl.rivm.screenit.wsb.service.mamma.MammaBeeldenVerwijderdService;
-import nl.rivm.screenit.wsb.service.mamma.MammaHL7v24Service;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Arrays;
 import java.util.List;
 
+import nl.rivm.screenit.model.mamma.enums.MammaHL7v24ORMBerichtStatus;
+import nl.rivm.screenit.wsb.service.mamma.MammaBeeldenVerwijderdService;
+
+import org.springframework.stereotype.Service;
+
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 public class MammaBeeldenVerwijderdServiceImpl extends MammaHL7V24ServiceImpl implements MammaBeeldenVerwijderdService
 {
 	@Override

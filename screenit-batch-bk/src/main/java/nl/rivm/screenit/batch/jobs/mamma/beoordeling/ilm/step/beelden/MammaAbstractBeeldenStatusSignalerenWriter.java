@@ -41,13 +41,13 @@ public abstract class MammaAbstractBeeldenStatusSignalerenWriter<E extends Hiber
 	protected void registreerSignalering(boolean isBezwaar, boolean isUploaded, long accessionNumber, Date statusDatum, Client client)
 	{
 		LOG.info("Gesignaleerd, accessionNumber: {}, statusDatum: {}, isBezwaar: {}, isUploaded: {}", accessionNumber, statusDatum, isBezwaar, isUploaded);
-		List<MammaIlmRetryDto> entries = (List<MammaIlmRetryDto>) getJobExecution().getExecutionContext().get(MammaIlmJobListener.KEY_BEELDEN_STATUS_ENTRIES);
+		var entries = (List<MammaIlmRetryDto>) getJobExecution().getExecutionContext().get(MammaIlmJobListener.KEY_BEELDEN_STATUS_ENTRIES);
 		if (entries == null)
 		{
 			entries = new ArrayList<>();
 			getExecutionContext().put(MammaIlmJobListener.KEY_BEELDEN_STATUS_ENTRIES, entries);
 		}
-		MammaIlmRetryDto dto = new MammaIlmRetryDto(accessionNumber,
+		var dto = new MammaIlmRetryDto(accessionNumber,
 			DateUtil.toUtilDate(DateUtil.toLocalDateTime(statusDatum)),
 			client.getId(),
 			DateUtil.toUtilDate(DateUtil.toLocalDate(client.getPersoon().getGeboortedatum())),

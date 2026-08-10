@@ -44,16 +44,16 @@ public final class BigDecimalUtil
 
 	public static double berekenDistance(BigDecimal latitudeFrom, BigDecimal longitudeFrom, BigDecimal latitudeTo, BigDecimal longitudeTo)
 	{
-		double latTo = latitudeTo.doubleValue() * Constants.RADIANS;
-		double lngTo = longitudeTo.doubleValue() * Constants.RADIANS;
+		var latTo = latitudeTo.doubleValue() * Constants.RADIANS;
+		var lngTo = longitudeTo.doubleValue() * Constants.RADIANS;
 
-		double latFrom = latitudeFrom.doubleValue() * Constants.RADIANS;
-		double lngFrom = longitudeFrom.doubleValue() * Constants.RADIANS;
+		var latFrom = latitudeFrom.doubleValue() * Constants.RADIANS;
+		var lngFrom = longitudeFrom.doubleValue() * Constants.RADIANS;
 
-		double dLng = lngTo - lngFrom;
-		double dLat = latTo - latFrom;
-		double a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(latFrom) * Math.cos(latTo) * Math.pow(Math.sin(dLng / 2), 2);
-		double intermediateResult = 2 * Math.asin(Math.min(1, Math.sqrt(a)));
+		var dLng = lngTo - lngFrom;
+		var dLat = latTo - latFrom;
+		var a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(latFrom) * Math.cos(latTo) * Math.pow(Math.sin(dLng / 2), 2);
+		var intermediateResult = 2 * Math.asin(Math.min(1, Math.sqrt(a)));
 		return Constants.EARTH_RADIUS * intermediateResult / 1000.0;
 	}
 
@@ -88,7 +88,7 @@ public final class BigDecimalUtil
 		{
 			return null;
 		}
-		BigDecimal roundedCapaciteit = capaciteit.setScale(0, RoundingMode.HALF_UP);
+		var roundedCapaciteit = capaciteit.setScale(0, RoundingMode.HALF_UP);
 		if (isPositive(capaciteit) && capaciteit.compareTo(new BigDecimal("0.5")) < 0)
 		{
 			roundedCapaciteit = BigDecimal.ONE;
@@ -107,9 +107,9 @@ public final class BigDecimalUtil
 
 	public static BigDecimal stringToBigDecimal(final String formattedString, final Locale locale)
 	{
-		DecimalFormatSymbols symbols = new DecimalFormatSymbols(locale);
-		char groupSeparatorChar = symbols.getGroupingSeparator();
-		char decimalSeparatorChar = symbols.getDecimalSeparator();
+		var symbols = new DecimalFormatSymbols(locale);
+		var groupSeparatorChar = symbols.getGroupingSeparator();
+		var decimalSeparatorChar = symbols.getDecimalSeparator();
 		String groupSeparator;
 		String decimalSeparator;
 
@@ -131,7 +131,7 @@ public final class BigDecimalUtil
 			decimalSeparator = Character.toString(decimalSeparatorChar);
 		}
 
-		String fixedString = formattedString.replaceAll(groupSeparator, "");
+		var fixedString = formattedString.replaceAll(groupSeparator, "");
 		fixedString = fixedString.replaceAll(decimalSeparator, ".");
 
 		return new BigDecimal(fixedString);

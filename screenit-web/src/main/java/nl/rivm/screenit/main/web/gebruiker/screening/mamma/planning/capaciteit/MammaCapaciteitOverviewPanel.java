@@ -268,7 +268,7 @@ public class MammaCapaciteitOverviewPanel extends GenericPanel<MammaScreeningsEe
 			@Override
 			protected void onOpslaan(AjaxRequestTarget target, IModel<PlanningCapaciteitBlokDto> editBlokModel)
 			{
-				PlanningCapaciteitBlokDto editBlok = editBlokModel.getObject();
+				var editBlok = editBlokModel.getObject();
 				onBeforeOpslaan(editBlok);
 				if (!getThisPage().hasMeldingen())
 				{

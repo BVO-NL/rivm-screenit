@@ -41,7 +41,7 @@ public abstract class MammaHuisartsVorigeRondePopupPanel extends GenericPanel<En
 	{
 		super(id, haUitVorigeRondeModel);
 
-		EnovationHuisarts ha = getModelObject();
+		var ha = getModelObject();
 		add(new Label("huisartsNaam", NaamUtil.getNaamHuisarts(ha)));
 		add(new Label("praktijknaam"));
 		add(new Label("praktijkAdres", AdresUtil.getVolledigeAdresString(ha.getAdres())));
@@ -76,7 +76,7 @@ public abstract class MammaHuisartsVorigeRondePopupPanel extends GenericPanel<En
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				EnovationHuisarts ha = MammaHuisartsVorigeRondePopupPanel.this.getModelObject();
+				var ha = MammaHuisartsVorigeRondePopupPanel.this.getModelObject();
 				onHuisartsGekozen(target, ha, null);
 			}
 		});

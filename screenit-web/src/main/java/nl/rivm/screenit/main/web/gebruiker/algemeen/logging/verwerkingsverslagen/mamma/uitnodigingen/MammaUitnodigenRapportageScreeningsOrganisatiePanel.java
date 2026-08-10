@@ -48,7 +48,7 @@ public class MammaUitnodigenRapportageScreeningsOrganisatiePanel extends Generic
 
 		add(new Label("naam", screeningOrganisatie.getNaam()));
 
-		SortingListModel<MammaStandplaatsPeriodeUitnodigenRapportage> sortingListModel = new SortingListModel<>(model,
+		var sortingListModel = new SortingListModel<MammaStandplaatsPeriodeUitnodigenRapportage>(model,
 			Comparator
 				.comparing((Function<MammaStandplaatsPeriodeUitnodigenRapportage, String> & Serializable) (
 					MammaStandplaatsPeriodeUitnodigenRapportage standplaatsPeriodeUitnodigenRapportage) -> standplaatsPeriodeUitnodigenRapportage.getStandplaatsPeriode()

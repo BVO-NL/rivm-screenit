@@ -45,7 +45,7 @@ public enum MammaHL7v24ORMBerichtStatus
 
 	public static MammaHL7v24ORMBerichtStatus getEnumForLabel(String label)
 	{
-		for (MammaHL7v24ORMBerichtStatus status : values())
+		for (var status : values())
 		{
 			if (status.getLabel().equals(label))
 			{

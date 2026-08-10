@@ -39,7 +39,6 @@ import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.util.NaamUtil;
 
 import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
@@ -77,13 +76,13 @@ public class BKRadioloogFragment extends DocumentTemplateTestenFieldsPanelCompon
 
 	private List<Medewerker> getActieveRadiologen()
 	{
-		Page page = getPage();
+		var page = getPage();
 		ScreeningOrganisatie so = null;
 		if (page instanceof BaseDocumentTemplateTestenPage)
 		{
 			so = ((BaseDocumentTemplateTestenPage) page).getSelectedRegio();
 		}
-		final ScreeningOrganisatie regio = so;
+		final var regio = so;
 		var sort = Sort.by(Sort.Order.asc(propertyChain(OrganisatieMedewerker_.MEDEWERKER, Medewerker_.ACHTERNAAM)));
 		return medewerkerService.getActieveRadiologen(new OrganisatieMedewerker(), Collections.emptyList(), sort).stream()
 			.filter(om -> om.getOrganisatie().getOrganisatieType() == OrganisatieType.BEOORDELINGSEENHEID

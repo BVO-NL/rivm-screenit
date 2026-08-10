@@ -35,7 +35,7 @@ public abstract class CervixHuisartsLocatiePanel extends GenericPanel<CervixHuis
 	public CervixHuisartsLocatiePanel(String id, IModel<CervixHuisartsLocatie> huisartsLocatieModel, boolean magAanpassen)
 	{
 		super(id, huisartsLocatieModel);
-		CervixHuisartsLocatie huisartsLocatie = getModelObject();
+		var huisartsLocatie = getModelObject();
 
 		add(new Label("huisarts", huisartsLocatie != null ? NaamUtil.getNaamHuisarts(huisartsLocatie.getHuisarts()) : null));
 		add(new Label("huisarts.agbcode"));

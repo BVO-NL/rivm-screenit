@@ -30,27 +30,33 @@ import java.util.Map;
 import nl.rivm.screenit.mamma.se.dto.actions.ActionDto;
 import nl.rivm.screenit.mamma.se.dto.actions.SEActieType;
 
-public abstract class Validator {
+public abstract class Validator
+{
 
-    protected abstract List<SEActieType> actieTypes();
+	protected abstract List<SEActieType> actieTypes();
 
-    protected abstract void validateActions(List<ActionDto> actions);
+	protected abstract void validateActions(List<ActionDto> actions);
 
-    public final void validate(List<ActionDto> actions) throws IOException {
-        validateActions(actionsOfAppropriateTypes(actions));
-    }
+	public final void validate(List<ActionDto> actions) throws IOException
+	{
+		validateActions(actionsOfAppropriateTypes(actions));
+	}
 
-    private List<ActionDto> actionsOfAppropriateTypes(List<ActionDto> actions) {
-        Map<SEActieType, ActionDto> map = new HashMap<>();
-        for (ActionDto action : actions) {
-            map.put(action.getType(), action); 
-        }
-        List<ActionDto> result = new ArrayList<>();
-        for (SEActieType actieType : actieTypes()) {
-            if (map.get(actieType) != null) {
-                result.add(map.get(actieType));
-            }
-        }
-        return result;
-    }
+	private List<ActionDto> actionsOfAppropriateTypes(List<ActionDto> actions)
+	{
+		Map<SEActieType, ActionDto> map = new HashMap<>();
+		for (var action : actions)
+		{
+			map.put(action.getType(), action); 
+		}
+		List<ActionDto> result = new ArrayList<>();
+		for (var actieType : actieTypes())
+		{
+			if (map.get(actieType) != null)
+			{
+				result.add(map.get(actieType));
+			}
+		}
+		return result;
+	}
 }

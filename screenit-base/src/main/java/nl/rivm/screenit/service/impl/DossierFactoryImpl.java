@@ -93,7 +93,7 @@ public class DossierFactoryImpl implements DossierFactory
 	{
 		LOG.info("ColonDossier aanmaken voor client(id: '{}')", client.getId());
 
-		ColonDossier colonDossier = new ColonDossier();
+		var colonDossier = new ColonDossier();
 		colonDossier.setStatus(DossierStatus.ACTIEF);
 		colonDossier.setAangemeld(true);
 		colonDossier.setClient(client);
@@ -105,7 +105,7 @@ public class DossierFactoryImpl implements DossierFactory
 	{
 		LOG.info("CervixDossier aanmaken voor client(id: '{}')", client.getId());
 
-		CervixDossier cervixDossier = new CervixDossier();
+		var cervixDossier = new CervixDossier();
 		cervixDossier.setStatus(DossierStatus.ACTIEF);
 		cervixDossier.setAangemeld(true);
 		cervixDossier.setDeelnamemodus(initieleDeelnamemodus(client));
@@ -119,7 +119,7 @@ public class DossierFactoryImpl implements DossierFactory
 	{
 		LOG.info("MammaDossier aanmaken voor client(id: '{}')", client.getId());
 
-		MammaDossier mammaDossier = new MammaDossier();
+		var mammaDossier = new MammaDossier();
 		mammaDossier.setStatus(DossierStatus.ACTIEF);
 		mammaDossier.setDoelgroep(MammaDoelgroep.REGULIER);
 		mammaDossier.setAangemeld(true);
@@ -128,7 +128,7 @@ public class DossierFactoryImpl implements DossierFactory
 		mammaDossier.setEersteOnderzoek(true);
 		client.setMammaDossier(mammaDossier);
 
-		MammaDeelnamekans mammaDeelnamekans = new MammaDeelnamekans();
+		var mammaDeelnamekans = new MammaDeelnamekans();
 		mammaDeelnamekans.setDossier(mammaDossier);
 		mammaDossier.setDeelnamekans(mammaDeelnamekans);
 

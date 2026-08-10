@@ -52,7 +52,7 @@ public abstract class BooleanFilterCellPanel<T> extends GenericPanel<T>
 		super(id, rowModel);
 		this.property = property;
 		setOutputMarkupId(true);
-		final WebMarkupContainer toggleActief = new WebMarkupContainer("toggleActief");
+		final var toggleActief = new WebMarkupContainer("toggleActief");
 
 		if (verwijderen)
 		{
@@ -64,7 +64,7 @@ public abstract class BooleanFilterCellPanel<T> extends GenericPanel<T>
 				@Override
 				protected void onEvent(AjaxRequestTarget target)
 				{
-					Boolean actief = BooleanFilterCellPanel.this.getProperty();
+					var actief = BooleanFilterCellPanel.this.getProperty();
 					if (!Boolean.FALSE.equals(actief))
 					{
 						target.appendJavaScript("$('.modal.fade.in').addClass('previousDialog').modal('hide');");

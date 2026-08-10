@@ -30,7 +30,6 @@ import nl.rivm.screenit.main.service.mamma.MammaBeoordelingsEenheidService;
 import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.CentraleEenheid;
 import nl.rivm.screenit.model.Organisatie;
-import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Organisatie_;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
 import nl.rivm.screenit.repository.algemeen.BeoordelingsEenheidRepository;
@@ -128,7 +127,7 @@ public class MammaBeoordelingsEenheidServiceImpl implements MammaBeoordelingsEen
 			return Collections.emptyList();
 		}
 		organisatie = (Organisatie) Hibernate.unproxy(organisatie);
-		OrganisatieType organisatieType = organisatie.getOrganisatieType();
+		var organisatieType = organisatie.getOrganisatieType();
 		return switch (organisatieType)
 		{
 			case RIVM, KWALITEITSPLATFORM -> organisatieService.getActieveOrganisaties(BeoordelingsEenheid.class);
@@ -145,7 +144,7 @@ public class MammaBeoordelingsEenheidServiceImpl implements MammaBeoordelingsEen
 		{
 			return Collections.emptyList();
 		}
-		OrganisatieType organisatieType = organisatie.getOrganisatieType();
+		var organisatieType = organisatie.getOrganisatieType();
 		organisatie = (Organisatie) Hibernate.unproxy(organisatie);
 		return switch (organisatieType)
 		{

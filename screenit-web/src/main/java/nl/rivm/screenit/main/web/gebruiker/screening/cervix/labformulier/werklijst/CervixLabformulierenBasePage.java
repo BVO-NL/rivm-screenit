@@ -35,7 +35,6 @@ import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.main.web.gebruiker.base.ZoekenContextMenuItem;
 import nl.rivm.screenit.main.web.gebruiker.screening.cervix.CervixScreeningBasePage;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.batch.BatchJob;
@@ -85,14 +84,14 @@ public abstract class CervixLabformulierenBasePage extends CervixScreeningBasePa
 		boolean labformulierStatussenVisible, boolean filterVisible, boolean ordersVerwerkenKnopVisible, boolean datumRangeVisible,
 		boolean geboortedatumFilterVisible, boolean minimaalWaardesTekstVisible, boolean naHuisartsOnbekendVisible)
 	{
-		IModel<CervixLabformulierenFilter> labformulierFilterZoekObject = (IModel<CervixLabformulierenFilter>) ScreenitSession.get()
+		var labformulierFilterZoekObject = (IModel<CervixLabformulierenFilter>) ScreenitSession.get()
 			.getZoekObject(CervixLabformulierenFilterPanel.class);
 		if (labformulierFilterZoekObject != null)
 		{
 			filter = labformulierFilterZoekObject.getObject();
 		}
 
-		BootstrapDialog dialog = new BootstrapDialog("dialog");
+		var dialog = new BootstrapDialog("dialog");
 		add(dialog);
 
 		MarkupContainer ordersVerwerkenKnop = new ConfirmingIndicatingAjaxLink<JobType>("ordersVerwerken", null, dialog, "orders.verwerken")
@@ -100,8 +99,8 @@ public abstract class CervixLabformulierenBasePage extends CervixScreeningBasePa
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				Organisatie organisatie = ScreenitSession.get().getOrganisatie();
-				BatchJob batchJob = new BatchJob();
+				var organisatie = ScreenitSession.get().getOrganisatie();
+				var batchJob = new BatchJob();
 				batchJob.setJobType(JobType.CERVIX_ORDER);
 				batchJob.getJobParameters().put(JobStartParameter.CERVIX_ORDER_LABORATORIUM.name(), organisatie.getId());
 				jobService.startJob(batchJob, getIngelogdeOrganisatieMedewerker());
@@ -134,7 +133,7 @@ public abstract class CervixLabformulierenBasePage extends CervixScreeningBasePa
 				@Override
 				public IModel<Object> getDataModel(IModel<CervixLabformulier> labformulierModel)
 				{
-					Client client = new PropertyModel<Client>(labformulierModel, getPropertyExpression()).getObject();
+					var client = new PropertyModel<Client>(labformulierModel, getPropertyExpression()).getObject();
 					return new Model(client != null ? NaamUtil.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client) : "");
 				}
 			});
@@ -171,7 +170,7 @@ public abstract class CervixLabformulierenBasePage extends CervixScreeningBasePa
 	{
 		if (showEmptyTable(filter))
 		{
-			EmptyPanel labformulieren = new EmptyPanel("labformulieren");
+			var labformulieren = new EmptyPanel("labformulieren");
 			labformulieren.setOutputMarkupPlaceholderTag(true);
 			addOrReplace(labformulieren);
 			return labformulieren;
@@ -180,7 +179,7 @@ public abstract class CervixLabformulierenBasePage extends CervixScreeningBasePa
 		{
 			var labformulierProvider = new CervixLabformulierProvider(filter);
 
-			ScreenitDataTable<CervixLabformulier, String> labformulieren = new ScreenitDataTable<>("labformulieren", columns, labformulierProvider, 10,
+			var labformulieren = new ScreenitDataTable<>("labformulieren", columns, labformulierProvider, 10,
 				Model.of("labformulieren"))
 			{
 				@Override

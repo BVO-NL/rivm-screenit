@@ -26,10 +26,8 @@ import lombok.AllArgsConstructor;
 import nl.rivm.screenit.clientportaal.controllers.AbstractController;
 import nl.rivm.screenit.clientportaal.mappers.HuisartsMapper;
 import nl.rivm.screenit.clientportaal.model.HuisartsDto;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.EnovationHuisarts;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.colon.ColonHuisartsService;
@@ -63,15 +61,15 @@ public class ColonHuisartsController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> koppelColonHuisarts(Authentication authentication, @RequestParam long id)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_HUISARTS_WIJZIGEN))
 		{
-			EnovationHuisarts huisarts = hibernateService.get(EnovationHuisarts.class, id);
+			var huisarts = hibernateService.get(EnovationHuisarts.class, id);
 
 			if (client != null && client.getColonDossier() != null && huisarts != null && !huisarts.isVerwijderd())
 			{
-				boolean isGekoppeld = colonHuisartsService.koppelHuisarts(huisarts, client.getColonDossier().getLaatsteScreeningRonde(),
+				var isGekoppeld = colonHuisartsService.koppelHuisarts(huisarts, client.getColonDossier().getLaatsteScreeningRonde(),
 					client);
 				if (isGekoppeld)
 				{
@@ -88,13 +86,13 @@ public class ColonHuisartsController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> ontkoppelColonHuisarts(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_HUISARTS_WIJZIGEN))
 		{
 			if (client != null && client.getColonDossier() != null)
 			{
-				boolean isOntkoppeld = colonHuisartsService.ontkoppelHuisarts(client.getColonDossier().getLaatsteScreeningRonde(), client);
+				var isOntkoppeld = colonHuisartsService.ontkoppelHuisarts(client.getColonDossier().getLaatsteScreeningRonde(), client);
 				if (isOntkoppeld)
 				{
 					return ResponseEntity.ok().build();
@@ -109,11 +107,11 @@ public class ColonHuisartsController extends AbstractController
 	@GetMapping(path = "/vorige")
 	public ResponseEntity<HuisartsDto> getVorigeColonHuisarts(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (client != null && client.getColonDossier() != null)
 		{
-			EnovationHuisarts huisartsVanVorigeRonde = colonHuisartsService
+			var huisartsVanVorigeRonde = colonHuisartsService
 				.getActieveHuisartsVanVorigeRonde(client.getColonDossier().getLaatsteScreeningRonde());
 			return ResponseEntity.ok(huisartsMapper.huisartsToDto(huisartsVanVorigeRonde));
 		}
@@ -123,11 +121,11 @@ public class ColonHuisartsController extends AbstractController
 	@GetMapping(path = "/huidige")
 	public ResponseEntity<HuisartsDto> getHuidigeColonHuisarts(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 		if (client != null && client.getColonDossier() != null)
 		{
-			ColonScreeningRonde laatsteScreeningRonde = client.getColonDossier().getLaatsteScreeningRonde();
-			EnovationHuisarts huisartsVanHuidigeRonde = colonHuisartsService.getActieveHuisartsVanRonde(laatsteScreeningRonde);
+			var laatsteScreeningRonde = client.getColonDossier().getLaatsteScreeningRonde();
+			var huisartsVanHuidigeRonde = colonHuisartsService.getActieveHuisartsVanRonde(laatsteScreeningRonde);
 			return ResponseEntity.ok(huisartsMapper.huisartsToDto(huisartsVanHuidigeRonde));
 		}
 		return ResponseEntity.notFound().build();
@@ -137,13 +135,13 @@ public class ColonHuisartsController extends AbstractController
 	@Transactional(propagation = Propagation.REQUIRED)
 	public ResponseEntity<Void> bevestigVorigeColonHuisarts(Authentication authentication)
 	{
-		Client client = getClient(authentication);
+		var client = getClient(authentication);
 
 		if (clientContactService.availableActiesBevatBenodigdeActie(client, ClientContactActieType.COLON_HUISARTS_WIJZIGEN))
 		{
 			if (client != null)
 			{
-				boolean isBevestigd = colonHuisartsService.bevestigVorigeColonHuisarts(client, client.getColonDossier().getLaatsteScreeningRonde());
+				var isBevestigd = colonHuisartsService.bevestigVorigeColonHuisarts(client, client.getColonDossier().getLaatsteScreeningRonde());
 				if (isBevestigd)
 				{
 					return ResponseEntity.ok().build();

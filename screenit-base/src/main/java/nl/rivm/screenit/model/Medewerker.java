@@ -184,7 +184,7 @@ public class Medewerker extends AbstractHibernateObject implements Account, IAct
 	@Transient
 	public String getNaamVolledig()
 	{
-		StringBuffer naamVolledig = new StringBuffer();
+		var naamVolledig = new StringBuffer();
 
 		naamVolledig.append(getAchternaam());
 		naamVolledig.append(", ");
@@ -212,7 +212,7 @@ public class Medewerker extends AbstractHibernateObject implements Account, IAct
 	@Transient
 	public String getNaamVolledigMetVoornaam()
 	{
-		StringBuilder naamVolledig = new StringBuilder();
+		var naamVolledig = new StringBuilder();
 
 		naamVolledig.append(getAchternaam());
 
@@ -241,7 +241,7 @@ public class Medewerker extends AbstractHibernateObject implements Account, IAct
 	@Transient
 	public String getVoornaamAchternaam()
 	{
-		StringBuffer voornaamAchternaam = new StringBuffer();
+		var voornaamAchternaam = new StringBuffer();
 		if (StringUtils.isNotBlank(getVoornaam()))
 		{
 			voornaamAchternaam.append(getVoornaam());
@@ -267,7 +267,7 @@ public class Medewerker extends AbstractHibernateObject implements Account, IAct
 	@Transient
 	public String getAchternaamVolledig()
 	{
-		StringBuffer naamVolledig = new StringBuffer();
+		var naamVolledig = new StringBuffer();
 
 		naamVolledig.append(getAchternaam());
 		naamVolledig.append(", ");
@@ -284,8 +284,8 @@ public class Medewerker extends AbstractHibernateObject implements Account, IAct
 	@Override
 	public int hashCode()
 	{
-		final int prime = 31;
-		int result = 1;
+		final var prime = 31;
+		var result = 1;
 		if (getId() != null)
 		{
 			result = prime * result + getId().hashCode();
@@ -303,7 +303,7 @@ public class Medewerker extends AbstractHibernateObject implements Account, IAct
 	@Override
 	public boolean equals(Object obj)
 	{
-		boolean returnValue = true;
+		var returnValue = true;
 		if (obj == null)
 		{
 			returnValue = false;
@@ -314,7 +314,7 @@ public class Medewerker extends AbstractHibernateObject implements Account, IAct
 		}
 		else
 		{
-			Medewerker other = (Medewerker) obj;
+			var other = (Medewerker) obj;
 			if (getId() == null)
 			{
 				if (other.getId() != null)

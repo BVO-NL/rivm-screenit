@@ -75,12 +75,12 @@ public class ColonZoekenOpBarcodePage extends ColonScreeningBasePage
 
 	public ColonZoekenOpBarcodePage()
 	{
-		Client zoekobject = new Client();
-		Persoon persoon = new Persoon();
+		var zoekobject = new Client();
+		var persoon = new Persoon();
 		persoon.setGbaAdres(new BagAdres());
 		zoekobject.setPersoon(persoon);
 
-		ColonZoekFitRegistratieMetBarcodePanel scanVoorFitRegistratie = new ColonZoekFitRegistratieMetBarcodePanel("scanVoorFitRegistratie")
+		var scanVoorFitRegistratie = new ColonZoekFitRegistratieMetBarcodePanel("scanVoorFitRegistratie")
 		{
 
 			@Override
@@ -95,7 +95,7 @@ public class ColonZoekenOpBarcodePage extends ColonScreeningBasePage
 				}
 				else
 				{
-					boolean isVerwijderdeBarcode = fitService.isVerwijderdeBarcode(getScanInput());
+					var isVerwijderdeBarcode = fitService.isVerwijderdeBarcode(getScanInput());
 					info(String.format(getString("error.barcode.niet.gekoppeld"), isVerwijderdeBarcode ? "meer " : ""));
 					info("Geen cli\u00EBnt gevonden");
 				}
@@ -130,7 +130,7 @@ public class ColonZoekenOpBarcodePage extends ColonScreeningBasePage
 		columns.add(new PostcodeColumn<>("persoon.gbaAdres.postcode", "persoon.gbaAdres.postcode"));
 		columns.add(new PropertyColumn<>(Model.of("Huisnummer"), "persoon.gbaAdres.huisnummer", "persoon.gbaAdres.huisnummer"));
 
-		final ScreenitDataTable<Client, String> tabel = new ScreenitDataTable<Client, String>("tabel", columns, new SortableDataProvider<>()
+		final var tabel = new ScreenitDataTable<Client, String>("tabel", columns, new SortableDataProvider<>()
 		{
 
 			@Override

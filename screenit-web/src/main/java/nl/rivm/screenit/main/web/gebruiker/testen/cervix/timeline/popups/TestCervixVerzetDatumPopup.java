@@ -49,7 +49,7 @@ public class TestCervixVerzetDatumPopup extends TestAbstractVerzetDatumPopup
 	private List<Client> getReloadClienten()
 	{
 		List<Client> reloadedClienten = new ArrayList<>();
-		for (Client client : getModelObject())
+		for (var client : getModelObject())
 		{
 			reloadedClienten.add(hibernateService.load(Client.class, client.getId()));
 		}
@@ -59,7 +59,7 @@ public class TestCervixVerzetDatumPopup extends TestAbstractVerzetDatumPopup
 	@Override
 	protected void opslaan()
 	{
-		for (Client client : getReloadClienten())
+		for (var client : getReloadClienten())
 		{
 			testTimelineTimeService.rekenDossierTerug(client.getCervixDossier(), getAantalDagen());
 		}

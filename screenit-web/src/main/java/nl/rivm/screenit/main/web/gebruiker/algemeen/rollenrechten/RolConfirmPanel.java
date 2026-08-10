@@ -46,7 +46,7 @@ public class RolConfirmPanel extends GenericPanel<Rol>
 		super(id);
 
 		add(new Label("title", header));
-		ListView<String> meldingen = new ListView<String>("meldingen", messages)
+		var meldingen = new ListView<String>("meldingen", messages)
 		{
 
 			private static final long serialVersionUID = 1L;

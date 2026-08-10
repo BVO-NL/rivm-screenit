@@ -54,7 +54,7 @@ public class OnbevestigdeIntakeVerwijzingenWriter extends BaseWriter<ColonIntake
 		hibernateService.saveOrUpdate(afspraak);
 		hibernateService.delete(conclusie);
 
-		String melding = "Conclusie: " + conclusie.getType().getOmschrijving()
+		var melding = "Conclusie: " + conclusie.getType().getOmschrijving()
 			+ " verwijderd en afspraak van verwijzende intakelocatie wordt verplaatst, omdat mogelijke verwijzing niet bevestigd is door verwijzende intakelocatie.";
 		logService.logGebeurtenis(LogGebeurtenis.CONCLUSIE_VERWIJDEREN, afspraak.getClient(), melding, Bevolkingsonderzoek.COLON);
 	}

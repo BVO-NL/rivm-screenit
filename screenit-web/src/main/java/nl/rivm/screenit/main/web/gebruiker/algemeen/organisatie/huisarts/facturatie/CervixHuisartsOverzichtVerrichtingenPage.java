@@ -25,7 +25,6 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.dto.cervix.facturatie.CervixVerrichtingenZoekObject;
@@ -92,7 +91,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.hibernate.Hibernate;
 import org.wicketstuff.shiro.ShiroConstraint;
-import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
 import static nl.rivm.screenit.main.service.cervix.impl.AbstractCervixBoekregelsDataProviderServiceImpl.BETAALOPDRACHT_PROPERTY;
 import static nl.rivm.screenit.main.service.cervix.impl.AbstractCervixBoekregelsDataProviderServiceImpl.HUISARTS_LOCATIE_PROPERTY;
@@ -135,7 +133,7 @@ public class CervixHuisartsOverzichtVerrichtingenPage extends OrganisatieBeheer
 
 	public CervixHuisartsOverzichtVerrichtingenPage()
 	{
-		ScreenitForm<CervixVerrichtingenZoekObject> form = new ScreenitForm<>("verrichtingZoekenForm", formCriteria);
+		var form = new ScreenitForm<CervixVerrichtingenZoekObject>("verrichtingZoekenForm", formCriteria);
 		form.setOutputMarkupId(true);
 		add(form);
 
@@ -161,7 +159,7 @@ public class CervixHuisartsOverzichtVerrichtingenPage extends OrganisatieBeheer
 		form.add(huisartsLocatieDropDownChoice);
 
 		ComponentHelper.addTextField(form, "monsterId", false, 55, false);
-		FormComponent<String> bsnField = ComponentHelper.addTextField(form, "bsn", false, 9, false);
+		var bsnField = ComponentHelper.addTextField(form, "bsn", false, 9, false);
 		bsnField.add(new BSNValidator());
 
 		ComponentHelper.addTextField(form, "betalingskenmerk", false, 255, false);
@@ -189,19 +187,19 @@ public class CervixHuisartsOverzichtVerrichtingenPage extends OrganisatieBeheer
 			}
 		});
 
-		DatePicker<Date> vanafDatumDatePicker = ComponentHelper.newDatePicker("verrichtingsDatumVanaf", new PropertyModel<>(form.getModel(), "verrichtingsDatumVanaf"));
+		var vanafDatumDatePicker = ComponentHelper.newDatePicker("verrichtingsDatumVanaf", new PropertyModel<>(form.getModel(), "verrichtingsDatumVanaf"));
 		form.add(vanafDatumDatePicker);
-		DatePicker<Date> totenmetDatumDatePicker = ComponentHelper.newDatePicker("verrichtingsDatumTotenmet",
+		var totenmetDatumDatePicker = ComponentHelper.newDatePicker("verrichtingsDatumTotenmet",
 			new PropertyModel<>(form.getModel(), "verrichtingsDatumTotenmet"));
 		form.add(totenmetDatumDatePicker);
 
 		form.add(new DependantDateValidator(vanafDatumDatePicker, totenmetDatumDatePicker, DependantDateValidator.Operator.AFTER));
 
-		DatePicker<Date> geboorteDatumDatePicker = ComponentHelper.newDatePicker("geboorteDatum",
+		var geboorteDatumDatePicker = ComponentHelper.newDatePicker("geboorteDatum",
 			new PropertyModel<>(form.getModel(), "geboorteDatum"));
 		form.add(geboorteDatumDatePicker);
 
-		DatePicker<Date> datumUitstrijkjeDatePicker = ComponentHelper.newDatePicker("datumUitstrijkje",
+		var datumUitstrijkjeDatePicker = ComponentHelper.newDatePicker("datumUitstrijkje",
 			new PropertyModel<>(form.getModel(), "datumUitstrijkje"));
 		form.add(datumUitstrijkjeDatePicker);
 
@@ -247,7 +245,7 @@ public class CervixHuisartsOverzichtVerrichtingenPage extends OrganisatieBeheer
 			toonSOdropdown = false;
 		}
 
-		List<ScreeningOrganisatie> screeningOrganisaties = organisatieService.getAllActiefScreeningOrganisaties();
+		var screeningOrganisaties = organisatieService.getAllActiefScreeningOrganisaties();
 		DropDownChoice<ScreeningOrganisatie> screeningOrganisatieDropDownChoice = ComponentHelper.newDropDownChoice("screeningOrganisatie",
 			ModelUtil.listRModel(screeningOrganisaties), new ChoiceRenderer<>("naam"), false);
 		screeningOrganisatieDropDownChoice.setOutputMarkupId(true);
@@ -255,7 +253,7 @@ public class CervixHuisartsOverzichtVerrichtingenPage extends OrganisatieBeheer
 		screeningOrganisatieDropDownChoice.setModel(screeningOrganisatieModel);
 		screeningOrganisatieDropDownChoice.setVisible(toonSOdropdown);
 		form.add(screeningOrganisatieDropDownChoice);
-		String soLabel = "-";
+		var soLabel = "-";
 		if (ScreenitSession.get().getScreeningOrganisatie() != null)
 		{
 			soLabel = ScreenitSession.get().getScreeningOrganisatie().getNaam();

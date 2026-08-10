@@ -70,7 +70,7 @@ public abstract class HuisartsVorigeRondeDialogPanel extends GenericPanel<ColonS
 		setZoekModel(zoekModel);
 		setHuisartsWijzigenPanel(huisartsWijzigenPanel);
 
-		EnovationHuisarts ha = getGeselecteerdModel().getObject();
+		var ha = getGeselecteerdModel().getObject();
 		add(new Label("huisartsNaam", NaamUtil.getNaamHuisarts(ha)));
 		add(new Label("praktijkNaam", new PropertyModel<String>(getGeselecteerdModel(), "praktijknaam")));
 		add(new Label("praktijkAdres", AdresUtil.getVolledigeAdresString(ha.getAdres())));
@@ -118,8 +118,8 @@ public abstract class HuisartsVorigeRondeDialogPanel extends GenericPanel<ColonS
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				EnovationHuisarts ha = getGeselecteerdModel().getObject();
-				ColonScreeningRonde laatsteRonde = getModelObject();
+				var ha = getGeselecteerdModel().getObject();
+				var laatsteRonde = getModelObject();
 				laatsteRonde.setHuisarts(ha);
 				getHuisartsWijzigenPanel().verversHuisarts(target);
 				close(target);

@@ -29,7 +29,6 @@ import nl.rivm.screenit.main.web.gebruiker.testen.gedeeld.timeline.components.Te
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Gemeente;
 import nl.rivm.screenit.model.INaam;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -64,10 +63,10 @@ public abstract class BijzondereClientDatumPopup extends GenericPanel<List<Clien
 	{
 		super(id, model);
 
-		Form<Void> form = new Form<Void>("form");
+		var form = new Form<Void>("form");
 		add(form);
 
-		List<GbaPersoonDatum> opties = getOpties();
+		var opties = getOpties();
 		persoonDatumModel = Model.of(opties.get(0));
 		RadioChoice<GbaPersoonDatum> reden = new TestEnumRadioChoice<>("bericht", persoonDatumModel, getOpties(), new NaamChoiceRenderer<>());
 		reden.setPrefix("<label class=\"radio\">");
@@ -82,8 +81,8 @@ public abstract class BijzondereClientDatumPopup extends GenericPanel<List<Clien
 	private List<GbaPersoonDatum> getOpties()
 	{
 		List<GbaPersoonDatum> opties = new ArrayList<GbaPersoonDatum>();
-		Client client = getModelObject().get(0);
-		Persoon persoon = client.getPersoon();
+		var client = getModelObject().get(0);
+		var persoon = client.getPersoon();
 		if (persoon.getOverlijdensdatum() == null)
 		{
 			opties.add(GbaPersoonDatum.DATUM_OVERLIJDEN);
@@ -101,13 +100,13 @@ public abstract class BijzondereClientDatumPopup extends GenericPanel<List<Clien
 
 	private void addButtons(Form form)
 	{
-		IndicatingAjaxSubmitLink link = new IndicatingAjaxSubmitLink("opslaan", form)
+		var link = new IndicatingAjaxSubmitLink("opslaan", form)
 		{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				List<Client> clienten = getModelObject();
-				for (Client client : clienten)
+				var clienten = getModelObject();
+				for (var client : clienten)
 				{
 					var persoon = client.getPersoon();
 					var persoonDatum = persoonDatumModel.getObject();

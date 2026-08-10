@@ -121,13 +121,13 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 
 	private void maakNevenBevindingenGedeelte()
 	{
-		MammaNevenbevindingViewerPanel nevenbevindingenPanel = new MammaNevenbevindingViewerPanel("nevenbevindingen", beoordelingModel);
+		var nevenbevindingenPanel = new MammaNevenbevindingViewerPanel("nevenbevindingen", beoordelingModel);
 		add(nevenbevindingenPanel);
 	}
 
 	private WebMarkupContainer maakAlternatieveHuisartsBeheerContainer()
 	{
-		WebMarkupContainer altHuisartsInfoContainer = new WebMarkupContainer("altHuisartsInfoContainer");
+		var altHuisartsInfoContainer = new WebMarkupContainer("altHuisartsInfoContainer");
 		altHuisartsInfoContainer.setOutputMarkupId(true);
 		altHuisartsInfoContainer.setOutputMarkupPlaceholderTag(true);
 		add(altHuisartsInfoContainer);
@@ -138,7 +138,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 
 	private WebMarkupContainer maakHuisartsBeheerContainer()
 	{
-		WebMarkupContainer huisartsInfoContainer = new WebMarkupContainer("huisartsInfoContainer");
+		var huisartsInfoContainer = new WebMarkupContainer("huisartsInfoContainer");
 		huisartsInfoContainer.setOutputMarkupId(true);
 		add(huisartsInfoContainer);
 		huisartsInfoContainer.add(maakHuisartsBeheer());
@@ -170,7 +170,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 	private void maakAlternatiefHaButton(WebMarkupContainer container)
 	{
 		Component kiesAlternativeHa;
-		MammaScreeningRonde screeningRonde = baseBeoordelingService.getScreeningRonde(beoordelingModel.getObject());
+		var screeningRonde = baseBeoordelingService.getScreeningRonde(beoordelingModel.getObject());
 		if (screeningRonde.getGeenHuisartsOptie() != null)
 		{
 			kiesAlternativeHa = new EmptyPanel("kiesAlternativeHa").setVisible(false).setOutputMarkupPlaceholderTag(true);
@@ -191,7 +191,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 
 	private void maakVerslagLaterGoedkeurenButton(WebMarkupContainer container)
 	{
-		IndicatingAjaxLink<Void> laterGoedkeurenButton = new IndicatingAjaxLink<Void>("laterGoedkeuren")
+		var laterGoedkeurenButton = new IndicatingAjaxLink<Void>("laterGoedkeuren")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)
@@ -207,7 +207,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 
 	private void maakVerslagAfkeurenButton(WebMarkupContainer container)
 	{
-		IndicatingAjaxLink<Void> verslagAfkeurenButton = new IndicatingAjaxLink<Void>("verslagAfkeuren")
+		var verslagAfkeurenButton = new IndicatingAjaxLink<Void>("verslagAfkeuren")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)
@@ -234,8 +234,8 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaBeoordeling beoordeling = beoordelingModel.getObject();
-				MammaScreeningRonde screeningRonde = baseBeoordelingService.getScreeningRonde(beoordeling);
+				var beoordeling = beoordelingModel.getObject();
+				var screeningRonde = baseBeoordelingService.getScreeningRonde(beoordeling);
 				beoordelingService.gunstigeUitslagMetNevenbevindingAfronden(beoordeling, rondeVoorAlternatieveHuisartsModel.getObject().getHuisarts(),
 					getIngelogdeOrganisatieMedewerker());
 				if (screeningRonde.getHuisarts() != null || rondeVoorAlternatieveHuisartsModel.getObject().getHuisarts() != null)
@@ -256,11 +256,11 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaBeoordeling beoordeling = beoordelingModel.getObject();
+				var beoordeling = beoordelingModel.getObject();
 
 				beoordeling.setStatus(beoordelingRepository.vindBeoordelingStatusVanId(beoordeling.getId()));
 
-				MammaScreeningRonde screeningRonde = baseBeoordelingService.getScreeningRonde(beoordeling);
+				var screeningRonde = baseBeoordelingService.getScreeningRonde(beoordeling);
 				if (screeningRonde.getHuisarts() != null && screeningRonde.getHuisarts().isVerwijderd())
 				{
 					error(getString("geen.active.ha.geselecteerd"));
@@ -275,7 +275,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 				catch (IllegalStateException e)
 				{
 					setResponsePage(new MammaCeVerwijsVerslagenWerklijstPage());
-					String errorKey = MammaBeoordelingStatus.GEANNULEERD.equals(beoordeling.getStatus()) ? "error.beoordeling.geannuleerd" : "error.beoordeling.onbekend";
+					var errorKey = MammaBeoordelingStatus.GEANNULEERD.equals(beoordeling.getStatus()) ? "error.beoordeling.geannuleerd" : "error.beoordeling.onbekend";
 					ScreenitSession.get().error(getString(errorKey));
 					return;
 				}
@@ -306,7 +306,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 
 	private void maakPdfGedeelte()
 	{
-		WebMarkupContainer pdfContainer = new WebMarkupContainer("pdfContainer");
+		var pdfContainer = new WebMarkupContainer("pdfContainer");
 		if (MammaBeoordelingStatus.GUNSTIG_MET_NEVENBEVINDING.equals(beoordelingModel.getObject().getStatus()))
 		{
 			pdfContainer.add(new EmptyPanel("pdf"));
@@ -421,7 +421,7 @@ public class MammaCeVerwijsVerslagPage extends AbstractMammaCePage
 				{
 					if (huisarts != null)
 					{
-						MammaScreeningRonde screeningRonde = baseBeoordelingService.getScreeningRonde(beoordelingModel.getObject());
+						var screeningRonde = baseBeoordelingService.getScreeningRonde(beoordelingModel.getObject());
 						if (huisarts.equals(screeningRonde.getHuisarts()))
 						{
 							error("Alternatieve huisarts mag niet dezelfde zijn als de primaire huisarts.");

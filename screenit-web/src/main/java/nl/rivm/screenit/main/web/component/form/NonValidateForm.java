@@ -21,13 +21,11 @@ package nl.rivm.screenit.main.web.component.form;
  * =========================LICENSE_END==================================
  */
 
-import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.form.AbstractSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.IFormSubmitter;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 
@@ -47,7 +45,7 @@ public class NonValidateForm<T extends Object> extends Form<T>
 	public void process(IFormSubmitter submittingComponent)
 	{
 
-		final Page page = getPage();
+		final var page = getPage();
 
 		if (!isEnabledInHierarchy() || !isVisibleInHierarchy())
 		{
@@ -83,7 +81,7 @@ public class NonValidateForm<T extends Object> extends Form<T>
 			delegateSubmit(submittingComponent);
 		}
 
-		final PageParameters parameters = page.getPageParameters();
+		final var parameters = page.getPageParameters();
 		if (parameters != null)
 		{
 			visitFormComponents(new IVisitor<FormComponent<?>, Void>()
@@ -97,7 +95,7 @@ public class NonValidateForm<T extends Object> extends Form<T>
 
 			if (submittingComponent instanceof AbstractSubmitLink)
 			{
-				AbstractSubmitLink submitLink = (AbstractSubmitLink) submittingComponent;
+				var submitLink = (AbstractSubmitLink) submittingComponent;
 				parameters.remove(submitLink.getInputName());
 			}
 		}

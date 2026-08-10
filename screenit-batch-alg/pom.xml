@@ -55,11 +55,6 @@
         </dependency>
 
         <dependency>
-            <groupId>nl.topicuszorg.gba</groupId>
-            <artifactId>vertrouwdverbonden</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>nl.topicuszorg</groupId>
             <artifactId>fill-db</artifactId>
         </dependency>

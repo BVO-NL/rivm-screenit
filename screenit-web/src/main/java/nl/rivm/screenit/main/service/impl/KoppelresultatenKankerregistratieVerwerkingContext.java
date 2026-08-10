@@ -191,14 +191,14 @@ public class KoppelresultatenKankerregistratieVerwerkingContext implements AutoC
 
 	private void bepaalVolgordeHeaders()
 	{
-		List<String> headers = getHuidigeRegel();
+		var headers = getHuidigeRegel();
 		if (CollectionUtils.isNotEmpty(headers))
 		{
-			int i = 0;
-			for (String header : headers)
+			var i = 0;
+			for (var header : headers)
 			{
-				boolean gevonden = false;
-				for (ColonKoppelresultatenKankerregistratieHeaderMapping m : ColonKoppelresultatenKankerregistratieHeaderMapping.values())
+				var gevonden = false;
+				for (var m : ColonKoppelresultatenKankerregistratieHeaderMapping.values())
 				{
 					if (m.header.equals(header))
 					{

@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import nl.rivm.screenit.Constants;
@@ -91,7 +90,6 @@ import org.apache.wicket.resource.FileSystemResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
 import org.apache.wicket.session.HttpSessionStore;
 import org.apache.wicket.settings.ExceptionSettings;
-import org.apache.wicket.settings.RequestLoggerSettings;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -138,7 +136,7 @@ public class ScreenitApplication extends WebApplication
 			.add(CSPDirective.FORM_ACTION, CSPDirectiveSrcValue.SELF);
 		getSecuritySettings().setCrossOriginOpenerPolicyConfiguration(CrossOriginOpenerPolicyConfiguration.CoopMode.SAME_ORIGIN_ALLOW_POPUPS);
 
-		ScreenitAnnotationsShiroAuthorizationStrategy authz = new ScreenitAnnotationsShiroAuthorizationStrategy();
+		var authz = new ScreenitAnnotationsShiroAuthorizationStrategy();
 		getSecuritySettings().setAuthorizationStrategy(authz);
 		getSecuritySettings().setUnauthorizedComponentInstantiationListener(new ScreenitShiroUnauthorizedComponentListener(null, null, authz));
 		getApplicationSettings().setInternalErrorPage(ErrorPage.class);
@@ -163,8 +161,8 @@ public class ScreenitApplication extends WebApplication
 				{
 					if (map != null && map.size() == 1 && map.values().toArray()[0] instanceof AjaxLazyLoadPanel)
 					{
-						boolean sessionFeedbackMessages = !Session.get().getFeedbackMessages().isEmpty();
-						boolean ajaxLazyLoadPanelFeedbackMessages = !((AjaxLazyLoadPanel<?>) map.values().toArray()[0]).getFeedbackMessages().isEmpty();
+						var sessionFeedbackMessages = !Session.get().getFeedbackMessages().isEmpty();
+						var ajaxLazyLoadPanelFeedbackMessages = !((AjaxLazyLoadPanel<?>) map.values().toArray()[0]).getFeedbackMessages().isEmpty();
 						List<FeedbackMessages> childsFeedbackMessages = new ArrayList<>();
 
 						((AjaxLazyLoadPanel<?>) map.values().toArray()[0]).visitChildren((component, iVisit) ->
@@ -195,7 +193,7 @@ public class ScreenitApplication extends WebApplication
 
 			private boolean isTimerRequest(AjaxRequestTarget target)
 			{
-				Set<String> parameterNames = target.getPage().getRequest().getRequestParameters().getParameterNames();
+				var parameterNames = target.getPage().getRequest().getRequestParameters().getParameterNames();
 				return parameterNames.contains(PollingAbstractAjaxTimerBehavior.MARKER);
 			}
 
@@ -218,7 +216,7 @@ public class ScreenitApplication extends WebApplication
 		}
 
 		getJavaScriptLibrarySettings().setJQueryReference(JQueryResourceReference.getV3());
-		JQueryUILibrarySettings jQueryUILibrarySettings = JQueryUILibrarySettings.get();
+		var jQueryUILibrarySettings = JQueryUILibrarySettings.get();
 		jQueryUILibrarySettings.setJavaScriptReference(new JavaScriptResourceReference(ScreenitApplication.class, "jquery-ui-1.10.3.js"));
 
 		initRequestLogger();
@@ -276,7 +274,7 @@ public class ScreenitApplication extends WebApplication
 
 	private void initRequestLogger()
 	{
-		RequestLoggerSettings reqLogger = getRequestLoggerSettings();
+		var reqLogger = getRequestLoggerSettings();
 		reqLogger.setRequestLoggerEnabled(true);
 		reqLogger.setRecordSessionSize(false);
 		reqLogger.setRequestsWindowSize(0);
@@ -298,7 +296,7 @@ public class ScreenitApplication extends WebApplication
 	@Override
 	public Session newSession(Request request, Response response)
 	{
-		ScreenitSession screenitSession = new ScreenitSession(request);
+		var screenitSession = new ScreenitSession(request);
 		screenitSession.setLocale(Constants.LOCALE_NL);
 		Locale.setDefault(Constants.LOCALE_NL);
 		return screenitSession;
@@ -312,8 +310,8 @@ public class ScreenitApplication extends WebApplication
 	@Override
 	protected IConverterLocator newConverterLocator()
 	{
-		ConverterLocator converterLocator = (ConverterLocator) super.newConverterLocator();
-		MultiDateConverter datumConverter = new MultiDateConverter();
+		var converterLocator = (ConverterLocator) super.newConverterLocator();
+		var datumConverter = new MultiDateConverter();
 		converterLocator.set(java.util.Date.class, datumConverter);
 		converterLocator.set(java.sql.Date.class, datumConverter);
 		converterLocator.set(java.sql.Timestamp.class, datumConverter);
@@ -335,14 +333,14 @@ public class ScreenitApplication extends WebApplication
 			@Override
 			protected IRequestHandler mapUnexpectedExceptions(Exception e, Application application)
 			{
-				final ExceptionSettings.UnexpectedExceptionDisplay unexpectedExceptionDisplay = application.getExceptionSettings()
+				final var unexpectedExceptionDisplay = application.getExceptionSettings()
 					.getUnexpectedExceptionDisplay();
 
 				LOG.error("Unexpected error occurred", e);
 
 				if (ExceptionSettings.SHOW_EXCEPTION_PAGE.equals(unexpectedExceptionDisplay))
 				{
-					Page currentPage = extractCurrentPage();
+					var currentPage = extractCurrentPage();
 					return createPageRequestHandler(new PageProvider(new ExceptionErrorPage(e,
 						currentPage)));
 				}

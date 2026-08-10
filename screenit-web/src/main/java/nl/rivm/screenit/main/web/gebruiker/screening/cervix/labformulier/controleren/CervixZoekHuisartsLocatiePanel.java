@@ -56,7 +56,7 @@ public abstract class CervixZoekHuisartsLocatiePanel extends GenericPanel<Cervix
 	{
 		super(id, new CompoundPropertyModel<>(new CervixHuisartsLocatieFilter()));
 
-		Form<CervixLabformulierenFilter> form = new Form<>("innerForm");
+		var form = new Form<CervixLabformulierenFilter>("innerForm");
 		add(form);
 
 		form.add(new TextField<>("achternaam"));
@@ -78,7 +78,7 @@ public abstract class CervixZoekHuisartsLocatiePanel extends GenericPanel<Cervix
 
 	private WebMarkupContainer createAdresZoekvelden()
 	{
-		WebMarkupContainer adresZoekVelden = new WebMarkupContainer("adresZoekvelden");
+		var adresZoekVelden = new WebMarkupContainer("adresZoekvelden");
 		adresZoekVelden.add(new TextField<String>("straat"));
 		adresZoekVelden.add(new PostcodeField("postcode").setAlleenCijfersToegestaan(true));
 		adresZoekVelden.add(new TextField<String>("plaats"));
@@ -92,7 +92,7 @@ public abstract class CervixZoekHuisartsLocatiePanel extends GenericPanel<Cervix
 	{
 		if (filterLeeg())
 		{
-			EmptyPanel huisartsLocaties = new EmptyPanel("huisartsLocaties");
+			var huisartsLocaties = new EmptyPanel("huisartsLocaties");
 			huisartsLocaties.setOutputMarkupPlaceholderTag(true);
 			addOrReplace(huisartsLocaties);
 			return huisartsLocaties;
@@ -105,7 +105,7 @@ public abstract class CervixZoekHuisartsLocatiePanel extends GenericPanel<Cervix
 				@Override
 				public IModel<String> getDataModel(IModel<CervixHuisartsLocatie> huisartsLocatieModel)
 				{
-					CervixHuisarts huisarts = new PropertyModel<CervixHuisarts>(huisartsLocatieModel, getPropertyExpression()).getObject();
+					var huisarts = new PropertyModel<CervixHuisarts>(huisartsLocatieModel, getPropertyExpression()).getObject();
 					return Model.of(NaamUtil.getNaamHuisarts(huisarts));
 				}
 			});
@@ -119,16 +119,16 @@ public abstract class CervixZoekHuisartsLocatiePanel extends GenericPanel<Cervix
 					@Override
 					public IModel<String> getDataModel(IModel<CervixHuisartsLocatie> huisartsLocatieModel)
 					{
-						CervixHuisartsLocatie huisartsLocatie = huisartsLocatieModel.getObject();
-						String adres = huisartsLocatie.getLocatieAdres() != null ? AdresUtil.getVolledigeAdresString(huisartsLocatie.getLocatieAdres()) : "";
+						var huisartsLocatie = huisartsLocatieModel.getObject();
+						var adres = huisartsLocatie.getLocatieAdres() != null ? AdresUtil.getVolledigeAdresString(huisartsLocatie.getLocatieAdres()) : "";
 						return Model.of(adres);
 					}
 				});
 			}
 
-			CervixHuisartsLocatieProvider huisartsLocatieProvider = new CervixHuisartsLocatieProvider(CervixZoekHuisartsLocatiePanel.this.getModelObject());
+			var huisartsLocatieProvider = new CervixHuisartsLocatieProvider(CervixZoekHuisartsLocatiePanel.this.getModelObject());
 
-			ScreenitDataTable<CervixHuisartsLocatie, String> huisartsLocaties = new ScreenitDataTable<CervixHuisartsLocatie, String>("huisartsLocaties", columns,
+			var huisartsLocaties = new ScreenitDataTable<CervixHuisartsLocatie, String>("huisartsLocaties", columns,
 				huisartsLocatieProvider, 10, Model.of("huisarts locaties"))
 			{
 				@Override
@@ -145,7 +145,7 @@ public abstract class CervixZoekHuisartsLocatiePanel extends GenericPanel<Cervix
 
 	private boolean filterLeeg()
 	{
-		CervixHuisartsLocatieFilter filter = CervixZoekHuisartsLocatiePanel.this.getModelObject();
+		var filter = CervixZoekHuisartsLocatiePanel.this.getModelObject();
 		return StringUtils.isBlank(filter.getAchternaam()) && StringUtils.isBlank(filter.getAgbcode()) && StringUtils.isBlank(filter.getLocatieNaam())
 			&& StringUtils.isBlank(filter.getPostcode()) && StringUtils.isBlank(filter.getPlaats()) && StringUtils.isBlank(filter.getStraat());
 	}

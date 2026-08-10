@@ -33,14 +33,14 @@ public final class AntwoordFormulierUtil
 
 	public static String getTestObjid()
 	{
-		StringBuilder barcode = new StringBuilder();
+		var barcode = new StringBuilder();
 
 		barcode.append("TST-OBJID");
 
-		Random randomGenerator = new Random();
-		String barcodeCijfers = Integer.toString(randomGenerator.nextInt(99999));
+		var randomGenerator = new Random();
+		var barcodeCijfers = Integer.toString(randomGenerator.nextInt(99999));
 
-		for (int i = 8; i > barcodeCijfers.length(); i--)
+		for (var i = 8; i > barcodeCijfers.length(); i--)
 		{
 			barcode.append("0");
 		}

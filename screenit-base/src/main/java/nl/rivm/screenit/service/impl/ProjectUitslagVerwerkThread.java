@@ -21,7 +21,6 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
 import java.io.IOException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -62,16 +61,16 @@ public class ProjectUitslagVerwerkThread extends OpenEntityManagerInThread
 	@Override
 	protected void runInternal()
 	{
-		ProjectBestand uitslagenbestand = hibernateService.load(ProjectBestand.class, id);
+		var uitslagenbestand = hibernateService.load(ProjectBestand.class, id);
 		ProjectUitslagVerwerkingContext context = null;
 
-		ProjectBestandVerwerking verwerking = new ProjectBestandVerwerking();
+		var verwerking = new ProjectBestandVerwerking();
 		verwerking.setProjectBestand(uitslagenbestand);
 		uitslagenbestand.setVerwerking(verwerking);
 
 		try
 		{
-			File file = uploadDocumentService.load(uitslagenbestand.getUploadDocument());
+			var file = uploadDocumentService.load(uitslagenbestand.getUploadDocument());
 			context = new ProjectUitslagVerwerkingContext(uitslagenbestand, file);
 
 			while (context.isErEenNieuweRegel())
@@ -118,7 +117,7 @@ public class ProjectUitslagVerwerkThread extends OpenEntityManagerInThread
 
 	private String getLoggingMelding(ProjectBestand uitslag)
 	{
-		String melding = uitslag.getVerwerking().getRegelsVerwerkt() + " uitslagen toegevoegd voor project: " + uitslag.getProject().getNaam() + " door bestand: "
+		var melding = uitslag.getVerwerking().getRegelsVerwerkt() + " uitslagen toegevoegd voor project: " + uitslag.getProject().getNaam() + " door bestand: "
 			+ uitslag.getUploadDocument().getNaam();
 
 		if (uitslag.getVerwerking().getRegelsMislukt() > 0)

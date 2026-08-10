@@ -46,9 +46,9 @@ public abstract class MammaStandplaatsPeriodeOpmerkingenPanel extends GenericPan
 	public MammaStandplaatsPeriodeOpmerkingenPanel(String id, IModel<PlanningStandplaatsPeriodeDto> model)
 	{
 		super(id, model);
-		PlanningStandplaatsPeriodeDto standplaatsPeriodeDto = getModelObject();
+		var standplaatsPeriodeDto = getModelObject();
 
-		AjaxLink<PlanningStandplaatsPeriodeDto> opmerkingen = new AjaxLink<PlanningStandplaatsPeriodeDto>("opmerkingen")
+		var opmerkingen = new AjaxLink<PlanningStandplaatsPeriodeDto>("opmerkingen")
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -58,7 +58,7 @@ public abstract class MammaStandplaatsPeriodeOpmerkingenPanel extends GenericPan
 				MammaStandplaatsPeriodeOpmerkingenPanel.this.openOpmerkingen(target, MammaStandplaatsPeriodeOpmerkingenPanel.this.getModel());
 			}
 		};
-		MammaStandplaats standplaats = hibernateService.get(MammaStandplaats.class, standplaatsPeriodeDto.standplaatsId);
+		var standplaats = hibernateService.get(MammaStandplaats.class, standplaatsPeriodeDto.standplaatsId);
 		if (!standplaatsService.heeftActieveOpmerking(standplaats))
 		{
 			opmerkingen.add(new AttributeAppender("class", " opacity-05"));

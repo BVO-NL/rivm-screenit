@@ -72,10 +72,10 @@ public class ClientDocumentenPage extends ClientPage
 		this.selectedClientModel = selectedClient;
 		add(new ClientPaspoortPanel("paspoort", selectedClient));
 
-		Form<Void> form = new Form<>("form");
+		var form = new Form<Void>("form");
 		add(form);
 
-		final WebMarkupContainer documentenContainer = new WebMarkupContainer("documentenContainer");
+		final var documentenContainer = new WebMarkupContainer("documentenContainer");
 		documentenContainer.setOutputMarkupId(true);
 		form.add(documentenContainer);
 
@@ -112,7 +112,7 @@ public class ClientDocumentenPage extends ClientPage
 
 		});
 
-		IndicatingAjaxLink<Void> toevoegen = new IndicatingAjaxLink<Void>("documentToevoegen")
+		var toevoegen = new IndicatingAjaxLink<Void>("documentToevoegen")
 		{
 
 			@Override

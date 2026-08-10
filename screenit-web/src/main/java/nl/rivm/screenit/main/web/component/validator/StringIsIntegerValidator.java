@@ -40,7 +40,7 @@ public class StringIsIntegerValidator extends StringValidator implements IValida
 		super.validate(validatable);
 		if (validatable.isValid() && Ints.tryParse(validatable.getValue()) == null)
 		{
-			ValidationError error = new ValidationError(this, "numeriek");
+			var error = new ValidationError(this, "numeriek");
 			validatable.error(error);
 		}
 

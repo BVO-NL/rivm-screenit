@@ -22,12 +22,12 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.batch;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.form.FilterBvoFormPanel;
 import nl.rivm.screenit.model.batch.BvoZoekCriteria;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.JobType;
+import nl.rivm.screenit.util.EnumStringUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -45,7 +45,7 @@ public abstract class BatchBvoFilterPanel extends Panel
 	{
 		super(id);
 
-		BvoZoekCriteria zoekCriteria = new BvoZoekCriteria();
+		var zoekCriteria = new BvoZoekCriteria();
 		zoekCriteria.setBevolkingsonderzoeken(ScreenitSession.get().getOnderzoeken());
 		if (ScreenitSession.get().isZoekObjectGezetForComponent(BatchBvoFilterPanel.class))
 		{
@@ -74,8 +74,8 @@ public abstract class BatchBvoFilterPanel extends Panel
 
 	protected String getJobName(JobType job)
 	{
-		String naam = getString(EnumStringUtil.getPropertyString(job));
-		String afkortingen = "(" + Bevolkingsonderzoek.getAfkortingen(job.getBevolkingsOnderzoeken()) + ")";
+		var naam = getString(EnumStringUtil.getPropertyString(job));
+		var afkortingen = "(" + Bevolkingsonderzoek.getAfkortingen(job.getBevolkingsOnderzoeken()) + ")";
 		return naam + " " + afkortingen;
 	}
 

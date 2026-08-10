@@ -24,13 +24,13 @@ package nl.rivm.screenit.batch.service.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import jakarta.annotation.PostConstruct;
+
 import nl.rivm.screenit.batch.service.RevisionInformationService;
 import nl.rivm.screenit.model.envers.RevisionInformationResolver;
 import nl.rivm.screenit.model.envers.RevisionKenmerk;
 
 import org.springframework.stereotype.Service;
-
-import jakarta.annotation.PostConstruct;
 
 @Service
 public class RevisionInformationServiceImpl implements RevisionInformationService
@@ -45,9 +45,9 @@ public class RevisionInformationServiceImpl implements RevisionInformationServic
 			@Override
 			public RevisionKenmerk getRevisionKenmerk()
 			{
-				for (Map<Long, RevisionInformationResolver.RevisionInformationResolverDelegate> delegete : delegates.values())
+				for (var delegete : delegates.values())
 				{
-					RevisionKenmerk kenmerk = delegete.entrySet().stream()
+					var kenmerk = delegete.entrySet().stream()
 						.filter(e -> e.getKey().equals(Thread.currentThread().getId()))
 						.map(e -> e.getValue().getRevisionKenmerk())
 						.findFirst()

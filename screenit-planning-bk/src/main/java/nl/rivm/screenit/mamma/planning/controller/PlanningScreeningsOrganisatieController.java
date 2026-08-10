@@ -21,18 +21,12 @@ package nl.rivm.screenit.mamma.planning.controller;
  * =========================LICENSE_END==================================
  */
 
-import java.util.NavigableSet;
-import java.util.Set;
-
 import nl.rivm.screenit.dto.mamma.planning.PlanningAfspraakDrempelOverzichtDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningRestConstants;
 import nl.rivm.screenit.dto.mamma.planning.PlanningScreeningsOrganisatieDto;
 import nl.rivm.screenit.mamma.planning.index.PlanningClientFactorTypeIndex;
 import nl.rivm.screenit.mamma.planning.index.PlanningScreeningsOrganisatieIndex;
-import nl.rivm.screenit.mamma.planning.model.PlanningPostcodeReeks;
 import nl.rivm.screenit.mamma.planning.model.PlanningScreeningsOrganisatie;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaats;
-import nl.rivm.screenit.mamma.planning.model.PlanningStandplaatsPeriode;
 import nl.rivm.screenit.mamma.planning.service.PlanningAfspraakDrempelOverzichtService;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningDoorrekenenManager;
 import nl.rivm.screenit.mamma.planning.wijzigingen.PlanningWijzigingen;
@@ -61,7 +55,7 @@ public class PlanningScreeningsOrganisatieController
 	@PutMapping
 	public void put(@RequestBody PlanningScreeningsOrganisatieDto screeningsOrganisatieDto)
 	{
-		PlanningScreeningsOrganisatie screeningsOrganisatie = PlanningScreeningsOrganisatieIndex.get(screeningsOrganisatieDto.id);
+		var screeningsOrganisatie = PlanningScreeningsOrganisatieIndex.get(screeningsOrganisatieDto.id);
 		if (!screeningsOrganisatie.getFactorEersteOnderzoek().equals(screeningsOrganisatieDto.factorEersteOnderzoekBk))
 		{
 			screeningsOrganisatie.setFactorEersteOnderzoek(screeningsOrganisatieDto.factorEersteOnderzoekBk);
@@ -97,13 +91,13 @@ public class PlanningScreeningsOrganisatieController
 	{
 		PlanningWijzigingen.getClientSet().addAll(PlanningClientFactorTypeIndex.get(screeningsOrganisatie, factorType));
 
-		Set<PlanningStandplaats> standplaatsSet = screeningsOrganisatie.getStandplaatsSet();
+		var standplaatsSet = screeningsOrganisatie.getStandplaatsSet();
 		PlanningWijzigingen.getStandplaatsSet().addAll(standplaatsSet);
-		for (PlanningStandplaats standplaats : standplaatsSet)
+		for (var standplaats : standplaatsSet)
 		{
-			Set<PlanningPostcodeReeks> postcodeReeksSet = standplaats.getPostcodeReeksSet();
+			var postcodeReeksSet = standplaats.getPostcodeReeksSet();
 			PlanningWijzigingen.getPostcodeReeksSet().addAll(postcodeReeksSet);
-			for (PlanningPostcodeReeks planningPostcodeReeks : postcodeReeksSet)
+			for (var planningPostcodeReeks : postcodeReeksSet)
 			{
 				PlanningWijzigingen.getPostcodeReeksRegioSet().addAll(planningPostcodeReeks.getPostcodeReeksRegios());
 			}
@@ -119,7 +113,7 @@ public class PlanningScreeningsOrganisatieController
 	{
 		screeningsOrganisatie.getScreeningsEenheidSet().forEach(screeningsEenheid ->
 		{
-			NavigableSet<PlanningStandplaatsPeriode> standplaatsPeriodeNavigableSet = screeningsEenheid.getStandplaatsPeriodeNavigableSet();
+			var standplaatsPeriodeNavigableSet = screeningsEenheid.getStandplaatsPeriodeNavigableSet();
 			if (!standplaatsPeriodeNavigableSet.isEmpty())
 			{
 				PlanningWijzigingen.getWijzigingenRoute(screeningsEenheid).setVanafStandplaatsPeriode(standplaatsPeriodeNavigableSet.first());
@@ -130,7 +124,7 @@ public class PlanningScreeningsOrganisatieController
 	@GetMapping("/getAfspraakDrempelOverzicht/{screeningsOrganisatieId}")
 	public ResponseEntity<PlanningAfspraakDrempelOverzichtDto> getAfspraakDrempelOverzicht(@PathVariable long screeningsOrganisatieId)
 	{
-		PlanningScreeningsOrganisatie screeningsOrganisatie = PlanningScreeningsOrganisatieIndex.get(screeningsOrganisatieId);
+		var screeningsOrganisatie = PlanningScreeningsOrganisatieIndex.get(screeningsOrganisatieId);
 
 		return new ResponseEntity<>(afspraakDrempelOverzichtService.getAfspraakDrempelOverzicht(screeningsOrganisatie), HttpStatus.OK);
 	}

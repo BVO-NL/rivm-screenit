@@ -28,7 +28,6 @@ import nl.rivm.screenit.huisartsenportaal.model.Huisarts;
 import nl.rivm.screenit.huisartsenportaal.repository.HuisartsRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -69,12 +68,12 @@ public abstract class BaseValidator<T> implements Validator
 
 	protected Huisarts getIngelogdeHuisarts()
 	{
-		SecurityContext context = SecurityContextHolder.getContext();
+		var context = SecurityContextHolder.getContext();
 
 		if (context != null && context.getAuthentication() != null && context.getAuthentication().getPrincipal() instanceof Huisarts)
 		{
 
-			Huisarts huisarts = (Huisarts) context.getAuthentication().getPrincipal();
+			var huisarts = (Huisarts) context.getAuthentication().getPrincipal();
 			return huisartsRepository.findByHuisartsportaalId(huisarts.getHuisartsportaalId());
 		}
 		return null;

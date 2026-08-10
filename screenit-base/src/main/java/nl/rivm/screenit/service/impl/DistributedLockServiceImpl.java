@@ -64,9 +64,9 @@ public class DistributedLockServiceImpl implements DistributedLockService
 	@Override
 	public void lockAndWait(String locknaam, OrganisatieMedewerker organisatieMedewerker)
 	{
-		DistributedLockKey lockKey = new DistributedLockKey(createLocknaamVoorOmgeving(locknaam), organisatieMedewerker);
+		var lockKey = new DistributedLockKey(createLocknaamVoorOmgeving(locknaam), organisatieMedewerker);
 		LOG.debug("Try to lock: '{}'", locknaam);
-		StopWatch stopWatch = startNewStopwatch();
+		var stopWatch = startNewStopwatch();
 
 		lock(lockKey);
 
@@ -102,8 +102,8 @@ public class DistributedLockServiceImpl implements DistributedLockService
 
 	private synchronized void lock(DistributedLockKey lockKey)
 	{
-		CuratorFramework zooKeeper = getZooKeeperClient();
-		InterProcessSemaphoreMutex lock = new InterProcessSemaphoreMutex(zooKeeper, "/" + lockKey.getLocknaam());
+		var zooKeeper = getZooKeeperClient();
+		var lock = new InterProcessSemaphoreMutex(zooKeeper, "/" + lockKey.getLocknaam());
 
 		try
 		{
@@ -132,16 +132,16 @@ public class DistributedLockServiceImpl implements DistributedLockService
 	{
 		LOG.debug("Try to unlock: {}", lockKey);
 
-		InterProcessSemaphoreMutex lock = locks.get(lockKey);
+		var lock = locks.get(lockKey);
 		if (lock != null)
 		{
 			try
 			{
 				if (lock.isAcquiredInThisProcess())
 				{
-					StopWatch stopWatch = startNewStopwatch();
+					var stopWatch = startNewStopwatch();
 					lock.release();
-					long duurWachtOpLock = duurWachtOpLock(stopWatch);
+					var duurWachtOpLock = duurWachtOpLock(stopWatch);
 					if (duurWachtOpLock > 1000)
 					{
 						LOG.info("Unlocked '{}' in {} ms", lockKey.getLocknaam(), duurWachtOpLock);
@@ -180,7 +180,7 @@ public class DistributedLockServiceImpl implements DistributedLockService
 
 	private StopWatch startNewStopwatch()
 	{
-		StopWatch stopWatch = new StopWatch();
+		var stopWatch = new StopWatch();
 		stopWatch.start();
 		return stopWatch;
 	}

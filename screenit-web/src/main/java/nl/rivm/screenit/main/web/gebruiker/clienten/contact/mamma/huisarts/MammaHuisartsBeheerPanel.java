@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact.mamma.huisarts;
 import nl.rivm.screenit.main.model.BaseHuisartsModel;
 import nl.rivm.screenit.main.model.EnovationHuisartsModel;
 import nl.rivm.screenit.main.model.GeenHuisartsModel;
-import nl.rivm.screenit.service.RondeNummerService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
@@ -34,6 +33,7 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.enums.MammaGeenHuisartsOption;
+import nl.rivm.screenit.service.RondeNummerService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -62,7 +62,7 @@ public abstract class MammaHuisartsBeheerPanel extends GenericPanel<MammaScreeni
 		super(id, screeningRondeModel);
 		this.voorPrimaireHuisarts = voorPrimaireHuisarts;
 
-		boolean magWijzigen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_WIJZIGEN_HUISARTS, Actie.AANPASSEN);
+		var magWijzigen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_WIJZIGEN_HUISARTS, Actie.AANPASSEN);
 
 		AjaxLink<MammaScreeningRonde> wijzigHuisartsBtn = new IndicatingAjaxLink<MammaScreeningRonde>("wijzigHuisarts")
 		{
@@ -77,7 +77,7 @@ public abstract class MammaHuisartsBeheerPanel extends GenericPanel<MammaScreeni
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				EnovationHuisarts huisartsVorigeRonde = getHuisartsVorigeRonde();
+				var huisartsVorigeRonde = getHuisartsVorigeRonde();
 				if (huisartsVorigeRonde != null)
 				{
 					openHuisartsUitVorigeRondePopup(dialog, target, huisartsVorigeRonde);
@@ -92,7 +92,7 @@ public abstract class MammaHuisartsBeheerPanel extends GenericPanel<MammaScreeni
 		wijzigHuisartsBtn.setVisible(magWijzigen);
 		add(wijzigHuisartsBtn);
 
-		EnovationHuisarts enovationHuisarts = getModelObject().getHuisarts();
+		var enovationHuisarts = getModelObject().getHuisarts();
 
 		AjaxLink<Void> huisartsVerwijderenBtn = new IndicatingAjaxLink<Void>("verwijderHuisarts")
 		{
@@ -105,7 +105,7 @@ public abstract class MammaHuisartsBeheerPanel extends GenericPanel<MammaScreeni
 		add(huisartsVerwijderenBtn);
 		huisartsVerwijderenBtn.setVisible(!voorPrimaireHuisarts);
 
-		MammaGeenHuisartsOption geenHuisartsOptie = getModelObject().getGeenHuisartsOptie();
+		var geenHuisartsOptie = getModelObject().getGeenHuisartsOptie();
 		BaseHuisartsModel<?> huisartsModel = null;
 		if (enovationHuisarts != null)
 		{

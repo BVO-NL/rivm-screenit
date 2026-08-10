@@ -40,7 +40,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode_;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.mamma.MammaStandplaats_;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
 import nl.rivm.screenit.model.mamma.MammaTehuis_;
@@ -107,7 +106,7 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 	{
 		magSoAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.AANPASSEN) && !ingelogdNamensRegio;
 
-		ScreeningOrganisatie ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
+		var ingelogdNamensRegio = ScreenitSession.get().getScreeningOrganisatie();
 		IModel<MammaTehuisFilter> criteriaModel;
 		if (ScreenitSession.get().isZoekObjectGezetForComponent(MammaTehuisZoekenPage.class))
 		{
@@ -115,16 +114,16 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 		}
 		else
 		{
-			MammaTehuisFilter zoekObject = new MammaTehuisFilter();
+			var zoekObject = new MammaTehuisFilter();
 			criteriaModel = new CompoundPropertyModel<>(zoekObject);
 			zoekObject = criteriaModel.getObject();
 			zoekObject.setRegio(ingelogdNamensRegio);
 			zoekObject.setActief(true);
 		}
 
-		MammaTehuisDataProvider tehuisDataProvider = new MammaTehuisDataProvider(STANDPLAATS_PERIODE_VANAF_PROPERTY, criteriaModel);
+		var tehuisDataProvider = new MammaTehuisDataProvider(STANDPLAATS_PERIODE_VANAF_PROPERTY, criteriaModel);
 
-		final WebMarkupContainer refreshContainer = new WebMarkupContainer("refreshContainer");
+		final var refreshContainer = new WebMarkupContainer("refreshContainer");
 		refreshContainer.setOutputMarkupId(Boolean.TRUE);
 		add(refreshContainer);
 
@@ -143,7 +142,7 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 			@Override
 			public IModel<String> getDataModel(IModel<IMammaTehuisDto> rowModel)
 			{
-				long aantalGekoppeldeClienten = baseTehuisClientenDao.countClienten(rowModel.getObject().getTehuis(), MammaTehuisSelectie.GEKOPPELD, null);
+				var aantalGekoppeldeClienten = baseTehuisClientenDao.countClienten(rowModel.getObject().getTehuis(), MammaTehuisSelectie.GEKOPPELD, null);
 				return Model.of(Long.toString(aantalGekoppeldeClienten));
 			}
 		});
@@ -153,14 +152,14 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 			@Override
 			public IModel<String> getDataModel(IModel<IMammaTehuisDto> rowModel)
 			{
-				long aantalGekoppeldeClienten = baseTehuisClientenDao.countClienten(rowModel.getObject().getTehuis(), MammaTehuisSelectie.GEKOPPELD, null);
+				var aantalGekoppeldeClienten = baseTehuisClientenDao.countClienten(rowModel.getObject().getTehuis(), MammaTehuisSelectie.GEKOPPELD, null);
 				if (aantalGekoppeldeClienten == 0)
 				{
 					return Model.of("");
 				}
 				else
 				{
-					long aantalUitTeNodigenClienten = baseTehuisClientenDao.countClienten(rowModel.getObject().getTehuis(), MammaTehuisSelectie.UIT_TE_NODIGEN, null);
+					var aantalUitTeNodigenClienten = baseTehuisClientenDao.countClienten(rowModel.getObject().getTehuis(), MammaTehuisSelectie.UIT_TE_NODIGEN, null);
 					if (aantalUitTeNodigenClienten > 0)
 					{
 						return Model.of("Ja");
@@ -180,8 +179,8 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target, IModel<IMammaTehuisDto> model)
 			{
-				MammaTehuis tehuis = model.getObject().getTehuis();
-				MammaStandplaatsRonde standplaatsRonde = tehuisService.getHuidigeStandplaatsRondeVoorStandplaats(tehuis.getStandplaats());
+				var tehuis = model.getObject().getTehuis();
+				var standplaatsRonde = tehuisService.getHuidigeStandplaatsRondeVoorStandplaats(tehuis.getStandplaats());
 				if (standplaatsRonde != null)
 				{
 					setResponsePage(new MammaTehuisEditPage(ModelUtil.cModel(tehuis)));
@@ -200,7 +199,7 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				MammaTehuis tehuis = new MammaTehuis();
+				var tehuis = new MammaTehuis();
 				tehuis.setActief(true);
 				setResponsePage(new MammaTehuisEditPage(ModelUtil.cModel(tehuis)));
 			}
@@ -213,7 +212,7 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 		add(zoekForm);
 
 		zoekForm.add(new TextField<>("tehuis.naam"));
-		ScreenitDropdown<ScreeningOrganisatie> regioComponent = new ScreenitDropdown<>("regio",
+		var regioComponent = new ScreenitDropdown<ScreeningOrganisatie>("regio",
 			ModelUtil.listRModel(organisatieService.getActieveOrganisaties(ScreeningOrganisatie.class), false), new ChoiceRenderer<ScreeningOrganisatie>("naam"));
 		regioComponent.setVisible(ingelogdNamensRegio == null);
 		regioComponent.setNullValid(true);
@@ -221,7 +220,7 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 
 		zoekForm.add(maakStandplaatsenDropdown(criteriaModel.getObject().getTehuis().getStandplaats()));
 
-		IndicatingAjaxSubmitLink zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
+		var zoekenButton = new IndicatingAjaxSubmitLink("zoeken", zoekForm)
 		{
 
 			@Override
@@ -238,9 +237,9 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 
 	private ScreenitDropdown<MammaStandplaats> maakStandplaatsenDropdown(MammaStandplaats huidigeStandplaats)
 	{
-		List<MammaStandplaats> mogelijkeStandplaatsen = getMogelijkeStandplaatsen(huidigeStandplaats);
+		var mogelijkeStandplaatsen = getMogelijkeStandplaatsen(huidigeStandplaats);
 
-		ScreenitDropdown<MammaStandplaats> standplaatsenDropdown = new ScreenitDropdown<>("tehuis.standplaats",
+		var standplaatsenDropdown = new ScreenitDropdown<MammaStandplaats>("tehuis.standplaats",
 			ModelUtil.listRModel(mogelijkeStandplaatsen, false), new ChoiceRenderer<>("naam"));
 
 		standplaatsenDropdown.setNullValid(true);
@@ -258,7 +257,7 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 		}
 		else
 		{
-			ScreeningOrganisatie regio = ScreenitSession.get().getScreeningOrganisatie();
+			var regio = ScreenitSession.get().getScreeningOrganisatie();
 			mogelijkeStandplaatsen = standplaatsService.getActieveStandplaatsen(regio);
 		}
 

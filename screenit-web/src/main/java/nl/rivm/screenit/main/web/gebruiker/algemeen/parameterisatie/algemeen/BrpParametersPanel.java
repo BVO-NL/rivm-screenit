@@ -43,7 +43,7 @@ public class BrpParametersPanel extends BasePrimaireParametersPanel
 	@Override
 	protected Form<Parameterisatie> createAndGetForm()
 	{
-		Form<Parameterisatie> form = new Form<>("form");
+		var form = new Form<Parameterisatie>("form");
 		form.add(new TextField<>("brpMaximaalAantalIndicatiesIntrekAanvragen", Integer.class).add(RangeValidator.minimum(0)).add(RangeValidator.maximum(100000)).setRequired(true));
 		form.add(
 			new TextField<>("bovengrensLeeftijdVoorVerwijderenBrpIndicaties", Integer.class).add(RangeValidator.minimum(80)).add(RangeValidator.maximum(100)).setRequired(true));

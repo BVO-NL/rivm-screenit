@@ -24,7 +24,6 @@ package nl.rivm.screenit.service.colon.impl;
 import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -117,12 +116,12 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 	public String setClientInState(TestModel model)
 	{
 
-		Client client = geefClient(model.getBsn(), model.getGeboortedatum(), model.getGbaStatus(), model.getDatumOverlijden(), model.getGeslacht());
+		var client = geefClient(model.getBsn(), model.getGeboortedatum(), model.getGbaStatus(), model.getDatumOverlijden(), model.getGeslacht());
 		geefAdres(client, model.getGemeente());
-		ColonDossier dossier = client.getColonDossier();
+		var dossier = client.getColonDossier();
 		var nu = currentDateSupplier.getDate();
 
-		String melding = "Geen testacties geselecteerd.";
+		var melding = "Geen testacties geselecteerd.";
 		if (model.getColonTestActies() != null)
 		{
 			melding = "Client in status " + model.getColonTestActies().toString() + " gezet. Colon client selectie job kan gedraaid worden.";
@@ -200,10 +199,10 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 	private ColonDossier setClientInU1(ColonDossier dossier, boolean totUitnodiging, Date nu, ColonUitnodigingscategorie u)
 	{
-		Client client = dossier.getClient();
+		var client = dossier.getClient();
 		Date vooraankondigingdate;
 		Date uitnodigingsdate;
-		Integer dagen = simplePreferenceService.getInteger(PreferenceKey.VOORAANKONDIGINSPERIODE.name());
+		var dagen = simplePreferenceService.getInteger(PreferenceKey.VOORAANKONDIGINSPERIODE.name());
 		if (totUitnodiging)
 		{
 			vooraankondigingdate = DateUtil.minDagen(nu, dagen);
@@ -215,7 +214,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 			uitnodigingsdate = DateUtil.plusDagen(nu, dagen);
 		}
 
-		ColonVooraankondiging voor = dossier.getVooraankondiging();
+		var voor = dossier.getVooraankondiging();
 		if (voor == null)
 		{
 			voor = new ColonVooraankondiging();
@@ -227,8 +226,8 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 		hibernateService.saveOrUpdate(voor);
 		hibernateService.saveOrUpdate(dossier);
 
-		ColonScreeningRonde ronde = newScreeningRonde(dossier, vooraankondigingdate);
-		ColonUitnodiging uitnodiging = nieuweUitnodiging(ronde, uitnodigingsdate, u);
+		var ronde = newScreeningRonde(dossier, vooraankondigingdate);
+		var uitnodiging = nieuweUitnodiging(ronde, uitnodigingsdate, u);
 		hibernateService.saveOrUpdate(uitnodiging);
 		hibernateService.saveOrUpdate(ronde);
 		return dossier;
@@ -238,8 +237,8 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 	{
 		var nu = currentDateSupplier.getDate();
 		fixU2_2Dossier(dossier, nu);
-		ColonScreeningRonde ronde = newScreeningRonde(dossier, nu);
-		ColonUitnodiging uitnodiging = nieuweUitnodiging(ronde, nu, u);
+		var ronde = newScreeningRonde(dossier, nu);
+		var uitnodiging = nieuweUitnodiging(ronde, nu, u);
 		hibernateService.saveOrUpdateAll(uitnodiging, ronde);
 		return dossier;
 	}
@@ -247,8 +246,8 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 	private ColonDossier setClientInU2_3(ColonDossier dossier, ColonUitnodigingscategorie u)
 	{
 		var nu = currentDateSupplier.getDate();
-		ColonScreeningRonde ronde = newScreeningRonde(dossier, nu);
-		ColonUitnodiging uitnodiging = nieuweUitnodiging(ronde, nu, u);
+		var ronde = newScreeningRonde(dossier, nu);
+		var uitnodiging = nieuweUitnodiging(ronde, nu, u);
 		dossier.setVooraankondiging(null);
 		hibernateService.saveOrUpdateAll(ronde, dossier, uitnodiging);
 		return dossier;
@@ -275,7 +274,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 	private ColonScreeningRonde newScreeningRonde(ColonDossier dossier, Date nu)
 	{
 		closeOtherScreeningRondes(dossier);
-		ColonScreeningRonde screeningRonde = new ColonScreeningRonde();
+		var screeningRonde = new ColonScreeningRonde();
 		screeningRonde.setStatus(ScreeningRondeStatus.LOPEND);
 		screeningRonde.setAangemeld(true);
 		screeningRonde.setCreatieDatum(nu);
@@ -292,7 +291,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 		if (dossier.getLaatsteScreeningRonde() != null)
 		{
 			var nu = currentDateSupplier.getDate();
-			ColonScreeningRonde ronde = dossier.getLaatsteScreeningRonde();
+			var ronde = dossier.getLaatsteScreeningRonde();
 			ronde.setStatus(ScreeningRondeStatus.AFGEROND);
 			ronde.setStatusDatum(nu);
 			hibernateService.saveOrUpdate(ronde);
@@ -301,7 +300,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 	private ColonUitnodiging nieuweUitnodiging(ColonScreeningRonde screeningRonde, Date nu, ColonUitnodigingscategorie u)
 	{
-		ColonUitnodiging uitnodiging = new ColonUitnodiging();
+		var uitnodiging = new ColonUitnodiging();
 		uitnodiging.setUitnodigingsId(uitnodigingsDao.getNextUitnodigingsId());
 		uitnodiging.setCreatieDatum(nu);
 		uitnodiging.setScreeningRonde(screeningRonde);
@@ -357,7 +356,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 			maakAfspraakEnConclusie(dossier);
 
-			ColonScreeningRonde ronde = dossier.getLaatsteScreeningRonde();
+			var ronde = dossier.getLaatsteScreeningRonde();
 			ronde.setStatus(ScreeningRondeStatus.AFGEROND);
 			ronde.setStatusDatum(nu);
 			hibernateService.saveOrUpdate(ronde);
@@ -370,7 +369,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 		if (dossier.getLaatsteScreeningRonde() != null && dossier.getLaatsteScreeningRonde().getLaatsteFitRegistratie() != null
 			&& dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging() != null)
 		{
-			ColonUitnodiging uitnodiging = dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging();
+			var uitnodiging = dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging();
 			uitnodiging.setVerstuurdDatum(DateUtil.minDagen(uitnodiging.getVerstuurdDatum(), 5));
 
 			hibernateService.saveOrUpdate(uitnodiging);
@@ -383,7 +382,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 			hibernateService.saveOrUpdate(fitRegistratie);
 
-			ColonVooraankondiging voor = dossier.getVooraankondiging();
+			var voor = dossier.getVooraankondiging();
 			voor.setCreatieDatum(DateUtil.minDagen(voor.getCreatieDatum(), 5));
 			hibernateService.saveOrUpdate(voor);
 		}
@@ -495,7 +494,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 	private BagAdres geefAdres(Client client, Gemeente gemeente)
 	{
-		BagAdres gbaAdres = client.getPersoon().getGbaAdres();
+		var gbaAdres = client.getPersoon().getGbaAdres();
 		if (gbaAdres == null)
 		{
 			gbaAdres = new BagAdres();
@@ -510,7 +509,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 			gbaAdres.setPlaats(gemeente.getNaam());
 			gbaAdres.setStraat("Teststraat");
 			gbaAdres.setHuisnummer(9);
-			String postcode = "1111XX";
+			var postcode = "1111XX";
 			gbaAdres.setPostcode(postcode);
 
 			hibernateService.saveOrUpdate(gbaAdres);
@@ -526,10 +525,10 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 	private ColonIntakeAfspraak maakAfspraak(ColonDossier dossier)
 	{
-		Client client = dossier.getClient();
-		ColonScreeningRonde screeningRonde = dossier.getLaatsteScreeningRonde();
+		var client = dossier.getClient();
+		var screeningRonde = dossier.getLaatsteScreeningRonde();
 
-		ColonIntakeAfspraak intakeAfspraak = screeningRonde.getLaatsteAfspraak();
+		var intakeAfspraak = screeningRonde.getLaatsteAfspraak();
 		if (intakeAfspraak == null)
 		{
 			intakeAfspraak = new ColonIntakeAfspraak();
@@ -553,7 +552,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 		}
 		if (intakeAfspraak.getKamer() == null)
 		{
-			List<ColonIntakekamer> all = hibernateService.loadAll(ColonIntakekamer.class);
+			var all = hibernateService.loadAll(ColonIntakekamer.class);
 			intakeAfspraak.setKamer(all.get(0));
 		}
 
@@ -571,14 +570,14 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 	private ColonConclusie maakAfspraakEnConclusie(ColonDossier dossier)
 	{
-		ColonIntakeAfspraak intakeAfspraak = maakAfspraak(dossier);
-		ColonConclusie conclusie = intakeAfspraak.getConclusie();
+		var intakeAfspraak = maakAfspraak(dossier);
+		var conclusie = intakeAfspraak.getConclusie();
 		if (conclusie == null)
 		{
 			conclusie = new ColonConclusie();
 			conclusie.setType(ColonConclusieType.COLOSCOPIE);
 			conclusie.setDatum(currentDateSupplier.getDate());
-			List<OrganisatieMedewerker> all = hibernateService.loadAll(OrganisatieMedewerker.class);
+			var all = hibernateService.loadAll(OrganisatieMedewerker.class);
 			conclusie.setOrganisatieMedewerker(all.get(0));
 			intakeAfspraak.setConclusie(conclusie);
 		}
@@ -589,13 +588,13 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 	private void uitnodigingVerstuurd(ColonUitnodiging uitnodiging, Date nu)
 	{
-		ColonScreeningRonde screeningRonde = uitnodiging.getScreeningRonde();
+		var screeningRonde = uitnodiging.getScreeningRonde();
 		uitnodiging.setVerstuurdDatum(nu);
 		uitnodiging.setVerstuurdDoorInpakcentrum(Boolean.TRUE);
 		uitnodiging.setVerstuurd(Boolean.TRUE);
 
-		ColonBrief brief = maakBrief("2-Brief uitnodiging FIT.doc", BriefType.COLON_UITNODIGING, screeningRonde.getDossier().getClient(), nu);
-		ColonMergedBrieven mbrieven = new ColonMergedBrieven();
+		var brief = maakBrief("2-Brief uitnodiging FIT.doc", BriefType.COLON_UITNODIGING, screeningRonde.getDossier().getClient(), nu);
+		var mbrieven = new ColonMergedBrieven();
 		mbrieven.setGeprint(true);
 		mbrieven.setPrintDatum(nu);
 		mbrieven.setBriefType(BriefType.COLON_UITNODIGING);
@@ -608,7 +607,7 @@ public class ColonTestStateServiceImpl implements ColonTestStateService
 
 	private ColonBrief maakBrief(String templateNaam, BriefType briefType, Client client, Date nu)
 	{
-		ColonBrief brief = new ColonBrief();
+		var brief = new ColonBrief();
 		brief.setTemplateNaam(templateNaam);
 		brief.setCreatieDatum(DateUtil.minDagen(nu, 1));
 		brief.setGegenereerd(true);

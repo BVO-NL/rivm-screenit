@@ -85,7 +85,7 @@ public class ProjectAttributenPage extends ProjectBasePage
 			public void onClick(AjaxRequestTarget target)
 			{
 
-				IModel<ProjectAttribuut> projectAttribuutModel = ModelUtil.ccModel(new ProjectAttribuut());
+				var projectAttribuutModel = ModelUtil.ccModel(new ProjectAttribuut());
 				projectAttribuutModel.getObject().setProject(getProjectModel().getObject());
 
 				openProjectAttribuutEditPage(target, projectAttribuutModel);
@@ -121,14 +121,14 @@ public class ProjectAttributenPage extends ProjectBasePage
 
 	private WebMarkupContainer getAttributenContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("projectAttributenContainer");
+		var container = new WebMarkupContainer("projectAttributenContainer");
 		container.setOutputMarkupId(true);
 
 		List<IColumn<ProjectAttribuut, String>> columns = new ArrayList<>();
 		columns.add(new PropertyColumn<>(Model.of("Naam"), NAAM, NAAM));
 		columns.add(new PropertyColumn<>(Model.of("Mergefield"), MERGE_FIELD, MERGE_FIELD));
 
-		Map<Boolean, String> isBarcode = Constants.getBooleanWeergave();
+		var isBarcode = Constants.getBooleanWeergave();
 		columns.add(new BooleanStringPropertyColumn<>(Model.of("Barcode"), isBarcode, BARCODE));
 
 		Map<Boolean, String> booleanStringMap = new HashMap<>();
@@ -144,13 +144,13 @@ public class ProjectAttributenPage extends ProjectBasePage
 			{
 				hibernateService.saveOrUpdate(actiefObject);
 
-				WebMarkupContainer container = getAttributenContainer();
+				var container = getAttributenContainer();
 				ProjectAttributenPage.this.attributenContainer.replaceWith(container);
 				ProjectAttributenPage.this.attributenContainer = container;
 				target.add(ProjectAttributenPage.this.attributenContainer);
 
-				Project project = actiefObject.getProject();
-				String melding = "Project attribuut" + actiefObject.getNaam() + " ge\u00EFnactiveerd van Project " + project.getNaam();
+				var project = actiefObject.getProject();
+				var melding = "Project attribuut" + actiefObject.getNaam() + " ge\u00EFnactiveerd van Project " + project.getNaam();
 
 				logService.logGebeurtenis(LogGebeurtenis.PROJECT_ATTRIBUUT_VERWIJDERD, ScreenitSession.get().getIngelogdAccount(), melding);
 
@@ -164,7 +164,7 @@ public class ProjectAttributenPage extends ProjectBasePage
 			}
 		});
 
-		ScreenitDataTable<ProjectAttribuut, String> dataTable = new ScreenitDataTable<ProjectAttribuut, String>("projectAttributen", columns,
+		var dataTable = new ScreenitDataTable<ProjectAttribuut, String>("projectAttributen", columns,
 			new ProjectAttributenDataProvider(filterModel), 10, Model.of("attributen"))
 		{
 			@Override
@@ -190,7 +190,7 @@ public class ProjectAttributenPage extends ProjectBasePage
 			@Override
 			protected void opslaan(AjaxRequestTarget target)
 			{
-				WebMarkupContainer container = getAttributenContainer();
+				var container = getAttributenContainer();
 				ProjectAttributenPage.this.attributenContainer.replaceWith(container);
 				ProjectAttributenPage.this.attributenContainer = container;
 				target.add(ProjectAttributenPage.this.attributenContainer);
@@ -202,7 +202,7 @@ public class ProjectAttributenPage extends ProjectBasePage
 
 	private WebMarkupContainer getPassPoortContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("projectPasspoortContainer");
+		var container = new WebMarkupContainer("projectPasspoortContainer");
 		container.setOutputMarkupId(true);
 		container.add(new ProjectPaspoortPanel("projectPasspoort", getProjectModel()));
 		return container;

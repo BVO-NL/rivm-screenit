@@ -55,7 +55,7 @@ public class WeekNumberDateField extends DatePicker<LocalDate>
 			setMinDate(new DateOption(DateUtil.toUtilDate(eersteDagNieuweWeek)));
 		}
 
-		JsScopeUiDatePickerDateTextEvent onSelectEventJs = JsScopeUiDatePickerDateTextEvent
+		var onSelectEventJs = JsScopeUiDatePickerDateTextEvent
 			.quickScope(new JsStatement()
 				.append("var selectedDate = $(this).datepicker('getDate');")
 				.append(" var year = selectedDate.getFullYear(); ")
@@ -78,8 +78,8 @@ public class WeekNumberDateField extends DatePicker<LocalDate>
 			{
 				if (StringUtils.isNotBlank(value))
 				{
-					String weeknummer = StringUtils.removeStart(value, "Week ");
-					String[] splittedWeeknummer = weeknummer.split(",");
+					var weeknummer = StringUtils.removeStart(value, "Week ");
+					var splittedWeeknummer = weeknummer.split(",");
 					if (splittedWeeknummer.length == 2 && NumberUtils.isDigits(StringUtils.trim(splittedWeeknummer[0]))
 						&& NumberUtils.isDigits(StringUtils.trim(splittedWeeknummer[1])))
 					{

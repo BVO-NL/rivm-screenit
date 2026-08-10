@@ -82,8 +82,8 @@ public class PercentageBigDecimalField extends TextField<BigDecimal>
 				@Override
 				protected NumberFormat newNumberFormat(Locale locale)
 				{
-					NumberFormat nf = NumberFormat.getNumberInstance(Constants.LOCALE_NL);
-					DecimalFormat df = (DecimalFormat) nf;
+					var nf = NumberFormat.getNumberInstance(Constants.LOCALE_NL);
+					var df = (DecimalFormat) nf;
 					df.applyPattern("##0");
 					return df;
 				}

@@ -59,7 +59,7 @@ public class FileValidator implements IValidator<List<FileUpload>>
 			naamFileTypes.add(fileType.getNaamFileType());
 		}
 
-		for (FileUpload file : files)
+		for (var file : files)
 		{
 			FileType fileTypeMatch = null;
 			var fileName = file.getClientFileName();
@@ -68,13 +68,13 @@ public class FileValidator implements IValidator<List<FileUpload>>
 				if (fileType.getAllowedContentTypes().contains(file.getContentType())
 					&& fileType.getFileExtensies().stream().anyMatch(fileName::endsWith))
 				{
-					byte[] magicNumber = fileType.getMagicNumber();
+					var magicNumber = fileType.getMagicNumber();
 					if (magicNumber != null)
 					{
 						var offset = fileType.getOffset();
 						if (file.getBytes().length >= offset + magicNumber.length)
 						{
-							byte[] magicNumberUpload = Arrays.copyOfRange(file.getBytes(), offset, offset + magicNumber.length);
+							var magicNumberUpload = Arrays.copyOfRange(file.getBytes(), offset, offset + magicNumber.length);
 							if (Arrays.equals(magicNumberUpload, magicNumber))
 							{
 								fileTypeMatch = fileType;

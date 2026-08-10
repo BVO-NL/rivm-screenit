@@ -23,9 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact.mamma;
  */
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +35,7 @@ import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContac
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.ClientContactPanel;
 import nl.rivm.screenit.model.enums.BevestigingsType;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
-import nl.rivm.screenit.model.mamma.MammaStandplaats;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.mamma.MammaUitstel;
 import nl.rivm.screenit.service.mamma.MammaBaseUitstelService;
 import nl.rivm.screenit.util.AdresUtil;
@@ -48,12 +43,10 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -87,17 +80,17 @@ public class MammaUitstelPanel extends AbstractClientContactActiePanel<MammaUits
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		MammaUitstel uitstel = getModelObject();
-		MammaStandplaats standplaats = uitstel.getStandplaats();
-		String screeningsEenheidNaam = "";
+		var uitstel = getModelObject();
+		var standplaats = uitstel.getStandplaats();
+		var screeningsEenheidNaam = "";
 
-		for (MammaStandplaatsRonde ronde : standplaats.getStandplaatsRonden())
+		for (var ronde : standplaats.getStandplaatsRonden())
 		{
-			for (MammaStandplaatsPeriode periode : ronde.getStandplaatsPerioden())
+			for (var periode : ronde.getStandplaatsPerioden())
 			{
-				LocalDate standplaatsPeriodeVanaf = DateUtil.toLocalDate(periode.getVanaf());
-				LocalDate standplaatsPeriodeTotEnMet = DateUtil.toLocalDate(periode.getTotEnMet());
-				LocalDate streefDatum = DateUtil.toLocalDate(uitstel.getStreefDatum());
+				var standplaatsPeriodeVanaf = DateUtil.toLocalDate(periode.getVanaf());
+				var standplaatsPeriodeTotEnMet = DateUtil.toLocalDate(periode.getTotEnMet());
+				var streefDatum = DateUtil.toLocalDate(uitstel.getStreefDatum());
 				if (!standplaatsPeriodeVanaf.isAfter(streefDatum)
 					&& !standplaatsPeriodeTotEnMet.isBefore(streefDatum))
 				{
@@ -111,14 +104,14 @@ public class MammaUitstelPanel extends AbstractClientContactActiePanel<MammaUits
 
 		add(new Label("screeningsEenheid", screeningsEenheidNaam));
 
-		MammaStandplaatsLocatie locatie = standplaats.getLocatie();
-		MammaStandplaatsLocatie tijdelijkeLocatie = standplaats.getTijdelijkeLocatie();
+		var locatie = standplaats.getLocatie();
+		var tijdelijkeLocatie = standplaats.getTijdelijkeLocatie();
 		if (tijdelijkeLocatie.getStartDatum() != null)
 		{
-			Date eindDatum = tijdelijkeLocatie.getEindDatum();
+			var eindDatum = tijdelijkeLocatie.getEindDatum();
 			eindDatum.setHours(23);
 			eindDatum.setMinutes(59);
-			Date uitstelDatum = uitstel.getStreefDatum();
+			var uitstelDatum = uitstel.getStreefDatum();
 			if (tijdelijkeLocatie.getStartDatum().compareTo(uitstelDatum) * uitstelDatum.compareTo(eindDatum) > 0)
 			{
 				locatie = tijdelijkeLocatie;
@@ -131,13 +124,13 @@ public class MammaUitstelPanel extends AbstractClientContactActiePanel<MammaUits
 
 		add(ComponentHelper.newDatePicker("streefDatum").setRequired(true).add(new WerkdagValidator()));
 
-		Component clientContactCheckBox = ComponentHelper.newCheckBox("clientContact", clientContact).setVisible(isVanuitPlanningOfAfsprakenkalender());
+		var clientContactCheckBox = ComponentHelper.newCheckBox("clientContact", clientContact).setVisible(isVanuitPlanningOfAfsprakenkalender());
 		add(clientContactCheckBox);
 
-		CheckBox briefAanmakenCheckBox = ComponentHelper.newCheckBox("briefAanmaken", briefAanmaken);
+		var briefAanmakenCheckBox = ComponentHelper.newCheckBox("briefAanmaken", briefAanmaken);
 		add(briefAanmakenCheckBox);
 
-		IndicatingAjaxLink<Void> wijzigMoment = new IndicatingAjaxLink<Void>("wijzigMoment")
+		var wijzigMoment = new IndicatingAjaxLink<Void>("wijzigMoment")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target)
@@ -157,10 +150,10 @@ public class MammaUitstelPanel extends AbstractClientContactActiePanel<MammaUits
 			error(getString("geen.client.contact"));
 		}
 
-		MammaStandplaatsPeriode standplaatsPeriode = standplaatsPeriodeModel.getObject();
-		MammaUitstel uitstel = getModelObject();
+		var standplaatsPeriode = standplaatsPeriodeModel.getObject();
+		var uitstel = getModelObject();
 
-		String validatieError = baseUitstelService.valideerStandplaatsPeriode(standplaatsPeriode, DateUtil.toLocalDate(uitstel.getStreefDatum()));
+		var validatieError = baseUitstelService.valideerStandplaatsPeriode(standplaatsPeriode, DateUtil.toLocalDate(uitstel.getStreefDatum()));
 
 		if (StringUtils.isNotBlank(validatieError))
 		{
@@ -171,8 +164,8 @@ public class MammaUitstelPanel extends AbstractClientContactActiePanel<MammaUits
 	@Override
 	public List<String> getOpslaanMeldingen()
 	{
-		MammaUitstel uitstel = getModelObject();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE dd-MM-yyyy");
+		var uitstel = getModelObject();
+		var dateFormat = new SimpleDateFormat("EEEE dd-MM-yyyy");
 		return Arrays
 			.asList(
 				String.format("De afspraak wordt uitgesteld naar de streefdatum %s in %s", dateFormat.format(uitstel.getStreefDatum()),

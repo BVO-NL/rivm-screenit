@@ -27,7 +27,6 @@ import java.util.List;
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.web.gebruiker.clienten.ClientContactActieTypeWrapper;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -42,7 +41,7 @@ public class MammaNaarAfspraakMakenPanel extends GenericPanel<Client>
 	public MammaNaarAfspraakMakenPanel(String id, IModel<Client> clientModel)
 	{
 		super(id, clientModel);
-		IndicatingAjaxLink<Client> link = new IndicatingAjaxLink<Client>("aanmaken")
+		var link = new IndicatingAjaxLink<Client>("aanmaken")
 		{
 
 			@Override
@@ -51,9 +50,9 @@ public class MammaNaarAfspraakMakenPanel extends GenericPanel<Client>
 				List<Object> extraParameters = new ArrayList<>();
 				extraParameters.add(Constants.CONTACT_EXTRA_PARAMETER_VANUIT_BK_PLANNING);
 
-				Client client = MammaNaarAfspraakMakenPanel.this.getModelObject();
-				MammaScreeningRonde ronde = client.getMammaDossier().getLaatsteScreeningRonde();
-				ClientContactActieTypeWrapper actie = ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN;
+				var client = MammaNaarAfspraakMakenPanel.this.getModelObject();
+				var ronde = client.getMammaDossier().getLaatsteScreeningRonde();
+				var actie = ClientContactActieTypeWrapper.MAMMA_AFSPRAAK_MAKEN;
 				if (ronde != null && ronde.getLaatsteUitnodiging().getLaatsteAfspraak() != null
 					&& !MammaAfspraakStatus.isGeannuleerd(ronde.getLaatsteUitnodiging().getLaatsteAfspraak().getStatus()))
 				{

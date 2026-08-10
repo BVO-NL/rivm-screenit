@@ -55,20 +55,20 @@ public enum PlanningBlokIndex
 
 	public static void changed(PlanningScreeningsEenheid screeningsEenheid, Collection<PlanningBlok> blokSet)
 	{
-		Long screeningsEenheidId = screeningsEenheid.getId();
+		var screeningsEenheidId = screeningsEenheid.getId();
 
-		Set<PlanningBlok> blokChangedSet = blokChangedMap.computeIfAbsent(screeningsEenheidId, k -> new HashSet<>());
+		var blokChangedSet = blokChangedMap.computeIfAbsent(screeningsEenheidId, k -> new HashSet<>());
 		blokChangedSet.addAll(blokSet);
 	}
 
 	public static void deleted(PlanningScreeningsEenheid screeningsEenheid, Collection<PlanningBlok> blokSet)
 	{
-		Long screeningsEenheidId = screeningsEenheid.getId();
+		var screeningsEenheidId = screeningsEenheid.getId();
 
-		Set<PlanningBlok> blokDeletedSet = blokDeletedMap.computeIfAbsent(screeningsEenheidId, k -> new HashSet<>());
+		var blokDeletedSet = blokDeletedMap.computeIfAbsent(screeningsEenheidId, k -> new HashSet<>());
 		blokDeletedSet.addAll(blokSet);
 
-		Set<PlanningBlok> blokChangedSet = blokChangedMap.get(screeningsEenheidId);
+		var blokChangedSet = blokChangedMap.get(screeningsEenheidId);
 		if (blokChangedSet != null)
 		{
 			blokChangedSet.removeAll(blokSet);
@@ -79,13 +79,13 @@ public enum PlanningBlokIndex
 
 	public static Set<PlanningBlok> getBlokDeletedSet(PlanningScreeningsEenheid screeningsEenheid)
 	{
-		Set<PlanningBlok> deletedBlokSet = blokDeletedMap.get(screeningsEenheid.getId());
+		var deletedBlokSet = blokDeletedMap.get(screeningsEenheid.getId());
 		return deletedBlokSet == null ? Collections.emptySet() : deletedBlokSet;
 	}
 
 	public static Set<PlanningBlok> getBlokChangedSet(PlanningScreeningsEenheid screeningsEenheid)
 	{
-		Set<PlanningBlok> changedBlokSet = blokChangedMap.get(screeningsEenheid.getId());
+		var changedBlokSet = blokChangedMap.get(screeningsEenheid.getId());
 		return changedBlokSet == null ? Collections.emptySet() : changedBlokSet;
 	}
 
@@ -98,7 +98,7 @@ public enum PlanningBlokIndex
 
 	public static void removeAll(PlanningScreeningsEenheid screeningsEenheid)
 	{
-		for (PlanningBlok blok : screeningsEenheid.getBlokSet())
+		for (var blok : screeningsEenheid.getBlokSet())
 		{
 			blokMap.remove(blok.getConceptId());
 		}

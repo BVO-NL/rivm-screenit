@@ -52,17 +52,17 @@ public final class ZipUtil
 {
 	public static Set<File> maakZips(List<UploadDocument> uploadDocumenten, String baseZipNaam, long maxKiloBytesZip) throws IOException
 	{
-		UploadDocumentService uploadDocumentService = ApplicationContextProvider.getApplicationContext().getBean(UploadDocumentService.class);
+		var uploadDocumentService = ApplicationContextProvider.getApplicationContext().getBean(UploadDocumentService.class);
 		var zips = new LinkedHashSet<File>();
 		var zipNummer = 0;
 		File zipFile = null;
 		ZipOutputStream zipOut = null;
-		int aantalBestandenInZip = 0;
+		var aantalBestandenInZip = 0;
 
-		for (UploadDocument document : uploadDocumenten)
+		for (var document : uploadDocumenten)
 		{
 			var fileToZip = uploadDocumentService.load(document);
-			long zipKiloBytes = zipFile == null ? 0 : (zipFile.length() + fileToZip.length()) / 1024;
+			var zipKiloBytes = zipFile == null ? 0 : (zipFile.length() + fileToZip.length()) / 1024;
 
 			if (zipNummer == 0 || zipKiloBytes >= (maxKiloBytesZip))
 			{
@@ -142,7 +142,7 @@ public final class ZipUtil
 		try (var in = new FileInputStream(srcFile);)
 		{
 
-			byte[] buffer = new byte[1024];
+			var buffer = new byte[1024];
 			int len;
 			while ((len = in.read(buffer)) != -1)
 			{

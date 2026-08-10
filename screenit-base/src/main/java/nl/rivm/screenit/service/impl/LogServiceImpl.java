@@ -149,7 +149,7 @@ public class LogServiceImpl implements LogService
 		Bevolkingsonderzoek[] bvos = null;
 		if (LogGebeurtenis.MEDVRY_VERSTUURD.equals(logGebeurtenis) && batchApplicationTypeString != null)
 		{
-			BatchApplicationType batchApplicationType = BatchApplicationType.valueOf(batchApplicationTypeString);
+			var batchApplicationType = BatchApplicationType.valueOf(batchApplicationTypeString);
 			switch (batchApplicationType)
 			{
 			case CERVIX:
@@ -174,7 +174,7 @@ public class LogServiceImpl implements LogService
 	{
 		if (logGebeurtenis != null)
 		{
-			LogEvent logEvent = getLogEvent(logGebeurtenis.getDefaultLevel(), omschrijving);
+			var logEvent = getLogEvent(logGebeurtenis.getDefaultLevel(), omschrijving);
 			logGebeurtenis(logGebeurtenis, logEvent, ingelogd, getBvos(logGebeurtenis));
 		}
 	}
@@ -190,7 +190,7 @@ public class LogServiceImpl implements LogService
 	@Transactional
 	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, Account account, Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
-		LogEvent logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), null);
+		var logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), null);
 		logGebeurtenis(gebeurtenis, dashboardOrganisaties, logEvent, account, null, bevolkingsonderzoeken);
 	}
 
@@ -212,7 +212,7 @@ public class LogServiceImpl implements LogService
 	@Transactional
 	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, Account account, String melding, Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
-		LogEvent logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), melding);
+		var logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), melding);
 		logGebeurtenis(gebeurtenis, dashboardOrganisaties, logEvent, account, null, bevolkingsonderzoeken);
 	}
 
@@ -227,7 +227,7 @@ public class LogServiceImpl implements LogService
 	@Transactional
 	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, Account account, Client client, Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
-		LogEvent logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), null);
+		var logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), null);
 		logGebeurtenis(gebeurtenis, dashboardOrganisaties, logEvent, account, client, bevolkingsonderzoeken);
 	}
 
@@ -243,7 +243,7 @@ public class LogServiceImpl implements LogService
 	public void logGebeurtenis(LogGebeurtenis gebeurtenis, List<Organisatie> dashboardOrganisaties, Account account, Client client, String melding,
 		Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
-		LogEvent logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), melding);
+		var logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), melding);
 		logGebeurtenis(gebeurtenis, dashboardOrganisaties, logEvent, account, client, bevolkingsonderzoeken);
 	}
 
@@ -303,7 +303,7 @@ public class LogServiceImpl implements LogService
 	public void logGebeurtenis(LogGebeurtenis gebeurtenis, MammaScreeningsEenheid screeningsEenheid, List<Organisatie> dashboardOrganisaties, Account account, Client client,
 		String melding, LocalDateTime datumTijd)
 	{
-		LogEvent logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), melding);
+		var logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), melding);
 		logGebeurtenis(gebeurtenis, screeningsEenheid, dashboardOrganisaties, logEvent, account, client, datumTijd, Bevolkingsonderzoek.MAMMA);
 	}
 
@@ -312,7 +312,7 @@ public class LogServiceImpl implements LogService
 	public void logGebeurtenis(LogGebeurtenis gebeurtenis, MammaScreeningsEenheid screeningsEenheid, Account account, Client client, String melding, LocalDateTime datumTijd,
 		Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
-		LogEvent logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), melding);
+		var logEvent = getLogEvent(gebeurtenis.getDefaultLevel(), melding);
 		logGebeurtenis(gebeurtenis, screeningsEenheid, new ArrayList<>(), logEvent, account, client, datumTijd, bevolkingsonderzoeken);
 	}
 
@@ -321,7 +321,7 @@ public class LogServiceImpl implements LogService
 	public void logGebeurtenis(LogGebeurtenis logGebeurtenis, MammaScreeningsEenheid mammaScreeningsEenheid, List<Organisatie> dashboardOrganisaties, LogEvent logEvent,
 		Account account, Client client, LocalDateTime datumTijd, Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
-		LogRegel logRegel = new LogRegel();
+		var logRegel = new LogRegel();
 		logRegel.setLogGebeurtenis(logGebeurtenis);
 		if (datumTijd != null)
 		{
@@ -369,7 +369,7 @@ public class LogServiceImpl implements LogService
 	@Override
 	public boolean heeftGeenBestaandeLogregelBinnenPeriode(List<LogGebeurtenis> gebeurtenissen, String bsn, List<Level> levels, String melding, int dagen)
 	{
-		LoggingZoekCriteria loggingZoekCriteria = new LoggingZoekCriteria();
+		var loggingZoekCriteria = new LoggingZoekCriteria();
 		loggingZoekCriteria.setGebeurtenis(gebeurtenissen);
 		loggingZoekCriteria.setBsnClient(bsn);
 		loggingZoekCriteria.setMelding(melding);
@@ -377,7 +377,7 @@ public class LogServiceImpl implements LogService
 
 		loggingZoekCriteria.setVanaf(DateUtil.minDagen(currentDateSupplier.getDate(), dagen));
 
-		List<LogRegel> result = getLogRegels(loggingZoekCriteria, 0, 1, new SortState<>("gebeurtenisDatum", Boolean.FALSE));
+		var result = getLogRegels(loggingZoekCriteria, 0, 1, new SortState<>("gebeurtenisDatum", Boolean.FALSE));
 
 		return result.isEmpty();
 	}
@@ -388,7 +388,7 @@ public class LogServiceImpl implements LogService
 	{
 		if (!logRegels.isEmpty())
 		{
-			LogRegel logRegel = logRegels.get(0);
+			var logRegel = logRegels.get(0);
 			logGebeurtenis(logGebeurtenisVoorVerwijderActie, ingelogdeOrganisatieMedewerker, logRegel.getClient(),
 				logRegel.getBevolkingsonderzoeken().toArray(Bevolkingsonderzoek[]::new));
 		}
@@ -411,7 +411,7 @@ public class LogServiceImpl implements LogService
 
 	private LogEvent getLogEvent(Level level, String melding)
 	{
-		LogEvent logEvent = new LogEvent();
+		var logEvent = new LogEvent();
 		logEvent.setLevel(level);
 		if (!Strings.isNullOrEmpty(melding))
 		{
@@ -423,11 +423,11 @@ public class LogServiceImpl implements LogService
 
 	private void fitMelding(LogEvent logEvent)
 	{
-		String melding = logEvent.getMelding();
+		var melding = logEvent.getMelding();
 		if (melding != null && melding.length() > meldingColumnSize)
 		{
 			logEvent.setVolledigeMelding(melding);
-			boolean containsHTML = melding.matches(".*\\<[^>]+>.*");
+			var containsHTML = melding.matches(".*\\<[^>]+>.*");
 			melding = melding.substring(0, meldingColumnSize - MELDING_TOO_LONG_PREFIX.length());
 			if (containsHTML && melding.lastIndexOf('<') > melding.lastIndexOf('>'))
 			{

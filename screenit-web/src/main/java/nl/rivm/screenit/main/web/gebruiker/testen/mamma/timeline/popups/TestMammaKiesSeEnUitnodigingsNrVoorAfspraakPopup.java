@@ -61,14 +61,14 @@ abstract public class TestMammaKiesSeEnUitnodigingsNrVoorAfspraakPopup extends A
 	{
 		super(id, clientModel);
 
-		TextField<String> accessionNumberTF = new TextField<>("uitnodigingsNr");
+		var accessionNumberTF = new TextField<String>("uitnodigingsNr");
 		accessionNumberTF.setVisible(clientModel.getObject().size() == 1);
 		accessionNumberTF.setModel(new PropertyModel<>(this, "uitnodigingsNr"));
 		add(accessionNumberTF);
 
 		ScreenitDropdown<MammaScreeningsEenheid> screeningsEenheidDropDown;
 
-		final List<MammaScreeningsEenheid> screeningsEenhedenMetRoute = getScreeningsEenhedenMetRoute(
+		final var screeningsEenhedenMetRoute = getScreeningsEenhedenMetRoute(
 			screeningsEenheidService.getActieveScreeningsEenhedenVoorScreeningOrganisatie(ScreenitSession.get().getScreeningOrganisatie()));
 		screeningsEenhedenMetRoute.sort(Comparator.comparing(MammaScreeningsEenheid::getCode));
 		IModel<List<MammaScreeningsEenheid>> seList = ModelUtil

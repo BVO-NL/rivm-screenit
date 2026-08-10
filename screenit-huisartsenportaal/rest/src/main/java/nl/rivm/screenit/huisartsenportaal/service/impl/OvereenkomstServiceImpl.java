@@ -21,7 +21,7 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.InputStream;
+import jakarta.annotation.PostConstruct;
 
 import nl.rivm.screenit.huisartsenportaal.dto.OvereenkomstDto;
 import nl.rivm.screenit.huisartsenportaal.model.Overeenkomst;
@@ -32,12 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aspose.words.License;
-
-import jakarta.annotation.PostConstruct;
 
 @Service
 public class OvereenkomstServiceImpl implements OvereenkomstService
@@ -52,8 +49,8 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 	{
 		try
 		{
-			License license = new License();
-			InputStream stream = getClass().getResourceAsStream("/aspose/Aspose.Words.lic");
+			var license = new License();
+			var stream = getClass().getResourceAsStream("/aspose/Aspose.Words.lic");
 			license.setLicense(stream);
 		}
 		catch (Exception e)
@@ -66,7 +63,7 @@ public class OvereenkomstServiceImpl implements OvereenkomstService
 	@Transactional
 	public Overeenkomst saveOrUpdateOvereenkomst(OvereenkomstDto overeenkomstDto)
 	{
-		Overeenkomst overeenkomst = overeenkomstRepository.findByScreenitId(overeenkomstDto.getHuisartsportaalId());
+		var overeenkomst = overeenkomstRepository.findByScreenitId(overeenkomstDto.getHuisartsportaalId());
 		if (overeenkomst == null)
 		{
 			overeenkomst = new Overeenkomst();

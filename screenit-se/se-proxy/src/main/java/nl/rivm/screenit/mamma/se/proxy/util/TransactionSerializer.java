@@ -37,7 +37,7 @@ public class TransactionSerializer
 
 	public static String writeAsString(TransactieDto transactieDto)
 	{
-		String json = "";
+		var json = "";
 		try
 		{
 			json = objectMapper.writeValueAsString(transactieDto);

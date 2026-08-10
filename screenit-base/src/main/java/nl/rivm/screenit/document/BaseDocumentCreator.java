@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 
 import com.aspose.words.Document;
-import com.aspose.words.net.System.Data.DataColumn;
 import com.aspose.words.net.System.Data.DataColumnCollection;
 import com.aspose.words.net.System.Data.DataRelation;
 import com.aspose.words.net.System.Data.DataRelationCollection;
@@ -51,11 +50,11 @@ public abstract class BaseDocumentCreator implements DocumentCreator
 
 	protected DataTable getOrCreateDataTable(DataSet dataSet, String tableNaam, String... columns)
 	{
-		DataTable table = getDataTable(dataSet, tableNaam);
+		var table = getDataTable(dataSet, tableNaam);
 		if (table == null && columns.length != 0)
 		{
 			table = new DataTable(tableNaam);
-			for (String columnNaam : columns)
+			for (var columnNaam : columns)
 			{
 				table.getColumns().add(columnNaam);
 			}
@@ -66,8 +65,8 @@ public abstract class BaseDocumentCreator implements DocumentCreator
 
 	protected DataRow insertRow(DataTable table, Object... values)
 	{
-		DataRow row = table.newRow();
-		for (int i = 0; i < values.length; i++)
+		var row = table.newRow();
+		for (var i = 0; i < values.length; i++)
 		{
 			row.set(i, values[i]);
 		}
@@ -105,7 +104,7 @@ public abstract class BaseDocumentCreator implements DocumentCreator
 	protected void log(Logger log, DataRelationCollection relationCollection)
 	{
 		log.debug("RELATIONS:");
-		for (DataRelation dataRelation : relationCollection)
+		for (var dataRelation : relationCollection)
 		{
 			log(log, dataRelation);
 		}
@@ -113,7 +112,7 @@ public abstract class BaseDocumentCreator implements DocumentCreator
 
 	protected void log(Logger log, DataRelation relation)
 	{
-		String relations = relation.getParentTableName() + "." + relation.getParentColumnNames()[0];
+		var relations = relation.getParentTableName() + "." + relation.getParentColumnNames()[0];
 		relations = relations + " -> " + relation.getChildTableName() + "." + relation.getChildColumnNames()[0];
 		log.debug(relations);
 	}
@@ -121,7 +120,7 @@ public abstract class BaseDocumentCreator implements DocumentCreator
 	protected void log(Logger log, DataTableCollection tableCollection) throws SQLException
 	{
 		log.debug("TABLES:");
-		for (DataTable table : tableCollection)
+		for (var table : tableCollection)
 		{
 			log.debug("-----");
 			log(log, table);
@@ -138,8 +137,8 @@ public abstract class BaseDocumentCreator implements DocumentCreator
 	protected void log(Logger log, DataColumnCollection columnCollection)
 	{
 		log.debug("COLUMNS:");
-		String columns = "";
-		for (DataColumn dataColumn : columnCollection)
+		var columns = "";
+		for (var dataColumn : columnCollection)
 		{
 			columns = columns + dataColumn.getColumnName() + " | ";
 		}
@@ -149,7 +148,7 @@ public abstract class BaseDocumentCreator implements DocumentCreator
 	protected void log(Logger log, DataRowCollection rowCollection) throws SQLException
 	{
 		log.debug("DATA:");
-		for (DataRow dataRow : rowCollection)
+		for (var dataRow : rowCollection)
 		{
 			log(log, dataRow);
 		}
@@ -157,10 +156,10 @@ public abstract class BaseDocumentCreator implements DocumentCreator
 
 	protected void log(Logger log, DataRow dataRow) throws SQLException
 	{
-		String values = "";
-		for (int i = 0; i < dataRow.getTable().getColumnsCount(); i++)
+		var values = "";
+		for (var i = 0; i < dataRow.getTable().getColumnsCount(); i++)
 		{
-			Object value = dataRow.get(i);
+			var value = dataRow.get(i);
 			values = values + value + " | ";
 		}
 		log.debug(values);

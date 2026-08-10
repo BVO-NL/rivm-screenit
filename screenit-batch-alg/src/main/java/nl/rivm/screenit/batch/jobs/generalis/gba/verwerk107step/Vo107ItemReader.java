@@ -37,13 +37,13 @@ import nl.rivm.screenit.model.gba.GbaFile;
 import nl.rivm.screenit.model.gba.GbaFoutCategorie;
 import nl.rivm.screenit.model.gba.GbaFoutRegel;
 import nl.rivm.screenit.model.gba.GbaVerwerkingsLog;
+import nl.rivm.screenit.model.vertrouwdverbonden.Vo107Bericht;
 import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.FileService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.ZipUtil;
-import nl.topicuszorg.gba.vertrouwdverbonden.exceptions.Vo107ParseException;
-import nl.topicuszorg.gba.vertrouwdverbonden.model.Vo107Bericht;
-import nl.topicuszorg.gba.vertrouwdverbonden.services.VO107Service;
+import nl.rivm.screenit.vertrouwdverbonden.exceptions.Vo107ParseException;
+import nl.rivm.screenit.vertrouwdverbonden.services.VO107Service;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -155,7 +155,7 @@ public class Vo107ItemReader implements ItemReader<Vo107Bericht>, ItemStream
 
 		databaseRunner.runInNewTransaction(() ->
 		{
-			GbaVerwerkingsLog verwerkingsLog = (GbaVerwerkingsLog) stepExecution.getJobExecution().getExecutionContext().get(GbaConstants.RAPPORTAGEKEYGBA);
+			var verwerkingsLog = (GbaVerwerkingsLog) stepExecution.getJobExecution().getExecutionContext().get(GbaConstants.RAPPORTAGEKEYGBA);
 
 			fileIterator = vo107Provider.getVo107Files(verwerkingsLog).iterator();
 			nextInputstream(verwerkingsLog);
@@ -167,7 +167,7 @@ public class Vo107ItemReader implements ItemReader<Vo107Bericht>, ItemStream
 
 			if (executionContext.containsKey(KEY_OFFSET))
 			{
-				for (int i = 0; i < executionContext.getInt(KEY_OFFSET); i++)
+				for (var i = 0; i < executionContext.getInt(KEY_OFFSET); i++)
 				{
 					if (berichtIterator.hasNext())
 					{
@@ -255,7 +255,7 @@ public class Vo107ItemReader implements ItemReader<Vo107Bericht>, ItemStream
 
 	private void createFoutRegel(GbaVerwerkingsLog gbaVerwerkingsLog, String foutregel)
 	{
-		GbaFoutRegel gbaFoutRegel = new GbaFoutRegel();
+		var gbaFoutRegel = new GbaFoutRegel();
 		gbaFoutRegel.setFout(foutregel);
 		gbaFoutRegel.setFoutCategorie(GbaFoutCategorie.PROCES);
 		gbaFoutRegel.setVerwerkingsLog(gbaVerwerkingsLog);

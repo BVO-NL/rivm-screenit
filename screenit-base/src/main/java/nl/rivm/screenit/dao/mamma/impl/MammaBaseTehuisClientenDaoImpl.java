@@ -34,8 +34,6 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.model.enums.GbaStatus;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -71,22 +69,22 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 
 	private NativeQuery createQuery(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, boolean count, String sortProperty, Boolean isAscending)
 	{
-		LocalDate vandaag = dateSupplier.getLocalDate();
+		var vandaag = dateSupplier.getLocalDate();
 
-		Integer maximaleLeeftijd = preferenceService.getInteger(PreferenceKey.MAMMA_MAXIMALE_LEEFTIJD.name());
-		Integer minimaleLeeftijd = preferenceService.getInteger(PreferenceKey.MAMMA_MINIMALE_LEEFTIJD.name());
+		var maximaleLeeftijd = preferenceService.getInteger(PreferenceKey.MAMMA_MAXIMALE_LEEFTIJD.name());
+		var minimaleLeeftijd = preferenceService.getInteger(PreferenceKey.MAMMA_MINIMALE_LEEFTIJD.name());
 
-		MammaStandplaatsRonde huidigeStandplaatsRonde = tehuisService.getHuidigeStandplaatsRondeVoorStandplaats(tehuis.getStandplaats());
+		var huidigeStandplaatsRonde = tehuisService.getHuidigeStandplaatsRondeVoorStandplaats(tehuis.getStandplaats());
 		if (huidigeStandplaatsRonde == null)
 		{
 			return null;
 		}
 		LocalDate standplaatsRondeVanaf = null;
 		LocalDate standplaatsRondeTotEnMet = null;
-		for (MammaStandplaatsPeriode standplaatsPeriode : huidigeStandplaatsRonde.getStandplaatsPerioden())
+		for (var standplaatsPeriode : huidigeStandplaatsRonde.getStandplaatsPerioden())
 		{
-			LocalDate standplaatsPeriodeVanaf = DateUtil.toLocalDate(standplaatsPeriode.getVanaf());
-			LocalDate standplaatsPeriodeTotEnMet = DateUtil.toLocalDate(standplaatsPeriode.getTotEnMet());
+			var standplaatsPeriodeVanaf = DateUtil.toLocalDate(standplaatsPeriode.getVanaf());
+			var standplaatsPeriodeTotEnMet = DateUtil.toLocalDate(standplaatsPeriode.getTotEnMet());
 			if (standplaatsRondeVanaf == null || standplaatsPeriodeVanaf.isBefore(standplaatsRondeVanaf))
 			{
 				standplaatsRondeVanaf = standplaatsPeriodeVanaf;
@@ -97,12 +95,12 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 			}
 		}
 
-		int vanafGeboortejaar = Integer.min(standplaatsRondeVanaf.getYear(), vandaag.getYear()) - maximaleLeeftijd;
-		int totGeboortejaar = standplaatsRondeTotEnMet.getYear() - minimaleLeeftijd + 1;
+		var vanafGeboortejaar = Integer.min(standplaatsRondeVanaf.getYear(), vandaag.getYear()) - maximaleLeeftijd;
+		var totGeboortejaar = standplaatsRondeTotEnMet.getYear() - minimaleLeeftijd + 1;
 
-		String selectString = count ? "select count(*)" : "select client.*";
+		var selectString = count ? "select count(*)" : "select client.*";
 
-		String fromString = "";
+		var fromString = "";
 		fromString += " from gedeeld.persoon persoon";
 		fromString += " join gedeeld.adres adres on (persoon.gba_adres = adres.id or persoon.tijdelijk_gba_adres = adres.id)";
 		fromString += " join gedeeld.adres gba_adres on persoon.gba_adres = gba_adres.id";
@@ -111,7 +109,7 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 		fromString += " join mamma.dossier dossier on client.mamma_dossier = dossier.id";
 		fromString += " left join mamma.screening_ronde laatste_screening_ronde on dossier.laatste_screening_ronde = laatste_screening_ronde.id";
 
-		StringBuilder whereString = new StringBuilder();
+		var whereString = new StringBuilder();
 		whereString.append(" where (dossier.deelnamemodus <> \'").append(Deelnamemodus.SELECTIEBLOKKADE.name()).append("\' or dossier.tehuis = :tehuis)");
 		whereString.append(" and persoon.geboortedatum >= :vanafGeboortedatum");
 		whereString.append(" and persoon.geboortedatum < :totGeboortedatum");
@@ -125,7 +123,7 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 		else
 		{
 			whereString.append(" and (");
-			for (int i = 0; i < tehuis.getAdressen().size(); i++)
+			for (var i = 0; i < tehuis.getAdressen().size(); i++)
 			{
 				if (i > 0)
 				{
@@ -210,7 +208,7 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 			whereString.append(" or standplaats_periode.tot_en_met < :standplaatsPeriodeTotEnMetTot)");
 		}
 
-		String orderString = "";
+		var orderString = "";
 
 		if (sortProperty != null)
 		{
@@ -225,7 +223,7 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 
 		orderString = voegAltijdSorteringOpPersoonIdToeBijSelect(sortProperty, orderString, count);
 
-		NativeQuery query = entityManager.unwrap(Session.class).createNativeQuery(selectString + fromString + whereString + orderString);
+		var query = entityManager.unwrap(Session.class).createNativeQuery(selectString + fromString + whereString + orderString);
 
 		query.setParameter("vanafGeboortedatum", DateUtil.toUtilDate(LocalDate.of(vanafGeboortejaar, 1, 1)));
 		query.setParameter("totGeboortedatum", DateUtil.toUtilDate(LocalDate.of(totGeboortejaar, 1, 1)));
@@ -233,8 +231,8 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 
 		if (tehuisSelectie == UIT_TE_NODIGEN)
 		{
-			Integer minimaleIntervalMammografieOnderzoeken = preferenceService.getInteger(PreferenceKey.MAMMA_MINIMALE_INTERVAL_MAMMOGRAFIE_ONDERZOEKEN.name());
-			Integer minimaleIntervalUitnodigingen = preferenceService.getInteger(PreferenceKey.MAMMA_MINIMALE_INTERVAL_UITNODIGINGEN.name());
+			var minimaleIntervalMammografieOnderzoeken = preferenceService.getInteger(PreferenceKey.MAMMA_MINIMALE_INTERVAL_MAMMOGRAFIE_ONDERZOEKEN.name());
+			var minimaleIntervalUitnodigingen = preferenceService.getInteger(PreferenceKey.MAMMA_MINIMALE_INTERVAL_UITNODIGINGEN.name());
 
 			query.setParameter("huidigeStandplaatsRonde", huidigeStandplaatsRonde.getId());
 			query.setParameter("laatsteMammografieAfgerondTot", DateUtil.toUtilDate(vandaag.minusDays(minimaleIntervalMammografieOnderzoeken)));
@@ -304,7 +302,7 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 	@Override
 	public List<Client> getClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres)
 	{
-		NativeQuery query = createQuery(tehuis, tehuisSelectie, zoekAdres, false, null, null);
+		var query = createQuery(tehuis, tehuisSelectie, zoekAdres, false, null, null);
 		if (query == null)
 		{
 			return new ArrayList<>();
@@ -316,7 +314,7 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 	@Override
 	public List<Client> getClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, int first, int count, String sortProperty, boolean isAscending)
 	{
-		NativeQuery query = createQuery(tehuis, tehuisSelectie, zoekAdres, false, sortProperty, isAscending);
+		var query = createQuery(tehuis, tehuisSelectie, zoekAdres, false, sortProperty, isAscending);
 		if (query == null)
 		{
 			return new ArrayList<>();

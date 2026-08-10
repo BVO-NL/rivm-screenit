@@ -83,15 +83,15 @@ public abstract class TestVervolgKeuzeKnop extends GenericPanel<List<Client>>
 		super(id, model);
 		this.dialog = dialog;
 		add(new AttributeAppender("class", Model.of(" Mogelijke opties")));
-		List<TestVervolgKeuzeOptie> opties = getOptions();
-		boolean snelkeuzeVisible = !opties.isEmpty();
-		boolean snelkeuzes = opties.size() > 1;
+		var opties = getOptions();
+		var snelkeuzeVisible = !opties.isEmpty();
+		var snelkeuzes = opties.size() > 1;
 
-		WebMarkupContainer caretContainer = new WebMarkupContainer("caret");
+		var caretContainer = new WebMarkupContainer("caret");
 		Component button;
 		if (!snelkeuzes && snelkeuzeVisible)
 		{
-			IndicatingAjaxLink<Void> link = new IndicatingAjaxLink<Void>("button")
+			var link = new IndicatingAjaxLink<Void>("button")
 			{
 				private static final long serialVersionUID = 1L;
 
@@ -110,7 +110,7 @@ public abstract class TestVervolgKeuzeKnop extends GenericPanel<List<Client>>
 		}
 		else
 		{
-			WebMarkupContainer buttonContainer = new WebMarkupContainer("button");
+			var buttonContainer = new WebMarkupContainer("button");
 			buttonContainer.add(new AttributeAppender("data-toggle", Model.of("dropdown")));
 			if ("snelKeuzeMamma".equals(id))
 			{
@@ -131,11 +131,11 @@ public abstract class TestVervolgKeuzeKnop extends GenericPanel<List<Client>>
 		}
 		add(button);
 
-		WebMarkupContainer container = new WebMarkupContainer("dropdownList");
+		var container = new WebMarkupContainer("dropdownList");
 		container.setVisible(isVisible());
 		add(container);
 
-		ListView<TestVervolgKeuzeOptie> acties = new ListView<>("snelkeuze", opties)
+		var acties = new ListView<>("snelkeuze", opties)
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -143,7 +143,7 @@ public abstract class TestVervolgKeuzeKnop extends GenericPanel<List<Client>>
 			@Override
 			protected void populateItem(ListItem<TestVervolgKeuzeOptie> item)
 			{
-				final TestVervolgKeuzeOptie option = item.getModelObject();
+				final var option = item.getModelObject();
 				IndicatingAjaxLink<TestVervolgKeuzeOptie> link = new IndicatingAjaxLink<>("link")
 				{
 
@@ -169,7 +169,7 @@ public abstract class TestVervolgKeuzeKnop extends GenericPanel<List<Client>>
 		if (TestVervolgKeuzeAction.class.isAssignableFrom(optie.getDetailClass()))
 		{
 			List<Object> params = new ArrayList<>();
-			List<Client> clienten = TestVervolgKeuzeKnop.this.getModel().getObject();
+			var clienten = TestVervolgKeuzeKnop.this.getModel().getObject();
 			params.add(clienten);
 			if (TestCervixVervolgKeuzeAction.class.isAssignableFrom(optie.getDetailClass()))
 			{
@@ -180,12 +180,12 @@ public abstract class TestVervolgKeuzeKnop extends GenericPanel<List<Client>>
 			{
 				params.add(mammaTestTimelineService);
 				params.add(mammaBaseTestTimelineService);
-				MammaTestTimelinePage page = (MammaTestTimelinePage) getPage();
+				var page = (MammaTestTimelinePage) getPage();
 				params.add(page.getVerstuurHl7Berichten());
 			}
 			try
 			{
-				TestVervolgKeuzeAction action = (TestVervolgKeuzeAction) ConstructorUtils.invokeConstructor(optie.getDetailClass(), params.toArray());
+				var action = (TestVervolgKeuzeAction) ConstructorUtils.invokeConstructor(optie.getDetailClass(), params.toArray());
 				action.execute();
 				refreshContainer(target);
 			}

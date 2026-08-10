@@ -56,13 +56,13 @@ public class BriefafdrukopdrachtDto implements IBriefafdrukopdrachtDto
 		private Integer order; 
 	}
 
-	private String code;
+	private String code; 
 
-	private String kenmerk;
+	private String kenmerk; 
 
-	private String timestamp;
+	private String timestamp; 
 
-	private String codeAddendum;
+	private String codeAddendum; 
 
 	private UUID guid;
 

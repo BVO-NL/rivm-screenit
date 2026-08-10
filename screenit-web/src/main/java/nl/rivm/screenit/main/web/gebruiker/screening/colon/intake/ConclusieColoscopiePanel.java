@@ -27,7 +27,6 @@ import java.util.Date;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 
 public class ConclusieColoscopiePanel extends GenericPanel<ColonIntakeAfspraak>
@@ -39,7 +38,7 @@ public class ConclusieColoscopiePanel extends GenericPanel<ColonIntakeAfspraak>
 
 		ComponentHelper.addTextField(this, "conclusie.datumColoscopie", true, 10, Date.class, allReadOnly);
 
-		CheckBox opVerzoekClient = ComponentHelper.newCheckBox("conclusie.coloscopieDatumOpVerzoekClient");
+		var opVerzoekClient = ComponentHelper.newCheckBox("conclusie.coloscopieDatumOpVerzoekClient");
 		opVerzoekClient.setEnabled(!allReadOnly);
 		add(opVerzoekClient);
 	}

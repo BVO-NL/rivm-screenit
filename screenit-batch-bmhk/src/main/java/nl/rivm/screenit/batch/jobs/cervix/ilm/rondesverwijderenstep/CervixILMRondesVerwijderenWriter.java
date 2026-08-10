@@ -23,12 +23,10 @@ package nl.rivm.screenit.batch.jobs.cervix.ilm.rondesverwijderenstep;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
-import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.service.HibernateService;
@@ -68,12 +66,12 @@ public class CervixILMRondesVerwijderenWriter extends BaseWriter<CervixScreening
 		}
 
 		List<CervixUitnodiging> verplaatsteUitnodigingen = new ArrayList<>();
-		for (CervixUitnodiging uitnodiging : ronde.getUitnodigingen())
+		for (var uitnodiging : ronde.getUitnodigingen())
 		{
 			if (uitnodiging.getMonster() != null)
 			{
-				CervixMonster monster = uitnodiging.getMonster();
-				CervixScreeningRonde ontvangstRonde = monster.getOntvangstScreeningRonde();
+				var monster = uitnodiging.getMonster();
+				var ontvangstRonde = monster.getOntvangstScreeningRonde();
 				if (ontvangstRonde != null && !ontvangstRonde.equals(ronde))
 				{
 					verplaatsUitnodigingNaarRonde(uitnodiging, ronde, ontvangstRonde);
@@ -81,7 +79,7 @@ public class CervixILMRondesVerwijderenWriter extends BaseWriter<CervixScreening
 				}
 				else
 				{
-					Optional<CervixScreeningRonde> cytologieRonde = dossier.getScreeningRondes().stream().filter(r -> !r.equals(ronde)
+					var cytologieRonde = dossier.getScreeningRondes().stream().filter(r -> !r.equals(ronde)
 							&& r.getStatusDatum().after(ronde.getStatusDatum()) && r.getUitstrijkjeCytologieUitslag() != null && r.getUitstrijkjeCytologieUitslag().equals(monster))
 						.findFirst();
 

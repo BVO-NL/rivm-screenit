@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.component.pingpong;
  */
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -81,7 +80,7 @@ public abstract class PingPongInput<T> extends GenericPanel<List<T>> implements 
 			@Override
 			protected void populateItem(ListItem<T> item)
 			{
-				StringBuilder javaScript = new StringBuilder();
+				var javaScript = new StringBuilder();
 				javaScript.append("$('#");
 				javaScript.append(getNotSelectedId(item.getModel()));
 				javaScript.append("').removeClass('display-none')");
@@ -103,7 +102,7 @@ public abstract class PingPongInput<T> extends GenericPanel<List<T>> implements 
 				javaScript.append(pingPongRecoder.getMarkupId());
 				javaScript.append("').val(value);");
 
-				WebMarkupContainer container = new WebMarkupContainer("container");
+				var container = new WebMarkupContainer("container");
 				container.setOutputMarkupId(true);
 				container.setMarkupId(PingPongInput.this.choiceRenderer.getIdValue(item.getModelObject(), -1) + SELECTEDSUPPLEMENT);
 
@@ -137,7 +136,7 @@ public abstract class PingPongInput<T> extends GenericPanel<List<T>> implements 
 			@Override
 			protected void populateItem(ListItem<T> item)
 			{
-				StringBuilder javaScript = new StringBuilder();
+				var javaScript = new StringBuilder();
 				javaScript.append("$('#");
 				javaScript.append(getSelectedId(item.getModel()));
 				javaScript.append("').removeClass('display-none')");
@@ -160,7 +159,7 @@ public abstract class PingPongInput<T> extends GenericPanel<List<T>> implements 
 				javaScript.append("').val(value);");
 				javaScript.append("return false;");
 
-				WebMarkupContainer container = new WebMarkupContainer("container");
+				var container = new WebMarkupContainer("container");
 				container.setOutputMarkupId(true);
 				container.setMarkupId(PingPongInput.this.choiceRenderer.getIdValue(item.getModelObject(), -1) + NOTSELECTEDSUPPLEMENT);
 
@@ -216,11 +215,11 @@ public abstract class PingPongInput<T> extends GenericPanel<List<T>> implements 
 	public void updateModel()
 	{
 
-		Iterator<T> it = pingPongRecoder.getSelectedChoices();
+		var it = pingPongRecoder.getSelectedChoices();
 
 		modelChanging();
 
-		Collection<T> collection = getModelCollection();
+		var collection = getModelCollection();
 		collection.clear();
 		while (it.hasNext())
 		{
@@ -230,7 +229,7 @@ public abstract class PingPongInput<T> extends GenericPanel<List<T>> implements 
 		modelChanged();
 
 		@SuppressWarnings("unchecked")
-		IModel<Object> defaultModel = (IModel<Object>) getDefaultModel();
+		var defaultModel = (IModel<Object>) getDefaultModel();
 		defaultModel.setObject(collection);
 	}
 
@@ -254,7 +253,7 @@ public abstract class PingPongInput<T> extends GenericPanel<List<T>> implements 
 
 	private boolean isSelected(T object)
 	{
-		for (T selectedObject : getModelCollection())
+		for (var selectedObject : getModelCollection())
 		{
 			if (object.equals(selectedObject))
 			{

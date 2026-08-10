@@ -128,7 +128,7 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
-				Date huidigeDatum = calenderPanel.getHuidigeStartVanWeek();
+				var huidigeDatum = calenderPanel.getHuidigeStartVanWeek();
 				refreshKalender(target, huidigeDatum);
 			}
 		});
@@ -151,7 +151,7 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 			{
 				if (calenderPanel.getHuidigeStartVanWeek() != null)
 				{
-					Date huidigeDatum = calenderPanel.getHuidigeStartVanWeek();
+					var huidigeDatum = calenderPanel.getHuidigeStartVanWeek();
 					refreshKalender(ajaxRequestTarget, huidigeDatum);
 				}
 			}
@@ -162,7 +162,7 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 		datumField = ComponentHelper.newDatePicker("datum", datumModel, true);
 		datumField.setOutputMarkupId(true);
 		add(datumField);
-		Date plannenTotEnMetDatum = baseConceptPlanningsApplicatie.getPlannenTotEnMetDatum();
+		var plannenTotEnMetDatum = baseConceptPlanningsApplicatie.getPlannenTotEnMetDatum();
 		datumField.add(DateValidator.maximum(plannenTotEnMetDatum));
 		datumField.setMaxDate(new DateOption(plannenTotEnMetDatum));
 		datumField.add(new AjaxFormComponentUpdatingBehavior("change")
@@ -178,10 +178,10 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				Date datum = datumModel.getObject();
+				var datum = datumModel.getObject();
 				if (datum != null)
 				{
-					Date previousWeek = DateUtil.toUtilDate(DateUtil.toLocalDate(datum).minusWeeks(1));
+					var previousWeek = DateUtil.toUtilDate(DateUtil.toLocalDate(datum).minusWeeks(1));
 					datumModel.setObject(previousWeek);
 					refreshKalender(target, previousWeek);
 				}
@@ -192,10 +192,10 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				Date datum = datumModel.getObject();
+				var datum = datumModel.getObject();
 				if (datum != null)
 				{
-					Date nextWeek = DateUtil.toUtilDate(DateUtil.toLocalDate(datum).plusWeeks(1));
+					var nextWeek = DateUtil.toUtilDate(DateUtil.toLocalDate(datum).plusWeeks(1));
 					if (datumField.getMaxDate().getDateParam().compareTo(nextWeek) >= 0)
 					{
 						datumModel.setObject(nextWeek);
@@ -227,7 +227,7 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 						@Override
 						void herhalingOpgeslagen(AjaxRequestTarget target)
 						{
-							Date huidigeDatum = calenderPanel.getHuidigeStartVanWeek();
+							var huidigeDatum = calenderPanel.getHuidigeStartVanWeek();
 							refreshKalender(target, huidigeDatum);
 							dialog.close(target);
 						}
@@ -250,7 +250,7 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 						@Override
 						protected void onOpgeslagen(AjaxRequestTarget target)
 						{
-							Date huidigeDatum = calenderPanel.getHuidigeStartVanWeek();
+							var huidigeDatum = calenderPanel.getHuidigeStartVanWeek();
 							refreshKalender(target, huidigeDatum);
 							dialog.close(target);
 						}
@@ -284,7 +284,7 @@ public class MammaSECapaciteitEditPage extends MammaPlanningBasePage
 			herhalingsWeek.setDefaultModelObject("(Nog) niet gezet.");
 		}
 
-		Date huidigeStartVanWeek = calenderPanel.getHuidigeStartVanWeek();
+		var huidigeStartVanWeek = calenderPanel.getHuidigeStartVanWeek();
 		datumModel.setObject(huidigeStartVanWeek);
 
 		weekHerhalenLink.setEnabled(!DateUtil.toLocalDate(huidigeStartVanWeek).isBefore(dateSupplier.getLocalDate().with(TemporalAdjusters.next(DayOfWeek.MONDAY))));

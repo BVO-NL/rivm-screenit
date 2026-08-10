@@ -29,13 +29,13 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Recht;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public abstract class VerwerktBerichtInzienPanel extends GenericPanel<OntvangenCdaBericht>
 {
@@ -50,7 +50,7 @@ public abstract class VerwerktBerichtInzienPanel extends GenericPanel<OntvangenC
 		add(new Label("berichtType"));
 		add(new MultiLineLabel("content", CdaTransformerHelper.cdaToHtml(model.getObject())).setEscapeModelStrings(false));
 
-		final boolean magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VERSLAGEN, Actie.AANPASSEN);
+		final var magAanpassen = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_VERSLAGEN, Actie.AANPASSEN);
 
 		add(new IndicatingAjaxLink<OntvangenCdaBericht>("opnieuwAanbieden")
 		{

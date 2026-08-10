@@ -49,7 +49,7 @@ public class BigDecimalScaleValidator implements IValidator<BigDecimal>
 	public void validate(IValidatable<BigDecimal> iValidatable)
 	{
 
-		final BigDecimal value = iValidatable.getValue();
+		final var value = iValidatable.getValue();
 		if (value.scale() > scaleMax)
 		{
 			error(iValidatable, "too.much.scale");
@@ -58,8 +58,8 @@ public class BigDecimalScaleValidator implements IValidator<BigDecimal>
 
 	private void error(IValidatable<BigDecimal> validatable, String errorKey)
 	{
-		ValidationError error = new ValidationError();
-		String errorCode = getClass().getSimpleName() + "." + errorKey;
+		var error = new ValidationError();
+		var errorCode = getClass().getSimpleName() + "." + errorKey;
 		LOG.info(errorCode);
 		error.addKey(errorCode);
 		error.setVariable("scale", Integer.toString(scaleMax));

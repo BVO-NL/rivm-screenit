@@ -35,7 +35,7 @@ public abstract class PercentageUtil
 
 	public static String getPercentageVanGeheel(long deel, long geheel)
 	{
-		BigDecimal percentage = BigDecimal.valueOf(deel)
+		var percentage = BigDecimal.valueOf(deel)
 			.divide(BigDecimal.valueOf(geheel), 4, RoundingMode.HALF_UP)
 			.multiply(BigDecimal.valueOf(100), new MathContext(4));
 

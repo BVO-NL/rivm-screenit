@@ -35,7 +35,6 @@ import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.hibernate.Hibernate;
 
@@ -103,7 +102,7 @@ public abstract class CervixMonsterBasePage extends CervixBarcodeAfdrukkenBasePa
 			}
 			else
 			{
-				CervixUitnodigingZasPanel uitnodigingZasPanel = new CervixUitnodigingZasPanel(this, "uitnodigingPanel",
+				var uitnodigingZasPanel = new CervixUitnodigingZasPanel(this, "uitnodigingPanel",
 					(CervixZas) Hibernate.unproxy(uitnodiging.getMonster()))
 				{
 					@Override
@@ -121,7 +120,7 @@ public abstract class CervixMonsterBasePage extends CervixBarcodeAfdrukkenBasePa
 					@Override
 					protected void onInitialize()
 					{
-						boolean nuInboeken = nuInboeken();
+						var nuInboeken = nuInboeken();
 						super.onInitialize();
 						if (nuInboeken)
 						{
@@ -143,11 +142,11 @@ public abstract class CervixMonsterBasePage extends CervixBarcodeAfdrukkenBasePa
 
 	private void voegUitnodigingToe(AjaxRequestTarget target, CervixUitnodiging uitnodiging)
 	{
-		final IModel<?> zoekObjectModel = ScreenitSession.get().getZoekObject(this.getClass());
+		final var zoekObjectModel = ScreenitSession.get().getZoekObject(this.getClass());
 		final List<CervixUitnodiging> result = new ArrayList<>();
 		if (zoekObjectModel != null)
 		{
-			final List<CervixUitnodiging> oudeLijst = zonderDezeUitnodiging((List<CervixUitnodiging>) zoekObjectModel.getObject(), uitnodiging);
+			final var oudeLijst = zonderDezeUitnodiging((List<CervixUitnodiging>) zoekObjectModel.getObject(), uitnodiging);
 			if (oudeLijst.size() <= 5)
 			{
 				result.addAll(oudeLijst);
@@ -178,7 +177,7 @@ public abstract class CervixMonsterBasePage extends CervixBarcodeAfdrukkenBasePa
 		{
 			voegUitnodigingToe(target, uitnodiging);
 		}
-		Panel newUitnodigingPanel = getUitnodigingPanel(target, uitnodiging);
+		var newUitnodigingPanel = getUitnodigingPanel(target, uitnodiging);
 		uitnodigingPanel.replaceWith(newUitnodigingPanel);
 		uitnodigingPanel = newUitnodigingPanel;
 		target.add(uitnodigingPanel);

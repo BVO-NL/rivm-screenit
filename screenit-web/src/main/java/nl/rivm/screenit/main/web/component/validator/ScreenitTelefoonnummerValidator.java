@@ -48,11 +48,11 @@ public abstract class ScreenitTelefoonnummerValidator
 		@Override
 		public void validate(IValidatable<String> validatable)
 		{
-			String telefoonnummer = validatable.getValue();
+			var telefoonnummer = validatable.getValue();
 
 			if (!TelefoonnummerUtil.isCorrectTelefoonnummer(telefoonnummer))
 			{
-				ValidationError error = new ValidationError(this);
+				var error = new ValidationError(this);
 				error.addKey("TelefoonnummerValidator.alle");
 				validatable.error(error);
 			}
@@ -64,11 +64,11 @@ public abstract class ScreenitTelefoonnummerValidator
 		@Override
 		public void validate(IValidatable<String> validatable)
 		{
-			String mobielNummer = validatable.getValue();
+			var mobielNummer = validatable.getValue();
 
 			if (!TelefoonnummerUtil.isCorrectNederlandsMobielNummer(mobielNummer))
 			{
-				ValidationError error = new ValidationError(this);
+				var error = new ValidationError(this);
 				error.addKey("TelefoonnummerValidator.mobiel");
 				validatable.error(error);
 			}

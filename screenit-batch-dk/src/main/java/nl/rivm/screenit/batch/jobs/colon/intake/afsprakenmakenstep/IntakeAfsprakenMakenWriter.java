@@ -106,7 +106,7 @@ public class IntakeAfsprakenMakenWriter implements ItemWriter<ClientAfspraak>
 	@Override
 	public void write(Chunk<? extends ClientAfspraak> chunk)
 	{
-		Integer intakeafspraakperiode = preferenceService.getInteger(PreferenceKey.INTAKEAFSPRAAKPERIODE.name());
+		var intakeafspraakperiode = preferenceService.getInteger(PreferenceKey.INTAKEAFSPRAAKPERIODE.name());
 		if (intakeafspraakperiode == null)
 		{
 
@@ -116,17 +116,17 @@ public class IntakeAfsprakenMakenWriter implements ItemWriter<ClientAfspraak>
 
 		var executionContext = stepExecution.getJobExecution().getExecutionContext();
 		var intakeMelding = (IntakeMakenLogEvent) executionContext.get(IntakeAfsprakenMakenConstants.RAPPORTAGEKEYINTAKE);
-		Integer maxDistance = preferenceService.getInteger(PreferenceKey.MAX_AFSTAND_CLIENT_COLOSCOPIECENTRUM.name());
-		int ronde = executionContext.getInt(IntakeAfsprakenMakenConstants.HUIDIGE_RONDE, 0);
-		Integer maxPogingen = preferenceService.getInteger(PreferenceKey.COLON_MAX_EXTRA_POGINGEN_PLANNING_INTAKE.name());
+		var maxDistance = preferenceService.getInteger(PreferenceKey.MAX_AFSTAND_CLIENT_COLOSCOPIECENTRUM.name());
+		var ronde = executionContext.getInt(IntakeAfsprakenMakenConstants.HUIDIGE_RONDE, 0);
+		var maxPogingen = preferenceService.getInteger(PreferenceKey.COLON_MAX_EXTRA_POGINGEN_PLANNING_INTAKE.name());
 		if (maxPogingen == null)
 		{
 			maxPogingen = 0;
 		}
 
-		Boolean allesVerwerkt = (Boolean) executionContext.get(IntakeAfsprakenMakenConstants.ALLE_INTAKES_VERWERKT);
+		var allesVerwerkt = (Boolean) executionContext.get(IntakeAfsprakenMakenConstants.ALLE_INTAKES_VERWERKT);
 
-		boolean maxExtraDagenBereikt = intakeMelding.getAantalExtraDagen() >= preferenceService.getInteger(PreferenceKey.COLON_MAX_EXTRA_DAGEN_PLANNING_INTAKE.name());
+		var maxExtraDagenBereikt = intakeMelding.getAantalExtraDagen() >= preferenceService.getInteger(PreferenceKey.COLON_MAX_EXTRA_DAGEN_PLANNING_INTAKE.name());
 		for (var afspraakOptie : chunk.getItems())
 		{
 			String bsn = null;
@@ -166,13 +166,13 @@ public class IntakeAfsprakenMakenWriter implements ItemWriter<ClientAfspraak>
 						newAfspraak.setKamer(kamer);
 
 						var afspraakslot = afspraakService.getAfspraakslotVoorAfspraak(newAfspraak);
-						String foutMessage = "Vrij slot is intussen verwijderd/verplaatst door de intakelocatie " + createMessageContext(clientId, vrijSlot, kamer);
+						var foutMessage = "Vrij slot is intussen verwijderd/verplaatst door de intakelocatie " + createMessageContext(clientId, vrijSlot, kamer);
 						var andereAfspraak = afspraakslot.getAfspraak();
 						if (andereAfspraak != null && andereAfspraak.getStatus() == ColonAfspraakStatus.GEPLAND)
-							{
-								afspraakslot = null;
-								foutMessage = "Er is intussen al een andere afspraak gepland op het door het alg. gekozen slot " + createMessageContext(clientId, vrijSlot, kamer);
-							}
+						{
+							afspraakslot = null;
+							foutMessage = "Er is intussen al een andere afspraak gepland op het door het alg. gekozen slot " + createMessageContext(clientId, vrijSlot, kamer);
+						}
 
 						if (afspraakslot == null)
 						{
@@ -262,7 +262,7 @@ public class IntakeAfsprakenMakenWriter implements ItemWriter<ClientAfspraak>
 			catch (Exception e)
 			{
 				LOG.error("Fout bij aanmaken intake afspraak voor clientId '{}'", clientId, e);
-				String message = e.getMessage();
+				var message = e.getMessage();
 				if (StringUtils.isBlank(message))
 				{
 					message = "Een onverwachte fout bij aanmaken intake afspraak voor client " + bsn;
@@ -300,11 +300,11 @@ public class IntakeAfsprakenMakenWriter implements ItemWriter<ClientAfspraak>
 
 		if (executionContext.containsKey(IntakeAfsprakenMakenConstants.FOUT_BIJ_INTAKE_VASTLEGGEN))
 		{
-			String huidigeMelding = executionContext.getString(IntakeAfsprakenMakenConstants.FOUT_BIJ_INTAKE_VASTLEGGEN);
-			String nieuweMelding = "";
+			var huidigeMelding = executionContext.getString(IntakeAfsprakenMakenConstants.FOUT_BIJ_INTAKE_VASTLEGGEN);
+			var nieuweMelding = "";
 			if (StringUtils.isNotBlank(huidigeMelding))
 			{
-				for (String melding : huidigeMelding.split("<br>"))
+				for (var melding : huidigeMelding.split("<br>"))
 				{
 					if (!melding.contains(bsn))
 					{

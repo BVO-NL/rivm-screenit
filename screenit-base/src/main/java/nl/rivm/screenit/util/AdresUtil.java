@@ -30,7 +30,6 @@ import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.TijdelijkAdres;
-import nl.rivm.screenit.model.TijdelijkGbaAdres;
 import nl.rivm.screenit.model.cervix.CervixHuisartsAdres;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
 import nl.topicuszorg.organisatie.model.Adres;
@@ -67,13 +66,13 @@ public final class AdresUtil
 	public static String getVolledigeAdresString(Adres adres)
 	{
 
-		StringBuilder adresString = new StringBuilder();
+		var adresString = new StringBuilder();
 		if (adres != null)
 		{
 			adresString.append(getAdres(adres));
 
-			String postcode = adres.getPostcode();
-			String plaats = getTeGebruikenWoonplaats(adres);
+			var postcode = adres.getPostcode();
+			var plaats = getTeGebruikenWoonplaats(adres);
 			if (!adresString.isEmpty() && (StringUtils.isNotBlank(postcode) || StringUtils.isNotBlank(plaats)))
 			{
 				adresString.append(",");
@@ -111,7 +110,7 @@ public final class AdresUtil
 
 	public static String getHuisnummerVolledig(Adres adres)
 	{
-		StringBuilder adresString = new StringBuilder();
+		var adresString = new StringBuilder();
 		if (adres.getHuisnummer() != null)
 		{
 			adresString.append(adres.getHuisnummer());
@@ -149,7 +148,7 @@ public final class AdresUtil
 	public static String getAdres(Adres adres)
 	{
 
-		StringBuilder adresString = new StringBuilder();
+		var adresString = new StringBuilder();
 		if (adres != null)
 		{
 			if (!Strings.isNullOrEmpty(adres.getStraat()))
@@ -178,13 +177,13 @@ public final class AdresUtil
 
 	private static String getAdresVoorStandplaatsLocatie(MammaStandplaatsLocatie adres, boolean huisnummerTonenVerplicht)
 	{
-		StringBuilder adresString = new StringBuilder();
+		var adresString = new StringBuilder();
 		if (adres != null)
 		{
 			adresString.append(getStraatMetHuisnummerVoorStandplaatsLocatie(adres, huisnummerTonenVerplicht));
 
-			String postcode = adres.getPostcode();
-			String plaats = getTeGebruikenWoonplaats(adres);
+			var postcode = adres.getPostcode();
+			var plaats = getTeGebruikenWoonplaats(adres);
 			if (adresString.length() > 0 && (StringUtils.isNotBlank(postcode) || StringUtils.isNotBlank(plaats)))
 			{
 				adresString.append(",");
@@ -212,7 +211,7 @@ public final class AdresUtil
 
 	public static String getStraatMetHuisnummerVoorStandplaatsLocatie(MammaStandplaatsLocatie adres, boolean huisnummerTonenVerplicht)
 	{
-		StringBuilder straatString = new StringBuilder();
+		var straatString = new StringBuilder();
 		if (adres != null)
 		{
 			if (StringUtils.isNotBlank(adres.getStraat()))
@@ -275,7 +274,7 @@ public final class AdresUtil
 				adres = tijdelijkAdres;
 			}
 		}
-		TijdelijkGbaAdres tijdelijkGbaAdres = persoon.getTijdelijkGbaAdres();
+		var tijdelijkGbaAdres = persoon.getTijdelijkGbaAdres();
 		if (tijdelijkGbaAdres != null && BagAdres.class.equals(Hibernate.getClass(adres)))
 		{
 			adres = tijdelijkGbaAdres;
@@ -321,7 +320,7 @@ public final class AdresUtil
 
 	public static String createKixCode(Adres adres)
 	{
-		StringBuilder kixcode = new StringBuilder();
+		var kixcode = new StringBuilder();
 		if (adres != null && org.apache.commons.lang3.StringUtils.isNotBlank(adres.getPostcode()))
 		{
 			kixcode.append(org.apache.commons.lang3.StringUtils.deleteWhitespace(adres.getPostcode()).replaceAll("[^A-Za-z0-9]", "").toUpperCase());
@@ -354,7 +353,7 @@ public final class AdresUtil
 
 	public static boolean isVolledigAdresVoorInpakcentrum(Client client)
 	{
-		Adres adres = getAdres(client.getPersoon(), LocalDate.now());
+		var adres = getAdres(client.getPersoon(), LocalDate.now());
 		return adres != null && postcodeWoonplaatsVolledig(adres) && (straatHuisnummerVolledig(adres) || locatiebeschrijvingGevuld(adres));
 	}
 

@@ -24,7 +24,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.afbeelding.MammaSignaleringAfbeeldingPanel;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
-import nl.rivm.screenit.model.mamma.MammaSignaleren;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeRole;
 import nl.rivm.screenit.service.mamma.MammaBaseAfbeeldingService;
 
@@ -71,7 +70,7 @@ public class MammaMBBBeoordelingPanel extends AbstractBEAccordionPanel<MammaOnde
 	{
 		setOutputMarkupId(true);
 
-		boolean isAutoniem = !MammobridgeRole.anoniemeRollen().contains(ScreenitSession.get().getMammaHuidigeIDS7Role());
+		var isAutoniem = !MammobridgeRole.anoniemeRollen().contains(ScreenitSession.get().getMammaHuidigeIDS7Role());
 
 		panelContainer.add(new Label("signaleren.afgerondDoor.medewerker.naamVolledig").setVisible(isAutoniem));
 
@@ -87,13 +86,13 @@ public class MammaMBBBeoordelingPanel extends AbstractBEAccordionPanel<MammaOnde
 		afwijkingContainer.setOutputMarkupPlaceholderTag(true);
 		panelContainer.add(afwijkingContainer);
 
-		MammaSignaleren signaleren = getModelObject().getSignaleren();
-		boolean heeftAfwijkingen = signaleren != null && signaleren.isHeeftAfwijkingen();
+		var signaleren = getModelObject().getSignaleren();
+		var heeftAfwijkingen = signaleren != null && signaleren.isHeeftAfwijkingen();
 
-		Label afwijkingLabel = new Label("afwijkingTekst", new Model<>(heeftAfwijkingen ? "Wel signalering" : "Geen signalering"));
+		var afwijkingLabel = new Label("afwijkingTekst", new Model<>(heeftAfwijkingen ? "Wel signalering" : "Geen signalering"));
 		afwijkingContainer.add(afwijkingLabel);
 
-		WebMarkupContainer afwijkingImage = new WebMarkupContainer("afwijkingImage");
+		var afwijkingImage = new WebMarkupContainer("afwijkingImage");
 		afwijkingImage.add(new AttributeModifier("src", new Model<>(heeftAfwijkingen ? HEEFT_AFWIJKINGEN_SRC : HEEFT_GEEN_AFWIJKINGEN_SRC)));
 
 		afwijkingContainer.add(afwijkingImage);

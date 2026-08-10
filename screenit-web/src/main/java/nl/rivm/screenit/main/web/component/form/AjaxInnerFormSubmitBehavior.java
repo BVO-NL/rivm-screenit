@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.component.form;
  * =========================LICENSE_END==================================
  */
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
@@ -74,7 +73,7 @@ public abstract class AjaxInnerFormSubmitBehavior extends AjaxEventBehavior
 	private IFormSubmittingComponent getFormSubmittingComponent()
 	{
 		IFormSubmittingComponent submittingComponent = null;
-		Component component = getComponent();
+		var component = getComponent();
 		if (component instanceof IFormSubmittingComponent)
 		{
 			submittingComponent = (IFormSubmittingComponent) component;
@@ -85,7 +84,7 @@ public abstract class AjaxInnerFormSubmitBehavior extends AjaxEventBehavior
 	protected Form<?> findForm()
 	{
 
-		Component component = getComponent();
+		var component = getComponent();
 		if (component instanceof Form<?>)
 		{
 			return (Form<?>) component;
@@ -101,10 +100,10 @@ public abstract class AjaxInnerFormSubmitBehavior extends AjaxEventBehavior
 	{
 		super.updateAjaxAttributes(attributes);
 
-		Form<?> form = getForm();
+		var form = getForm();
 		attributes.setFormId(form.getMarkupId());
 
-		String formMethod = form.getMarkupAttributes().getString("method");
+		var formMethod = form.getMarkupAttributes().getString("method");
 		if (formMethod == null || "POST".equalsIgnoreCase(formMethod))
 		{
 			attributes.setMethod(Method.POST);
@@ -116,10 +115,10 @@ public abstract class AjaxInnerFormSubmitBehavior extends AjaxEventBehavior
 			attributes.setMethod(Method.POST);
 		}
 
-		IFormSubmittingComponent submittingComponent = getFormSubmittingComponent();
+		var submittingComponent = getFormSubmittingComponent();
 		if (submittingComponent != null)
 		{
-			String submittingComponentName = submittingComponent.getInputName();
+			var submittingComponentName = submittingComponent.getInputName();
 			attributes.setSubmittingComponentName(submittingComponentName);
 		}
 	}

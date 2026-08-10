@@ -25,15 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.mamma.MammaConclusieReviewService;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.MammaScreeningBasePage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBeoordelenPage;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaRondePanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.kwaliteitscontrole.panels.MammaKwaliteitscontroleHuidigeRondePanel;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
-import nl.rivm.screenit.model.mamma.MammaConclusieReview;
-import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.enums.MammaBeLezerSoort;
 import nl.rivm.screenit.model.mamma.enums.MammobridgeFocusMode;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -64,9 +61,9 @@ public class MammaConclusieReviewenPage extends AbstractMammaBeoordelenPage
 	protected void maakRondesContainer(IModel<MammaBeoordeling> beoordelingModel)
 	{
 		List<AbstractMammaRondePanel> rondePanels = new ArrayList<>();
-		MammaScreeningRonde screeningRonde = baseBeoordelingService.getScreeningRonde(beoordelingModel.getObject());
+		var screeningRonde = baseBeoordelingService.getScreeningRonde(beoordelingModel.getObject());
 
-		MammaConclusieReview conclusieReview = conclusieReviewService.getConclusieReview(screeningRonde, radioloogModel.getObject());
+		var conclusieReview = conclusieReviewService.getConclusieReview(screeningRonde, radioloogModel.getObject());
 
 		huidigeRondePanel = new MammaConclusieReviewHuidigeRondePanel("rondeItem", ModelUtil.sModel(beoordelingModel.getObject()), ModelUtil.ccModel(conclusieReview),
 			ModelUtil.sModel(screeningRonde), getBeoordelingenIds());

@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.service.mamma.MammaUitwisselportaalService;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.PollingAbstractAjaxTimerBehavior;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.ClientColumn;
@@ -273,7 +272,7 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<MammaDownloadOnderzoekenVerzoek>> cellItem, String componentId, IModel<MammaDownloadOnderzoekenVerzoek> rowModel)
 			{
-				BestandStatus status = rowModel.getObject().getStatus();
+				var status = rowModel.getObject().getStatus();
 				if (status == BestandStatus.VERWERKT || status == BestandStatus.CRASH)
 				{
 					cellItem.add(new Label(componentId, maakMeldingTekst(rowModel)));
@@ -357,7 +356,7 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				super.onSubmit(target);
-				List<MammaOnderzoek> onderzoeken = selectedOnderzoeken.getList();
+				var onderzoeken = selectedOnderzoeken.getList();
 				if (onderzoeken.isEmpty())
 				{
 					error("Er zijn geen onderzoeken geselecteerd.");
@@ -398,7 +397,7 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 	@Override
 	protected void updateContent()
 	{
-		AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class).orElseThrow();
+		var target = RequestCycle.get().find(AjaxRequestTarget.class).orElseThrow();
 		if (clientOpt != null)
 		{
 			passport = new ClientPaspoortPanel("paspoort", clientOpt);
@@ -420,7 +419,7 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 
 	private void createContentContainer(IModel<Client> clientOpt, AjaxRequestTarget target)
 	{
-		RepeatingView repeatingView = new RepeatingView("contentRepeater");
+		var repeatingView = new RepeatingView("contentRepeater");
 		repeatingView.setOutputMarkupId(true);
 		repeatingView.setVisible(true);
 		uitwisselPortaalService.beschikbareRondesVoorDownload(clientOpt.getObject())

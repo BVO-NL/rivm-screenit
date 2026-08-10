@@ -26,10 +26,8 @@ import nl.rivm.screenit.main.model.mamma.beoordeling.MammaConclusieReviewZoekObj
 import nl.rivm.screenit.main.service.mamma.MammaConclusieReviewService;
 import nl.rivm.screenit.main.service.mamma.MammaLezingService;
 import nl.rivm.screenit.main.service.mamma.impl.MammaConclusieReviewDataProviderServiceImpl;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.AbstractMammaBePage;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -74,10 +72,10 @@ public class MammaRadioloogDashboardPage extends AbstractMammaBePage
 	public void createStatestiekenTabel()
 	{
 
-		OrganisatieMedewerker organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
+		var organisatieMedewerker = getIngelogdeOrganisatieMedewerker();
 
-		MammaLezingRapportageDto lezingRapportageVandaag = lezingService.getLezingRapportage(organisatieMedewerker, currentDateSupplier.getLocalDate(), Termijn.VANDAAG);
-		MammaLezingRapportageDto lezingRapportageDitJaar = lezingService.getLezingRapportage(organisatieMedewerker, currentDateSupplier.getLocalDate(), Termijn.KALENDERJAAR);
+		var lezingRapportageVandaag = lezingService.getLezingRapportage(organisatieMedewerker, currentDateSupplier.getLocalDate(), Termijn.VANDAAG);
+		var lezingRapportageDitJaar = lezingService.getLezingRapportage(organisatieMedewerker, currentDateSupplier.getLocalDate(), Termijn.KALENDERJAAR);
 
 		voegKolomMetWaardesToeAanTabel(lezingRapportageVandaag, Termijn.VANDAAG);
 		voegKolomMetWaardesToeAanTabel(lezingRapportageDitJaar, Termijn.KALENDERJAAR);
@@ -86,7 +84,7 @@ public class MammaRadioloogDashboardPage extends AbstractMammaBePage
 
 	private void voegKolomMetWaardesToeAanTabel(MammaLezingRapportageDto lezingRapportage, Termijn termijn)
 	{
-		String termijnNaam = getTermijnNaam(termijn);
+		var termijnNaam = getTermijnNaam(termijn);
 
 		add(new Label("eersteLezingen" + termijnNaam + "Label", Model.of(lezingRapportage.getAantalEersteLezingen())));
 		add(new Label("tweedeLezingen" + termijnNaam + "Label", Model.of(lezingRapportage.getAantalTweedeLezingen())));
@@ -117,7 +115,7 @@ public class MammaRadioloogDashboardPage extends AbstractMammaBePage
 
 	private long countConclusieReviewsVanRadioloog(boolean toonGereviewed)
 	{
-		MammaConclusieReviewZoekObject zoekObject = new MammaConclusieReviewZoekObject();
+		var zoekObject = new MammaConclusieReviewZoekObject();
 		zoekObject.setRadioloog(getIngelogdeOrganisatieMedewerker());
 		zoekObject.setIngelogdeOrganisatieMedewerker(getIngelogdeOrganisatieMedewerker());
 		zoekObject.setFilterOptie(MammaConclusieReviewFilterOptie.ALLES);

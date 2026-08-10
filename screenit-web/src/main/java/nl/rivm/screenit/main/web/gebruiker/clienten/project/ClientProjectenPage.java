@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.project;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import nl.rivm.screenit.Constants;
@@ -37,8 +36,6 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.project.ProjectClient;
-import nl.rivm.screenit.model.project.ProjectGroep;
-import nl.rivm.screenit.model.project.ProjectStatus;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.rivm.screenit.util.ProjectUtil;
@@ -84,7 +81,7 @@ public class ClientProjectenPage extends ClientPage
 		{
 			projectClientModel = (IModel<ProjectClient>) ScreenitSession.get().getZoekObject(ClientProjectenPage.class);
 		}
-		ProjectClient projectClient = projectClientModel.getObject();
+		var projectClient = projectClientModel.getObject();
 		projectClient.setClient(client.getObject());
 
 		add(new ClientPaspoortPanel("paspoort", client));
@@ -94,7 +91,7 @@ public class ClientProjectenPage extends ClientPage
 
 	private WebMarkupContainer getProjectenDataTable()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("projectenContainer");
+		var container = new WebMarkupContainer("projectenContainer");
 		container.setOutputMarkupId(true);
 
 		List<IColumn<ProjectClient, String>> columns = new ArrayList<>();
@@ -104,8 +101,8 @@ public class ClientProjectenPage extends ClientPage
 			@Override
 			public void populateItem(Item<ICellPopulator<ProjectClient>> cellItem, String componentId, IModel<ProjectClient> rowModel)
 			{
-				Date nu = currentDateSupplier.getDate();
-				ProjectStatus status = ProjectUtil.getStatus(rowModel.getObject().getProject(), nu);
+				var nu = currentDateSupplier.getDate();
+				var status = ProjectUtil.getStatus(rowModel.getObject().getProject(), nu);
 				cellItem.add(new Label(componentId, Model.of(getString(EnumStringUtil.getPropertyString(status)))));
 			}
 
@@ -115,9 +112,9 @@ public class ClientProjectenPage extends ClientPage
 			@Override
 			public void populateItem(Item<ICellPopulator<ProjectClient>> cellItem, String componentId, IModel<ProjectClient> rowModel)
 			{
-				String status = "Actief";
-				ProjectClient projectClient = rowModel.getObject();
-				ProjectGroep projectGroep = projectClient.getGroep();
+				var status = "Actief";
+				var projectClient = rowModel.getObject();
+				var projectGroep = projectClient.getGroep();
 				if (!projectClient.getActief() || !projectGroep.getActief())
 				{
 					status = "Inactief";
@@ -132,7 +129,7 @@ public class ClientProjectenPage extends ClientPage
 		columns.add(
 			new DateTimePropertyColumn<>(Model.of("Einddatum"), PROJECT + "." + EIND_DATUM, PROJECT + "." + EIND_DATUM, formatter));
 
-		ScreenitDataTable<ProjectClient, String> dataTable = new ScreenitDataTable<>("projecten", columns, new ClientProjectenDataProvider(projectClientModel), 10,
+		var dataTable = new ScreenitDataTable<>("projecten", columns, new ClientProjectenDataProvider(projectClientModel), 10,
 			new Model<>("Projecten"))
 		{
 			@Override

@@ -32,10 +32,8 @@ import nl.rivm.screenit.batch.model.ScreenITHL7MessageContext;
 import nl.rivm.screenit.batch.service.CervixHL7BaseService;
 import nl.rivm.screenit.batch.service.HL7BaseSendMessageService;
 import nl.rivm.screenit.model.BMHKLaboratorium;
-import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
-import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
@@ -52,8 +50,6 @@ import org.springframework.stereotype.Service;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Connection;
 import ca.uhn.hl7v2.model.DataTypeException;
-import ca.uhn.hl7v2.model.v24.datatype.XAD;
-import ca.uhn.hl7v2.model.v24.datatype.XPN;
 import ca.uhn.hl7v2.model.v24.segment.MSH;
 import ca.uhn.hl7v2.model.v24.segment.OBR;
 import ca.uhn.hl7v2.model.v24.segment.PID;
@@ -76,7 +72,7 @@ public class CervixHL7BaseServiceImpl implements CervixHL7BaseService
 	{
 		if (messageContext.getPort() == null || messageContext.getHost() == null)
 		{
-			String melding = "Voor laboratorium " + laboratoriumNaam + " zijn geen HL7v2 host en/of port gespecificeerd.";
+			var melding = "Voor laboratorium " + laboratoriumNaam + " zijn geen HL7v2 host en/of port gespecificeerd.";
 			messageContext.getResponseWrapper().setMelding(melding);
 			throw new IllegalStateException(melding);
 		}
@@ -88,7 +84,7 @@ public class CervixHL7BaseServiceImpl implements CervixHL7BaseService
 	@Override
 	public HL7v24ResponseWrapper sendHL7Message(String hl7Bericht, BMHKLaboratorium laboratorium, OrganisatieParameterKey hostKey, OrganisatieParameterKey portKey)
 	{
-		ScreenITHL7MessageContext messageContext = new ScreenITHL7MessageContext(HapiContextType.UTF_8);
+		var messageContext = new ScreenITHL7MessageContext(HapiContextType.UTF_8);
 		try
 		{
 			messageContext.setHost(organisatieParameterService.getOrganisatieParameter(laboratorium, hostKey));
@@ -99,7 +95,7 @@ public class CervixHL7BaseServiceImpl implements CervixHL7BaseService
 		}
 		catch (Exception e)
 		{
-			HL7v24ResponseWrapper responseWrapper = messageContext.getResponseWrapper();
+			var responseWrapper = messageContext.getResponseWrapper();
 			if (StringUtils.isBlank(responseWrapper.getMelding()))
 			{
 				responseWrapper.setMelding(e.getMessage());
@@ -128,8 +124,8 @@ public class CervixHL7BaseServiceImpl implements CervixHL7BaseService
 	@Override
 	public PID buildPIDSegmentWithForcedGender(PID pid, Client client, Geslacht forcedGender) throws DataTypeException
 	{
-		Persoon persoon = client.getPersoon();
-		BagAdres persoonAdres = persoon.getGbaAdres();
+		var persoon = client.getPersoon();
+		var persoonAdres = persoon.getGbaAdres();
 
 		pid.getSetIDPID().setValue("1");
 
@@ -138,7 +134,7 @@ public class CervixHL7BaseServiceImpl implements CervixHL7BaseService
 		pid.getPid3_PatientIdentifierList(0).getCx1_ID().setValue(persoon.getBsn());
 		pid.getPid3_PatientIdentifierList(0).getCx5_IdentifierTypeCode().setValue("NNNLD");
 
-		XPN patientGegevens = pid.getPid5_PatientName(0);
+		var patientGegevens = pid.getPid5_PatientName(0);
 		patientGegevens.getGivenName().setValue(persoon.getVoornaam());
 		patientGegevens.getNameTypeCode().setValue("L");
 		patientGegevens.getFamilyName().getSurname().setValue(NaamUtil.getAanspreekTussenvoegselEnAchternaam(client));
@@ -161,7 +157,7 @@ public class CervixHL7BaseServiceImpl implements CervixHL7BaseService
 			}
 		}
 
-		XAD omlAdres1 = pid.getPatientAddress(0);
+		var omlAdres1 = pid.getPatientAddress(0);
 		omlAdres1.getCity().setValue(persoonAdres.getPlaats());
 		omlAdres1.getStreetAddress().getSad2_StreetName().setValue(persoonAdres.getStraat());
 		if (persoonAdres.getHuisnummer() != null)

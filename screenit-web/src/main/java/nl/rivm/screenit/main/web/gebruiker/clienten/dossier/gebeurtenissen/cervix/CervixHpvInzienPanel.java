@@ -35,10 +35,7 @@ import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.ClientDossierPage;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.AbstractGebeurtenisDetailPanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.GebeurtenisPopupBasePanel;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.UploadDocument;
-import nl.rivm.screenit.model.cervix.CervixMonster;
-import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -131,11 +128,11 @@ public class CervixHpvInzienPanel extends AbstractGebeurtenisDetailPanel
 			{
 				if (file.getObject().size() == 1)
 				{
-					FileUpload fileUpload = file.getObject().get(0);
+					var fileUpload = file.getObject().get(0);
 					try
 					{
 						maakUploadDocument(fileUpload);
-						Client client = getModelObject().getBeoordeling().getMonster().getBrief().getClient();
+						var client = getModelObject().getBeoordeling().getMonster().getBrief().getClient();
 						uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.CERVIX_UITSLAG_VERWIJDEREN_CLIENT_BRIEF, client.getId());
 						cervixUitnodigingService.vervangVerwijderdDocument(getModelObject().getBeoordeling().getMonster(), uploadDocument);
 						setResponsePage(new ClientDossierPage(ModelUtil.sModel(client)));
@@ -178,7 +175,7 @@ public class CervixHpvInzienPanel extends AbstractGebeurtenisDetailPanel
 			{
 				if (file.getObject().size() == 1)
 				{
-					FileUpload fileUpload = file.getObject().get(0);
+					var fileUpload = file.getObject().get(0);
 					try
 					{
 						maakUploadDocument(fileUpload);
@@ -202,7 +199,7 @@ public class CervixHpvInzienPanel extends AbstractGebeurtenisDetailPanel
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				CervixUitnodiging uitnodiging = (CervixUitnodiging) CervixHpvInzienPanel.this.getModelObject().getUitnodiging();
+				var uitnodiging = (CervixUitnodiging) CervixHpvInzienPanel.this.getModelObject().getUitnodiging();
 				try
 				{
 					uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.CERVIX_UITSLAG_VERWIJDEREN_CLIENT_BRIEF,
@@ -227,9 +224,9 @@ public class CervixHpvInzienPanel extends AbstractGebeurtenisDetailPanel
 
 	private boolean magVerwijderen()
 	{
-		CervixUitnodiging uitnodiging = (CervixUitnodiging) getModelObject().getUitnodiging();
-		CervixMonster monster = uitnodiging.getMonster();
-		CervixScreeningRonde ontvangstRonde = monster.getOntvangstScreeningRonde();
+		var uitnodiging = (CervixUitnodiging) getModelObject().getUitnodiging();
+		var monster = uitnodiging.getMonster();
+		var ontvangstRonde = monster.getOntvangstScreeningRonde();
 		return ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_VERWIJDEREN_RESULTATEN_MONSTER, Actie.VERWIJDEREN, ontvangstRonde.getDossier().getClient())
 			&& monster.equals(cervixUitnodigingService.getUitnodigingMagVerwijderdWorden(ontvangstRonde));
 	}
@@ -263,7 +260,7 @@ public class CervixHpvInzienPanel extends AbstractGebeurtenisDetailPanel
 	@Override
 	protected void addDocumentDownloadenButton(String id, GebeurtenisPopupBasePanel parent)
 	{
-		UploadDocumentLink briefDownloadBtn = new UploadDocumentLink(id, new PropertyModel<>(getModel(), "beoordeling.monster.verwijderdBrief"), true);
+		var briefDownloadBtn = new UploadDocumentLink(id, new PropertyModel<>(getModel(), "beoordeling.monster.verwijderdBrief"), true);
 		briefDownloadBtn.setVisible(getModelObject().getBeoordeling().getMonster().getVerwijderdDatum() != null);
 		parent.add(briefDownloadBtn);
 	}

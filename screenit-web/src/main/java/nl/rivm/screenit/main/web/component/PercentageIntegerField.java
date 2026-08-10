@@ -75,9 +75,9 @@ public class PercentageIntegerField extends TextField<Integer>
 	{
 		if (error instanceof ValidationError)
 		{
-			ValidationError valError = (ValidationError) error;
-			Integer minimum = (Integer) valError.getVariables().get("minimum");
-			Integer maximum = (Integer) valError.getVariables().get("maximum");
+			var valError = (ValidationError) error;
+			var minimum = (Integer) valError.getVariables().get("minimum");
+			var maximum = (Integer) valError.getVariables().get("maximum");
 
 			if (minimum != null && maximum != null)
 			{
@@ -113,8 +113,8 @@ public class PercentageIntegerField extends TextField<Integer>
 				@Override
 				protected NumberFormat newNumberFormat(Locale locale)
 				{
-					NumberFormat nf = NumberFormat.getNumberInstance(Constants.LOCALE_NL);
-					DecimalFormat df = (DecimalFormat) nf;
+					var nf = NumberFormat.getNumberInstance(Constants.LOCALE_NL);
+					var df = (DecimalFormat) nf;
 					df.applyPattern("##0.00");
 					return df;
 				}

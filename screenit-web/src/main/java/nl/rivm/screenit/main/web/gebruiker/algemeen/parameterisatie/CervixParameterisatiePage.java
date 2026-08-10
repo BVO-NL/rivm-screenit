@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.parameterisatie;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.model.Parameterisatie;
 import nl.rivm.screenit.main.service.ParameterisatieService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
@@ -53,7 +52,7 @@ public class CervixParameterisatiePage extends ParameterisatieBasePage
 
 	public CervixParameterisatiePage()
 	{
-		Parameterisatie parameterisatie = parameterisatieService.loadParameterisatie();
+		var parameterisatie = parameterisatieService.loadParameterisatie();
 		add(new CervixPrimaireParametersPanel("landelijkeParameters", new Model<>(parameterisatie)));
 
 		if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CERVIX_HUISARTS_TARIEF, Actie.INZIEN))

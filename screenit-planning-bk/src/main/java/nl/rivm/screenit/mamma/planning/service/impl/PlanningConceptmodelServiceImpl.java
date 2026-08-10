@@ -265,7 +265,7 @@ public class PlanningConceptmodelServiceImpl implements PlanningConceptmodelServ
 	@Override
 	public void addStandplaatsPeriode(PlanningStandplaatsPeriode planningStandplaatsPeriode)
 	{
-		Long screeningsOrganisatieId = planningStandplaatsPeriode.getScreeningsEenheid().getScreeningsOrganisatie().getId();
+		var screeningsOrganisatieId = planningStandplaatsPeriode.getScreeningsEenheid().getScreeningsOrganisatie().getId();
 		teLezenStandplaatsPeriodeIdsPerScreeningsOrganisatieId.get(screeningsOrganisatieId).add(planningStandplaatsPeriode.getId());
 		teLezenStandplaatsRondeIdsPerScreeningsOrganisatieId.get(screeningsOrganisatieId).add(planningStandplaatsPeriode.getStandplaatsRonde().getId());
 	}

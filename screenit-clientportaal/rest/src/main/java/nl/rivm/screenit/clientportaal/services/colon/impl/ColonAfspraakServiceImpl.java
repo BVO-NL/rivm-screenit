@@ -31,7 +31,6 @@ import nl.rivm.screenit.clientportaal.services.colon.ColonAfspraakService;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
-import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamer;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
@@ -63,7 +62,7 @@ public class ColonAfspraakServiceImpl implements ColonAfspraakService
 	@Override
 	public ColonIntakeAfspraak getHuidigeIntakeAfspraak(Client client)
 	{
-		ColonScreeningRonde laatsteColonScreeningRonde = client.getColonDossier().getLaatsteScreeningRonde();
+		var laatsteColonScreeningRonde = client.getColonDossier().getLaatsteScreeningRonde();
 		if (laatsteColonScreeningRonde == null)
 		{
 			return null;
@@ -84,9 +83,9 @@ public class ColonAfspraakServiceImpl implements ColonAfspraakService
 	@Override
 	public ColonVrijSlotZonderKamerDto vanVrijSlotNaarColonVrijSlot(VrijSlotZonderKamer vrijSlot)
 	{
-		ColonVrijSlotZonderKamerDto vrijColonSlot = colonVrijSlotZonderKamerMapper.vrijSlotToColonVrijSlotZonderKamerDto(vrijSlot);
+		var vrijColonSlot = colonVrijSlotZonderKamerMapper.vrijSlotToColonVrijSlotZonderKamerDto(vrijSlot);
 
-		ColonIntakelocatie intakelocatie = hibernateService.load(ColonIntakelocatie.class, vrijColonSlot.getIntakelocatieId());
+		var intakelocatie = hibernateService.load(ColonIntakelocatie.class, vrijColonSlot.getIntakelocatieId());
 		vrijColonSlot.setAdres(intakelocatie.getAdres().getAdres());
 		vrijColonSlot.setPostcode(intakelocatie.getAdres().getPostcode());
 		vrijColonSlot.setZiekenhuis(intakelocatie.getNaam());
@@ -97,7 +96,7 @@ public class ColonAfspraakServiceImpl implements ColonAfspraakService
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void intakeAfspraakAfzeggen(Client client)
 	{
-		ColonIntakeAfspraak intakeAfspraak = client.getColonDossier().getLaatsteScreeningRonde().getLaatsteAfspraak();
+		var intakeAfspraak = client.getColonDossier().getLaatsteScreeningRonde().getLaatsteAfspraak();
 		if (intakeAfspraak == null)
 		{
 			throw new IllegalStateException("Intakeafspraak onbekend");

@@ -246,7 +246,7 @@ public class BriefFactoryImpl implements BriefFactory
 	@Transactional
 	public <B extends ClientBrief<?, A, ?>, A extends Afmelding<?, ?, B>> B maakBvoBrief(A afmelding, BriefType type, Date creatieMoment, boolean vervangendeProjectBrief)
 	{
-		Client client = AfmeldingUtil.getClientFromAfmelding(afmelding);
+		var client = AfmeldingUtil.getClientFromAfmelding(afmelding);
 
 		B brief = maakBvoBrief(client, type, creatieMoment, false, vervangendeProjectBrief);
 		brief.setAfmelding(afmelding);
@@ -376,7 +376,7 @@ public class BriefFactoryImpl implements BriefFactory
 			return;
 		}
 
-		BaseJpaRepository<B> repository = getBriefTypeRepository(briefClass);
+		var repository = getBriefTypeRepository(briefClass);
 		var brieven = repository.findAll(heeftTeGenererenBrieven(type, client));
 
 		for (var brief : brieven)

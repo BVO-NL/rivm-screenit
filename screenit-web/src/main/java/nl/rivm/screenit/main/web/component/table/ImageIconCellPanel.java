@@ -35,7 +35,7 @@ public class ImageIconCellPanel<T> extends GenericPanel<T>
 	{
 		super(id, rowModel);
 		setOutputMarkupId(true);
-		WebMarkupContainer image = new WebMarkupContainer("image");
+		var image = new WebMarkupContainer("image");
 		image.add(new AttributeModifier("class", imageClass));
 		if (onHoverLabel != null)
 		{

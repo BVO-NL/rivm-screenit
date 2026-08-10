@@ -44,7 +44,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.IModel;
@@ -73,12 +72,12 @@ public class ProjectUitslagUploadenPage extends ProjectBasePage
 		super(model);
 
 		uitslagModel = ModelUtil.ccModel(new ProjectBestand());
-		ProjectBestand uitslag = uitslagModel.getObject();
+		var uitslag = uitslagModel.getObject();
 		uitslag.setProject(model.getObject());
-		Form<ProjectBestand> form = new Form<>("form", uitslagModel);
+		var form = new Form<ProjectBestand>("form", uitslagModel);
 		add(form);
 
-		FormComponent<List<FileUpload>> uitslagUpload = new FileUploadField("uitslag", uitslagen).add(new FileValidator(FileType.CSV));
+		var uitslagUpload = new FileUploadField("uitslag", uitslagen).add(new FileValidator(FileType.CSV));
 		uitslagUpload.setRequired(true);
 		form.add(uitslagUpload);
 
@@ -95,13 +94,13 @@ public class ProjectUitslagUploadenPage extends ProjectBasePage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
-				ProjectBestand uitslag = form.getModelObject();
-				Project project = getProjectModel().getObject();
+				var uitslag = form.getModelObject();
+				var project = getProjectModel().getObject();
 				if (uitslagen.getObject().size() == 1)
 				{
 					try
 					{
-						FileUpload uitslagenBestand = uitslagen.getObject().get(0);
+						var uitslagenBestand = uitslagen.getObject().get(0);
 						projectService.queueProjectBestandVoorUitslagen(project, uitslag,
 							uitslagenBestand.getContentType(),
 							uitslagenBestand.getClientFileName(),
@@ -133,7 +132,7 @@ public class ProjectUitslagUploadenPage extends ProjectBasePage
 
 	private WebMarkupContainer getPassPoortContainer()
 	{
-		WebMarkupContainer container = new WebMarkupContainer("projectPasspoortContainer");
+		var container = new WebMarkupContainer("projectPasspoortContainer");
 		container.setOutputMarkupId(true);
 
 		container.add(new ProjectPaspoortPanel("projectPasspoort", getProjectModel()));

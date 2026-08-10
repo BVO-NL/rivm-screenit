@@ -75,7 +75,7 @@ public class MammaLezingServiceImpl implements MammaLezingService
 	@Override
 	public MammaLezingRapportageDto getLezingRapportage(OrganisatieMedewerker organisatieMedewerker, LocalDate date, Termijn termijn)
 	{
-		MammaLezingRapportageDto lezingDto = new MammaLezingRapportageDto();
+		var lezingDto = new MammaLezingRapportageDto();
 		lezingDto.setAantalEersteLezingen(getEersteLezingenCount(organisatieMedewerker, date, termijn));
 		lezingDto.setAantalTweedeLezingen(getTweedeLezingenCount(organisatieMedewerker, date, termijn));
 		lezingDto.setTotaalAantalLezingen(lezingDto.getAantalEersteLezingen() + lezingDto.getAantalTweedeLezingen());
@@ -131,7 +131,7 @@ public class MammaLezingServiceImpl implements MammaLezingService
 
 	private String getPercentageRondeVerwijzend(long nRondeUitslagen, long totaalBeoordeling1Of2Lezing)
 	{
-		String uitslagString = "Geen beoordelingen";
+		var uitslagString = "Geen beoordelingen";
 		if (totaalBeoordeling1Of2Lezing != 0L)
 		{
 			uitslagString = PercentageUtil.getPercentageVanGeheel(nRondeUitslagen, totaalBeoordeling1Of2Lezing);
@@ -143,7 +143,7 @@ public class MammaLezingServiceImpl implements MammaLezingService
 	public void logPopupPreBirads(Client client, OrganisatieMedewerker organisatieMedewerker, MammaLezing lezing, MammaBIRADSWaarde prePopupBiradsWaardeLinks,
 		MammaBIRADSWaarde prePopupBiradsWaardeRechts)
 	{
-		String melding = String.format("Lezing BI-RADS waardes voor popup: BI-RADS: %s%s. BI-RADS waardes na popup: %s%s",
+		var melding = String.format("Lezing BI-RADS waardes voor popup: BI-RADS: %s%s. BI-RADS waardes na popup: %s%s",
 			MammaScreeningRondeUtil.bepaalNaamBiradsWaarde(MammaZijde.RECHTER_BORST, prePopupBiradsWaardeRechts),
 			MammaScreeningRondeUtil.bepaalNaamBiradsWaarde(MammaZijde.LINKER_BORST, prePopupBiradsWaardeLinks),
 			MammaScreeningRondeUtil.bepaalNaamBiradsWaarde(MammaZijde.RECHTER_BORST, lezing.getBiradsRechts()),

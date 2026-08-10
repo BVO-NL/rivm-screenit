@@ -42,7 +42,7 @@ public class ColonFitRegistratieKoppelenBeeindigdLogEvent extends LogEvent
 	@Override
 	public String getMelding()
 	{
-		String melding = super.getMelding();
+		var melding = super.getMelding();
 		if (StringUtils.isBlank(melding))
 		{
 			melding = "#" + aantalFitRegistratiesVerwerkt + " verwerkt";

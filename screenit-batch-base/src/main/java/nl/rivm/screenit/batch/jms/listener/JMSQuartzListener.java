@@ -26,6 +26,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.jms.Session;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,17 +44,13 @@ import nl.rivm.screenit.model.helper.ActiveMQHelper;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
-import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
-import org.quartz.spi.MutableTrigger;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
-
-import jakarta.jms.Session;
 
 @Slf4j
 @Component
@@ -72,27 +70,27 @@ public class JMSQuartzListener implements SessionAwareMessageListener<ActiveMQOb
 			LOG.info("Reply queue: " + message.getJMSReplyTo());
 			if (object instanceof AddTriggerRequest)
 			{
-				AddTriggerRequest addTriggerRequest = (AddTriggerRequest) object;
+				var addTriggerRequest = (AddTriggerRequest) object;
 
 				try
 				{
-					Trigger trigger = addTriggerRequest.getTrigger();
-					final AddTriggerResponse addTriggerResponse = new AddTriggerResponse();
+					var trigger = addTriggerRequest.getTrigger();
+					final var addTriggerResponse = new AddTriggerResponse();
 					if (trigger.getJobType() != null)
 					{
-						JobDetail jobDetail = scheduler.getJobDetail(new JobKey(trigger.getJobType().name()));
+						var jobDetail = scheduler.getJobDetail(new JobKey(trigger.getJobType().name()));
 
-						boolean newJob = false;
+						var newJob = false;
 						if (jobDetail == null)
 						{
 							jobDetail = QuartzJobHelper.createNewJobDetail(trigger.getJobType());
 							newJob = true;
 						}
 
-						CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(trigger.getCronExpressie());
+						var cronScheduleBuilder = CronScheduleBuilder.cronSchedule(trigger.getCronExpressie());
 
-						TriggerKey key = new TriggerKey(UUID.randomUUID().toString());
-						MutableTrigger mutableTrigger = cronScheduleBuilder.build();
+						var key = new TriggerKey(UUID.randomUUID().toString());
+						var mutableTrigger = cronScheduleBuilder.build();
 						mutableTrigger.setKey(key);
 
 						Date firstScheduleDate;
@@ -125,14 +123,14 @@ public class JMSQuartzListener implements SessionAwareMessageListener<ActiveMQOb
 				try
 				{
 					final List<Trigger> triggers = new ArrayList<>();
-					for (TriggerKey triggerKey : scheduler.getTriggerKeys(null))
+					for (var triggerKey : scheduler.getTriggerKeys(null))
 					{
-						org.quartz.Trigger quartzTrigger = scheduler.getTrigger(triggerKey);
-						JobDetail jobDetail = scheduler.getJobDetail(quartzTrigger.getJobKey());
+						var quartzTrigger = scheduler.getTrigger(triggerKey);
+						var jobDetail = scheduler.getJobDetail(quartzTrigger.getJobKey());
 						if (quartzTrigger instanceof CronTrigger)
 						{
-							CronTrigger cronTrigger = (CronTrigger) quartzTrigger;
-							Trigger trigger = new Trigger();
+							var cronTrigger = (CronTrigger) quartzTrigger;
+							var trigger = new Trigger();
 							trigger.setJobType(JobType.valueOf(jobDetail.getJobDataMap().getString(QuartzJobHelper.JOB_NAME)));
 							trigger.setCronExpressie(cronTrigger.getCronExpression());
 							trigger.setTriggerNaam(cronTrigger.getKey().getName());
@@ -143,7 +141,7 @@ public class JMSQuartzListener implements SessionAwareMessageListener<ActiveMQOb
 
 					jmsTemplate.send(message.getJMSReplyTo(), session12 ->
 					{
-						GetTriggersResponse getTriggersResponse = new GetTriggersResponse();
+						var getTriggersResponse = new GetTriggersResponse();
 						getTriggersResponse.setTriggers(triggers);
 						return ActiveMQHelper.getActiveMqObjectMessage(getTriggersResponse);
 					});
@@ -158,13 +156,13 @@ public class JMSQuartzListener implements SessionAwareMessageListener<ActiveMQOb
 			{
 				try
 				{
-					RemoveTriggerRequest removeTriggerRequest = (RemoveTriggerRequest) object;
-					org.quartz.Trigger trigger = scheduler.getTrigger(new TriggerKey(removeTriggerRequest.getTriggerNaam()));
+					var removeTriggerRequest = (RemoveTriggerRequest) object;
+					var trigger = scheduler.getTrigger(new TriggerKey(removeTriggerRequest.getTriggerNaam()));
 					final Boolean result = scheduler.unscheduleJob(trigger.getKey());
 
 					jmsTemplate.send(message.getJMSReplyTo(), session1 ->
 					{
-						RemoveTriggerResponse removeTriggerResponse = new RemoveTriggerResponse();
+						var removeTriggerResponse = new RemoveTriggerResponse();
 						removeTriggerResponse.setRemoveResult(result);
 						return ActiveMQHelper.getActiveMqObjectMessage(removeTriggerResponse);
 					});

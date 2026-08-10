@@ -54,11 +54,11 @@ public class EnovationHuisartsWriter implements ItemWriter<Object[]>
 	@Override
 	public void write(Chunk<? extends Object[]> chunk) throws Exception
 	{
-		ZorgmailImportMapping mapping = (ZorgmailImportMapping) executionContext.get(EnovationHuisartsJobListener.ZM_BESTAND_MAPPING);
-		ZorgmailImportVoortgang voortgang = (ZorgmailImportVoortgang) executionContext.get(EnovationHuisartsJobListener.ZM_BESTAND_VOORTGANG);
-		for (Object[] lineObjects : chunk.getItems())
+		var mapping = (ZorgmailImportMapping) executionContext.get(EnovationHuisartsJobListener.ZM_BESTAND_MAPPING);
+		var voortgang = (ZorgmailImportVoortgang) executionContext.get(EnovationHuisartsJobListener.ZM_BESTAND_VOORTGANG);
+		for (var lineObjects : chunk.getItems())
 		{
-			Integer lineNumber = (Integer) lineObjects[0];
+			var lineNumber = (Integer) lineObjects[0];
 			if (lineNumber > 1)
 			{
 				try
@@ -71,7 +71,7 @@ public class EnovationHuisartsWriter implements ItemWriter<Object[]>
 				}
 				catch (IllegalStateException | ParseException | IndexOutOfBoundsException e)
 				{
-					String melding = "Regel #" + lineNumber + " is niet verwerkt";
+					var melding = "Regel #" + lineNumber + " is niet verwerkt";
 					LOG.warn(melding, e);
 					addMelding(melding);
 				}
@@ -81,7 +81,7 @@ public class EnovationHuisartsWriter implements ItemWriter<Object[]>
 
 	private void addMelding(String melding)
 	{
-		String huidigeMelding = "";
+		var huidigeMelding = "";
 		if (executionContext.containsKey(BatchConstants.MELDING))
 		{
 			huidigeMelding = executionContext.getString(BatchConstants.MELDING);

@@ -23,6 +23,8 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
 
 import java.time.LocalDate;
 
+import jakarta.servlet.http.HttpSession;
+
 import nl.rivm.screenit.mamma.se.proxy.services.LogischeSessieService;
 import nl.rivm.screenit.mamma.se.proxy.services.ProxyService;
 import nl.rivm.screenit.mamma.se.proxy.services.SeStatusService;
@@ -31,15 +33,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/dagverslag")
@@ -63,7 +62,7 @@ public class DagverslagProxyController
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 
-		RequestEntity.BodyBuilder requestBuilder = proxyService.getProxyRequestEntity("/dagverslag/" + seStatusService.getSeCode() + "/" + datum, HttpMethod.GET);
+		var requestBuilder = proxyService.getProxyRequestEntity("/dagverslag/" + seStatusService.getSeCode() + "/" + datum, HttpMethod.GET);
 		return proxyService.sendUncheckedProxyRequest(requestBuilder.build(), String.class);
 	}
 }

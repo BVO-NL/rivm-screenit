@@ -40,12 +40,12 @@ public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException
 	{
-		ClientHttpResponse response = execution.execute(request, body);
-		ClientHttpResponse responseCopy = response;
+		var response = execution.execute(request, body);
+		var responseCopy = response;
 		if (LOG.isTraceEnabled())
 		{
 			responseCopy = new BufferingClientHttpResponseWrapper(response);
-			String responseBody = "";
+			var responseBody = "";
 			if (responseCopy.getStatusCode() == HttpStatus.OK || responseCopy.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR)
 			{
 				responseBody = IOUtils.toString(responseCopy.getBody(), Charset.defaultCharset());

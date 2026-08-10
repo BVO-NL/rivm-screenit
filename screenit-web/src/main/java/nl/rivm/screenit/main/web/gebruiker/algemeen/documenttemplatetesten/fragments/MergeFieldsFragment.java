@@ -73,15 +73,15 @@ public class MergeFieldsFragment extends Fragment
 			@Override
 			protected void populateItem(final ListItem<MergeField> item)
 			{
-				final MergeField field = item.getModelObject();
+				final var field = item.getModelObject();
 				item.add(new Label("fieldName", field.getFieldName()));
 				item.add(getInvoerField(field));
 			}
 
 			private WebMarkupContainer getInvoerField(final MergeField field)
 			{
-				String property = "fromDB" + modelObject.name();
-				String componentId = "invoerField";
+				var property = "fromDB" + modelObject.name();
+				var componentId = "invoerField";
 				if (field.equals(MergeField.MAMMA_AFSPRAAK_BETREFT))
 				{
 					return new MammaAfspraakBetreftFragment(componentId,

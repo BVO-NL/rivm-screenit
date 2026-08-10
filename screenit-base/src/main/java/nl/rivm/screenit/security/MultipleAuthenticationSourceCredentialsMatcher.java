@@ -69,11 +69,11 @@ public class MultipleAuthenticationSourceCredentialsMatcher implements Credentia
 	{
 		if (token instanceof UsernamePasswordToken)
 		{
-			boolean result = passwordCredentialsMatcher.doCredentialsMatch(token, info);
+			var result = passwordCredentialsMatcher.doCredentialsMatch(token, info);
 
 			if (result && token instanceof YubikeyToken)
 			{
-				YubikeyAuthenticationInfo yubikeyAuthenticationInfo = (YubikeyAuthenticationInfo) info;
+				var yubikeyAuthenticationInfo = (YubikeyAuthenticationInfo) info;
 				result = yubikeyMatcher.doCredentialsMatch(token, info);
 				hibernateService.saveOrUpdate(yubikeyAuthenticationInfo.getYubiKey());
 			}

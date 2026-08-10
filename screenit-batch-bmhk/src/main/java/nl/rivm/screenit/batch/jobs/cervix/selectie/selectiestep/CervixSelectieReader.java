@@ -107,7 +107,7 @@ public class CervixSelectieReader extends BaseSpecificationScrollableResultReade
 	protected Specification<Client> createSpecification()
 	{
 		var stepContext = getStepExecutionContext();
-		Long bmhkLabId = (Long) stepContext.get(CervixLabPartitioner.KEY_BMHK_LAB);
+		var bmhkLabId = (Long) stepContext.get(CervixLabPartitioner.KEY_BMHK_LAB);
 
 		var vandaag = dateSupplier.getLocalDate();
 

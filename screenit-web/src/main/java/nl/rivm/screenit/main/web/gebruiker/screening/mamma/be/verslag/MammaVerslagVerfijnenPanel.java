@@ -41,7 +41,6 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.verslag.laesies.Ca
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.verslag.laesies.LaesiePanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.verslag.laesies.MassaLaesiePanel;
 import nl.rivm.screenit.main.web.gebruiker.screening.mamma.panel.MammaNevenbevindingViewerPanel;
-import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 import nl.rivm.screenit.model.mamma.MammaLezing;
 import nl.rivm.screenit.model.mamma.enums.MammaAmputatie;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
@@ -82,17 +81,17 @@ public class MammaVerslagVerfijnenPanel extends GenericPanel<MammaLezing>
 	public MammaVerslagVerfijnenPanel(MammaVerslagRondePanel verslagRondePanel, String id, IModel<MammaLezing> model, MammaAmputatie amputatie, boolean toonAfwijkingSliceButtons)
 	{
 		super(id, model);
-		ScreenitForm<MammaLezing> form = new ScreenitForm<>("verfijnenForm");
+		var form = new ScreenitForm<MammaLezing>("verfijnenForm");
 		add(form);
 		renderAfkeurRedenen(form);
 
-		LaesieDtoMapper mapper = new LaesieDtoMapper();
+		var mapper = new LaesieDtoMapper();
 		laesieDtos = new ListModel<>(mapper.lezingToLaesieDtos(model.getObject()));
-		MammaLaesiesAfbeeldingPanel afbeelding = new MammaLaesiesAfbeeldingPanel("verfijnVerslagAfbeelding", laesieDtos, false, model.getObject().getId(), true, amputatie);
+		var afbeelding = new MammaLaesiesAfbeeldingPanel("verfijnVerslagAfbeelding", laesieDtos, false, model.getObject().getId(), true, amputatie);
 		afbeelding.setOnAfbeeldingGewijzigd((Consumer<AjaxRequestTarget> & Serializable) this::onAfbeeldingGewijzigd);
 		form.add(afbeelding);
 
-		MammaLezingParameters lezingParameters = new MammaLezingParameters().setVerbergAfrondKnop(true)
+		var lezingParameters = new MammaLezingParameters().setVerbergAfrondKnop(true)
 			.setAmputatie(amputatie)
 			.setMetAfbeelding(false)
 			.setToonBiradsOpmerkingVeld(false);
@@ -115,7 +114,7 @@ public class MammaVerslagVerfijnenPanel extends GenericPanel<MammaLezing>
 				valideerBirads(MammaVerslagVerfijnenPanel.this.getModelObject());
 				if (!MammaVerslagVerfijnenPanel.this.hasErrorMessage())
 				{
-					IModel<MammaLezing> verslagLezingModel = MammaVerslagVerfijnenPanel.this.getModel();
+					var verslagLezingModel = MammaVerslagVerfijnenPanel.this.getModel();
 					koppelLaesiesAanLezingEnSlaOp(verslagLezingModel, verslagRondePanel);
 					BasePage.markeerFormulierenOpgeslagen(target);
 					gaNaarVerwijsVerslagPanel(target, verslagRondePanel, verslagLezingModel, amputatie, toonAfwijkingSliceButtons);
@@ -146,10 +145,10 @@ public class MammaVerslagVerfijnenPanel extends GenericPanel<MammaLezing>
 	private void renderAfkeurRedenen(ScreenitForm<MammaLezing> form)
 	{
 		Label afkeurreden;
-		MammaBeoordeling beoordeling = getModelObject().getBeoordeling();
+		var beoordeling = getModelObject().getBeoordeling();
 		if (beoordeling != null && MammaBeoordelingStatus.VERSLAG_AFGEKEURD.equals(beoordeling.getStatus()))
 		{
-			String afkeurredenTekst = StringUtils.isNotBlank(beoordeling.getAfkeurreden())
+			var afkeurredenTekst = StringUtils.isNotBlank(beoordeling.getAfkeurreden())
 				? String.format("Verslag afgekeurd met reden: %s", beoordeling.getAfkeurreden())
 				: "Geen afkeurreden opgegeven";
 			afkeurreden = new Label("afkeurreden", afkeurredenTekst);
@@ -189,7 +188,7 @@ public class MammaVerslagVerfijnenPanel extends GenericPanel<MammaLezing>
 	private void gaNaarVerwijsVerslagPanel(AjaxRequestTarget target, MammaVerslagRondePanel verslagPanel, IModel<MammaLezing> verslagLezingModel, MammaAmputatie amputatie,
 		boolean toonAfwijkingSliceButtons)
 	{
-		MammaVerwijsVerslagPanel verwijsVerslagPanel = new MammaVerwijsVerslagPanel("verslagPanel", verslagPanel, verslagLezingModel, amputatie, toonAfwijkingSliceButtons);
+		var verwijsVerslagPanel = new MammaVerwijsVerslagPanel("verslagPanel", verslagPanel, verslagLezingModel, amputatie, toonAfwijkingSliceButtons);
 		verwijsVerslagPanel.setOutputMarkupId(true);
 		verslagPanel.replaceRonde(target, verwijsVerslagPanel);
 	}
@@ -236,7 +235,7 @@ public class MammaVerslagVerfijnenPanel extends GenericPanel<MammaLezing>
 	public void blokeerOpslaan()
 	{
 		maakVerslagBtn.setEnabled(false);
-		AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
+		var target = RequestCycle.get().find(AjaxRequestTarget.class).orElse(null);
 		if (target != null)
 		{
 			target.add(maakVerslagBtn);

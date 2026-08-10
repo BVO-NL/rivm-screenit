@@ -48,7 +48,7 @@ public class MammaLezingParameters
 
 	public static MammaLezingParameters maakAlleenInzien()
 	{
-		MammaLezingParameters lezingParameters = new MammaLezingParameters();
+		var lezingParameters = new MammaLezingParameters();
 		lezingParameters.setInzien(true);
 		lezingParameters.setToonBiradsOpmerkingVeld(true);
 		return lezingParameters;

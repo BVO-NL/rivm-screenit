@@ -32,10 +32,8 @@ import nl.rivm.screenit.mamma.se.service.MammaScreeningsEenheidService;
 import nl.rivm.screenit.mamma.se.service.SELogService;
 import nl.rivm.screenit.mamma.se.service.SeAutorisatieService;
 import nl.rivm.screenit.model.Account;
-import nl.rivm.screenit.model.BeoordelingsEenheid;
 import nl.rivm.screenit.model.InlogStatus;
 import nl.rivm.screenit.model.Medewerker;
-import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.InlogMethode;
@@ -57,7 +55,6 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.mgt.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,10 +105,10 @@ public class SELogin
 	public LoginDto doLogin(String seCode, LocalDateTime proxyDatumTijd, String gebruikersnaam, String plainWachtwoord, String yubikey, String versie, String nfcServerVersie,
 		boolean genereerLoggebeurtenis)
 	{
-		SecurityManager securityManager = SecurityUtils.getSecurityManager();
-		LoginDto result = new LoginDto(false);
+		var securityManager = SecurityUtils.getSecurityManager();
+		var result = new LoginDto(false);
 
-		MammaScreeningsEenheid screeningsEenheid = screeningseenhedenService.getActieveScreeningsEenheidByCode(seCode);
+		var screeningsEenheid = screeningseenhedenService.getActieveScreeningsEenheidByCode(seCode);
 		if (screeningsEenheid == null)
 		{
 			LOG.error("Screeningseenheid niet herkend! SE-code: " + seCode);
@@ -121,7 +118,7 @@ public class SELogin
 		screeningsEenheidId = screeningsEenheid.getId();
 		Medewerker medewerker = null;
 
-		UsernamePasswordToken token = yubikey.equals(GEEN_OTP) ? new UsernamePasswordToken(gebruikersnaam, plainWachtwoord)
+		var token = yubikey.equals(GEEN_OTP) ? new UsernamePasswordToken(gebruikersnaam, plainWachtwoord)
 			: new YubikeyToken(gebruikersnaam, plainWachtwoord, yubikey);
 
 		try
@@ -151,7 +148,7 @@ public class SELogin
 			else
 			{
 				securityManager.authenticate(token);
-				String meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDateMidnight());
+				var meldingNavActiefVanafEnTotEnMet = MedewerkerUtil.meldingNavActiefVanafEnTotEnMet(medewerker, currentDateSupplier.getDateMidnight());
 				if (meldingNavActiefVanafEnTotEnMet != null)
 				{
 					result.setMessage(meldingNavActiefVanafEnTotEnMet);
@@ -180,13 +177,13 @@ public class SELogin
 	private LoginDto login(MammaScreeningsEenheid screeningsEenheid, LocalDateTime proxyDatumTijd, Medewerker medewerker, String versie, String nfcServerVersie,
 		boolean genereerLoggebeurtenis)
 	{
-		LoginDto result = new LoginDto(false);
+		var result = new LoginDto(false);
 
 		if (!authenticatieService.isAccountLocked(medewerker))
 		{
 			authenticatieService.unlockAccount(medewerker);
 
-			List<OrganisatieMedewerker> organisatieMedewerkers = authenticatieService.getActieveOrganisatieMedewerkers(medewerker);
+			var organisatieMedewerkers = authenticatieService.getActieveOrganisatieMedewerkers(medewerker);
 			if (organisatieMedewerkers.size() == 0)
 			{
 
@@ -196,19 +193,19 @@ public class SELogin
 			}
 			else
 			{
-				OrganisatieMedewerker inlogOrganisatieMedewerker = getOrganisatieMedewerker(organisatieMedewerkers, screeningsEenheid);
+				var inlogOrganisatieMedewerker = getOrganisatieMedewerker(organisatieMedewerkers, screeningsEenheid);
 				if (inlogOrganisatieMedewerker != null)
 				{
 
-					OrganisatieMedewerkerToken token = new OrganisatieMedewerkerToken(inlogOrganisatieMedewerker.getId());
+					var token = new OrganisatieMedewerkerToken(inlogOrganisatieMedewerker.getId());
 					SecurityUtils.getSubject().login(token);
 					if (seAutorisatieService.isGeautoriseerdVoorInloggen(inlogOrganisatieMedewerker.getId()))
 					{
 						accountId = inlogOrganisatieMedewerker.getId();
 						result.setSuccess(true);
-						String seVersie = versie == null ? "onbekend" : versie;
-						String nfcVersie = nfcServerVersie == null || nfcServerVersie.equals("undefined") ? "onbekend" : nfcServerVersie;
-						String logBericht = String.format("SE-Proxy versie: %s, Nfc webserver versie: %s", seVersie, nfcVersie);
+						var seVersie = versie == null ? "onbekend" : versie;
+						var nfcVersie = nfcServerVersie == null || nfcServerVersie.equals("undefined") ? "onbekend" : nfcServerVersie;
+						var logBericht = String.format("SE-Proxy versie: %s, Nfc webserver versie: %s", seVersie, nfcVersie);
 						if (genereerLoggebeurtenis)
 						{
 							logService.logInfo(LogGebeurtenis.INLOGGEN, inlogOrganisatieMedewerker, screeningsEenheid, proxyDatumTijd, logBericht);
@@ -257,15 +254,15 @@ public class SELogin
 	private OrganisatieMedewerker getOrganisatieMedewerker(List<OrganisatieMedewerker> organisatieMedewerkers, MammaScreeningsEenheid inlogScreeningsEenheid)
 	{
 		OrganisatieMedewerker inlogOrganisatieMedewerker = null;
-		for (OrganisatieMedewerker organisatieMedewerker : organisatieMedewerkers)
+		for (var organisatieMedewerker : organisatieMedewerkers)
 		{
 
-			Organisatie organisatie = organisatieMedewerker.getOrganisatie(); 
+			var organisatie = organisatieMedewerker.getOrganisatie(); 
 			if (organisatie instanceof ScreeningOrganisatie)
 			{
-				BeoordelingsEenheid be = inlogScreeningsEenheid.getBeoordelingsEenheid();
-				Organisatie ce = be.getParent();
-				Organisatie so = ce.getRegio();
+				var be = inlogScreeningsEenheid.getBeoordelingsEenheid();
+				var ce = be.getParent();
+				var so = ce.getRegio();
 				if (so.equals(organisatie))
 				{
 					inlogOrganisatieMedewerker = organisatieMedewerker;
@@ -277,8 +274,8 @@ public class SELogin
 
 	private String getError(Medewerker inTeLoggenMedewerker, MammaScreeningsEenheid screeningsEenheid, LocalDateTime proxyDatumTijd)
 	{
-		Integer foutieveAanmeldpogingenTimeout = preferenceService.getInteger(PreferenceKey.FOUTIEVE_AANMELDPOGINGEN_TIMEOUT.name());
-		String resultMessage = "";
+		var foutieveAanmeldpogingenTimeout = preferenceService.getInteger(PreferenceKey.FOUTIEVE_AANMELDPOGINGEN_TIMEOUT.name());
+		var resultMessage = "";
 		if (foutieveAanmeldpogingenTimeout == null)
 		{
 			foutieveAanmeldpogingenTimeout = 30;
@@ -308,12 +305,12 @@ public class SELogin
 		else if (inTeLoggenMedewerker != null && InlogStatus.OK.equals(inTeLoggenMedewerker.getInlogstatus())
 			&& inTeLoggenMedewerker.getFoutieveInlogpogingen() != null)
 		{
-			Integer maxFoutieveAanmeldpogingen = preferenceService.getInteger(PreferenceKey.MAXIMUM_FOUTIEVE_AANMELDPOGINGEN.name());
+			var maxFoutieveAanmeldpogingen = preferenceService.getInteger(PreferenceKey.MAXIMUM_FOUTIEVE_AANMELDPOGINGEN.name());
 			if (maxFoutieveAanmeldpogingen == null)
 			{
 				maxFoutieveAanmeldpogingen = 3;
 			}
-			int aantalPogingenResterend = maxFoutieveAanmeldpogingen - inTeLoggenMedewerker.getFoutieveInlogpogingen();
+			var aantalPogingenResterend = maxFoutieveAanmeldpogingen - inTeLoggenMedewerker.getFoutieveInlogpogingen();
 			resultMessage = "Aanmelden mislukt. Aantal pogingen resterend: " + aantalPogingenResterend;
 			LOG.error("SE: {} {} {}", seLogCode(screeningsEenheid), accountIdLogTekst(inTeLoggenMedewerker), resultMessage);
 		}
@@ -330,7 +327,7 @@ public class SELogin
 
 	public OrganisatieMedewerker getIngelogdeOrganisatieMedewerker()
 	{
-		Long accountId = getIngelogdeAccountId();
+		var accountId = getIngelogdeAccountId();
 		return accountId != null ? hibernateService.load(OrganisatieMedewerker.class, accountId) : null;
 	}
 
@@ -348,12 +345,12 @@ public class SELogin
 	{
 		if (account instanceof OrganisatieMedewerker)
 		{
-			Integer medewerkercode = ((OrganisatieMedewerker) account).getMedewerker().getMedewerkercode();
+			var medewerkercode = ((OrganisatieMedewerker) account).getMedewerker().getMedewerkercode();
 			return String.format("OM:%s MC:%s", account.getId(), medewerkercode);
 		}
 		else if (account instanceof Medewerker)
 		{
-			Integer medewerkercode = ((Medewerker) account).getMedewerkercode();
+			var medewerkercode = ((Medewerker) account).getMedewerkercode();
 			return String.format("M:%s MC:%s", account.getId(), medewerkercode);
 		}
 		return "?";

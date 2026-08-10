@@ -83,7 +83,7 @@ public class KoppelresultatenKankerregistratieVerwerkenThread extends OpenEntity
 	{
 
 		List<String> meldingen = new ArrayList<>();
-		try (KoppelresultatenKankerregistratieVerwerkingContext context = new KoppelresultatenKankerregistratieVerwerkingContext(file, contentType, fileName, bevolkingsonderzoek))
+		try (var context = new KoppelresultatenKankerregistratieVerwerkingContext(file, contentType, fileName, bevolkingsonderzoek))
 		{
 			uploadDocumentService.saveOrUpdate(context.getFile(), FileStoreLocation.COLON_INTERVALCARCINOOM);
 
@@ -105,7 +105,7 @@ public class KoppelresultatenKankerregistratieVerwerkenThread extends OpenEntity
 			meldingen.add("Er is een onbekende fout opgetreden " + e.getMessage());
 			LOG.error("Er is een onbekende fout opgetreden.", e);
 		}
-		String melding = StringUtils.join(meldingen, "<br>");
+		var melding = StringUtils.join(meldingen, "<br>");
 		logService.logGebeurtenis(LogGebeurtenis.UPLOAD_KOPPELRESULTATEN_KANKERREGISTRATIE, hibernateService.get(OrganisatieMedewerker.class, igId), melding, bevolkingsonderzoek);
 	}
 

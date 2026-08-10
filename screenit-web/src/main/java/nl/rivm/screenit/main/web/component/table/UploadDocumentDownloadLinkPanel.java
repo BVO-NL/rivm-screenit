@@ -90,7 +90,7 @@ public class UploadDocumentDownloadLinkPanel extends GenericPanel<UploadDocument
 	protected void onConfigure()
 	{
 		super.onConfigure();
-		UploadDocument document = getModelObject();
+		var document = getModelObject();
 		setVisible(document != null && !Boolean.FALSE.equals(document.getActief()));
 	}
 

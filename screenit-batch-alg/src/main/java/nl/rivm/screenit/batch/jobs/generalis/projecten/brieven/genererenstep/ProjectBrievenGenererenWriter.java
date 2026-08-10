@@ -24,7 +24,6 @@ package nl.rivm.screenit.batch.jobs.generalis.projecten.brieven.genererenstep;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,12 +39,8 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.messagequeue.dto.BriefafdrukopdrachtDto;
-import nl.rivm.screenit.model.project.Project;
-import nl.rivm.screenit.model.project.ProjectAttribuut;
 import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.model.project.ProjectBriefActie;
-import nl.rivm.screenit.model.project.ProjectClient;
-import nl.rivm.screenit.model.project.ProjectClientAttribuut;
 import nl.rivm.screenit.model.project.ProjectMergedBrieven;
 import nl.rivm.screenit.repository.algemeen.ProjectBriefActieRepository;
 import nl.rivm.screenit.service.ClientService;
@@ -53,7 +48,6 @@ import nl.rivm.screenit.util.ProjectUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -69,7 +63,7 @@ public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 	protected ProjectMergedBrieven createConcreteMergedBrieven(Date aangemaaktOp)
 	{
 
-		ProjectMergedBrieven mergedBrieven = new ProjectMergedBrieven();
+		var mergedBrieven = new ProjectMergedBrieven();
 		mergedBrieven.setScreeningOrganisatie(getScreeningOrganisatie());
 		mergedBrieven.setCreatieDatum(aangemaaktOp);
 		getHibernateService().saveOrUpdate(mergedBrieven);
@@ -85,19 +79,19 @@ public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 	@Override
 	public void additionalMergedContext(MailMergeContext context)
 	{
-		ProjectBrief brief = (ProjectBrief) context.getBrief();
+		var brief = (ProjectBrief) context.getBrief();
 		ClientBrief<?, ?, ?> orgineleBrief = brief.getBrief();
 		if (orgineleBrief != null)
 		{
 			switch (orgineleBrief.getBevolkingsonderzoek())
 			{
 			case COLON:
-				ColonBrief colonBrief = (ColonBrief) Hibernate.unproxy(orgineleBrief);
+				var colonBrief = (ColonBrief) Hibernate.unproxy(orgineleBrief);
 				context.setIntakeAfspraak(colonBrief.getIntakeAfspraak());
 				context.setVorigeIntakeAfspraak(colonBrief.getVorigeIntakeAfspraak());
 				break;
 			case CERVIX:
-				CervixBrief cervixBrief = (CervixBrief) Hibernate.unproxy(orgineleBrief);
+				var cervixBrief = (CervixBrief) Hibernate.unproxy(orgineleBrief);
 				if (cervixBrief.getUitnodiging() != null)
 				{
 					context.setCervixUitnodiging(cervixBrief.getUitnodiging());
@@ -119,17 +113,17 @@ public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 		}
 		context.setProjectBrief(brief);
 
-		ProjectClient projectClient = brief.getProjectClient();
-		Project project = projectClient.getProject();
-		List<ProjectClientAttribuut> projectClientAttributen = projectClient.getAttributen();
-		for (ProjectAttribuut attribuut : project.getProjectAttributen())
+		var projectClient = brief.getProjectClient();
+		var project = projectClient.getProject();
+		var projectClientAttributen = projectClient.getAttributen();
+		for (var attribuut : project.getProjectAttributen())
 		{
 			if (!attribuut.getActief())
 			{
 				continue;
 			}
 			String value = null;
-			for (ProjectClientAttribuut papc : projectClientAttributen)
+			for (var papc : projectClientAttributen)
 			{
 				if (attribuut.equals(papc.getAttribuut()))
 				{
@@ -162,7 +156,7 @@ public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 			naam += briefType != null ? briefType.getBriefCode() : BriefType.FALLBACK_BRIEF_CODE;
 			if (StringUtils.isNotBlank(printomschrijving))
 			{
-				boolean overruleBriefcode = printomschrijving.contains("_");
+				var overruleBriefcode = printomschrijving.contains("_");
 				if (overruleBriefcode)
 				{
 
@@ -177,7 +171,7 @@ public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 			}
 			if (actie.getProject().getNaam() != null)
 			{
-				String projectNaam = actie.getProject().getNaam();
+				var projectNaam = actie.getProject().getNaam();
 				projectNaam = projectNaam.replace(" ", "_");
 				naam += projectNaam;
 			}
@@ -190,13 +184,13 @@ public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 			}
 			if (brieven.getScreeningOrganisatie() != null)
 			{
-				String soNaam = brieven.getScreeningOrganisatie().getNaam();
+				var soNaam = brieven.getScreeningOrganisatie().getNaam();
 				soNaam = soNaam.replaceAll(" ", "_");
 				naam += soNaam + "-";
 			}
 			if (actie.getProject().getNaam() != null)
 			{
-				String projectNaam = actie.getProject().getNaam();
+				var projectNaam = actie.getProject().getNaam();
 				projectNaam = projectNaam.replaceAll(" ", "_");
 				naam += projectNaam + "-";
 			}
@@ -221,9 +215,9 @@ public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 	public String getTechnischeLoggingMergedBriefAanmaken(ProjectMergedBrieven brieven)
 	{
 		Long projectBriefActieId = getStepExecutionContext().getLong(ProjectBrievenConstants.KEY_PROJECT_ACTIE_ID);
-		ProjectBriefActie actie = getHibernateService().load(ProjectBriefActie.class, projectBriefActieId);
+		var actie = getHibernateService().load(ProjectBriefActie.class, projectBriefActieId);
 
-		String tekst = "Mergedocument(id = " + brieven.getId() + ") aangemaakt voor ScreeningOrganisatie " + brieven.getScreeningOrganisatie().getNaam();
+		var tekst = "Mergedocument(id = " + brieven.getId() + ") aangemaakt voor ScreeningOrganisatie " + brieven.getScreeningOrganisatie().getNaam();
 		if (actie != null)
 		{
 			if (actie.getProject() != null)
@@ -243,10 +237,10 @@ public class ProjectBrievenGenererenWriter extends AbstractBrievenGenererenWrite
 	@Override
 	public Long getFileStoreId()
 	{
-		ExecutionContext stepExecutionContext = getStepExecutionContext();
+		var stepExecutionContext = getStepExecutionContext();
 
-		ProjectBriefActie actie = getHibernateService().load(ProjectBriefActie.class, stepExecutionContext.getLong(ProjectBrievenConstants.KEY_PROJECT_ACTIE_ID));
-		Project project = actie.getProject();
+		var actie = getHibernateService().load(ProjectBriefActie.class, stepExecutionContext.getLong(ProjectBrievenConstants.KEY_PROJECT_ACTIE_ID));
+		var project = actie.getProject();
 		return project.getId();
 	}
 

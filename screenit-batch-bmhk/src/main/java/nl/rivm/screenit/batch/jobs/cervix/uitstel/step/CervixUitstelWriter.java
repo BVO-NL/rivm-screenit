@@ -75,7 +75,7 @@ public class CervixUitstelWriter extends BaseWriter<CervixUitstel>
 			}
 			else
 			{
-				boolean herinneren = true;
+				var herinneren = true;
 				if (ronde.getLaatsteBrief() != null && ronde.getLaatsteBrief().getBriefType() == BriefType.CERVIX_VOORAANKONDIGING)
 				{
 					factory.updateDossierMetVolgendeRondeDatum(dossier, dateSupplier.getLocalDateTime());

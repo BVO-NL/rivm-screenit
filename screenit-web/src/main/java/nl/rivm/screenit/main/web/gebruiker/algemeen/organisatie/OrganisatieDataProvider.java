@@ -67,7 +67,7 @@ public class OrganisatieDataProvider extends SortableDataProvider<Organisatie, S
 	public Iterator<Organisatie> iterator(long first, long count)
 	{
 		String sortProperty = null;
-		boolean asc = true;
+		var asc = true;
 		if (getSort() != null)
 		{
 			sortProperty = getSort().getProperty();
@@ -99,7 +99,7 @@ public class OrganisatieDataProvider extends SortableDataProvider<Organisatie, S
 
 	private List<OrganisatieType> getSelectedOrganisatieTypes()
 	{
-		List<OrganisatieType> organisatieTypes = ModelUtil.nullSafeGet(selectedOrganisatieTypes);
+		var organisatieTypes = ModelUtil.nullSafeGet(selectedOrganisatieTypes);
 		if (selectedOrganisatieTypes != null && CollectionUtils.isEmpty(organisatieTypes))
 		{
 

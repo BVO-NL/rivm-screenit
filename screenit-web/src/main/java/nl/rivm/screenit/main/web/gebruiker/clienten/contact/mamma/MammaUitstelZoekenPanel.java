@@ -30,9 +30,7 @@ import nl.rivm.screenit.main.web.component.SimpleStringResourceModel;
 import nl.rivm.screenit.main.web.component.table.ScreenitDataTable;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
-import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
-import nl.rivm.screenit.model.mamma.MammaStandplaatsRonde;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.util.DateUtil;
@@ -61,10 +59,10 @@ public abstract class MammaUitstelZoekenPanel extends Panel
 	protected MammaUitstelZoekenPanel(String id, IModel<Client> clientModel)
 	{
 		super(id);
-		Client client = clientModel.getObject();
-		MammaStandplaats standplaats = baseStandplaatsService.getStandplaatsMetPostcode(client);
+		var client = clientModel.getObject();
+		var standplaats = baseStandplaatsService.getStandplaatsMetPostcode(client);
 		MammaScreeningsEenheid screeningsEenheid = null;
-		MammaStandplaatsRonde standplaatsRonde = client.getMammaDossier().getLaatsteScreeningRonde().getStandplaatsRonde();
+		var standplaatsRonde = client.getMammaDossier().getLaatsteScreeningRonde().getStandplaatsRonde();
 		if (standplaats != null && standplaats.equals(standplaatsRonde.getStandplaats()))
 		{
 			screeningsEenheid = standplaatsRonde.getStandplaatsPerioden().get(0).getScreeningsEenheid();
@@ -101,8 +99,8 @@ public abstract class MammaUitstelZoekenPanel extends Panel
 			public void populateItem(Item<ICellPopulator<MammaStandplaatsPeriodeMetAfstandDto>> cell, String id,
 				IModel<MammaStandplaatsPeriodeMetAfstandDto> standplaatsPeriodeMetAfstandDtoModel)
 			{
-				MammaStandplaatsPeriodeMetAfstandDto standplaatsPeriodeMetAfstandDto = standplaatsPeriodeMetAfstandDtoModel.getObject();
-				Double afstand = standplaatsPeriodeMetAfstandDto.getAfstand();
+				var standplaatsPeriodeMetAfstandDto = standplaatsPeriodeMetAfstandDtoModel.getObject();
+				var afstand = standplaatsPeriodeMetAfstandDto.getAfstand();
 				if (standplaatsPeriodeMetAfstandDto.isOnbekendeAfstand())
 				{
 					cell.add(new Label(id, "onbekend"));
@@ -119,7 +117,7 @@ public abstract class MammaUitstelZoekenPanel extends Panel
 			public void populateItem(Item<ICellPopulator<MammaStandplaatsPeriodeMetAfstandDto>> cell, String id,
 				IModel<MammaStandplaatsPeriodeMetAfstandDto> standplaatsPeriodeMetAfstandDtoModel)
 			{
-				MammaStandplaatsPeriode standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class,
+				var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class,
 					standplaatsPeriodeMetAfstandDtoModel.getObject().getStandplaatsPeriodeId());
 				cell.add(DateLabel.forDatePattern(id, Model.of(standplaatsPeriode.getVanaf()), "EEEE dd-MM-yyyy"));
 			}
@@ -130,15 +128,15 @@ public abstract class MammaUitstelZoekenPanel extends Panel
 			public void populateItem(Item<ICellPopulator<MammaStandplaatsPeriodeMetAfstandDto>> cell, String id,
 				IModel<MammaStandplaatsPeriodeMetAfstandDto> standplaatsPeriodeMetAfstandDtoModel)
 			{
-				MammaStandplaatsPeriode standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class,
+				var standplaatsPeriode = hibernateService.load(MammaStandplaatsPeriode.class,
 					standplaatsPeriodeMetAfstandDtoModel.getObject().getStandplaatsPeriodeId());
 				cell.add(DateLabel.forDatePattern(id, Model.of(standplaatsPeriode.getTotEnMet()), "EEEE dd-MM-yyyy"));
 			}
 		});
 
-		MammaStandplaatsPeriodeProvider standplaatsPeriodeProvider = new MammaStandplaatsPeriodeProvider(clientModel, filterModel);
+		var standplaatsPeriodeProvider = new MammaStandplaatsPeriodeProvider(clientModel, filterModel);
 
-		ScreenitDataTable<MammaStandplaatsPeriodeMetAfstandDto, String> standplaatsPeriodes = new ScreenitDataTable<>(
+		var standplaatsPeriodes = new ScreenitDataTable<>(
 			"standplaatsPeriodes", columns, standplaatsPeriodeProvider, 10, Model.of("standplaats periodes"))
 		{
 
@@ -160,7 +158,7 @@ public abstract class MammaUitstelZoekenPanel extends Panel
 			@Override
 			protected void zoeken(AjaxRequestTarget target)
 			{
-				MammaAfspraakWijzigenFilter filter = filterModel.getObject();
+				var filter = filterModel.getObject();
 				filter.setTotEnMet(filter.getVanaf());
 				standplaatsPeriodes.setVisible(true);
 				target.add(standplaatsPeriodes);

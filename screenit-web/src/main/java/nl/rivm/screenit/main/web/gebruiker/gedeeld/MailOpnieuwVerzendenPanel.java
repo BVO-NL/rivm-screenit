@@ -78,7 +78,7 @@ public class MailOpnieuwVerzendenPanel extends GenericPanel<DigitaalClientBerich
 
 	private Form<Void> getEmailFormulier()
 	{
-		Form<Void> emailFormulier = new Form<>("emailForm");
+		var emailFormulier = new Form<Void>("emailForm");
 		emailFormulier.add(getEmailTekstveld());
 		emailFormulier.add(new AjaxSubmitLink("herzenden")
 		{
@@ -110,7 +110,7 @@ public class MailOpnieuwVerzendenPanel extends GenericPanel<DigitaalClientBerich
 	{
 		var voorkeurmailClient = getModel().getObject().getScreeningRonde().getDossier().getClient().getPersoon().getEmailadres();
 		nieuwEmailadresModel = new Model<>(voorkeurmailClient);
-		TextField<String> emailVeld = new TextField<>("E-mailadres", nieuwEmailadresModel);
+		var emailVeld = new TextField<String>("E-mailadres", nieuwEmailadresModel);
 		setEmailValidaties(emailVeld);
 		return emailVeld;
 	}

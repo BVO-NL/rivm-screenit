@@ -27,7 +27,6 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import nl.rivm.screenit.model.Bezwaar;
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -72,7 +71,7 @@ public class BezwaarUtil
 	{
 		if (moment != null)
 		{
-			for (Bezwaar bezwaar : moment.getBezwaren())
+			for (var bezwaar : moment.getBezwaren())
 			{
 				if (type.equals(bezwaar.getType()) && (!type.equals(BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER) || !checkDossierBezwaar)
 					&& (onderzoek == null && bezwaar.getBevolkingsonderzoek() == null || onderzoek != null && onderzoek.equals(bezwaar.getBevolkingsonderzoek())))
@@ -90,7 +89,7 @@ public class BezwaarUtil
 		{
 			return false;
 		}
-		for (Bezwaar bezwaar : moment.getBezwaren())
+		for (var bezwaar : moment.getBezwaren())
 		{
 			if (!BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER.equals(bezwaar.getType()))
 			{

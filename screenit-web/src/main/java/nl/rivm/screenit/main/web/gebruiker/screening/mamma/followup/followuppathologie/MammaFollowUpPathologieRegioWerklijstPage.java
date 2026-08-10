@@ -68,7 +68,7 @@ public class MammaFollowUpPathologieRegioWerklijstPage extends AbstractMammaFoll
 		refreshContainer.setOutputMarkupId(Boolean.TRUE);
 		add(refreshContainer);
 
-		MammaFollowUpPathologieRegioProvider followUpPathologieRegioProvider = new MammaFollowUpPathologieRegioProvider(
+		var followUpPathologieRegioProvider = new MammaFollowUpPathologieRegioProvider(
 			ModelUtil.sModel(ScreenitSession.get().getScreeningOrganisatie()));
 
 		List<IColumn<MammaFollowUpOrganisatieDto, String>> columns = new ArrayList<>();
@@ -76,7 +76,7 @@ public class MammaFollowUpPathologieRegioWerklijstPage extends AbstractMammaFoll
 		columns.add(new PropertyColumn<>(Model.of("Telefoon 1"), "telefoon"));
 		columns.add(new PropertyColumn<>(Model.of("Telefoon 2"), "telefoon2"));
 		columns.add(new PropertyColumn<>(Model.of("Gebeld op"), "laatstGebeld", "laatstGebeld"));
-		ScreenitDataTable<MammaFollowUpOrganisatieDto, String> table = new ScreenitDataTable<MammaFollowUpOrganisatieDto, String>("resultaten", columns,
+		var table = new ScreenitDataTable<MammaFollowUpOrganisatieDto, String>("resultaten", columns,
 			followUpPathologieRegioProvider,
 			10, Model.of("organisatie(s)"))
 		{
@@ -85,7 +85,7 @@ public class MammaFollowUpPathologieRegioWerklijstPage extends AbstractMammaFoll
 			public void onClick(AjaxRequestTarget target, IModel<MammaFollowUpOrganisatieDto> model)
 			{
 				super.onClick(target, model);
-				Organisatie organisatie = hibernateService.get(Organisatie.class, model.getObject().getOrganisatieId());
+				var organisatie = hibernateService.get(Organisatie.class, model.getObject().getOrganisatieId());
 				setResponsePage(new MammaFollowUpPathologieWerklijstPage(ModelUtil.sModel(organisatie)));
 			}
 		};

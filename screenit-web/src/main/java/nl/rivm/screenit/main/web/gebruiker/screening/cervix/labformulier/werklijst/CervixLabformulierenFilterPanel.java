@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.web.gebruiker.screening.cervix.labformulier.werkli
  */
 
 import java.util.Arrays;
-import java.util.Date;
 
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.AjaxButtonGroup;
@@ -45,7 +44,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.util.ListModel;
-import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
 public abstract class CervixLabformulierenFilterPanel extends GenericPanel<CervixLabformulierenFilter>
 {
@@ -54,25 +52,25 @@ public abstract class CervixLabformulierenFilterPanel extends GenericPanel<Cervi
 	{
 		super(id, new CompoundPropertyModel<>(labformulierFilter));
 
-		Form<CervixLabformulierenFilter> form = new Form<>("form");
+		var form = new Form<CervixLabformulierenFilter>("form");
 		add(form);
 
-		WebMarkupContainer minimaalTweeWaardesContainer = new WebMarkupContainer("minimaalTweeWaardesContainer");
+		var minimaalTweeWaardesContainer = new WebMarkupContainer("minimaalTweeWaardesContainer");
 		minimaalTweeWaardesContainer.setVisible(minimaalTweeWaardesTekstVisible);
 		form.add(minimaalTweeWaardesContainer);
 
 		form.add(new TextField<>("monsterId"));
 		form.add(new TextField<String>("bsn").add(new BSNValidator()));
-		Component geboortedatumDateField = new ScreenitDateTextField("geboortedatum")
+		var geboortedatumDateField = new ScreenitDateTextField("geboortedatum")
 			.setRequired(false)
 			.setOutputMarkupId(true)
 			.setVisible(geboortedatumVisible);
 		form.add(geboortedatumDateField);
 
-		DatePicker<Date> vanaf = ComponentHelper.newDatePicker("scanDatumVanaf");
+		var vanaf = ComponentHelper.newDatePicker("scanDatumVanaf");
 		form.add(vanaf.setVisible(scanDatumRangeVisible));
 
-		DatePicker<Date> totEnMet = ComponentHelper.newDatePicker("scanDatumTotEnMet");
+		var totEnMet = ComponentHelper.newDatePicker("scanDatumTotEnMet");
 		form.add(totEnMet.setVisible(scanDatumRangeVisible));
 		form.add(new DependantDateValidator(vanaf, totEnMet, DependantDateValidator.Operator.AFTER));
 

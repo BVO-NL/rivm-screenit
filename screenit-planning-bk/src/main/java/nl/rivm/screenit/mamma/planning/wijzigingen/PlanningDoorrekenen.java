@@ -21,12 +21,10 @@ package nl.rivm.screenit.mamma.planning.wijzigingen;
  * =========================LICENSE_END==================================
  */
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.mamma.planning.model.PlanningBenodigd;
 import nl.rivm.screenit.mamma.planning.model.PlanningClient;
 import nl.rivm.screenit.mamma.planning.model.PlanningConstanten;
 import nl.rivm.screenit.mamma.planning.model.PlanningPostcodeReeks;
@@ -44,12 +42,12 @@ public enum PlanningDoorrekenen
 	{
 		LOG.trace("run client: " + client.getId());
 
-		PlanningBenodigd benodigd = client.getBenodigd();
+		var benodigd = client.getBenodigd();
 		benodigd.clear();
 
-		BigDecimal benodigdeCapaciteit = client.getBenodigdeCapaciteit(client.getScreeningsOrganisatie());
+		var benodigdeCapaciteit = client.getBenodigdeCapaciteit(client.getScreeningsOrganisatie());
 
-		for (int jaar = client.getVanafJaar(); jaar <= client.getTotEnMetJaar(); jaar++)
+		for (var jaar = client.getVanafJaar(); jaar <= client.getTotEnMetJaar(); jaar++)
 		{
 			benodigd.get(jaar).add(benodigdeCapaciteit);
 		}
@@ -79,7 +77,7 @@ public enum PlanningDoorrekenen
 				eersteOnderzoekCorrectieVanafJaar = client.getUitnodigenVanafJaar() + 2;
 			}
 
-			for (int jaar = eersteOnderzoekCorrectieVanafJaar; jaar <= client.getTotEnMetJaar(); jaar++)
+			for (var jaar = eersteOnderzoekCorrectieVanafJaar; jaar <= client.getTotEnMetJaar(); jaar++)
 			{
 				benodigd.get(jaar).addToEersteOnderzoekCorrectie(client.getDeelnamekans().subtract(benodigdeCapaciteit));
 			}
@@ -90,10 +88,10 @@ public enum PlanningDoorrekenen
 	{
 		LOG.trace("run postcodeReeksRegio: " + postcodeReeksRegio.getCijfer());
 
-		PlanningBenodigd benodigd = postcodeReeksRegio.getBenodigd();
+		var benodigd = postcodeReeksRegio.getBenodigd();
 		benodigd.clear();
 
-		for (PlanningClient client : postcodeReeksRegio.getClientSet())
+		for (var client : postcodeReeksRegio.getClientSet())
 		{
 			benodigd.add(client.getBenodigd());
 		}
@@ -103,10 +101,10 @@ public enum PlanningDoorrekenen
 	{
 		LOG.trace("run postcodeReeks: " + postcodeReeks.getVanPostcode());
 
-		PlanningBenodigd benodigd = postcodeReeks.getBenodigd();
+		var benodigd = postcodeReeks.getBenodigd();
 		benodigd.clear();
 
-		for (PlanningPostcodeReeksRegio postcodeReeksRegio : postcodeReeks.getPostcodeReeksRegios())
+		for (var postcodeReeksRegio : postcodeReeks.getPostcodeReeksRegios())
 		{
 			benodigd.add(postcodeReeksRegio.getBenodigd());
 		}
@@ -116,10 +114,10 @@ public enum PlanningDoorrekenen
 	{
 		LOG.trace("run tehuis: " + tehuis.getId());
 
-		PlanningBenodigd benodigd = tehuis.getBenodigd();
+		var benodigd = tehuis.getBenodigd();
 		benodigd.clear();
 
-		for (PlanningClient client : tehuis.getClientSet())
+		for (var client : tehuis.getClientSet())
 		{
 			benodigd.add(client.getBenodigd());
 		}
@@ -129,37 +127,37 @@ public enum PlanningDoorrekenen
 	{
 		LOG.debug("run standplaats: " + standplaats.getId());
 
-		PlanningBenodigd benodigd = standplaats.getBenodigd();
+		var benodigd = standplaats.getBenodigd();
 		benodigd.clear();
-		for (PlanningPostcodeReeks postcodeReeks : standplaats.getPostcodeReeksSet())
+		for (var postcodeReeks : standplaats.getPostcodeReeksSet())
 		{
 			benodigd.add(postcodeReeks.getBenodigd());
 		}
-		for (PlanningTehuis tehuis : standplaats.getTehuisSet())
+		for (var tehuis : standplaats.getTehuisSet())
 		{
 			benodigd.add(tehuis.getBenodigd());
 		}
 
-		PlanningBenodigd transport = standplaats.getTransport();
+		var transport = standplaats.getTransport();
 		transport.clear();
-		for (PlanningClient client : standplaats.getTransportVanSet())
+		for (var client : standplaats.getTransportVanSet())
 		{
 			transport.subtract(client.getBenodigd());
 		}
-		for (PlanningClient client : standplaats.getTransportNaarSet())
+		for (var client : standplaats.getTransportNaarSet())
 		{
 			transport.add(client.getBenodigd());
 		}
 
-		long somDatum = 0L;
+		var somDatum = 0L;
 		long aantalScreeningRonden = 0;
-		for (PlanningPostcodeReeks postcodeReeks : standplaats.getPostcodeReeksSet())
+		for (var postcodeReeks : standplaats.getPostcodeReeksSet())
 		{
-			for (PlanningPostcodeReeksRegio postcodeReeksRegio : postcodeReeks.getPostcodeReeksRegios())
+			for (var postcodeReeksRegio : postcodeReeks.getPostcodeReeksRegios())
 			{
-				for (PlanningClient client : postcodeReeksRegio.getClientSet())
+				for (var client : postcodeReeksRegio.getClientSet())
 				{
-					LocalDate vorigeScreeningRondeCreatieDatum = client.getVorigeScreeningRondeCreatieDatum();
+					var vorigeScreeningRondeCreatieDatum = client.getVorigeScreeningRondeCreatieDatum();
 					if (vorigeScreeningRondeCreatieDatum != null)
 					{
 						somDatum += vorigeScreeningRondeCreatieDatum.toEpochDay();

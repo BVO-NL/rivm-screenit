@@ -148,7 +148,7 @@ public class CervixVerrichtingServiceImpl implements CervixVerrichtingService
 		opdracht.setVanIban(screeningOrganisatie.getIban().toUpperCase());
 		opdracht.setVanTenaamstelling(screeningOrganisatie.getIbanTenaamstelling());
 
-		for (CervixBoekRegel boekregel : boekregels)
+		for (var boekregel : boekregels)
 		{
 			var regel = findOrCreateCervixBetaalOpdrachtRegel(opdracht, boekregel);
 			var specificatie = findOrCreateCervixBetaalopdrachtRegelSpecificatie(regel, boekregel);
@@ -288,7 +288,7 @@ public class CervixVerrichtingServiceImpl implements CervixVerrichtingService
 	{
 		var type = boekRegel.getVerrichting().getType();
 		var tarief = boekRegel.getTarief();
-		for (CervixBetaalopdrachtRegelSpecificatie spec : regel.getSpecificaties())
+		for (var spec : regel.getSpecificaties())
 		{
 			if (tarief.equals(spec.getTarief()) && type.equals(spec.getTariefType()))
 			{
