@@ -51,6 +51,19 @@ export const algemeenRoutes: Routes = [
         ],
       },
       {
+        path: 'dossier/bezwaar',
+        loadComponent: () => import('./clientdossier/bezwaar/bezwaar-overzicht-page/bezwaar-overzicht-page.component').then((c) => c.BezwaarOverzichtPageComponent),
+        canActivate: [
+          autorisatieGuard({
+            recht: [Recht.MEDEWERKER_CLIENT_BEZWAAR],
+            level: ToegangLevel.LANDELIJK,
+            bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+            actie: Actie.INZIEN,
+            required: Required.ALL,
+          }),
+        ],
+      },
+      {
         path: 'dossier',
         loadComponent: () => import('../algemeen/clientdossier/clientdossier-page.component').then((c) => c.ClientdossierPageComponent),
         canActivate: [

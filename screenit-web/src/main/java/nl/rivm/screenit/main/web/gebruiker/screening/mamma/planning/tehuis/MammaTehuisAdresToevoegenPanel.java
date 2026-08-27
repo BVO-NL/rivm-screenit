@@ -57,9 +57,6 @@ public abstract class MammaTehuisAdresToevoegenPanel extends GenericPanel<MammaT
 
 		locatieForm.add(new ScreenitIndicatingAjaxSubmitLink("opslaan", locatieForm)
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
@@ -73,10 +70,12 @@ public abstract class MammaTehuisAdresToevoegenPanel extends GenericPanel<MammaT
 				else
 				{
 					tehuisAdresService.adresToevoegen(adres, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+					adres.getTehuis().getAdressen().add(adres);
+
 					onClickOpslaan(target);
 				}
 
-				var zijnErClienten = tehuisAdresService.countClienten(adres.getTehuis(), MammaTehuisSelectie.TEHUIS_ADRES, adres) > 0;
+				var zijnErClienten = tehuisAdresService.countClienten(adres.getTehuis(), MammaTehuisSelectie.TEHUIS_ADRES, adres, true) > 0;
 				if (!zijnErClienten)
 				{
 					ScreenitSession.get().warn(getString("warn.geen.clienten.op.adres"));

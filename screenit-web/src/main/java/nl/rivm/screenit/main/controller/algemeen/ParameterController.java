@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
+import nl.rivm.screenit.main.controller.BaseController;
 import nl.rivm.screenit.main.dto.algemeen.ParameterDto;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
@@ -51,7 +52,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/parameters")
 @Tag(name = "Parameters", description = "Opvragen van toegestane applicatieparameters")
-public class ParameterController
+public class ParameterController extends BaseController
 {
 
 	private static final Set<PreferenceKey> TOEGESTANE_PREFERENCE_KEYS = EnumSet.of(

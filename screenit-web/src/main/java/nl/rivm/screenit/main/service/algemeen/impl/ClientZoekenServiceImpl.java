@@ -37,9 +37,9 @@ import nl.rivm.screenit.main.dto.algemeen.ClientZoekenFilterDto;
 import nl.rivm.screenit.main.dto.algemeen.TijdelijkAdresDto;
 import nl.rivm.screenit.main.mappers.algemeen.ClientMapper;
 import nl.rivm.screenit.main.service.algemeen.ClientZoekenService;
+import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.TijdelijkGbaAdres;
@@ -215,7 +215,7 @@ public class ClientZoekenServiceImpl implements ClientZoekenService
 	}
 
 	@Override
-	public void saveBrpTijdelijkAdres(Long clientId, TijdelijkAdresDto tijdelijkAdresDto, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	public void saveBrpTijdelijkAdres(Long clientId, TijdelijkAdresDto tijdelijkAdresDto, Account ingelogdeOrganisatieMedewerker)
 	{
 		var client = clientRepository.findById(clientId).orElseThrow();
 		var persoon = client.getPersoon();
@@ -238,7 +238,7 @@ public class ClientZoekenServiceImpl implements ClientZoekenService
 	}
 
 	@Override
-	public void deleteBrpTijdelijkAdres(Long clientId, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	public void deleteBrpTijdelijkAdres(Long clientId, Account ingelogdeOrganisatieMedewerker)
 	{
 		var client = clientRepository.findById(clientId).orElseThrow();
 		clientService.verwijderTijdelijkGbaAdres(client, ingelogdeOrganisatieMedewerker);

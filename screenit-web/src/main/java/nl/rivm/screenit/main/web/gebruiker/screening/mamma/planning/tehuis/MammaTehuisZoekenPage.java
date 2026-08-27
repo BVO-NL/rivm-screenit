@@ -142,7 +142,7 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 			@Override
 			public IModel<String> getDataModel(IModel<IMammaTehuisDto> rowModel)
 			{
-				var aantalGekoppeldeClienten = baseTehuisClientenDao.countClienten(rowModel.getObject().getTehuis(), MammaTehuisSelectie.GEKOPPELD, null);
+				var aantalGekoppeldeClienten = baseTehuisClientenDao.countClienten(rowModel.getObject().getTehuis(), MammaTehuisSelectie.GEKOPPELD, null, false);
 				return Model.of(Long.toString(aantalGekoppeldeClienten));
 			}
 		});
@@ -152,14 +152,14 @@ public class MammaTehuisZoekenPage extends MammaPlanningBasePage
 			@Override
 			public IModel<String> getDataModel(IModel<IMammaTehuisDto> rowModel)
 			{
-				var aantalGekoppeldeClienten = baseTehuisClientenDao.countClienten(rowModel.getObject().getTehuis(), MammaTehuisSelectie.GEKOPPELD, null);
+				var aantalGekoppeldeClienten = baseTehuisClientenDao.countClienten(rowModel.getObject().getTehuis(), MammaTehuisSelectie.GEKOPPELD, null, false);
 				if (aantalGekoppeldeClienten == 0)
 				{
 					return Model.of("");
 				}
 				else
 				{
-					var aantalUitTeNodigenClienten = baseTehuisClientenDao.countClienten(rowModel.getObject().getTehuis(), MammaTehuisSelectie.UIT_TE_NODIGEN, null);
+					var aantalUitTeNodigenClienten = baseTehuisClientenDao.countClienten(rowModel.getObject().getTehuis(), MammaTehuisSelectie.UIT_TE_NODIGEN, null, false);
 					if (aantalUitTeNodigenClienten > 0)
 					{
 						return Model.of("Ja");

@@ -20,10 +20,11 @@
  */
 import {ClientDto} from '../types/algemeen/dto/client.dto'
 import {ClientContactgegevensDto} from '../types/algemeen/dto/clientcontactgegevens.dto'
+import {ClientPaspoortDto} from '../types/algemeen/dto/client-paspoort.dto'
 import {NaamGebruik} from '../types/algemeen/enum/naam-gebruik'
 import {isStringNullOfLeeg} from '@shared/utils/string-utils'
 
-type ClientNaamData = ClientDto | ClientContactgegevensDto
+type ClientNaamData = ClientDto | ClientContactgegevensDto | ClientPaspoortDto
 
 export class NaamUtils {
   static titelVoorlettersTussenvoegselEnAanspreekAchternaam(client: ClientNaamData): string {

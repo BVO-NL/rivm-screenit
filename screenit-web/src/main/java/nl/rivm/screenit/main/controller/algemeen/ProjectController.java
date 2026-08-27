@@ -26,6 +26,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.main.controller.BaseController;
 import nl.rivm.screenit.main.service.algemeen.ProjectService;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.mappers.ProjectMapper;
@@ -55,7 +56,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/project")
 @Tag(name = "Projecten", description = "Opvragen van projecten in het medewerkerportaal")
-public class ProjectController
+public class ProjectController extends BaseController
 {
 	private final ProjectService projectService;
 

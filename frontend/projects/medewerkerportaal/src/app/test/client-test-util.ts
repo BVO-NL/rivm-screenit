@@ -20,6 +20,7 @@
  */
 import { ClientDto } from '@shared/types/algemeen/dto/client.dto'
 import { ClientContactgegevensDto } from '@shared/types/algemeen/dto/clientcontactgegevens.dto'
+import { ClientPaspoortDto } from '@shared/types/algemeen/dto/client-paspoort.dto'
 import { Aanspreekvorm } from '@shared/types/algemeen/enum/aanspreekvorm'
 import { NaamGebruik } from '@shared/types/algemeen/enum/naam-gebruik'
 import { Geslacht } from '@shared/types/algemeen/enum/geslacht'
@@ -47,6 +48,7 @@ export const maakClient = (overrides: Partial<ClientDto> = {}): ClientDto => ({
   actief: true,
   gbaStatus: GbaStatus.INDICATIE_AANWEZIG,
   onderzoeksresultatenActies: [],
+  bezwaarMomenten: [],
   ...overrides,
 })
 
@@ -73,6 +75,38 @@ export const maakClientContactgegevens = (overrides: Partial<ClientContactgegeve
     dubbeleTijdReden: '',
     aanspreekvorm: Aanspreekvorm.GEACHTE_HEER,
     heeftMammaAfspraak: false,
+    ...overrides,
+  }
+}
+
+export const maakClientPaspoort = (overrides: Partial<ClientPaspoortDto> = {}): ClientPaspoortDto => {
+  const client = maakClient()
+
+  return {
+    clientId: client.id,
+    voornaam: client.voornaam,
+    achternaam: client.achternaam,
+    tussenvoegsel: client.tussenvoegsel,
+    titel: client.titel,
+    partnerTussenvoegsel: client.partnerTussenvoegsel,
+    partnerAchternaam: client.partnerAchternaam,
+    naamGebruik: client.naamGebruik,
+    geslacht: client.geslacht,
+    bsn: client.bsn,
+    anummer: null,
+    geboortedatum: client.geboortedatum,
+    mobielNummer: '0612345678',
+    extraNummer: '0201234567',
+    emailAdres: 'jan.jansen@example.org',
+    brpAdres: 'Straat 4A',
+    brpPostcode: '1111 XX',
+    brpWoonplaats: 'Deventer',
+    adres: 'Hoofdstraat 1',
+    postcode: '1234 AB',
+    woonplaats: 'Amsterdam',
+    isTijdelijkAdres: false,
+    isTijdelijkBrpAdres: false,
+    doelgroepen: [],
     ...overrides,
   }
 }

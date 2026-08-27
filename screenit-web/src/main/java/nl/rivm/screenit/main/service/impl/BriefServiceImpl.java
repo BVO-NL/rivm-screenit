@@ -22,14 +22,17 @@ package nl.rivm.screenit.main.service.impl;
  */
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
+import nl.rivm.screenit.config.CommunicationHubProperties;
 import nl.rivm.screenit.factory.algemeen.BriefFactory;
 import nl.rivm.screenit.main.model.BriefActie;
 import nl.rivm.screenit.main.service.BriefService;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.ClientBrief;
@@ -42,17 +45,19 @@ import nl.rivm.screenit.model.UploadDocument_;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.colon.ColonBrief;
-import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.BriefType;
-import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaBrief;
 import nl.rivm.screenit.repository.algemeen.BezwaarBriefRepository;
+import nl.rivm.screenit.service.BriefHerdrukkenService;
+import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification;
 import nl.rivm.screenit.specification.algemeen.UploadDocumentSpecification;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.RangeUtil;
+import nl.topicuszorg.communicationhub.api.LetterServiceCommunicationHubClientApi;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -71,14 +76,26 @@ import static nl.rivm.screenit.specification.algemeen.MergedBrievenSpecification
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @Service
+@Slf4j
 public class BriefServiceImpl implements BriefService
 {
-
 	@Autowired
 	private BriefFactory briefFactory;
 
 	@Autowired
 	private BezwaarBriefRepository bezwaarBriefRepository;
+
+	@Autowired
+	private ICurrentDateSupplier currentDateSupplier;
+
+	@Autowired
+	private LetterServiceCommunicationHubClientApi letterServiceApi;
+
+	@Autowired
+	private CommunicationHubProperties communicationHubProperties;
+
+	@Autowired
+	private BriefHerdrukkenService briefHerdrukkenService;
 
 	@Override
 	public <M extends MergedBrieven<?>> List<M> getMergedBrieven(ScreeningOrganisatie screeningOrganisatie, MergedBrievenFilter<M> filter, long first, long count,
@@ -175,31 +192,75 @@ public class BriefServiceImpl implements BriefService
 	}
 
 	@Override
-	public List<BriefActie> getBriefActies(ClientBrief<?, ?, ?> brief)
+	public List<BriefActie> getBriefActies(ClientBrief<?, ?, ?> brief, boolean magOpnieuwKlaarzetten, boolean magTegenhouden)
 	{
 		var acties = new ArrayList<BriefActie>();
 		if (brief.getBriefDefinitie() != null)
 		{
-			acties.add(BriefActie.INZIEN);
+			acties.add(BriefActie.TEMPLATE_INZIEN);
+		}
+		if (isVerstuurdeBriefInzienMogelijk(brief))
+		{
+			acties.add(BriefActie.VERSTUURDE_BRIEF_INZIEN);
 		}
 
-		if (BriefUtil.isGegenereerd(brief))
+		if (magOpnieuwKlaarzetten && briefHerdrukkenService.magHerdrukken(brief))
+		{
+			acties.add(BriefActie.OPNIEUW_AANMAKEN);
+		}
+
+		if (!BriefUtil.isNietGegenereerdEnNietVervangen(brief))
 		{
 			return acties;
 		}
 
-		if (BriefUtil.isTegenhoudenMogelijk(brief) && !BriefUtil.isTegengehouden(brief) && ScreenitSession.get()
-			.checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN))
+		if (BriefUtil.isTegenhoudenMogelijk(brief) && !BriefUtil.isTegengehouden(brief) && magTegenhouden)
 		{
 			acties.add(BriefActie.TEGENHOUDEN);
 		}
-		if (BriefUtil.isTegengehouden(brief) && ScreenitSession.get()
-			.checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_OPNIEUW_KLAARZETTEN, Actie.AANPASSEN))
+		if (BriefUtil.isTegengehouden(brief) && magOpnieuwKlaarzetten)
 		{
 			acties.add(BriefActie.ACTIVEREN);
 		}
 
 		return acties;
+	}
+
+	private boolean isVerstuurdeBriefInzienMogelijk(ClientBrief<?, ?, ?> brief)
+	{
+		var verstuurdVoorAfdrukkenOp = brief.getVerstuurdVoorAfdrukkenOp();
+		return StringUtils.isNotBlank(brief.getCommHubGuid()) && verstuurdVoorAfdrukkenOp != null
+			&& currentDateSupplier.getLocalDateTime().isBefore(verstuurdVoorAfdrukkenOp.plusWeeks(2));
+	}
+
+	@Override
+	public Optional<byte[]> getVerstuurdeBrief(String briefGuid)
+	{
+		var letterDetail = letterServiceApi.getLetterDetail(communicationHubProperties.getTenant(), briefGuid);
+		if (letterDetail == null)
+		{
+			LOG.error("Fout bij ophalen brief {}", briefGuid);
+			return Optional.empty();
+		}
+
+		var files = letterDetail.getFiles();
+		if (files == null || files.isEmpty())
+		{
+			var messageHistory = letterDetail.getMessageHistory();
+			var status = messageHistory != null && !messageHistory.isEmpty() ? messageHistory.getLast().getStatus() : "";
+			LOG.error("Fout bij ophalen brief {}: {}", briefGuid, status);
+			return Optional.empty();
+		}
+
+		try
+		{
+			return Optional.of(Base64.getDecoder().decode(files.getFirst().getBase64Content()));
+		}
+		catch (IllegalArgumentException e)
+		{
+			LOG.error("Ongeldige base64-content voor brief {}", briefGuid, e);
+			return Optional.empty();
+		}
 	}
 
 	@Override

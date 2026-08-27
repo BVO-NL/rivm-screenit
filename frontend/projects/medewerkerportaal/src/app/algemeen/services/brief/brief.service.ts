@@ -19,39 +19,47 @@
  * =========================LICENSE_END==================================
  */
 import { inject, Injectable } from '@angular/core'
-import { HttpClient } from '@angular/common/http'
 import { map, Observable } from 'rxjs'
 import { BriefActie } from '@shared/types/algemeen/enum/brief-actie'
 import { BriefType } from '@shared/types/algemeen/enum/brief-type'
 import { getCategorieVanBriefType } from '@shared/utils/brief-utils'
+import { ApiService } from '@shared/services/api/api.service'
 
 @Injectable({
   providedIn: 'root',
 })
 export class BriefService {
-  private readonly http = inject(HttpClient)
+  private readonly apiService: ApiService = inject(ApiService)
 
   getBriefActies(briefId: number, briefType: BriefType): Observable<BriefActie[]> {
     const briefCategorie = getCategorieVanBriefType(briefType)
-    return this.http.get<BriefActie[]>(`/api/brief/${briefCategorie}/${briefId}/acties`)
+    return this.apiService.get<BriefActie[]>(`/api/brief/${briefCategorie}/${briefId}/acties`)
   }
 
   getBriefTemplate(briefId: number, briefType: BriefType): Observable<string> {
     const briefCategorie = getCategorieVanBriefType(briefType)
-    return this.http
-      .get(`/api/brief/${briefCategorie}/${briefId}/template-inzien`, {
-        responseType: 'blob' as 'blob',
-      })
+    return this.apiService
+      .get<Blob>(`/api/brief/${briefCategorie}/${briefId}/template-inzien`, undefined, { responseType: 'blob' })
       .pipe(map((blob: Blob) => URL.createObjectURL(blob)))
+  }
+
+  getVerstuurdeBrief(briefId: number, briefType: BriefType): Observable<Blob> {
+    const briefCategorie = getCategorieVanBriefType(briefType)
+    return this.apiService.get<Blob>(`/api/brief/${briefCategorie}/${briefId}/verstuurde-brief-inzien`, undefined, { responseType: 'blob' })
   }
 
   activeerBrief(briefId: number, briefType: BriefType): Observable<void> {
     const briefCategorie = getCategorieVanBriefType(briefType)
-    return this.http.post<void>(`/api/brief/${briefCategorie}/${briefId}/activeren`, {})
+    return this.apiService.post<void>(`/api/brief/${briefCategorie}/${briefId}/activeren`, {})
   }
 
-  houdBriefTegen(briefId: number, briefType: BriefType) {
+  maakBriefOpnieuwAan(briefId: number, briefType: BriefType): Observable<void> {
     const briefCategorie = getCategorieVanBriefType(briefType)
-    return this.http.post(`/api/brief/${briefCategorie}/${briefId}/tegenhouden`, {})
+    return this.apiService.post<void>(`/api/brief/${briefCategorie}/${briefId}/opnieuw-aanmaken`, {})
+  }
+
+  houdBriefTegen(briefId: number, briefType: BriefType): Observable<void> {
+    const briefCategorie = getCategorieVanBriefType(briefType)
+    return this.apiService.post(`/api/brief/${briefCategorie}/${briefId}/tegenhouden`, {})
   }
 }

@@ -30,7 +30,9 @@ import nl.rivm.screenit.main.dto.algemeen.BezwaarClientDto;
 import nl.rivm.screenit.main.dto.algemeen.BrpGegevensDto;
 import nl.rivm.screenit.main.dto.algemeen.ClientContactgegevensDto;
 import nl.rivm.screenit.main.dto.algemeen.ClientDto;
+import nl.rivm.screenit.main.dto.algemeen.ClientPaspoortDto;
 import nl.rivm.screenit.main.dto.algemeen.TijdelijkAdresDto;
+import nl.rivm.screenit.main.service.algemeen.BezwaarService;
 import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
@@ -52,7 +54,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 
-@Mapper(config = ScreenitMapperConfig.class, uses = { OnderzoeksresultatenActieMapper.class })
+@Mapper(config = ScreenitMapperConfig.class, uses = { OnderzoeksresultatenActieMapper.class, BezwaarMomentMapper.class })
 public interface ClientMapper
 {
 	@Mappings({
@@ -92,9 +94,10 @@ public interface ClientMapper
 		@Mapping(target = "postadres", source = "client", qualifiedByName = "getPostadres"),
 		@Mapping(target = "screeningsorganisatie", source = "persoon.gbaAdres.gbaGemeente.screeningOrganisatie.naam"),
 		@Mapping(target = "actief", source = "client", qualifiedByName = "isActief"),
-		@Mapping(target = "onderzoeksresultatenActies", source = "onderzoeksresultatenActies")
+		@Mapping(target = "onderzoeksresultatenActies", source = "onderzoeksresultatenActies"),
+		@Mapping(target = "bezwaarMomenten", source = "bezwaarMomenten"),
 	})
-	ClientDto clientToClientDto(Client client, @Context ClientService clientService);
+	ClientDto clientToClientDto(Client client, @Context ClientService clientService, @Context BezwaarService bezwaarService);
 
 	@Mappings({
 		@Mapping(source = "startDatum", target = "begindatum"),
@@ -244,6 +247,97 @@ public interface ClientMapper
 	default boolean heeftOpenMammaAfspraak(Client client, @Context ClientContactService clientContactService)
 	{
 		return clientContactService.heeftOpenMammaAfspraak(client);
+	}
+
+	@Mappings({
+		@Mapping(target = "clientId", source = "id"),
+		@Mapping(target = "voornaam", source = "persoon.voornaam"),
+		@Mapping(target = "achternaam", source = "persoon.achternaam"),
+		@Mapping(target = "tussenvoegsel", source = "persoon.tussenvoegsel"),
+		@Mapping(target = "titel", source = "persoon.titel"),
+		@Mapping(target = "partnerTussenvoegsel", source = "persoon.partnerTussenvoegsel"),
+		@Mapping(target = "partnerAchternaam", source = "persoon.partnerAchternaam"),
+		@Mapping(target = "naamGebruik", source = "persoon.naamGebruik"),
+		@Mapping(target = "geslacht", source = "persoon.geslacht"),
+		@Mapping(target = "bsn", source = "persoon.bsn"),
+		@Mapping(target = "geboortedatum", source = "persoon.geboortedatum"),
+		@Mapping(target = "mobielNummer", source = "persoon.telefoonnummer1"),
+		@Mapping(target = "extraNummer", source = "persoon.telefoonnummer2"),
+		@Mapping(target = "emailAdres", source = "persoon.emailadres"),
+		@Mapping(target = "overlijdensdatum", source = "persoon.overlijdensdatum"),
+		@Mapping(target = "adres", source = "client", qualifiedByName = "getPaspoortAdres"),
+		@Mapping(target = "brpAdres", source = "client", qualifiedByName = "getPaspoortBrpAdres"),
+		@Mapping(target = "brpPostcode", source = "client", qualifiedByName = "getPaspoortBrpPostcode"),
+		@Mapping(target = "brpWoonplaats", source = "client", qualifiedByName = "getPaspoortBrpWoonplaats"),
+		@Mapping(target = "postcode", source = "client", qualifiedByName = "getPaspoortPostcode"),
+		@Mapping(target = "woonplaats", source = "client", qualifiedByName = "getPaspoortWoonplaats"),
+		@Mapping(target = "tijdelijkAdres", source = "client", qualifiedByName = "isPaspoortTijdelijkAdres"),
+		@Mapping(target = "tijdelijkBrpAdres", source = "client", qualifiedByName = "isPaspoortTijdelijkBrpAdres"),
+		@Mapping(target = "doelgroepen", ignore = true),
+		@Mapping(target = "anummer", ignore = true),
+	})
+	ClientPaspoortDto clientToClientPaspoortDto(Client client);
+
+	@Named("getPaspoortAdres")
+	default String getPaspoortAdres(Client client)
+	{
+		var adres = AdresUtil.getAdres(client.getPersoon(), LocalDate.now());
+		if (adres == null)
+		{
+			return null;
+		}
+		return StringUtils.trimToNull(AdresUtil.getAdres(adres));
+	}
+
+	@Named("getPaspoortBrpAdres")
+	default String getPaspoortBrpAdres(Client client)
+	{
+		var brpAdres = client.getPersoon().getGbaAdres();
+		if (brpAdres == null)
+		{
+			return null;
+		}
+		return StringUtils.trimToNull(AdresUtil.getAdres(brpAdres));
+	}
+
+	@Named("getPaspoortBrpPostcode")
+	default String getPaspoortBrpPostcode(Client client)
+	{
+		var brpAdres = client.getPersoon().getGbaAdres();
+		return brpAdres != null ? StringUtils.trimToNull(brpAdres.getPostcode()) : null;
+	}
+
+	@Named("getPaspoortBrpWoonplaats")
+	default String getPaspoortBrpWoonplaats(Client client)
+	{
+		var brpAdres = client.getPersoon().getGbaAdres();
+		return brpAdres != null ? StringUtils.trimToNull(brpAdres.getPlaats()) : null;
+	}
+
+	@Named("getPaspoortPostcode")
+	default String getPaspoortPostcode(Client client)
+	{
+		var adres = AdresUtil.getAdres(client.getPersoon(), LocalDate.now());
+		return adres != null ? adres.getPostcode() : null;
+	}
+
+	@Named("getPaspoortWoonplaats")
+	default String getPaspoortWoonplaats(Client client)
+	{
+		var adres = AdresUtil.getAdres(client.getPersoon(), LocalDate.now());
+		return adres != null ? adres.getPlaats() : null;
+	}
+
+	@Named("isPaspoortTijdelijkAdres")
+	default boolean isPaspoortTijdelijkAdres(Client client)
+	{
+		return AdresUtil.getAdres(client.getPersoon(), LocalDate.now()) instanceof TijdelijkAdres;
+	}
+
+	@Named("isPaspoortTijdelijkBrpAdres")
+	default boolean isPaspoortTijdelijkBrpAdres(Client client)
+	{
+		return AdresUtil.getAdres(client.getPersoon(), LocalDate.now()) instanceof TijdelijkGbaAdres;
 	}
 
 	@Named("isActief")

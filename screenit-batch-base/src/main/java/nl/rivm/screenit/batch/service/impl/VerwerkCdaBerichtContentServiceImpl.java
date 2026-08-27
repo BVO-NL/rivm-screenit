@@ -26,6 +26,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
@@ -69,11 +70,10 @@ import nl.topicuszorg.hibernate.object.model.HibernateObject;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -81,7 +81,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
 @Slf4j
 public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtContentService
 {
@@ -228,6 +227,31 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 					}
 					return dsValue;
 				}
+			},
+		CERVIX_COS("275", VerslagGeneratie.V11)
+			{
+				@Override
+				Object getValue(ConceptExceptionContext context) throws XPathExpressionException
+				{
+					DSValue dsValue = null;
+					var booleanNode = (Node) context.xpath.compile(context.xpathValue).evaluate(context.node, XPathConstants.NODE);
+					var booleanValue = getBooleanValue(booleanNode);
+					if (BooleanUtils.isTrue(booleanValue))
+					{
+						dsValue = getCosDSValue(context, "1"); 
+					}
+					else if (BooleanUtils.isFalse(booleanValue))
+					{
+						dsValue = getCosDSValue(context, "2");  
+					}
+
+					return dsValue;
+				}
+
+				private DSValue getCosDSValue(ConceptExceptionContext context, String code)
+				{
+					return context.verslagService.getDsValue(code, "2.16.840.1.113883.2.4.3.36.77.11.268", "vs_COS");
+				}
 			};
 
 		private final String shortConceptId;
@@ -311,7 +335,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 			var domFactory = DocumentBuilderFactory.newInstance("com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl", null);
 			domFactory.setNamespaceAware(true);
 			var builder = domFactory.newDocumentBuilder();
-			var doc = builder.parse(IOUtils.toInputStream(verslag.getOntvangenBericht().getXmlBericht()));
+			var doc = builder.parse(IOUtils.toInputStream(verslag.getOntvangenBericht().getXmlBericht(), StandardCharsets.UTF_8));
 
 			var factory = XPathFactory.newInstance();
 			var xpath = factory.newXPath();
@@ -331,7 +355,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 			verslagContent.setVerslag(verslag);
 		}
 		catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | SAXException | IOException | ParserConfigurationException
-		       | XPathExpressionException e)
+			   | XPathExpressionException e)
 		{
 			LOG.error("Fout bij vertaling van bericht naar model classes", e);
 			throw new IllegalArgumentException("Fout bij vertaling van CDA bericht naar verslag in DB");
@@ -342,7 +366,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 	private <T, S> T maakEnVulVerslagDeel(Node node, XPath xpath, Class<T> rootClazz, S parent, String rootXPath, VerslagType verslagType, VerslagGeneratie generatie)
 		throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, XPathExpressionException
 	{
-		var verslagDeel = rootClazz.newInstance();
+		var verslagDeel = rootClazz.getDeclaredConstructor().newInstance();
 		var declaredFields = rootClazz.getDeclaredFields();
 
 		for (var declaredField : declaredFields)
@@ -373,10 +397,8 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 						}
 						var nodeSet = xpath.compile(nieuwRootXPath).evaluate(node, XPathConstants.NODESET);
 						var property = PropertyUtils.getProperty(verslagDeel, fieldName);
-						if (nodeSet instanceof NodeList && property instanceof List)
+						if (nodeSet instanceof NodeList nodeList && property instanceof List list)
 						{
-							var list = (List) property;
-							var nodeList = (NodeList) nodeSet;
 							Class paramType = getType(declaredField);
 							var extension = xpathMapping.extension();
 
@@ -503,7 +525,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 	}
 
 	private Object getValue(Node node, XPath xpath, Field declaredField, String rootXPath, VerslagType verslagType, VerslagGeneratie generatie)
-		throws XPathExpressionException, InstantiationException, IllegalAccessException
+		throws XPathExpressionException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException
 	{
 		Object returnValue = null;
 		var vraagElement = declaredField.getAnnotation(VraagElement.class);
@@ -587,30 +609,16 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 	}
 
 	private Object getValue(Node node, XPath xpath, String xpathValue, String extension, Field declaredField, VerslagType verslagType)
-		throws XPathExpressionException, InstantiationException, IllegalAccessException
+		throws XPathExpressionException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException
 	{
 		Object returnValue = null;
 		var type = getType(declaredField);
-		if (type.equals(Boolean.class))
+		if (Boolean.class.equals(type))
 		{
 			var booleanNode = (Node) xpath.compile(xpathValue).evaluate(node, XPathConstants.NODE);
-			if (booleanNode != null)
-			{
-				var attributes = booleanNode.getAttributes();
-				var typeNode = attributes.getNamedItem("xsi:type");
-				var valueNode = attributes.getNamedItem("value");
-				if (typeNode != null && valueNode != null && typeNode.getNodeValue().equals("BL")) 
-				{
-					returnValue = "true".equals(valueNode.getNodeValue());
-				}
-				else
-				{
-					returnValue = isNoNullFlavour(attributes);
-				}
-
-			}
+			returnValue = getBooleanValue(booleanNode);
 		}
-		else if (type.equals(String.class))
+		else if (String.class.equals(type))
 		{
 			if (StringUtils.isNotBlank(extension))
 			{
@@ -622,13 +630,13 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 			}
 			returnValue = xpath.compile(xpathValue).evaluate(node);
 		}
-		else if (type.equals(Date.class))
+		else if (Date.class.equals(type))
 		{
 			returnValue = getDateValue(node, xpath, xpathValue);
 		}
-		else if (type.equals(Quantity.class))
+		else if (Quantity.class.equals(type))
 		{
-			var quantity = (Quantity) type.newInstance();
+			var quantity = (Quantity) type.getDeclaredConstructor().newInstance();
 			var quantityNode = (Node) xpath.compile(xpathValue).evaluate(node, XPathConstants.NODE);
 			quantity.setValue(xpath.compile("@value").evaluate(quantityNode));
 			quantity.setUnit(xpath.compile("@unit").evaluate(quantityNode));
@@ -637,9 +645,9 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 				returnValue = quantity;
 			}
 		}
-		else if (type.equals(NullFlavourQuantity.class))
+		else if (NullFlavourQuantity.class.equals(type))
 		{
-			var quantity = (NullFlavourQuantity) type.newInstance();
+			var quantity = (NullFlavourQuantity) type.getDeclaredConstructor().newInstance();
 			var quantityNode = (Node) xpath.compile(xpathValue.replace("[not(@nullFlavor)]", "")).evaluate(node, XPathConstants.NODE);
 			quantity.setValue(xpath.compile("@value").evaluate(quantityNode));
 			quantity.setUnit(xpath.compile("@unit").evaluate(quantityNode));
@@ -655,7 +663,7 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 				returnValue = quantity;
 			}
 		}
-		else if (type.equals(DSValue.class))
+		else if (DSValue.class.equals(type))
 		{
 			var dsValueSet = declaredField.getAnnotation(DSValueSet.class);
 			var dsZoekObject = new DSValue();
@@ -668,25 +676,9 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 
 			returnValue = zoekDsValue(xpath, dsNode, dsZoekObject, verslagService);
 		}
-		else if (type.equals(List.class))
+		else if (List.class.equals(type))
 		{
 			returnValue = xpath.compile(xpathValue).evaluate(node, XPathConstants.NODESET);
-		}
-		return returnValue;
-	}
-
-	private Boolean isNoNullFlavour(NamedNodeMap attributes)
-	{
-		Boolean returnValue;
-		var nullFlavorNode = attributes.getNamedItem("nullFlavor");
-		if (nullFlavorNode != null && ("UNK".equals(nullFlavorNode.getNodeValue()) || "NA".equals(nullFlavorNode.getNodeValue())))
-		{
-			returnValue = null;
-		}
-		else
-		{
-			var negationIndNode = attributes.getNamedItem("negationInd");
-			returnValue = !(negationIndNode != null && "true".equals(negationIndNode.getNodeValue()));
 		}
 		return returnValue;
 	}
@@ -768,6 +760,47 @@ public class VerwerkCdaBerichtContentServiceImpl implements VerwerkCdaBerichtCon
 				}
 			}
 		}
+	}
+
+	private static Boolean getBooleanValue(Node booleanNode)
+	{
+		if (booleanNode == null)
+		{
+			return null;
+		}
+		var attributes = booleanNode.getAttributes();
+		if (attributes == null)
+		{
+			return null;
+		}
+		var typeNode = attributes.getNamedItem("xsi:type");
+		var valueNode = attributes.getNamedItem("value");
+		Boolean returnValue;
+		if (typeNode != null && valueNode != null && typeNode.getNodeValue().equals("BL")) 
+		{
+			returnValue = "true".equals(valueNode.getNodeValue());
+		}
+		else
+		{
+			returnValue = isNoNullFlavour(attributes);
+		}
+		return returnValue;
+	}
+
+	private static Boolean isNoNullFlavour(NamedNodeMap attributes)
+	{
+		Boolean returnValue;
+		var nullFlavorNode = attributes.getNamedItem("nullFlavor");
+		if (nullFlavorNode != null && ("UNK".equals(nullFlavorNode.getNodeValue()) || "NA".equals(nullFlavorNode.getNodeValue())))
+		{
+			returnValue = null;
+		}
+		else
+		{
+			var negationIndNode = attributes.getNamedItem("negationInd");
+			returnValue = !(negationIndNode != null && "true".equals(negationIndNode.getNodeValue()));
+		}
+		return returnValue;
 	}
 
 	private static Date getDateValue(Node node, XPath xpath, String xpathValue) throws XPathExpressionException

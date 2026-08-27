@@ -1,0 +1,61 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog titel="Keuzehistorie" size="xxl" [sluitResultaat]="laatsteActie()">
+  <div body>
+    <div class="row">
+      <div class="col-6 display-block">
+        <app-bezwaar-lijst class="display-block" [bezwaarMoment]="data.bezwaarMoment"/>
+        @if (toonFormulierVervangen()) {
+          <div class="mt-3">
+            <div class="info-label">PDF-bestand uploaden</div>
+            <app-single-file-selector class="display-block" acceptedExtensie="pdf" [required]="true" [formControl]="uploadFormulierCtrl"/>
+            <button
+              ds-button-primary
+              class="mt-2"
+              data-testid="formulier_vervangen_opslaan_button"
+              [disabled]="uploadFormulierCtrl.invalid || uploadFormulierCtrl.value === null"
+              (click)="vervangDocument()"
+            >
+              Opslaan
+            </button>
+          </div>
+        }
+      </div>
+      <div class="col-6 display-block">
+        <app-brieven-lijst [brieven]="brieven()"/>
+      </div>
+    </div>
+  </div>
+  <ng-container buttons>
+    @if (kanVervangen) {
+      <button *appAutorisatie="formulierVervangenConstraint" ds-button-secondary data-testid="brief_actie_vervangen_button" (click)="toggleFormulierVervangen()">
+        Formulier vervangen
+      </button>
+    }
+    @for (actie of briefActies(); track $index) {
+      @let testId = 'brief_actie_' + actie.toLowerCase() + '_button';
+      <button ds-button-secondary [attr.data-testid]="testId" (click)="handelActieAf(actie)">
+        {{ actie | enumLabel: briefActieLabels }}
+      </button>
+    }
+    <button ds-button-primary (click)="sluiten()" data-testid="sluiten_button">Sluiten</button>
+  </ng-container>
+</app-base-dialog>

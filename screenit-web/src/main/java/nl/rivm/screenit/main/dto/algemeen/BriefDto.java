@@ -21,6 +21,9 @@ package nl.rivm.screenit.main.dto.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,4 +38,14 @@ public class BriefDto
 	private Long id;
 
 	private String documentNaam;
+
+	private LocalDateTime verstuurdVoorAfdrukkenOp;
+
+	private boolean tegengehouden;
+
+	private boolean vervangen;
+
+	private BriefDto herdrukBrief;
+
+	private Date creatieDatum;
 }

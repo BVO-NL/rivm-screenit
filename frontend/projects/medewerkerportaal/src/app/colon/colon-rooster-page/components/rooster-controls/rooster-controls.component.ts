@@ -67,7 +67,6 @@ export class RoosterControlsComponent {
   selectedDate = input<Date | undefined>()
   currentDate = input<Date | undefined>()
 
-  viewRangeChange = output<CalendarView>()
   gotoNext = output<void>()
   gotoPrevious = output<void>()
   gotoToday = output<void>()
@@ -187,7 +186,6 @@ export class RoosterControlsComponent {
   setViewRange(viewRange: CalendarView) {
     this.viewRange.set(viewRange)
     this.isNavLinkDayClick = false
-    this.viewRangeChange.emit(viewRange)
   }
 
   verwijderItemClicked($event: DsMenuItem) {

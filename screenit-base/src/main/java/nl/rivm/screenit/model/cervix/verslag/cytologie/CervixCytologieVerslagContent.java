@@ -56,11 +56,15 @@ public class CervixCytologieVerslagContent
 	private CervixCytologieVerrichting verrichting;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(conceptId = "246", displayName = "Cytologie uitslag BVO BMHK")
+	@VraagElement(conceptId = "246", displayName = "Cytologie uitslag BVO BMHK", xpaths = {
+		"/hl7:ClinicalDocument"
+	})
 	private CervixCytologieCytologieUitslagBvoBmhk cytologieUitslagBvoBmhk;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "verslagContent", cascade = CascadeType.ALL)
-	@VraagElement(conceptId = "266", displayName = "Cytologie uitslag BVO BMHK tbv huisarts")
+	@VraagElement(conceptId = "266", displayName = "Cytologie uitslag BVO BMHK tbv huisarts", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody"
+	})
 	private CervixCytologieCytologieUitslagBvoBmhkTbvHuisarts cytologieUitslagBvoBmhkTbvHuisarts;
 
 }

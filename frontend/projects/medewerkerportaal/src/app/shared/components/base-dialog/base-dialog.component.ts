@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {Component, inject, input, OnInit} from '@angular/core'
-import {DsFooterActionsLeftDirective, DsFooterActionsRightDirective, DsModalComponent, DsModalConfig} from '@topicus-rgp-ds/web'
-import {DialogRef} from '@angular/cdk/dialog'
+import { Component, inject, input, OnInit } from '@angular/core'
+import { DsFooterActionsLeftDirective, DsFooterActionsRightDirective, DsModalComponent, DsModalConfig } from '@topicus-rgp-ds/web'
+import { DialogRef } from '@angular/cdk/dialog'
 
 @Component({
   selector: 'app-base-dialog',
@@ -43,6 +43,7 @@ export class BaseDialogComponent implements OnInit {
   size = input<string>('md')
   contentPadding = input<string>('1rem')
   enableClose = input<boolean>(true)
+  sluitResultaat = input<unknown | (() => unknown)>()
 
   private readonly dialogRef = inject(DialogRef)
 
@@ -55,7 +56,11 @@ export class BaseDialogComponent implements OnInit {
 
   public ngOnInit(): void {
     this.modalConfig.enableClose = this.enableClose()
-    this.modalConfig.closeCallback = () => { this.dialogRef.close(); return true }
+    this.modalConfig.closeCallback = () => {
+      const sluitResultaat = this.sluitResultaat()
+      this.dialogRef.close(typeof sluitResultaat === 'function' ? sluitResultaat() : sluitResultaat)
+      return true
+    }
     this.modalConfig.width = BaseDialogComponent.MODAL_BREEDTES[this.size()] ?? BaseDialogComponent.MODAL_BREEDTES['md']
     this.modalConfig.maxWidth = BaseDialogComponent.MODAL_BREEDTES['xxl']
     this.modalConfig.contentPadding = this.contentPadding()

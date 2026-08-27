@@ -53,7 +53,7 @@ import nl.topicuszorg.organisatie.model.Adres;
 public class AfspraakDtoMapper
 {
 
-	public AfspraakSeDto createAfspraakSeDto(MammaAfspraak afspraak, String seVersie)
+	public AfspraakSeDto createAfspraakSeDto(MammaAfspraak afspraak)
 	{
 		var clientSeDto = createClientSeDto(afspraak);
 		var afspraakSeDto = new AfspraakSeDto();
@@ -65,7 +65,7 @@ public class AfspraakDtoMapper
 		afspraakSeDto.setIdentificatiesoort(afspraak.getIdentificatiesoort());
 		afspraakSeDto.setIdentificatienummer(afspraak.getIdentificatienummer());
 		afspraakSeDto.setBezwaarAangevraagd(afspraak.getBezwaarAangevraagd());
-		afspraakSeDto.setHuidigOnderzoek(createHuidigOnderzoekDto(afspraak, seVersie));
+		afspraakSeDto.setHuidigOnderzoek(createHuidigOnderzoekDto(afspraak));
 		afspraakSeDto.setMammografie(createMammografieDto(afspraak));
 		afspraakSeDto.setSignaleren(createSignalerenDto(afspraak));
 		var huisarts = getHuisarts(afspraak);
@@ -248,9 +248,9 @@ public class AfspraakDtoMapper
 		}
 	}
 
-	private OnderzoekSeDto createHuidigOnderzoekDto(MammaAfspraak afspraak, String seVersie)
+	private OnderzoekSeDto createHuidigOnderzoekDto(MammaAfspraak afspraak)
 	{
-		return new OnderzoekDtoMapper().createOnderzoekDto(afspraak.getOnderzoek(), seVersie);
+		return new OnderzoekDtoMapper().createOnderzoekDto(afspraak.getOnderzoek());
 	}
 
 	private MammografieSeDto createMammografieDto(MammaAfspraak afspraak)

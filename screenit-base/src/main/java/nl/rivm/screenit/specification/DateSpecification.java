@@ -49,6 +49,11 @@ public class DateSpecification
 		return cb.function("date_trunc", Date.class, new StringLiteral(cb, part), datePath);
 	}
 
+	public static Expression<LocalDate> truncateToLocalDate(String part, Expression<LocalDateTime> datePath, CriteriaBuilder cb)
+	{
+		return cb.function("date_trunc", LocalDate.class, new StringLiteral(cb, part), datePath);
+	}
+
 	public static Expression<Integer> extractYear(Expression<Date> datePath, CriteriaBuilder cb)
 	{
 		return cb.function("YEAR", Integer.class, datePath);

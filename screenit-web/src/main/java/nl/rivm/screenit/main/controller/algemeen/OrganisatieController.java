@@ -27,6 +27,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.dto.OrganisatieDto;
+import nl.rivm.screenit.main.controller.BaseController;
 import nl.rivm.screenit.main.mappers.mamma.MammaScreeningsEenheidMapper;
 import nl.rivm.screenit.main.model.algemeen.dto.OrganisatieZoekFilterDto;
 import nl.rivm.screenit.main.service.mamma.MammaBeoordelingsEenheidService;
@@ -58,7 +59,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/organisatie")
 @Tag(name = "Organisaties", description = "Opvragen van organisaties voor de mamma-werklijsten")
-public class OrganisatieController
+public class OrganisatieController extends BaseController
 {
 	private final MammaBeoordelingsEenheidService beoordelingsEenheidService;
 

@@ -18,6 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Dossier } from '@shared/types/algemeen/dossier'
+export enum AanvraagBriefStatus {
+  BRIEF = 'BRIEF',
+  BRIEF_ONTVANGEN = 'BRIEF_ONTVANGEN',
+  VERWERKT = 'VERWERKT',
+}
 
-export interface ColonDossier extends Dossier {}
+export const aanvraagBriefStatusLabel: Record<AanvraagBriefStatus, string> = {
+  [AanvraagBriefStatus.BRIEF]: 'Brief',
+  [AanvraagBriefStatus.BRIEF_ONTVANGEN]: 'Brief ontvangen',
+  [AanvraagBriefStatus.VERWERKT]: 'Verwerkt',
+}

@@ -219,6 +219,8 @@
                         -Duser.country=NL -Duser.country.format=NL
                         -Duser.language=nl
                         -Duser.language.format=nl
+                        -Dtest.fork.number=${surefire.forkNumber}
+                        -Dtest.module=${project.artifactId}
                     </argLine>
                     <includes>
                         <include>**/*Test.java</include>

@@ -24,6 +24,8 @@ package nl.rivm.screenit.main.mappers.algemeen;
 import nl.rivm.screenit.main.dto.algemeen.BriefDto;
 import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
 import nl.rivm.screenit.model.Brief;
+import nl.rivm.screenit.model.ClientBrief;
+import nl.rivm.screenit.util.BriefUtil;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -36,7 +38,12 @@ public interface BriefMapper
 	@Mappings({
 		@Mapping(target = "id", source = "id"),
 		@Mapping(target = "briefType", source = "briefType"),
-		@Mapping(target = "documentNaam", source = "brief", qualifiedByName = "documentNaam")
+		@Mapping(target = "documentNaam", source = "brief", qualifiedByName = "documentNaam"),
+		@Mapping(target = "verstuurdVoorAfdrukkenOp", source = "verstuurdVoorAfdrukkenOp"),
+		@Mapping(target = "tegengehouden", source = "brief", qualifiedByName = "tegengehouden"),
+		@Mapping(target = "vervangen", source = "vervangen"),
+		@Mapping(target = "herdrukBrief", source = "brief", qualifiedByName = "herdrukBrief"),
+		@Mapping(target = "creatieDatum", source = "creatieDatum"),
 	})
 	BriefDto briefNaarDto(Brief brief);
 
@@ -44,5 +51,21 @@ public interface BriefMapper
 	default String getNaamVanDocument(Brief brief)
 	{
 		return brief.isGegenereerd() ? brief.getTemplateNaam() : brief.getBriefType().getWeergaveNaam();
+	}
+
+	@Named("tegengehouden")
+	default boolean tegengehouden(Brief brief)
+	{
+		return BriefUtil.isTegengehouden(brief);
+	}
+
+	@Named("herdrukBrief")
+	default Brief herdrukBrief(Brief brief)
+	{
+		if (brief instanceof ClientBrief<?, ?, ?> clientBrief)
+		{
+			return BriefUtil.getHerdruk(clientBrief);
+		}
+		return null;
 	}
 }

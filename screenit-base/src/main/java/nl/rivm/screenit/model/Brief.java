@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model;
 
 /*-
@@ -113,5 +112,4 @@ public abstract class Brief extends AbstractHibernateObject
 		}
 		return bevolkingsonderzoek;
 	}
-
 }

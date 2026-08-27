@@ -19,11 +19,6 @@
   =========================LICENSE_END==================================
   -->
 <ds-card [cardTitle]="clientContactgegevensTitel()">
-  <ng-template ds-card-header-badge>
-    @if (clientContactgegevens()?.geslacht) {
-      <ds-icon [icon]="clientContactgegevens()!.geslacht | geslachtIcoon" class="geslacht-icoon"/>
-    }
-  </ng-template>
   <ng-template ds-card-header-content *appAutorisatie="bewerkenConstraint">
     <button ds-button-tertiary (click)="openContactgegevensBewerkenPopup()" [disabled]="!clientContactgegevens()">
       <ds-icon [icon]="faPencil"/>
@@ -35,11 +30,7 @@
       @if (contactgegevens.doelgroepen.length) {
         <div class="client-gegevens-rij">
           <span class="client-gegevens-label">Doelgroep</span>
-          <span class="doelgroepen">
-          @for (doelgroep of contactgegevens.doelgroepen; track doelgroep) {
-            <ds-badge type="info" [label]="doelgroep | enumLabel: doelgroepLabel"/>
-          }
-        </span>
+          <app-doelgroep-badges class="doelgroepen" [doelgroepen]="contactgegevens.doelgroepen"/>
         </div>
         @if (heeftDubbeltijd()) {
           <div class="client-gegevens-rij">

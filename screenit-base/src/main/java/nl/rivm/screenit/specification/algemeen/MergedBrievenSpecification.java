@@ -124,6 +124,6 @@ public class MergedBrievenSpecification
 
 	public static <M extends MergedBrieven<?>> ExtendedSpecification<M> isNietGeprintOp(LocalDate peildatum)
 	{
-		return (r, q, cb) -> cb.notEqual(truncate("day", r.get(MergedBrieven_.printDatum), cb), DateUtil.toUtilDate(peildatum));
+		return (r, q, cb) -> cb.or(cb.isNull(r.get(MergedBrieven_.printDatum)), cb.notEqual(truncate("day", r.get(MergedBrieven_.printDatum), cb), DateUtil.toUtilDate(peildatum)));
 	}
 }

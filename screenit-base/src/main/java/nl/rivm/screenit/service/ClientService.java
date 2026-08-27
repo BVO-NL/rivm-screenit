@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.Optional;
 
 import nl.rivm.screenit.main.dto.algemeen.ClientContactgegevensDto;
+import nl.rivm.screenit.main.dto.algemeen.DoelgroepDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.CentraleEenheid;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.Organisatie;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
@@ -59,6 +59,8 @@ public interface ClientService
 	void slaContactgegevensOp(Client client, ClientContactgegevensDto dto, Account ingelogdAccount);
 
 	void zetDoelgroepenVanClient(Client client, ClientContactgegevensDto contactgegevens);
+
+	List<DoelgroepDto> bepaalDoelgroepenVanClient(Client client);
 
 	Client getClientByBsnFromNg01Bericht(String bsn, String anummer);
 
@@ -102,9 +104,9 @@ public interface ClientService
 
 	boolean isTijdelijkeAdresNuActueel(Persoon persoon);
 
-	void saveOrUpdateTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+	void saveOrUpdateTijdelijkGbaAdres(Client client, Account ingelogdeOrganisatieMedewerker);
 
-	void verwijderTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+	void verwijderTijdelijkGbaAdres(Client client, Account ingelogdeOrganisatieMedewerker);
 
 	List<Organisatie> getScreeningOrganisatieVan(Client client);
 

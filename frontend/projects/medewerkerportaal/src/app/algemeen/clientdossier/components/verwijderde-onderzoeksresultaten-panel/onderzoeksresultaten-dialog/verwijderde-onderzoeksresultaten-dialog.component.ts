@@ -91,7 +91,7 @@ export class VerwijderdeOnderzoeksresultatenDialogComponent {
 
   protected nogmaalsVersturen() {
     this.bezwaarService
-      .nogmaalsVersturen(this.onderzoeksresultaat.id)
+      .verstuurBevestigingsbrievenOnderzoeksresultatenActieNogmaals(this.onderzoeksresultaat.id)
       .pipe(take(1))
       .subscribe({
         next: () => {

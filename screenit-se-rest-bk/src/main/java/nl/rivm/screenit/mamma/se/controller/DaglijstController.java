@@ -42,7 +42,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,11 +60,10 @@ public class DaglijstController extends AuthorizedController
 	private MammaScreeningsEenheidService screeningsEenheidService;
 
 	@GetMapping(value = "/{datum}")
-	public ResponseEntity readDaglijst(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate datum, HttpServletRequest request,
-		@RequestHeader(value = VERSIE_HEADER, required = false) String seVersie)
+	public ResponseEntity readDaglijst(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate datum, HttpServletRequest request)
 	{
 		var seCode = getSeCode(request);
-		var daglijstOphaler = new DaglijstOphaler(datum, seCode, seVersie);
+		var daglijstOphaler = new DaglijstOphaler(datum, seCode);
 		var future = executorService.submit(daglijstOphaler);
 
 		try
@@ -98,16 +96,13 @@ public class DaglijstController extends AuthorizedController
 
 		private final String seCode;
 
-		private final String seVersie;
-
 		private List<AfspraakSeDto> afspraken;
 
-		DaglijstOphaler(LocalDate opTeHalenDatum, String seCode, String seVersie)
+		DaglijstOphaler(LocalDate opTeHalenDatum, String seCode)
 		{
 			super(true);
 			this.opTeHalenDatum = opTeHalenDatum;
 			this.seCode = seCode;
-			this.seVersie = seVersie;
 		}
 
 		@Override
@@ -115,7 +110,7 @@ public class DaglijstController extends AuthorizedController
 		{
 			if (screeningsEenheidService.magSeDaglijstInzienVanDatum(seCode, opTeHalenDatum))
 			{
-				afspraken = daglijstService.readDaglijst(opTeHalenDatum, seCode, seVersie);
+				afspraken = daglijstService.readDaglijst(opTeHalenDatum, seCode);
 			}
 			else
 			{

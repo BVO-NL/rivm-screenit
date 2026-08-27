@@ -120,7 +120,7 @@ public class BezwaarController extends AbstractController
 			.flatMap(g -> g.getBezwaren().stream())
 			.forEach(b -> Arrays.stream(bezwaarDtos)
 				.filter(bd -> bd.getType() == b.getType() && bd.getBevolkingsonderzoek() == b.getBevolkingsonderzoek())
-				.forEach(bd -> b.setActief(bd.getActive())));
+				.forEach(bd -> b.setActief(bd.getActief())));
 	}
 
 }

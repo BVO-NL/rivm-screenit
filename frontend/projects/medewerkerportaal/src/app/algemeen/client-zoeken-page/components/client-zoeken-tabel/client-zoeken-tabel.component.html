@@ -26,10 +26,7 @@
     <th *dsHeaderCellDef ds-header-cell mat-sort-header="achternaam">Naam</th>
     <td *dsCellDef="let row" ds-cell>
         <span class="naam-met-icoon">
-          {{ row | voornaamTussenvoegselAchternaam }}
-          @if (row.geslacht | geslachtIcoon; as icoon) {
-            <ds-icon [icon]="icoon" class="geslacht-icoon"/>
-          }
+          {{ row | voornaamTussenvoegselAchternaam }} ({{ row.geslacht | geslachtAfkorting }})
         </span>
     </td>
   </ng-container>
@@ -73,7 +70,7 @@
   <ng-container dsColumnDef="navigeer">
     <th ds-header-cell *dsHeaderCellDef></th>
     <td ds-cell *dsCellDef class="navigeer-cel">
-      <ds-icon [icon]="navigeerIcoon"/>
+      <ds-icon [icon]="navigeerIcoon" size="16px"/>
     </td>
   </ng-container>
 

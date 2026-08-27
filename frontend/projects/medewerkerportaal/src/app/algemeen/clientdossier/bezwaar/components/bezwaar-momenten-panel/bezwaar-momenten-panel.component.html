@@ -1,0 +1,78 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<ds-card cardTitle="Historie">
+  <table ds-table [dataSource]="gebeurtenissen()" [fullWidth]="true" [hoverable]="true">
+    <ng-container dsColumnDef="bron">
+      <th *dsHeaderCellDef ds-header-cell>Bron</th>
+      <td *dsCellDef="let row" ds-cell (click)="openBrievenDialog(row)">{{ row.bron | enumLabel: gebeurtenisBronLabels }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="status">
+      <th *dsHeaderCellDef ds-header-cell>Status</th>
+      <td *dsCellDef="let row" ds-cell (click)="openBrievenDialog(row)">{{ row.status }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="brief">
+      <th *dsHeaderCellDef ds-header-cell>Brieftype</th>
+      <td *dsCellDef="let row" ds-cell (click)="openBrievenDialog(row)">{{ row.brieven[0]?.documentNaam }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="datumTijd">
+      <th *dsHeaderCellDef ds-header-cell>Datum/tijd</th>
+      <td *dsCellDef="let row" ds-cell (click)="openBrievenDialog(row)">
+        {{ row.datum | datumTijd }}
+      </td>
+    </ng-container>
+
+    <ng-container dsColumnDef="acties">
+      <th *dsHeaderCellDef ds-header-cell data-testid="acties_kolom_header">{{ actiesHeaderLabel() }}</th>
+      <td *dsCellDef="let row" ds-cell>
+        @if (isMeestRecenteBezwaarMoment(row) && row.documentId !== null) {
+          <button ds-button-secondary ds-button-icon aria-label="Inzien" data-testid="inzien_document_button" (click)="inzienDocument(row)">
+            <ds-icon [icon]="faEye"/>
+          </button>
+        }
+        @if (isMeestRecenteBezwaarMoment(row) && heeftBriefActies(row)) {
+          <button
+            ds-button-secondary
+            dsButtonMenu
+            [menu]="getBriefActies(row)"
+            (menuOpened)="setCloseOnClick()"
+            (menuItemClicked)="handleItemClick($event, row)"
+            data-testid="opties_menu_button"
+          >
+            <ds-icon [icon]="faEllipsisVertical"/>
+          </button>
+        }
+      </td>
+    </ng-container>
+
+    <ng-container dsColumnDef="navigeren">
+      <th *dsHeaderCellDef ds-header-cell></th>
+      <td *dsCellDef="let row" ds-cell (click)="openBrievenDialog(row)">
+        <ds-icon [icon]="navigeerIcoon" size="16px"/>
+      </td>
+    </ng-container>
+
+    <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>
+    <tr ds-row *dsRowDef="let row; columns: displayedColumns" data-testid="bezwaar_moment_rij"></tr>
+  </table>
+</ds-card>

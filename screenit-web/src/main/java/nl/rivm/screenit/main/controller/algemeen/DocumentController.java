@@ -28,7 +28,7 @@ import java.nio.file.NoSuchFileException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.main.web.ScreenitSession;
+import nl.rivm.screenit.main.controller.BaseController;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -59,7 +59,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/document")
 @Tag(name = "Documenten", description = "Downloaden van documenten uit het medewerkerportaal")
-public class DocumentController
+public class DocumentController extends BaseController
 {
 	private final UploadDocumentService uploadDocumentService;
 
@@ -92,7 +92,7 @@ public class DocumentController
 
 			if (file.getPath().contains(FileStoreLocation.ALGEMEEN_HANDLEIDINGEN.getPath()))
 			{
-				logService.logGebeurtenis(LogGebeurtenis.HANDLEIDING_DOWNLOAD, ScreenitSession.get().getIngelogdAccount(), document.getNaam() + " gedownload",
+				logService.logGebeurtenis(LogGebeurtenis.HANDLEIDING_DOWNLOAD, getIngelogdeGebruiker(), document.getNaam() + " gedownload",
 					Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA);
 			}
 			return ResponseEntity.ok()

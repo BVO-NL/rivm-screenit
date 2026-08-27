@@ -275,7 +275,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 				public void onClickDeleteAction(AjaxRequestTarget target, IModel<MammaTehuisAdres> adresModel)
 				{
 					var adres = adresModel.getObject();
-					if (baseTehuisClientenDao.countClienten(adres.getTehuis(), MammaTehuisSelectie.GEKOPPELD, adres) > 0)
+					if (baseTehuisClientenDao.countClienten(adres.getTehuis(), MammaTehuisSelectie.GEKOPPELD, adres, true) > 0)
 					{
 						error(getString("error.adres.kan.niet.verwijderd.worden"));
 					}
@@ -627,7 +627,7 @@ public class MammaTehuisEditPage extends MammaPlanningBasePage
 				if (tehuis.getId() != null)
 				{
 					uitnodigenVisible = ingelogdNamensRegio && ScreenitSession.get().checkPermission(Recht.MEDEWERKER_SCREENING_MAMMA_TEHUIS, Actie.AANPASSEN);
-					uitnodigenEnabled = baseTehuisClientenDao.countClienten(tehuis, MammaTehuisSelectie.UIT_TE_NODIGEN, null) > 0;
+					uitnodigenEnabled = baseTehuisClientenDao.countClienten(tehuis, MammaTehuisSelectie.UIT_TE_NODIGEN, null, false) > 0;
 				}
 
 				setVisible(uitnodigenVisible);

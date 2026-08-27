@@ -81,7 +81,10 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		briefActies = briefService.getBriefActies(getModelObject().getBrief());
+		var magOpnieuwKlaarzetten = ScreenitSession.get()
+			.checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_OPNIEUW_KLAARZETTEN, Actie.AANPASSEN);
+		var magTegenhouden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
+		briefActies = briefService.getBriefActies(getModelObject().getBrief(), magOpnieuwKlaarzetten, magTegenhouden);
 		add(new TemplateInzienPanel("templateInzienPanel", new CompoundPropertyModel(new PropertyModel(getModel(), "brief"))));
 		add(new BriefOpnieuwAanmakenPanel("briefOpnieuwAanmakenPanel", new CompoundPropertyModel(new PropertyModel(getModel(), "brief"))));
 		tegenhoudenContainer = maakBriefTegenhoudenContent();
@@ -113,7 +116,6 @@ public class BriefKlaargezetPanel extends AbstractGebeurtenisDetailPanel
 		mogelijk.add(tegenhoudenLink);
 		mogelijk.add(new IndicatingAjaxLink<Void>("activeren")
 		{
-
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{

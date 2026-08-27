@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, computed, inject, Signal } from '@angular/core'
+import { Component, computed, inject, signal } from '@angular/core'
 import {
   DsButtonComponent,
   DsCardComponent,
@@ -35,13 +35,13 @@ import {
 } from '@topicus-rgp-ds/web'
 import { ClientService } from '@/algemeen/services/client/client.service'
 import { ScreeningRondeGebeurtenisDto } from '@shared/types/algemeen/dto/screening-ronde-gebeurtenis.dto'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { EnumLabelPipe } from '@shared/pipes/enum-label/enum-label.pipe'
 import { typeGebeurtenisLabels } from '@shared/types/algemeen/enum/type-gebeurtenis'
 import { GebeurtenisBronPipe } from '@shared/pipes/gebeurtenis-bron/gebeurtenis-bron.pipe'
 import { Dialog } from '@angular/cdk/dialog'
 import { BriefDialogComponent } from '@algemeen/components/brief-dialog/brief-dialog.component'
 import { DatumTijdPipe } from '@shared/pipes/datum-tijd/datum-tijd.pipe'
+import { take } from 'rxjs'
 
 @Component({
   selector: 'app-algemene-brieven-panel',
@@ -73,12 +73,28 @@ export class AlgemeneBrievenPanelComponent {
   protected readonly displayedColumns = ['actie', 'naam', 'datum', 'bekijken']
   protected readonly gebeurtenisLabels = typeGebeurtenisLabels
 
-  brieven: Signal<ScreeningRondeGebeurtenisDto[]> = toSignal(this.clientService.getGebeurtenissen(this.clientService.clientId(), 'algemene-brieven'), {
-    initialValue: [],
-  })
+  readonly brieven = signal<ScreeningRondeGebeurtenisDto[]>([])
   isZichtbaar = computed(() => this.brieven().length === 0 && this.clientService.isClientActief())
 
+  constructor() {
+    this.laadBrieven()
+  }
+
   openBrief(gebeurtenis: ScreeningRondeGebeurtenisDto) {
-    this.dialog.open(BriefDialogComponent, { data: gebeurtenis })
+    this.dialog
+      .open(BriefDialogComponent, { data: gebeurtenis })
+      .closed.pipe(take(1))
+      .subscribe((briefOpnieuwAangemaakt) => {
+        if (briefOpnieuwAangemaakt) {
+          this.laadBrieven()
+        }
+      })
+  }
+
+  private laadBrieven() {
+    this.clientService
+      .getScreeningRondeGebeurtenissen(this.clientService.clientId(), 'algemene-brieven')
+      .pipe(take(1))
+      .subscribe((brieven) => this.brieven.set(brieven))
   }
 }

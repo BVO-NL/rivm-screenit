@@ -48,7 +48,7 @@ public class BaseDvaBronServiceImpl implements BaseDvaBronService
 		try
 		{
 			clientBrief.setBriefType(pgoBriefType);
-			return baseBriefService.maakPdfAVanBrief(clientBrief);
+			return baseBriefService.maakPgoPdfAVanBrief(clientBrief);
 		}
 		finally
 		{

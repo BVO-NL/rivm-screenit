@@ -24,7 +24,6 @@ export enum MammaOnderzoekRedenFotobespreking {
   CALCIFICATIES = 'CALCIFICATIES',
   MASSA = 'MASSA',
   INSTELTECHNIEK = 'INSTELTECHNIEK',
-  OVERIG = 'OVERIG',
   TE_BESPREKEN_ONDERZOEK = 'TE_BESPREKEN_ONDERZOEK',
 }
 
@@ -34,6 +33,5 @@ export const mammaOnderzoekRedenFotobesprekingLabels: Record<MammaOnderzoekReden
   [MammaOnderzoekRedenFotobespreking.CALCIFICATIES]: 'Calcificaties',
   [MammaOnderzoekRedenFotobespreking.MASSA]: 'Massa',
   [MammaOnderzoekRedenFotobespreking.INSTELTECHNIEK]: 'Insteltechniek',
-  [MammaOnderzoekRedenFotobespreking.OVERIG]: 'Overig',
   [MammaOnderzoekRedenFotobespreking.TE_BESPREKEN_ONDERZOEK]: 'Te bespreken onderzoek',
 }

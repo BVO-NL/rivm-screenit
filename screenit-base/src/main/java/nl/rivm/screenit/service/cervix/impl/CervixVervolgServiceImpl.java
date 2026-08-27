@@ -39,7 +39,6 @@ import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
 import nl.rivm.screenit.model.cervix.enums.CervixUitstrijkjeStatus;
 import nl.rivm.screenit.model.cervix.enums.CervixZasStatus;
 import nl.rivm.screenit.model.messagequeue.MessageType;
-import nl.rivm.screenit.model.messagequeue.dto.CervixHL7v24HpvOrderTriggerDto;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BaseHoudbaarheidService;
 import nl.rivm.screenit.service.HibernateService;
@@ -51,9 +50,9 @@ import nl.rivm.screenit.service.cervix.CervixBepaalVervolgService;
 import nl.rivm.screenit.service.cervix.CervixVervolgService;
 import nl.rivm.screenit.service.cervix.enums.CervixVervolgTekst;
 import nl.rivm.screenit.util.EntityAuditUtil;
+import nl.rivm.screenit.util.cervix.CervixHL7v24HpvOrderTriggerDtoUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -223,10 +222,7 @@ public class CervixVervolgServiceImpl implements CervixVervolgService
 
 	private void maakEnQueueHpvOrderMessageTrigger(CervixMonster monster, BMHKLaboratorium bmhkLaboratorium, boolean cancelOrder)
 	{
-		var triggerDto = new CervixHL7v24HpvOrderTriggerDto();
-		triggerDto.setClazz(((CervixMonster) Hibernate.unproxy(monster)).getClass());
-		triggerDto.setMonsterId(monster.getId());
-		triggerDto.setCancelOrder(cancelOrder);
+		var triggerDto = CervixHL7v24HpvOrderTriggerDtoUtil.maakHpvOrderTriggerDto(monster, cancelOrder);
 		bmhkLaboratorium = getBmhkLaboratorium(monster, bmhkLaboratorium);
 		messageService.queueMessage(MessageType.HPV_ORDER, triggerDto, bmhkLaboratorium.getId().toString());
 	}

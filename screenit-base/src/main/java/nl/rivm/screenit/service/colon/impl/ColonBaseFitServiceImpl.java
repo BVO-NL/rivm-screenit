@@ -38,6 +38,7 @@ import jakarta.persistence.PersistenceContext;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ProjectParameterKey;
@@ -780,7 +781,10 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 		}
 
 		var betrouwbareLimiet = simplePreferenceService.getLong(PreferenceKey.COLON_BETROUWBARE_LIMIET_FIT.name(), 80L);
-		var waardeHogerDanLimiet = fitRegistratie.getUitslag() != null && fitRegistratie.getUitslag().compareTo(BigDecimal.valueOf(betrouwbareLimiet)) >= 0;
+		var nieuweAnalysemethodeGestart = !DateUtil.toLocalDate(fitRegistratie.getAnalyseDatum()).isBefore(DateUtil.parseLocalDateForPattern("06-01-2026",
+			Constants.DEFAULT_DATE_FORMAT));
+		var waardeHogerDanLimiet =
+			nieuweAnalysemethodeGestart && fitRegistratie.getUitslag() != null && fitRegistratie.getUitslag().compareTo(BigDecimal.valueOf(betrouwbareLimiet)) >= 0;
 		var heeftProFlag = ANALYSE_RESULTAAT_FLAG_PRO.equals(fitRegistratie.getFlag());
 		if (waardeHogerDanLimiet || heeftProFlag)
 		{

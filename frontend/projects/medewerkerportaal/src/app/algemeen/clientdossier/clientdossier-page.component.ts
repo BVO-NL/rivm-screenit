@@ -19,22 +19,22 @@
  * =========================LICENSE_END==================================
  */
 import { afterNextRender, ChangeDetectorRef, Component, inject } from '@angular/core'
-import { DsButtonComponent, DsIconComponent, DsLazyTabbedContentDirective, DsTabComponent, DsTabGroupComponent } from '@topicus-rgp-ds/web'
+import { DsButtonComponent, DsIconComponent, DsLazyTabbedContentDirective, DsPageHeaderComponent, DsTabComponent, DsTabGroupComponent } from '@topicus-rgp-ds/web'
 import { faSearch } from '@fortawesome/pro-light-svg-icons'
-import { PageComponent } from '@shared/components/page/page.component'
 import { ClientgegevensTabComponent } from '@/algemeen/clientdossier/clientgegevens-tab/clientgegevens-tab.component'
 import { ClientService } from '@/algemeen/services/client/client.service'
-import { RouterLink } from '@angular/router'
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'app-client-dossier-page',
-  imports: [DsButtonComponent, PageComponent, DsIconComponent, DsTabGroupComponent, DsTabComponent, ClientgegevensTabComponent, RouterLink, DsLazyTabbedContentDirective],
+  imports: [DsButtonComponent, DsIconComponent, DsTabComponent, ClientgegevensTabComponent, DsLazyTabbedContentDirective, DsTabGroupComponent, DsPageHeaderComponent],
   templateUrl: './clientdossier-page.component.html',
   styleUrl: './clientdossier-page.component.scss',
 })
 export class ClientdossierPageComponent {
   private readonly changeDetection = inject(ChangeDetectorRef)
   protected readonly client = inject(ClientService).select('client')
+  private readonly router = inject(Router)
 
   constructor() {
     afterNextRender(() => {
@@ -42,6 +42,10 @@ export class ClientdossierPageComponent {
         this.changeDetection.markForCheck()
       })
     })
+  }
+
+  naarClientZoeken() {
+    this.router.navigateByUrl('/client/zoeken')
   }
 
   protected readonly faSearch = faSearch

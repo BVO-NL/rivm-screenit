@@ -34,13 +34,11 @@ import org.mapstruct.Mappings;
 @Mapper(config = ScreenitMapperConfig.class)
 public interface BezwaarMapper
 {
-
 	List<BezwaarDto> bezwarenToDtos(List<BezwaarViewWrapper> bezwaren);
 
 	@Mappings({
-		@Mapping(source = "actief", target = "active"),
+		@Mapping(source = "actief", target = "actief"),
 		@Mapping(source = "bevolkingsonderzoek", target = "bevolkingsonderzoek")
 	})
 	BezwaarDto bezwaarToDto(BezwaarViewWrapper bezwaar);
-
 }

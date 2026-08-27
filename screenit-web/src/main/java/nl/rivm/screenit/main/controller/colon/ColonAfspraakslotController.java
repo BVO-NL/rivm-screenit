@@ -31,6 +31,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
+import nl.rivm.screenit.main.controller.BaseController;
 import nl.rivm.screenit.main.exception.BeperkingException;
 import nl.rivm.screenit.main.exception.BulkAanmakenException;
 import nl.rivm.screenit.main.exception.BulkVerwijderenException;
@@ -71,7 +72,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/colon/rooster/afspraakslot")
 @Tag(name = "Colon afspraakslots", description = "Beheer van afspraakslots voor het colon-rooster")
-public class ColonAfspraakslotController
+public class ColonAfspraakslotController extends BaseController
 {
 	private final ColonAfspraakslotService afspraakslotService;
 
@@ -156,7 +157,7 @@ public class ColonAfspraakslotController
 	public ResponseEntity<Void> createAfspraakslots(@Parameter(description = "Gegevens van de aan te maken afspraakslots") @RequestBody ColonAfspraakslotDto afspraakslotsDto)
 		throws ValidatieException, OpslaanVerwijderenTijdBlokException, BeperkingException, BulkAanmakenException
 	{
-		afspraakslotService.createAfspraakslot(afspraakslotsDto, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+		afspraakslotService.createAfspraakslot(afspraakslotsDto, getIngelogdeGebruiker());
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
@@ -171,7 +172,7 @@ public class ColonAfspraakslotController
 		@Parameter(description = "Nieuwe gegevens van het afspraakslot") @RequestBody ColonAfspraakslotDto afspraakslotDto)
 		throws ValidatieException, OpslaanVerwijderenTijdBlokException, BeperkingException
 	{
-		afspraakslotService.updateAfspraakslot(id, afspraakslotDto, ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+		afspraakslotService.updateAfspraakslot(id, afspraakslotDto, getIngelogdeGebruiker());
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
@@ -194,11 +195,11 @@ public class ColonAfspraakslotController
 
 		if (Boolean.TRUE.equals(bulk))
 		{
-			afspraakslotService.bulkDeleteAfspraakslots(afspraakslotIds, ScreenitSession.get().getIngelogdeOrganisatieMedewerker(), alleenValidatie);
+			afspraakslotService.bulkDeleteAfspraakslots(afspraakslotIds, getIngelogdeGebruiker(), alleenValidatie);
 		}
 		else
 		{
-			afspraakslotService.deleteAfspraakslot(afspraakslotIds.get(0), ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
+			afspraakslotService.deleteAfspraakslot(afspraakslotIds.getFirst(), getIngelogdeGebruiker());
 		}
 
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

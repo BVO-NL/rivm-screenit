@@ -24,10 +24,12 @@ import { Component, input } from '@angular/core'
   selector: 'app-page',
   imports: [],
   template: `<div class="pagina" [class.pagina--zonder-marge]="zonderMarge()">
-    <div class="header">
-      <h1 class="pagina--titel">{{ titel() }}</h1>
-      <ng-content select="[header-actions]" />
-    </div>
+    @if (titel()) {
+      <div class="header">
+        <h1 class="pagina--titel">{{ titel() }}</h1>
+        <ng-content select="[header-actions]" />
+      </div>
+    }
     <ng-content />
   </div> `,
   styles: `
@@ -45,13 +47,13 @@ import { Component, input } from '@angular/core'
       flex: 1;
       min-height: 0;
 
-        &.pagina--zonder-marge {
-          margin: 0;
+      &.pagina--zonder-marge {
+        margin: 0;
 
-          .header {
-            margin: 10px 10px 0;
-          }
+        .header {
+          margin: 10px 10px 0;
         }
+      }
 
       .header {
         display: flex;
@@ -71,6 +73,6 @@ import { Component, input } from '@angular/core'
   `,
 })
 export class PageComponent {
-  titel = input.required<string>()
+  titel = input<string | null>(null)
   zonderMarge = input(false)
 }

@@ -114,14 +114,14 @@ public class DaglijstServiceImpl implements DaglijstService
 	private MammaBaseScreeningrondeService baseScreeningrondeService;
 
 	@Override
-	public List<AfspraakSeDto> readDaglijst(LocalDate datum, String seCode, String seVersie)
+	public List<AfspraakSeDto> readDaglijst(LocalDate datum, String seCode)
 	{
 		var afspraakDtos = afspraakService
 			.getAfspraken(seCode, datum, datum, MammaAfspraakStatus.NIET_GEANNULEERD.toArray(new MammaAfspraakStatus[] {}))
 			.stream()
 			.filter(afspraak -> afspraak.getId().equals(afspraak.getUitnodiging().getLaatsteAfspraak().getId())
 				&& afspraak.getUitnodiging().getScreeningRonde().getStatus() == ScreeningRondeStatus.LOPEND)
-			.map(afspraak -> createAfspraakDto(afspraak, seVersie))
+			.map(afspraak -> createAfspraakDto(afspraak))
 			.collect(Collectors.toList());
 
 		if (afsprakenKunnenGeopendWordenOpSe(datum))
@@ -139,16 +139,16 @@ public class DaglijstServiceImpl implements DaglijstService
 		seProxyWebsocket.sendDaglijstUpdate(seCodeEnDatum);
 	}
 
-	private AfspraakSeDto createAfspraakDto(MammaAfspraak afspraak, String seVersie)
+	private AfspraakSeDto createAfspraakDto(MammaAfspraak afspraak)
 	{
-		var afspraakSeDto = afspraakDtoMapper.createAfspraakSeDto(afspraak, seVersie);
+		var afspraakSeDto = afspraakDtoMapper.createAfspraakSeDto(afspraak);
 		updateAfspraakDtoBijzonderhedenZelfdeRonde(afspraak, afspraakSeDto);
 		updateAfspraakDtoMetOpkomstTellers(afspraak, afspraakSeDto);
-		updateClientDtoMetVorigeOnderzoeken(afspraak, afspraakSeDto.getClient(), seVersie);
+		updateClientDtoMetVorigeOnderzoeken(afspraak, afspraakSeDto.getClient());
 		return afspraakSeDto;
 	}
 
-	private void updateClientDtoMetVorigeOnderzoeken(MammaAfspraak afspraak, ClientSeDto clientSeDto, String seVersie)
+	private void updateClientDtoMetVorigeOnderzoeken(MammaAfspraak afspraak, ClientSeDto clientSeDto)
 	{
 		var dossier = afspraak.getUitnodiging().getScreeningRonde().getDossier();
 		var daglijstSe = afspraak.getStandplaatsPeriode().getScreeningsEenheid();
@@ -156,15 +156,15 @@ public class DaglijstServiceImpl implements DaglijstService
 		clientSeDto.setJaarLaatsteVerwijzing(baseScreeningrondeService.getJaarLaatsteVerwijzing(dossier.getClient()));
 		clientSeDto.setVorigeOnderzoeken(
 			baseDossierService.laatste3AfgerondeRondesMetOnderzoek(dossier)
-				.map(ronde -> createVorigOnderzoekDto(ronde, daglijstSe, seVersie))
+				.map(ronde -> createVorigOnderzoekDto(ronde, daglijstSe))
 				.filter(Objects::nonNull).collect(Collectors.toList()));
 	}
 
-	private VorigOnderzoekDto createVorigOnderzoekDto(MammaScreeningRonde ronde, MammaScreeningsEenheid daglijstSe, String seVersie)
+	private VorigOnderzoekDto createVorigOnderzoekDto(MammaScreeningRonde ronde, MammaScreeningsEenheid daglijstSe)
 	{
 		try
 		{
-			return vorigOnderzoekDtoMapper.createVorigOnderzoekDto(ronde, beoordelingService, mammaBaseOnderzoekService, seVersie);
+			return vorigOnderzoekDtoMapper.createVorigOnderzoekDto(ronde, beoordelingService, mammaBaseOnderzoekService);
 		}
 		catch (Exception exception)
 		{

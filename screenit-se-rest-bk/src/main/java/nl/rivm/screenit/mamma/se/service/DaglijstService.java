@@ -28,7 +28,7 @@ import nl.rivm.screenit.mamma.se.dto.AfspraakSeDto;
 
 public interface DaglijstService
 {
-	List<AfspraakSeDto> readDaglijst(LocalDate datum, String seCode, String seVersie);
+	List<AfspraakSeDto> readDaglijst(LocalDate datum, String seCode);
 
 	void verstuurUpdate(String seCodeEnDatum);
 }

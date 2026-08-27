@@ -49,30 +49,35 @@ public class BriefOmschrijvingUtil
 	{
 		List<String> brievenStrings = new ArrayList<>();
 		brieven.sort(new BriefCreatieDatumComparator());
-		var formatter = new SimpleDateFormat("dd-MM-yyyy");
 		for (var brief : brieven)
 		{
-			var builder = new StringBuilder();
-			builder.append(brief.getBriefType().getWeergaveNaam());
-			builder.append("(");
-			builder.append(formatter.format(brief.getCreatieDatum()));
-			var herdrukBrief = BriefUtil.getHerdruk(brief);
+			brievenStrings.add(getBriefOmschrijving(brief) + ", ");
+		}
+		return brievenStrings;
+	}
+
+	public static String getBriefOmschrijving(Brief brief)
+	{
+		var formatter = new SimpleDateFormat("dd-MM-yyyy");
+		var builder = new StringBuilder(brief.getBriefType().getWeergaveNaam())
+			.append("(").append(formatter.format(brief.getCreatieDatum()));
+		if (brief instanceof ClientBrief<?, ?, ?> clientBrief)
+		{
+			var herdrukBrief = BriefUtil.getHerdruk(clientBrief);
 			if (herdrukBrief != null)
 			{
 				builder.append(", herdruk van ").append(formatter.format(herdrukBrief.getCreatieDatum()));
 			}
-			if (BriefUtil.isTegengehouden(brief))
-			{
-				builder.append(", tegengehouden");
-			}
-			if (brief.isVervangen())
-			{
-				builder.append(", vervangen");
-			}
-			builder.append("), ");
-			brievenStrings.add(builder.toString());
 		}
-		return brievenStrings;
+		if (BriefUtil.isTegengehouden(brief))
+		{
+			builder.append(", tegengehouden");
+		}
+		if (brief.isVervangen())
+		{
+			builder.append(", vervangen");
+		}
+		return builder.append(")").toString();
 	}
 
 	public static void addExtraOmschrijving(StringBuilder omschrijving, Brief brief, UnaryOperator<String> getString)

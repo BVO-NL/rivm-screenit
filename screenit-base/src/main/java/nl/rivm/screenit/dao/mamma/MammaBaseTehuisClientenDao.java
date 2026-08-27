@@ -22,6 +22,7 @@ package nl.rivm.screenit.dao.mamma;
  */
 
 import java.util.List;
+
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
 import nl.rivm.screenit.service.mamma.enums.MammaTehuisSelectie;
@@ -29,9 +30,10 @@ import nl.topicuszorg.organisatie.model.Adres;
 
 public interface MammaBaseTehuisClientenDao
 {
-	long countClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres);
+	long countClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, boolean strictMatchOpToevoeging);
 
 	List<Client> getClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres);
 
-	List<Client> getClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, int first, int count, String sortProperty, boolean isAscending);
+	List<Client> getClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, int first, int count, String sortProperty,
+		boolean isAscending);
 }

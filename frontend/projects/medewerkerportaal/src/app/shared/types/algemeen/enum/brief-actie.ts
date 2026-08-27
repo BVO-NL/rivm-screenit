@@ -21,5 +21,19 @@
 export enum BriefActie {
   TEGENHOUDEN = 'TEGENHOUDEN',
   ACTIVEREN = 'ACTIVEREN',
-  INZIEN = 'INZIEN',
+  TEMPLATE_INZIEN = 'TEMPLATE_INZIEN',
+  VERVANGEN = 'VERVANGEN',
+  NOGMAALS_VERSTUREN = 'NOGMAALS_VERSTUREN',
+  OPNIEUW_AANMAKEN = 'OPNIEUW_AANMAKEN',
+  VERSTUURDE_BRIEF_INZIEN = 'VERSTUURDE_BRIEF_INZIEN',
+}
+
+export const briefActieLabels: Record<BriefActie, string> = {
+  [BriefActie.TEGENHOUDEN]: 'Tegenhouden',
+  [BriefActie.ACTIVEREN]: 'Herstel brief aanmaken',
+  [BriefActie.TEMPLATE_INZIEN]: 'Template inzien',
+  [BriefActie.VERVANGEN]: 'Formulier vervangen',
+  [BriefActie.NOGMAALS_VERSTUREN]: 'Nogmaals versturen',
+  [BriefActie.OPNIEUW_AANMAKEN]: 'Opnieuw aanmaken',
+  [BriefActie.VERSTUURDE_BRIEF_INZIEN]: 'Verstuurde brief inzien',
 }

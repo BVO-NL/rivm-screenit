@@ -26,6 +26,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.main.controller.BaseController;
 import nl.rivm.screenit.main.dto.algemeen.HandleidingDto;
 import nl.rivm.screenit.main.dto.algemeen.HandleidingUploadResultDto;
 import nl.rivm.screenit.main.service.algemeen.HandleidingService;
@@ -59,7 +60,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/handleiding")
 @Tag(name = "Handleidingen", description = "Beheer van handleidingen in het medewerkerportaal")
-public class HandleidingController
+public class HandleidingController extends BaseController
 {
 	private HandleidingService handleidingService;
 

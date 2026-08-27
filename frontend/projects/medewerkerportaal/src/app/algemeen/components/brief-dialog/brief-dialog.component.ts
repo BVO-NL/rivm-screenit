@@ -19,6 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import { Component, computed, inject, OnInit, signal } from '@angular/core'
+import { HttpErrorResponse } from '@angular/common/http'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { Dialog, DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { ScreeningRondeGebeurtenisDto } from '@shared/types/algemeen/dto/screening-ronde-gebeurtenis.dto'
@@ -31,6 +32,7 @@ import { take } from 'rxjs'
 import { NotificationService } from '@shared/services/notification/notification.service'
 import { BriefInzienDialogComponent } from '@algemeen/components/brief-inzien-dialog/brief-inzien-dialog.component'
 import { DatumTijdPipe } from '@shared/pipes/datum-tijd/datum-tijd.pipe'
+import { saveAs } from 'file-saver'
 
 @Component({
   selector: 'app-brief-dialog',
@@ -46,16 +48,19 @@ export class BriefDialogComponent implements OnInit {
   private readonly dialogService = inject(Dialog)
 
   private readonly briefActies = signal<BriefActie[]>([])
+  protected briefOpnieuwAangemaakt = false
   protected readonly magActiveren = computed(() => this.briefActies().includes(BriefActie.ACTIVEREN))
   protected readonly magTegenhouden = computed(() => this.briefActies().includes(BriefActie.TEGENHOUDEN))
-  protected readonly magInzien = computed(() => this.briefActies().includes(BriefActie.INZIEN))
+  protected readonly magOpnieuwAanmaken = computed(() => this.briefActies().includes(BriefActie.OPNIEUW_AANMAKEN))
+  protected readonly magTemplateInzien = computed(() => this.briefActies().includes(BriefActie.TEMPLATE_INZIEN))
+  protected readonly magVerstuurdeBriefInzien = computed(() => this.briefActies().includes(BriefActie.VERSTUURDE_BRIEF_INZIEN))
 
   ngOnInit() {
     this.laadBriefActies()
   }
 
   annuleren() {
-    this.dialogRef.close()
+    this.dialogRef.close(this.briefOpnieuwAangemaakt)
   }
 
   activeren() {
@@ -78,16 +83,38 @@ export class BriefDialogComponent implements OnInit {
       })
   }
 
+  opnieuwAanmaken() {
+    this.briefService
+      .maakBriefOpnieuwAan(this.gebeurtenis.briefId, this.gebeurtenis.briefType)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.briefActies.update((briefActies) => briefActies.filter((briefActie) => briefActie !== BriefActie.OPNIEUW_AANMAKEN))
+        this.briefOpnieuwAangemaakt = true
+        this.notificatieService.success('Brief is opnieuw aangemaakt')
+      })
+  }
+
   templateInzien() {
-    this.dialogRef.close()
+    this.dialogRef.close(this.briefOpnieuwAangemaakt)
     this.briefService
       .getBriefTemplate(this.gebeurtenis.briefId, this.gebeurtenis.briefType)
       .pipe(take(1))
       .subscribe((briefContent: string) => {
         this.dialogService.open(BriefInzienDialogComponent, {
-          data: briefContent,
+          data: { brief: briefContent, titel: 'Template inzien' },
           panelClass: 'pdf-inzien-dialog',
         })
+      })
+  }
+
+  verstuurdeBriefInzien() {
+    this.briefService
+      .getVerstuurdeBrief(this.gebeurtenis.briefId, this.gebeurtenis.briefType)
+      .pipe(take(1))
+      .subscribe({
+        next: (brief: Blob) => saveAs(brief, 'brief.pdf'),
+        error: (fout: HttpErrorResponse) =>
+          this.notificatieService.error(fout.status === 401 ? 'De bewaartermijn van de verstuurde brief is verlopen.' : 'Er is een fout bij het ophalen van de brief.'),
       })
   }
 

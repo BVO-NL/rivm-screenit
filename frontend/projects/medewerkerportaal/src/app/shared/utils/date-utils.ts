@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { format, isBefore, isValid, parse, parseISO, startOfDay } from 'date-fns'
+import { differenceInYears, format, isBefore, isValid, parse, parseISO, startOfDay } from 'date-fns'
 import { COMPACT_DATE_FORMAT, DATE_FORMAT, ISO_DATE_FORMAT, LOCAL_TIME_FORMAT, NL_DATE_FORMAT, TIME_FORMAT } from '@shared/constants'
 
 export function getDateFormat(date: string): string {
@@ -179,4 +179,11 @@ export function normaliseerNaarDate(datumWaarde: unknown): Date | null {
 
 export function isEinddatumVerlopen(einddatum: string | null | undefined): boolean {
   return !!einddatum && isBefore(startOfDay(new Date(einddatum)), startOfDay(new Date()))
+}
+
+export function berekenLeeftijd(geboortedatum: Date | string | null | undefined): number | undefined {
+  if (!geboortedatum) {
+    return undefined
+  }
+  return differenceInYears(new Date(), new Date(geboortedatum))
 }

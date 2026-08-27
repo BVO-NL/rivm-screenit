@@ -21,9 +21,12 @@ package nl.rivm.screenit.repository.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Optional;
+
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
 public interface BezwaarMomentRepository extends BaseJpaRepository<BezwaarMoment>
 {
+	Optional<BezwaarMoment> findByBezwaarBriefId(Long bezwaarBriefId);
 }

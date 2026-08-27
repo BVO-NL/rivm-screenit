@@ -31,3 +31,10 @@ export const geslachtLabel: Record<Geslacht, string> = {
   [Geslacht.VROUW]: 'Vrouw',
   [Geslacht.NIET_GESPECIFICEERD]: 'Niet gespecificeerd',
 }
+
+export const geslachtAfkorting: Record<Geslacht, string> = {
+  [Geslacht.ONBEKEND]: 'x',
+  [Geslacht.MAN]: 'm',
+  [Geslacht.VROUW]: 'v',
+  [Geslacht.NIET_GESPECIFICEERD]: 'x',
+}

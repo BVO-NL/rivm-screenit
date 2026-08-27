@@ -23,12 +23,11 @@ package nl.rivm.screenit.main.web.gebruiker.gedeeld;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Base64;
 import java.util.Date;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.config.CommunicationHubProperties;
+import nl.rivm.screenit.main.service.BriefService;
 import nl.rivm.screenit.main.util.GebeurtenisUtil;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
@@ -36,8 +35,6 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.PdfVi
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.util.BriefUtil;
-import nl.topicuszorg.communicationhub.api.LetterServiceCommunicationHubClientApi;
-import nl.topicuszorg.util.collections.CollectionUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.Component;
@@ -64,15 +61,11 @@ public class TemplateInzienPanel extends GenericPanel<Brief>
 	private BaseBriefService baseBriefService;
 
 	@SpringBean
-	private LetterServiceCommunicationHubClientApi letterServiceApi;
-
-	@SpringBean
-	private CommunicationHubProperties communicatieHubClientConfig;
+	private BriefService briefService;
 
 	public TemplateInzienPanel(String id, IModel<Brief> model)
 	{
 		super(id, model);
-
 	}
 
 	@Override
@@ -81,7 +74,6 @@ public class TemplateInzienPanel extends GenericPanel<Brief>
 		super.onInitialize();
 		var datum = BriefUtil.geefDatumVoorGebeurtenisoverzicht(getModelObject());
 		maakBriefInzienContent(getModelObject(), datum);
-
 	}
 
 	private void maakBriefInzienContent(Brief brief, Date datum)
@@ -158,17 +150,12 @@ public class TemplateInzienPanel extends GenericPanel<Brief>
 			{
 				try
 				{
-					var letterDetail = letterServiceApi.getLetterDetail(communicatieHubClientConfig.getTenant(), briefGuid);
-
-					if (letterDetail != null && !CollectionUtils.isEmpty(letterDetail.getFiles()))
+					if (briefService.getVerstuurdeBrief(briefGuid).isPresent())
 					{
 						downloadBehavior.initiate(target);
 					}
 					else
 					{
-						var messageHistory = letterDetail != null ? letterDetail.getMessageHistory() : null;
-						var status = messageHistory != null && !messageHistory.isEmpty() ? messageHistory.getLast().getStatus() : "";
-						LOG.error("Fout bij ophalen brief {}: {}", briefGuid, status);
 						error("Er is een fout bij het ophalen van de brief.");
 					}
 				}
@@ -198,12 +185,10 @@ public class TemplateInzienPanel extends GenericPanel<Brief>
 					{
 						try
 						{
-							var letterDetail = letterServiceApi.getLetterDetail(communicatieHubClientConfig.getTenant(), briefGuid);
-							if (letterDetail != null && !CollectionUtils.isEmpty(letterDetail.getFiles()))
+							var verstuurdeBrief = briefService.getVerstuurdeBrief(briefGuid);
+							if (verstuurdeBrief.isPresent())
 							{
-								var file = letterDetail.getFiles().getFirst();
-								var decodedFile = Base64.getDecoder().decode(file.getBase64Content());
-								attributes.getResponse().getOutputStream().write(decodedFile);
+								attributes.getResponse().getOutputStream().write(verstuurdeBrief.get());
 							}
 						}
 						catch (IOException e)

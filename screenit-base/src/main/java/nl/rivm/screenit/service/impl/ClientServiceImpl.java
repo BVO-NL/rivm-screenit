@@ -49,7 +49,6 @@ import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.Organisatie;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.Persoon;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.UploadDocument;
@@ -340,8 +339,25 @@ public class ClientServiceImpl implements ClientService
 			return;
 		}
 
+		contactgegevens.getDoelgroepen().addAll(bepaalDoelgroepenVanClient(client));
+
+		if (mammaDossier.getDoelgroep() == MammaDoelgroep.DUBBELE_TIJD)
+		{
+			contactgegevens.setDubbeleTijdReden(mammaDossier.getDubbeleTijdReden());
+		}
+	}
+
+	@Override
+	public List<DoelgroepDto> bepaalDoelgroepenVanClient(Client client)
+	{
+		var doelgroepen = new ArrayList<DoelgroepDto>();
+		var mammaDossier = client.getMammaDossier();
+		if (mammaDossier == null)
+		{
+			return doelgroepen;
+		}
+
 		var doelgroep = mammaDossier.getDoelgroep();
-		var doelgroepen = contactgegevens.getDoelgroepen();
 
 		if (doelgroep == MammaDoelgroep.MINDERVALIDE)
 		{
@@ -350,7 +366,6 @@ public class ClientServiceImpl implements ClientService
 		if (doelgroep == MammaDoelgroep.DUBBELE_TIJD)
 		{
 			doelgroepen.add(DoelgroepDto.DUBBELE_TIJD);
-			contactgegevens.setDubbeleTijdReden(mammaDossier.getDubbeleTijdReden());
 		}
 		if (isSuspectOfHoogRisico(mammaDossier))
 		{
@@ -360,6 +375,7 @@ public class ClientServiceImpl implements ClientService
 		{
 			doelgroepen.add(DoelgroepDto.TEHUIS);
 		}
+		return doelgroepen;
 	}
 
 	private boolean isSuspectOfHoogRisico(MammaDossier mammaDossier)
@@ -701,7 +717,7 @@ public class ClientServiceImpl implements ClientService
 
 	@Override
 	@Transactional
-	public void saveOrUpdateTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	public void saveOrUpdateTijdelijkGbaAdres(Client client, Account ingelogdeOrganisatieMedewerker)
 	{
 		var melding = "Gewijzigd.";
 		var persoon = client.getPersoon();
@@ -716,7 +732,7 @@ public class ClientServiceImpl implements ClientService
 
 	@Override
 	@Transactional
-	public void verwijderTijdelijkGbaAdres(Client client, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	public void verwijderTijdelijkGbaAdres(Client client, Account ingelogdeOrganisatieMedewerker)
 	{
 		var melding = "Handmatig verwijderd.";
 		var persoon = client.getPersoon();

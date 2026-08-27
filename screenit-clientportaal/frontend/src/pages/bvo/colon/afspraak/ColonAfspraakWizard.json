@@ -13,8 +13,8 @@
       "description": "U krijgt dan een gesprek met een verpleegkundige of arts."
     },
     "digitaal": {
-      "label": "Een online voorbereiding",
-      "description": "Dit kan nog niet in alle ziekenhuizen, maar er komen steeds meer ziekenhuizen bij waar dit kan. Een online voorbereiding is geen gesprek, maar een voorbereiding die u thuis op uw eigen computer, tablet of telefoon doet: U bekijkt en leest informatie over het vervolgonderzoek (video’s en tekst). Daarna vult u online een vragenlijst in. Heeft u alles bekeken, ingevuld en verstuurd? Dan neemt het ziekenhuis contact met u op over het vervolg."
+      "label": "Een online voorbereiding (dit kan nog niet in alle ziekenhuizen)",
+      "description": "Er komen steeds meer ziekenhuizen bij waar dit kan. Een online voorbereiding is geen gesprek, maar een voorbereiding die u thuis op uw eigen computer, tablet of telefoon doet: u bekijkt en leest informatie over het vervolgonderzoek (video’s en tekst). Daarna vult u online een vragenlijst in. Heeft u alles bekeken, ingevuld en verstuurd? Dan neemt het ziekenhuis contact met u op over het vervolg."
     },
     "error": "Maak uw keuze"
   },

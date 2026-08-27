@@ -22,6 +22,7 @@ import { NaamGebruik } from '@shared/types/algemeen/enum/naam-gebruik'
 import { Geslacht } from '@shared/types/algemeen/enum/geslacht'
 import { GbaStatus } from '@shared/types/algemeen/enum/gba-status'
 import { OnderzoeksresultatenActieDto } from '@shared/types/algemeen/dto/onderzoeksresultaten-actie.dto'
+import { BezwaarMomentDto } from '@shared/types/algemeen/dto/bezwaar-moment.dto'
 
 export interface ClientDto {
   id: number
@@ -47,4 +48,5 @@ export interface ClientDto {
   actief: boolean
   gbaStatus: GbaStatus
   onderzoeksresultatenActies: OnderzoeksresultatenActieDto[]
+  bezwaarMomenten: BezwaarMomentDto[]
 }

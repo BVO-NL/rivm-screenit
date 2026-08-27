@@ -26,12 +26,14 @@ import { TijdelijkAdresDto } from '@shared/types/algemeen/dto/tijdelijk-adres.dt
 import { BvoStatusDto } from '@shared/types/algemeen/dto/bvo-status.dto'
 import { map, Observable, of, switchMap, tap, throwError } from 'rxjs'
 import { ClientContactgegevensDto } from '@shared/types/algemeen/dto/clientcontactgegevens.dto'
+import { ClientPaspoortDto } from '@shared/types/algemeen/dto/client-paspoort.dto'
 import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { BaseService } from '@shared/services/base/base.service'
 import { catchError } from 'rxjs/operators'
 import { ClientBrpGegevensDto } from '@shared/types/algemeen/dto/clientbrpgegevens.dto'
 import { ScreeningRondeGebeurtenisDto } from '@shared/types/algemeen/dto/screening-ronde-gebeurtenis.dto'
 import { GbaStatus } from '@shared/types/algemeen/enum/gba-status'
+import { DossierGebeurtenisDto } from '@shared/types/algemeen/dto/dossier-gebeurtenis.dto'
 
 interface ClientState {
   client: ClientDto
@@ -101,6 +103,10 @@ export class ClientService extends BaseService<ClientState> {
     return this.http.get<ClientContactgegevensDto>(`${this.baseUrl}/${id}/contactgegevens`)
   }
 
+  getClientPaspoort(id: number): Observable<ClientPaspoortDto> {
+    return this.http.get<ClientPaspoortDto>(`${this.baseUrl}/${id}/paspoort`)
+  }
+
   saveContactgegevens(dto: ClientContactgegevensDto): Observable<void> {
     return this.http.put<void>(`${this.baseUrl}/${dto.clientId}/contactgegevens`, dto)
   }
@@ -129,7 +135,11 @@ export class ClientService extends BaseService<ClientState> {
     )
   }
 
-  getGebeurtenissen(clientId: number, type: string): Observable<ScreeningRondeGebeurtenisDto[]> {
-    return this.http.get<ScreeningRondeGebeurtenisDto[]>(`${this.baseUrl}/${clientId}/gebeurtenissen/${type}`)
+  getScreeningRondeGebeurtenissen(clientId: number, type: string): Observable<ScreeningRondeGebeurtenisDto[]> {
+    return this.http.get<ScreeningRondeGebeurtenisDto[]>(`${this.baseUrl}/${clientId}/screeningronde-gebeurtenissen/${type}`)
+  }
+
+  getDossierGebeurtenissen(clientId: number, type: string): Observable<DossierGebeurtenisDto[]> {
+    return this.http.get<DossierGebeurtenisDto[]>(`${this.baseUrl}/${clientId}/dossier-gebeurtenissen/${type}`)
   }
 }

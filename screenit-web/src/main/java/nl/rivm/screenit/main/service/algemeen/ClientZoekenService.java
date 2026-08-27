@@ -26,8 +26,8 @@ import java.util.List;
 import nl.rivm.screenit.main.dto.algemeen.BrpGegevensDto;
 import nl.rivm.screenit.main.dto.algemeen.ClientZoekenFilterDto;
 import nl.rivm.screenit.main.dto.algemeen.TijdelijkAdresDto;
+import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
-import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 
 public interface ClientZoekenService
@@ -40,7 +40,7 @@ public interface ClientZoekenService
 
 	TijdelijkAdresDto getBrpTijdelijkAdres(Long clientId);
 
-	void saveBrpTijdelijkAdres(Long clientId, TijdelijkAdresDto tijdelijkAdresDto, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+	void saveBrpTijdelijkAdres(Long clientId, TijdelijkAdresDto tijdelijkAdresDto, Account ingelogdeOrganisatieMedewerker);
 
-	void deleteBrpTijdelijkAdres(Long clientId, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+	void deleteBrpTijdelijkAdres(Long clientId, Account ingelogdeOrganisatieMedewerker);
 }

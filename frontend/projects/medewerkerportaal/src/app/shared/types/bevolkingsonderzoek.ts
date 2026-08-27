@@ -31,3 +31,9 @@ export const bevolkingsonderzoekLijst: EnumOptie<Bevolkingsonderzoek>[] = [
   { waarde: Bevolkingsonderzoek.CERVIX, naam: 'Baarmoederhalskanker' },
   { waarde: Bevolkingsonderzoek.MAMMA, naam: 'Borstkanker' },
 ]
+
+export const bevolkingsonderzoekLabels: Record<Bevolkingsonderzoek, string> = {
+  [Bevolkingsonderzoek.COLON]: 'Darmkanker',
+  [Bevolkingsonderzoek.CERVIX]: 'Baarmoederhalskanker',
+  [Bevolkingsonderzoek.MAMMA]: 'Borstkanker',
+}

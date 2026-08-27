@@ -84,7 +84,6 @@ public class BriefOpnieuwAanmakenPanel extends GenericPanel<ClientBrief<?, ?, ?>
 		opnieuwMogelijkContainer.setOutputMarkupId(true);
 		opnieuwMogelijkContainer.add(new IndicatingAjaxLink<Void>("aanmaken")
 		{
-
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
@@ -99,7 +98,6 @@ public class BriefOpnieuwAanmakenPanel extends GenericPanel<ClientBrief<?, ?, ?>
 		opnieuwMogelijkContainer.setVisible(magOpnieuwAanvragen);
 
 		opnieuwContainer.add(opnieuwMogelijkContainer);
-
 		opnieuwContainer.add(nietOpnieuw);
 		add(opnieuwContainer);
 	}

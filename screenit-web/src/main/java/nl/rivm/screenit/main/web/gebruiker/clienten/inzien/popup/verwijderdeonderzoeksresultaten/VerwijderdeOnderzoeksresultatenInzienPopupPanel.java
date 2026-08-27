@@ -129,7 +129,8 @@ public abstract class VerwijderdeOnderzoeksresultatenInzienPopupPanel extends Ge
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				var bevestigingsbrieven = bezwaarService.verstuurBevestigingsbrievenNogmaals(VerwijderdeOnderzoeksresultatenInzienPopupPanel.this.getModelObject(),
+				var bevestigingsbrieven = bezwaarService.verstuurBevestigingsbrievenOnderzoeksresultatenActieNogmaals(
+					VerwijderdeOnderzoeksresultatenInzienPopupPanel.this.getModelObject(),
 					ScreenitSession.get().getIngelogdAccount());
 				info(getString(
 					bevestigingsbrieven.size() > 1 ?

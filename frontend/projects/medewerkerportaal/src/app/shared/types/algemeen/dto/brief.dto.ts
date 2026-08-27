@@ -24,4 +24,9 @@ export interface BriefDto {
   id: number
   briefType: BriefType
   documentNaam: string
+  verstuurdVoorAfdrukkenOp?: Date
+  tegengehouden: boolean
+  vervangen: boolean
+  herdrukBrief?: BriefDto
+  creatieDatum: Date
 }

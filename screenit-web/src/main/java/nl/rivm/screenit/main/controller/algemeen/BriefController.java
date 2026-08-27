@@ -27,6 +27,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.main.controller.BaseController;
 import nl.rivm.screenit.main.exception.EntityNietGevondenException;
 import nl.rivm.screenit.main.model.BriefActie;
 import nl.rivm.screenit.main.service.BriefService;
@@ -37,11 +38,13 @@ import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.BriefHerdrukkenService;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,11 +62,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/brief")
-public class BriefController
+public class BriefController extends BaseController
 {
 	private final BriefService briefService;
 
 	private final BaseBriefService baseBriefService;
+
+	private final BriefHerdrukkenService briefHerdrukkenService;
 
 	@GetMapping("/{briefType}/{id}/acties")
 	@Operation(summary = "Haal brief acties op", description = "Zoek alle toegestane acties voor een gegeven brief op")
@@ -77,8 +82,16 @@ public class BriefController
 	public ResponseEntity<List<BriefActie>> getBriefActies(@PathVariable Long id, @PathVariable String briefType)
 	{
 		var brief = getBriefOfGooiNotFoundException(id, briefType);
-		var acties = briefService.getBriefActies(brief);
+		var acties = getBriefActies(brief);
 		return ResponseEntity.ok(acties);
+	}
+
+	private List<BriefActie> getBriefActies(ClientBrief<?, ?, ?> brief)
+	{
+		var magOpnieuwKlaarzetten = ScreenitSession.get()
+			.checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_OPNIEUW_KLAARZETTEN, Actie.AANPASSEN);
+		var magTegenhouden = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
+		return briefService.getBriefActies(brief, magOpnieuwKlaarzetten, magTegenhouden);
 	}
 
 	@PostMapping("/{briefType}/{id}/activeren")
@@ -94,7 +107,29 @@ public class BriefController
 	public ResponseEntity<Void> activeren(@PathVariable Long id, @PathVariable String briefType)
 	{
 		var brief = getBriefOfGooiNotFoundException(id, briefType);
-		baseBriefService.briefNietMeerTegenhouden(brief, ScreenitSession.get().getIngelogdAccount());
+		baseBriefService.briefNietMeerTegenhouden(brief, getIngelogdeGebruiker());
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/{briefType}/{id}/opnieuw-aanmaken")
+	@Operation(summary = "Maak de brief opnieuw aan", description = "Maakt een herdruk van de brief aan")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200"),
+		@ApiResponse(responseCode = "400", description = "Brief kan niet opnieuw aangemaakt worden"),
+		@ApiResponse(responseCode = "404", description = "Brief niet gevonden"),
+		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+	})
+	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht =
+		Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_OPNIEUW_KLAARZETTEN, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	public ResponseEntity<Void> opnieuwAanmaken(@PathVariable Long id, @PathVariable String briefType)
+	{
+		var brief = getBriefOfGooiNotFoundException(id, briefType);
+		if (!briefHerdrukkenService.magHerdrukken(brief))
+		{
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		briefHerdrukkenService.opnieuwAanmaken(brief, ScreenitSession.get().getIngelogdAccount());
 		return ResponseEntity.ok().build();
 	}
 
@@ -111,7 +146,7 @@ public class BriefController
 	public ResponseEntity<Void> tegenhouden(@PathVariable Long id, @PathVariable String briefType)
 	{
 		var brief = getBriefOfGooiNotFoundException(id, briefType);
-		baseBriefService.briefTegenhouden(brief, ScreenitSession.get().getIngelogdAccount());
+		baseBriefService.briefTegenhouden(brief, getIngelogdeGebruiker());
 		return ResponseEntity.ok().build();
 	}
 
@@ -152,7 +187,45 @@ public class BriefController
 			LOG.error(e.getMessage());
 			return ResponseEntity.internalServerError().build();
 		}
+	}
 
+	@GetMapping("/{briefType}/{id}/verstuurde-brief-inzien")
+	@Operation(summary = "Bekijk de verstuurde brief", description = "Haalt de verstuurde brief uit Communication Hub op")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Verstuurde brief"),
+		@ApiResponse(responseCode = "404", description = "Brief niet gevonden of niet meer beschikbaar"),
+		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+	})
+	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {}, altijdToegestaan = true, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	public ResponseEntity<Resource> verstuurdeBriefInzien(@PathVariable Long id, @PathVariable String briefType)
+	{
+		var brief = getBriefOfGooiNotFoundException(id, briefType);
+		if (!getBriefActies(brief).contains(BriefActie.VERSTUURDE_BRIEF_INZIEN))
+		{
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		try
+		{
+			var verstuurdeBrief = briefService.getVerstuurdeBrief(brief.getCommHubGuid());
+			if (verstuurdeBrief.isEmpty())
+			{
+				return ResponseEntity.notFound().build();
+			}
+			var bytes = verstuurdeBrief.get();
+			var headers = new HttpHeaders();
+			headers.setContentDisposition(ContentDisposition.builder("attachment").filename("brief.pdf").build());
+			return ResponseEntity.ok()
+				.headers(headers)
+				.contentType(MediaType.APPLICATION_PDF)
+				.contentLength(bytes.length)
+				.body(new ByteArrayResource(bytes));
+		}
+		catch (Exception e)
+		{
+			LOG.error("Fout bij ophalen verstuurde brief PDF uit CommHub", e);
+			return ResponseEntity.internalServerError().build();
+		}
 	}
 
 	private ClientBrief<?, ?, ?> getBriefOfGooiNotFoundException(Long briefId, String briefType)

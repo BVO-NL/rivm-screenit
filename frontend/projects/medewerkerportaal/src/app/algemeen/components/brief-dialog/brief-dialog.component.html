@@ -18,10 +18,10 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog size="lg" [titel]="gebeurtenis.gebeurtenis | enumLabel:typeGebeurtenisLabels">
+<app-base-dialog size="lg" [titel]="gebeurtenis.gebeurtenis | enumLabel:typeGebeurtenisLabels" [sluitResultaat]="briefOpnieuwAangemaakt">
   <div body>
     <div class="row">
-      <div class="col-4 info-label">Document naam</div>
+      <div class="col-4 info-label">Documentnaam</div>
       <div class="col-8">{{ gebeurtenis.documentNaam }}</div>
     </div>
     <div class="row">
@@ -30,14 +30,20 @@
     </div>
   </div>
   <ng-container buttons>
-    @if (magInzien()) {
-      <button (click)="templateInzien()" data-testid="template_inzien_btn" ds-button-secondary>Inzien template</button>
+    @if (magVerstuurdeBriefInzien()) {
+      <button (click)="verstuurdeBriefInzien()" data-testid="verstuurde_brief_inzien_btn" ds-button-secondary>Verstuurde brief inzien</button>
+    }
+    @if (magTemplateInzien()) {
+      <button (click)="templateInzien()" data-testid="template_inzien_btn" ds-button-secondary>Template inzien</button>
     }
     @if (magActiveren()) {
       <button (click)="activeren()" data-testid="activeren_btn" ds-button-secondary>Herstel brief aanmaken</button>
     }
     @if (magTegenhouden()) {
       <button (click)="tegenhouden()" data-testid="tegenhouden_btn" ds-button-secondary>Tegenhouden</button>
+    }
+    @if (magOpnieuwAanmaken()) {
+      <button (click)="opnieuwAanmaken()" data-testid="opnieuw_aanmaken_btn" ds-button-secondary>Opnieuw aanmaken</button>
     }
     <button (click)="annuleren()" data-testid="annuleren_btn" ds-button-primary>Sluiten</button>
   </ng-container>

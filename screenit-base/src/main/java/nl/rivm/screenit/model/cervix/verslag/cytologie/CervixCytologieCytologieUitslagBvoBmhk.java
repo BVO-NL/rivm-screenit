@@ -268,17 +268,22 @@ public class CervixCytologieCytologieUitslagBvoBmhk
 	}, isVerplicht = true)
 	private DSValue screeningsadviesHerhaling;
 
-	@Column
-	@VraagElement(conceptId = "275", displayName = "COS", xpaths = {
-		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.212']]]/hl7:section/hl7:entry[hl7:observation[hl7:code[(@code='COS' and @codeSystem='2.16.840.1.113883.2.4.3.36.77.5.266')]]]/hl7:observation/hl7:value|@value",
-		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.212']]]/hl7:section/hl7:entry[hl7:observation[hl7:code[(@code='COS' and @codeSystem='2.16.840.1.113883.2.4.3.36.77.5.266')]]]/hl7:observation/hl7:value|@value"
+	@ManyToOne(fetch = FetchType.LAZY)
+	@DSValueSet(name = "vs_COS", values = {
+		@DSValueSetValue(code = "0", codeSystem = "2.16.840.1.113883.2.4.3.36.77.11.268"),
+		@DSValueSetValue(code = "1", codeSystem = "2.16.840.1.113883.2.4.3.36.77.11.268"),
+		@DSValueSetValue(code = "2", codeSystem = "2.16.840.1.113883.2.4.3.36.77.11.268")
 	})
-	private Boolean cos;
+	@VraagElement(conceptId = "275", displayName = "COS", xpaths = {
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.212']]]/hl7:section/hl7:entry[hl7:observation[hl7:code[(@code='COS' and @codeSystem='2.16.840.1.113883.2.4.3.36.77.5.266')]]]/hl7:observation/hl7:value|@code",
+		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.36.10.212']]]/hl7:section/hl7:entry[hl7:observation[hl7:code[(@code='COS' and @codeSystem='2.16.840.1.113883.2.4.3.36.77.5.266')]]]/hl7:observation/hl7:value|@value"
+	}, isVerplicht = true)
+	private DSValue cos;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@DSValueSet(name = "vs_COSPlatform", values = {
 		@DSValueSetValue(code = "TIS", codeSystem = "2.16.840.1.113883.2.4.3.36.77.11.267"),
-		@DSValueSetValue(code = "FPGIS", codeSystem = "2.16.840.1.113883.2.4.3.36.77.11.267")
+		@DSValueSetValue(code = "HGDDS", codeSystem = "2.16.840.1.113883.2.4.3.36.77.11.267")
 	})
 	@VraagElement(conceptId = "276", displayName = "COS platform", xpaths = {
 		"/hl7:ClinicalDocument/hl7:component/hl7:structuredBody/hl7:component[hl7:section[hl7:templateId[@root='2.16.840.1.113883.2.4.3.11.60.142.10.212']]]/hl7:section/hl7:entry[hl7:observation[hl7:code[(@code='COS' and @codeSystem='2.16.840.1.113883.2.4.3.36.77.5.266')]]]/hl7:observation/hl7:entryRelationship/hl7:observation/hl7:value|@code",

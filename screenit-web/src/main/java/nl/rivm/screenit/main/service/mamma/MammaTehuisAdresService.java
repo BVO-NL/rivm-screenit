@@ -22,6 +22,7 @@ package nl.rivm.screenit.main.service.mamma;
  */
 
 import java.util.List;
+
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
@@ -37,7 +38,7 @@ public interface MammaTehuisAdresService
 
 	boolean isAdresAlGekoppeld(MammaTehuisAdres adres);
 
-	long countClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres);
+	long countClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, boolean strictMatchOpToevoeging);
 
 	List<Client> getTehuisAdresClienten(MammaTehuis tehuis, Adres zoekAdres, int first, int count,
 		String sortProperty, boolean isAscending);

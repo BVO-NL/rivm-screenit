@@ -30,6 +30,7 @@ import { AdresgegevensPanelComponent } from '@algemeen/clientdossier/components/
 import { BrpPanelComponent } from '@algemeen/clientdossier/components/brp-panel/brp-panel.component'
 import { ClientInfoPanelComponent } from '@algemeen/clientdossier/components/client-info-panel/client-info-panel.component'
 import { VerwijderdeOnderzoeksresultatenPanelComponent } from '@algemeen/clientdossier/components/verwijderde-onderzoeksresultaten-panel/verwijderde-onderzoeksresultaten-panel.component'
+import { BezwaarPanelComponent } from '@/algemeen/clientdossier/bezwaar/components/bezwaar-panel/bezwaar-panel.component'
 
 @Component({
   selector: 'app-overzicht-page',
@@ -43,6 +44,7 @@ import { VerwijderdeOnderzoeksresultatenPanelComponent } from '@algemeen/clientd
     BrpPanelComponent,
     ClientInfoPanelComponent,
     VerwijderdeOnderzoeksresultatenPanelComponent,
+    BezwaarPanelComponent,
   ],
   templateUrl: 'clientdossier-overzicht-page.component.html',
   styleUrl: 'clientdossier-overzicht-page.component.scss',

@@ -49,7 +49,7 @@ public class VerslagProjectVersionMapping
 		addProjectVersion("2023-01-12T11:59:05", VerslagGeneratie.V11, VerslagType.MDL, VerslagType.PA_LAB, VerslagType.CERVIX_CYTOLOGIE);
 		addProjectVersion("2023-11-23T21:16:46", VerslagGeneratie.V12, VerslagType.PA_LAB);
 		addProjectVersion("2025-03-19T15:27:22", VerslagGeneratie.V12, VerslagType.MDL);
-		addProjectVersion("2024-01-19T10:30:28", VerslagGeneratie.V12, VerslagType.CERVIX_CYTOLOGIE);
+		addProjectVersion("2026-07-24T13:30:00", VerslagGeneratie.V12, VerslagType.CERVIX_CYTOLOGIE);
 		addProjectVersion("2022-09-13T14:46:06", VerslagGeneratie.V2, VerslagType.MAMMA_PA_FOLLOW_UP);
 	}
 

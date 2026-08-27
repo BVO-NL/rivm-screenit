@@ -18,13 +18,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-page titel="Cliëntdossier" [zonderMarge]="true">
-  <ng-container header-actions>
-    <button ds-button-secondary routerLink="/client/zoeken">
-      <ds-icon [icon]="faSearch"/>
-      Cliënt zoeken
-    </button>
-  </ng-container>
+<ds-page-header title="Cliëntdossier" [fullHeight]="true" (backButtonClicked)="naarClientZoeken()">
   <ds-tab-group [selectedIndex]="0">
     <ds-tab titel="Cliëntgegevens">
       <ng-template dsLazyContentDirective>
@@ -32,4 +26,9 @@
       </ng-template>
     </ds-tab>
   </ds-tab-group>
-</app-page>
+
+  <button ds-button-secondary (click)="naarClientZoeken()">
+    <ds-icon [icon]="faSearch"/>
+    Cliënt zoeken
+  </button>
+</ds-page-header>

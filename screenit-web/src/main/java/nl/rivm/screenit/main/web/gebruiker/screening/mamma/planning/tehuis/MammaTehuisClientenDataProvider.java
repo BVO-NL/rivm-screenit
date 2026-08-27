@@ -64,7 +64,7 @@ public class MammaTehuisClientenDataProvider extends SortableDataProvider<Client
 	public long size()
 	{
 		var zoekAdres = zoekAdresModel.getObject();
-		return tehuisAdresService.countClienten(zoekAdres.getTehuis(), MammaTehuisSelectie.TEHUIS_ADRES, zoekAdres);
+		return tehuisAdresService.countClienten(zoekAdres.getTehuis(), MammaTehuisSelectie.TEHUIS_ADRES, zoekAdres, false);
 	}
 
 	@Override

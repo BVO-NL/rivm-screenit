@@ -27,6 +27,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.main.controller.BaseController;
 import nl.rivm.screenit.main.mappers.algemeen.MedewerkerMapper;
 import nl.rivm.screenit.main.model.algemeen.dto.MedewerkerDto;
 import nl.rivm.screenit.main.service.MedewerkerService;
@@ -53,7 +54,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/medewerker")
 @Tag(name = "Medewerkers", description = "Zoeken van medewerkers voor het medewerkerportaal")
-public class MedewerkerController
+public class MedewerkerController extends BaseController
 {
 	private final MedewerkerService medewerkerService;
 

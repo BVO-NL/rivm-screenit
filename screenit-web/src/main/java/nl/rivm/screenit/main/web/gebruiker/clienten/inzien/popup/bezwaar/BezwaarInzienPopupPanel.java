@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.List;
 
 import nl.rivm.screenit.comparator.BriefCreatieDatumComparator;
+import nl.rivm.screenit.main.model.BriefActie;
 import nl.rivm.screenit.main.service.BriefService;
 import nl.rivm.screenit.main.service.algemeen.BezwaarService;
 import nl.rivm.screenit.main.util.BriefOmschrijvingUtil;
@@ -34,12 +35,9 @@ import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.popup.DocumentVervang
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
-import nl.rivm.screenit.model.enums.Actie;
-import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BriefHerdrukkenService;
 import nl.rivm.screenit.service.UploadDocumentService;
-import nl.rivm.screenit.util.BriefUtil;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.io.FilenameUtils;
@@ -64,7 +62,6 @@ import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment>
 {
-
 	@SpringBean
 	private UploadDocumentService uploadDocumentService;
 
@@ -120,14 +117,13 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 
 	private void addButtons()
 	{
+		var briefActies = bezwaarService.getBriefActies(getModelObject());
 
-		var laatsteBrief = getLaatsteBrief();
 		upload = ModelUtil.sModel(getModelObject().getBezwaarBrief());
-		var magNogmaalsVersturen = upload != null;
-		var magDocumentVervangen = ScreenitSession.get().checkPermission(Recht.VERVANGEN_DOCUMENTEN, Actie.AANPASSEN);
-		var heeftTegenhoudenRecht = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN);
-		var magTegenhouden = heeftTegenhoudenRecht && laatsteBrief != null && !BriefUtil.isTegengehouden(laatsteBrief) && !BriefUtil.isGegenereerd(laatsteBrief);
-		var magDoorvoeren = heeftTegenhoudenRecht && BriefUtil.isTegengehouden(laatsteBrief);
+		var magNogmaalsVersturen = briefActies.contains(BriefActie.NOGMAALS_VERSTUREN);
+		var magDocumentVervangen = briefActies.contains(BriefActie.VERVANGEN);
+		var magTegenhouden = briefActies.contains(BriefActie.TEGENHOUDEN);
+		var magDoorvoeren = briefActies.contains(BriefActie.ACTIVEREN);
 
 		if (upload != null)
 		{
@@ -174,8 +170,8 @@ public abstract class BezwaarInzienPopupPanel extends GenericPanel<BezwaarMoment
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
-				var bevestigingsbrieven = briefService.getOorspronkelijkeBevestigingsbrieven(BezwaarInzienPopupPanel.this.getModelObject());
-				briefHerdrukkenService.opnieuwAanmaken(bevestigingsbrieven, ScreenitSession.get().getIngelogdAccount());
+				var bevestigingsbrieven = bezwaarService.verstuurBevestigingsbrievenBezwaarMomentNogmaals(BezwaarInzienPopupPanel.this.getModelObject(),
+					ScreenitSession.get().getIngelogdAccount());
 				info(getString(
 					bevestigingsbrieven.size() > 1 ? "info.bezwaar.meerdere.bevestigingsbrieven.nogmaals.verstuurd" : "info.bezwaar.enkele.bevestigingsbrief.nogmaals.verstuurd"));
 				close(target);

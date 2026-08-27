@@ -37,7 +37,7 @@ public class BezwaarDto
 {
 	private BezwaarType type;
 
-	private Boolean active;
+	private Boolean actief;
 
 	private Bevolkingsonderzoek bevolkingsonderzoek;
 }

@@ -34,6 +34,11 @@ const FooterComponent = () => {
 			</Col>
 			<Col md={8}>
 				<ul className={styles.footerUrls}>
+					<a href={`${getBevolkingsonderzoekNederlandUrl()}/toegankelijkheid/`}
+					   rel="noopener noreferrer" target="_blank"
+					   onClick={() => datadogService.stuurEvent("itemGeklikt", AnalyticsCategorie.FOOTER, {naam: "toegankelijkheid"})}>
+						<li>{properties.links.toegankelijkheid}</li>
+					</a>
 					<a href={`${getBevolkingsonderzoekNederlandUrl()}/privacy/`}
 					   rel="noopener noreferrer" target="_blank"
 					   onClick={() => datadogService.stuurEvent("itemGeklikt", AnalyticsCategorie.FOOTER, {naam: "privacy"})}>

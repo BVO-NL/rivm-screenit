@@ -23,3 +23,9 @@ export enum GebeurtenisBron {
   CLIENT = 'CLIENT',
   AUTOMATISCH = 'AUTOMATISCH',
 }
+
+export const gebeurtenisBronLabels: Record<GebeurtenisBron, string> = {
+  [GebeurtenisBron.MEDEWERKER]: 'Cliëntservice',
+  [GebeurtenisBron.CLIENT]: 'Cliënt',
+  [GebeurtenisBron.AUTOMATISCH]: 'Automatisch',
+}

@@ -19,19 +19,19 @@
  * =========================LICENSE_END==================================
  */
 import { Component, computed, inject, OnInit, signal } from '@angular/core'
-import { DsBadgeComponent, DsButtonComponent, DsCardComponent, DsCardHeaderBadgeDirective, DsCardHeaderContentDirective, DsIconComponent } from '@topicus-rgp-ds/web'
+import { DsBadgeComponent, DsButtonComponent, DsCardComponent, DsCardHeaderContentDirective, DsIconComponent } from '@topicus-rgp-ds/web'
 import { DatePipe } from '@angular/common'
 import { faPencil } from '@fortawesome/pro-solid-svg-icons'
 import { ClientService } from '@/algemeen/services/client/client.service'
 import { ClientContactgegevensDto } from '@shared/types/algemeen/dto/clientcontactgegevens.dto'
-import { geslachtLabel } from '@shared/types/algemeen/enum/geslacht'
+import { geslachtAfkorting, geslachtLabel } from '@shared/types/algemeen/enum/geslacht'
 import { take } from 'rxjs'
 import { Dialog } from '@angular/cdk/dialog'
 import { ClientInfoBewerkenModalComponent } from './client-info-bewerken-modal/client-info-bewerken-modal.component'
 import { EnumLabelPipe } from '@shared/pipes/enum-label/enum-label.pipe'
-import { Doelgroep, doelgroepLabel } from '@shared/types/algemeen/enum/doelgroep'
+import { Doelgroep } from '@shared/types/algemeen/enum/doelgroep'
 import { NL_DATE_FORMAT } from '@shared/constants'
-import { differenceInYears } from 'date-fns'
+import { berekenLeeftijd } from '@shared/utils/date-utils'
 import { aanspreekvormLabel } from '@shared/types/algemeen/enum/aanspreekvorm'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
@@ -41,15 +41,15 @@ import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'
 import { NaamUtils } from '@shared/utils/naam-utils'
 import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.directive'
+import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
-import { GeslachtIcoonPipe } from '@shared/pipes/geslacht-icoon/geslacht-icoon.pipe'
 import { EnumNaturalPipe } from '@shared/pipes/enum-natural/enum-natural'
+import { DoelgroepBadgesComponent } from '@shared/components/doelgroep-badges/doelgroep-badges.component'
 
 @Component({
   selector: 'app-client-info-panel',
   imports: [
     DsCardComponent,
-    DsCardHeaderBadgeDirective,
     DsCardHeaderContentDirective,
     DsBadgeComponent,
     DsButtonComponent,
@@ -57,8 +57,8 @@ import { EnumNaturalPipe } from '@shared/pipes/enum-natural/enum-natural'
     DatePipe,
     EnumLabelPipe,
     AutorisatieDirective,
-    GeslachtIcoonPipe,
     EnumNaturalPipe,
+    DoelgroepBadgesComponent,
   ],
   templateUrl: './client-info-panel.component.html',
   styleUrl: './client-info-panel.component.scss',
@@ -66,7 +66,6 @@ import { EnumNaturalPipe } from '@shared/pipes/enum-natural/enum-natural'
 export class ClientInfoPanelComponent implements OnInit {
   protected readonly faPencil = faPencil
   protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
-  protected readonly doelgroepLabel = doelgroepLabel
   protected readonly geslachtLabel = geslachtLabel
   protected readonly aanspreekvormLabel = aanspreekvormLabel
   protected readonly bewerkenConstraint: SecurityConstraint = {
@@ -86,15 +85,13 @@ export class ClientInfoPanelComponent implements OnInit {
   }
   private readonly clientService = inject(ClientService)
   private readonly dialog = inject(Dialog)
+  private readonly autorisatieService = inject(AutorisatieService)
   protected readonly clientUitLocalStorage = this.clientService.select('client')
   protected clientContactgegevens = signal<ClientContactgegevensDto | undefined>(undefined)
   protected readonly heeftDubbeltijd = computed(() => {
     return this.clientContactgegevens()?.doelgroepen?.some((d) => d === Doelgroep.DUBBELE_TIJD) ?? false
   })
-  protected readonly leeftijd = computed(() => {
-    const geboortedatum = this.clientContactgegevens()?.geboortedatum
-    return geboortedatum ? differenceInYears(new Date(), new Date(geboortedatum)) : undefined
-  })
+  protected readonly leeftijd = computed(() => berekenLeeftijd(this.clientContactgegevens()?.geboortedatum))
 
   ngOnInit() {
     this.haalContactgegevensOp()
@@ -131,7 +128,11 @@ export class ClientInfoPanelComponent implements OnInit {
   protected clientContactgegevensTitel(): string {
     const client = this.clientContactgegevens()
     if (client) {
-      return NaamUtils.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client)
+      const naam = NaamUtils.titelVoorlettersTussenvoegselEnAanspreekAchternaam(client)
+      if (this.autorisatieService.isToegestaan(this.genderIdentiteitConstraint)) {
+        return naam + ' (' + geslachtAfkorting[client.geslacht] + ')'
+      }
+      return naam
     }
     return ''
   }

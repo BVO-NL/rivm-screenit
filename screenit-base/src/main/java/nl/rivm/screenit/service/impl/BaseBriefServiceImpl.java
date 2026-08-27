@@ -50,6 +50,7 @@ import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.BriefDefinitie;
+import nl.rivm.screenit.model.BriefDefinitie_;
 import nl.rivm.screenit.model.BriefDefinitiesFilter;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
@@ -88,6 +89,7 @@ import nl.rivm.screenit.service.MessageService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.UploadDocumentService;
+import nl.rivm.screenit.specification.algemeen.BriefDefinitieSpecification;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.DateUtil;
@@ -103,6 +105,7 @@ import org.hibernate.Hibernate;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -710,14 +713,26 @@ public class BaseBriefServiceImpl implements BaseBriefService
 	}
 
 	@Override
-	public <B extends Brief> File maakPdfAVanBrief(B brief) throws Exception
+	public <B extends Brief> File maakPgoPdfAVanBrief(B brief) throws Exception
 	{
 		var client = getClientFromBrief(brief);
-		var briefTemplate = getBriefDefinitieFile(brief);
+		var briefTemplate = getBriefDefinitieFileVoorMomentVanVerstuurdVoorAfdrukken(brief);
 		var context = getMailMergeContext(brief, client);
 		var briefTemplateBytes = FileUtils.readFileToByteArray(briefTemplate);
 		var document = asposeService.processDocument(briefTemplateBytes, context);
 		return genereerPdf(document, brief.getBriefType().toString(), false, true);
+	}
+
+	private <B extends Brief> File getBriefDefinitieFileVoorMomentVanVerstuurdVoorAfdrukken(B brief)
+	{
+		var briefType = brief.getBriefType();
+		var spec = BriefDefinitieSpecification.heeftBriefType(briefType)
+			.and(BriefDefinitieSpecification.isAangemaaktOpOfVoor(BriefUtil.getVerstuurdVoorAfdrukkenMoment(brief)));
+		var briefDefinitie = briefDefinitieRepository.findFirst(spec, Sort.by(Sort.Direction.DESC, BriefDefinitie_.LAATST_GEWIJZIGD))
+			.orElseGet(() -> briefDefinitieRepository.findFirst(
+				BriefDefinitieSpecification.heeftBriefType(briefType),
+				Sort.by(Sort.Direction.ASC, BriefDefinitie_.LAATST_GEWIJZIGD)).orElseThrow());
+		return uploadDocumentService.load(briefDefinitie.getDocument());
 	}
 
 	@Override

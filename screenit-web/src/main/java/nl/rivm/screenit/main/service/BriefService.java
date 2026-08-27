@@ -52,7 +52,9 @@ public interface BriefService
 
 	List<BezwaarBrief> getOorspronkelijkeBevestigingsbrieven(OnderzoeksresultatenActie actie);
 
-	List<BriefActie> getBriefActies(ClientBrief<?, ?, ?> brief);
+	List<BriefActie> getBriefActies(ClientBrief<?, ?, ?> brief, boolean magOpnieuwKlaarzetten, boolean magTegenhouden);
+
+	Optional<byte[]> getVerstuurdeBrief(String briefGuid);
 
 	Optional<ClientBrief<?, ?, ?>> getBriefById(Long id, String briefType);
 }

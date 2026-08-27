@@ -27,6 +27,11 @@ import { WINDOW } from '@shared/tokens/window.token'
   selector: 'app-root',
   template: ` <router-outlet></router-outlet>`,
   imports: [RouterOutlet],
+  styles: `
+    :host {
+      background: var(--stale-background-color);
+    }
+  `,
 })
 export class AppComponent implements AfterViewInit {
   private elementRef: ElementRef = inject(ElementRef)

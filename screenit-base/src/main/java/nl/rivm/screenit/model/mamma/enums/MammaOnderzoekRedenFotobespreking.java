@@ -28,17 +28,5 @@ public enum MammaOnderzoekRedenFotobespreking
 	CALCIFICATIES,
 	MASSA,
 	INSTELTECHNIEK,
-	TE_BESPREKEN_ONDERZOEK,
-	@Deprecated 
-	OVERIG;
-
-	public MammaOnderzoekRedenFotobespreking normaliseerOudNaarNieuw()
-	{
-		return this == OVERIG ? TE_BESPREKEN_ONDERZOEK : this;
-	}
-
-	public MammaOnderzoekRedenFotobespreking normaliseerNieuwNaarOud()
-	{
-		return this == TE_BESPREKEN_ONDERZOEK ? OVERIG : this;
-	}
+	TE_BESPREKEN_ONDERZOEK
 }

@@ -26,6 +26,7 @@
   overflow: hidden;
 }
 
+
 ds-navigation-sidebar {
   flex-shrink: 0;
   align-self: stretch;
@@ -40,12 +41,4 @@ ds-navigation-sidebar {
       margin-top: auto;
     }
   }
-}
-
-.inhoud {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  background: var(--stale-background-color);
-  padding: 0.8rem;
 }

@@ -25,10 +25,12 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+import nl.rivm.screenit.main.model.BriefActie;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.OnderzoeksresultatenActie;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 
@@ -36,13 +38,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface BezwaarService
 {
-	void bezwaarBRPIntrekken(Client client, MultipartFile document) throws IOException;
+	void bezwaarBRPIntrekken(OrganisatieMedewerker organisatieMedewerker, Client client, MultipartFile document) throws IOException;
 
-	List<Client> getClientenMetBezwaarBrp(String bsn, LocalDate geboortedatum);
+	List<Client> getClientenMetBezwaarBrp(String bsn, LocalDate geboortedatum, OrganisatieMedewerker organisatieMedewerker);
 
 	boolean ondertekendeOnderzoeksresultatenBriefVervangen(UploadDocument nieuwDocument, OnderzoeksresultatenActie actie);
 
 	boolean ondertekendeBezwaarBriefVervangen(UploadDocument nieuwDocument, BezwaarMoment bezwaarMoment, UploadDocument huidigDocument);
 
-	List<BezwaarBrief> verstuurBevestigingsbrievenNogmaals(OnderzoeksresultatenActie actie, Account ingelogdAccount);
+	List<BriefActie> getBriefActies(BezwaarMoment bezwaarMoment);
+
+	List<BezwaarBrief> verstuurBevestigingsbrievenBezwaarMomentNogmaals(BezwaarMoment bezwaarMoment, Account ingelogdAccount);
+
+	List<BezwaarBrief> verstuurBevestigingsbrievenOnderzoeksresultatenActieNogmaals(OnderzoeksresultatenActie actie, Account ingelogdAccount);
+
+	void briefNietMeerTegenhouden(Long briefId, String briefType, Account account);
 }

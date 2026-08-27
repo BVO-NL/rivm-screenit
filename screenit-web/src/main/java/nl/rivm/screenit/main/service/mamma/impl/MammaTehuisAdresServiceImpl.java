@@ -107,9 +107,9 @@ public class MammaTehuisAdresServiceImpl implements MammaTehuisAdresService
 	}
 
 	@Override
-	public long countClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres)
+	public long countClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, boolean strictMatchOpToevoeging)
 	{
-		return baseTehuisClientenDao.countClienten(tehuis, tehuisSelectie, zoekAdres);
+		return baseTehuisClientenDao.countClienten(tehuis, tehuisSelectie, zoekAdres, strictMatchOpToevoeging);
 	}
 
 	@Override

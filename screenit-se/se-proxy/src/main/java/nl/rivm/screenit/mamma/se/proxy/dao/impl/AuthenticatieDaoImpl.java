@@ -78,7 +78,7 @@ public class AuthenticatieDaoImpl extends BaseDaoImpl implements AuthenticatieDa
 	{
 		var sql = "INSERT INTO INGELOGDE_MEDEWERKER(gebruikersnaam, wachtwoord, laatste_inlog, yubikey_public, login_response, account_id)" +
 			" VALUES (?, ?, ?, ? ,?, ?)" +
-			" ON CONFLICT(account_id)" +
+			" ON CONFLICT" +
 			" DO UPDATE SET gebruikersnaam = ?, wachtwoord = ?, laatste_inlog = ?, yubikey_public = ?, login_response = ?, account_id = ?;";
 		try (var connection = getConnection();
 			var insertStatement = connection.prepareStatement(sql))

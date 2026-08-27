@@ -37,6 +37,7 @@ import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.util.DateUtil;
 
+import static nl.rivm.screenit.specification.DateSpecification.truncateToLocalDate;
 import static nl.rivm.screenit.specification.ExtendedSpecification.not;
 import static nl.rivm.screenit.specification.SpecificationUtil.joinByString;
 
@@ -110,6 +111,19 @@ public class BriefSpecification
 		ExtendedSpecification<B> mergedBrievenAfgedrukt = MergedBrievenSpecification.heeftPrintDatumVoor(datum)
 			.with(r -> joinByString(r, AlgemeneBrief_.MERGED_BRIEVEN, JoinType.LEFT));
 		return mergedBrievenAfgedrukt.or(heeftVerstuurdVoorAfdrukkenVoor(datum));
+	}
+
+	public static <B extends Brief> ExtendedSpecification<B> isNietVerstuurdVoorAfdrukken(LocalDate peildatum)
+	{
+		ExtendedSpecification<B> mergedBrievenNietAfgedrukt = MergedBrievenSpecification.isNietGeprintOp(peildatum)
+			.with(r -> joinByString(r, AlgemeneBrief_.MERGED_BRIEVEN, JoinType.LEFT));
+		return mergedBrievenNietAfgedrukt.and(isNietVerstuurdVoorAfdrukkenOp(peildatum));
+	}
+
+	public static <B extends Brief> ExtendedSpecification<B> isNietVerstuurdVoorAfdrukkenOp(LocalDate peildatum)
+	{
+		return (r, q, cb) -> cb.or(cb.isNull(r.get(Brief_.verstuurdVoorAfdrukkenOp)),
+			cb.notEqual(truncateToLocalDate("day", r.get(Brief_.verstuurdVoorAfdrukkenOp), cb), peildatum));
 	}
 
 	private static <B extends Brief> ExtendedSpecification<B> heeftVerstuurdVoorAfdrukkenVoor(LocalDate peilDatum)

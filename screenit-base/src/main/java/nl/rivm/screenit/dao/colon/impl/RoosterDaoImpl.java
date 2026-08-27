@@ -416,12 +416,12 @@ public class RoosterDaoImpl implements RoosterDao
 
 		querySB.append("select {k.*}");
 
-//5ee157a7-730d-481d-b04a-724d67400dd8
+//f49234ce-b425-4877-a31f-7b2ad3018606
 		querySB.append(" from colon.afspraakslot afs");
 		querySB.append(" join colon.tijdslot ts on afs.id=ts.id");
 		querySB.append(" join colon.intakekamer k on ts.kamer=k.id");
 
-//5ee157a7-730d-481d-b04a-724d67400dd8
+//f49234ce-b425-4877-a31f-7b2ad3018606
 		var params = new HashMap<String, Object>();
 		querySB.append(" and k.actief = true");
 		querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2))");

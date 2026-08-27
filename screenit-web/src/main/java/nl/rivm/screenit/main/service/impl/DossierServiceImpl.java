@@ -44,6 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.model.AfmeldenDossierGebeurtenis;
+import nl.rivm.screenit.main.model.BezwaarDossierGebeurtenis;
 import nl.rivm.screenit.main.model.DossierGebeurtenis;
 import nl.rivm.screenit.main.model.DossierGebeurtenisType;
 import nl.rivm.screenit.main.model.OpenUitnodigingDossierGebeurtenis;
@@ -62,6 +63,7 @@ import nl.rivm.screenit.main.web.gebruiker.clienten.dossier.gebeurtenissen.mamma
 import nl.rivm.screenit.model.AanvraagBriefStatus;
 import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.AfmeldingType;
+import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
@@ -146,8 +148,10 @@ import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.hibernate.object.helper.HibernateHelper;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
+import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.wicket.Application;
 import org.hibernate.Hibernate;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.RevisionType;
@@ -2516,6 +2520,38 @@ public class DossierServiceImpl implements DossierService
 		return dossier != null && (dossier.getLaatsteAfmelding() != null || dossier.getLaatsteScreeningRonde() != null) && DossierStatus.ACTIEF.equals(dossier.getStatus())
 			&& dossier.getClient().getPersoon().getOverlijdensdatum() == null && dossier.getClient().getPersoon().getDatumVertrokkenUitNederland() == null
 			&& GbaStatus.INDICATIE_AANWEZIG.equals(dossier.getClient().getGbaStatus());
+	}
+
+	@Override
+	public List<BezwaarDossierGebeurtenis> getBezwaarGebeurtenissen(Client client)
+	{
+		return client.getBezwaarMomenten().stream()
+			.map(bezwaar ->
+			{
+				var c = new BezwaarDossierGebeurtenis(bezwaarOmschrijving(bezwaar), bezwaar.getStatusDatum());
+				c.setDossierGebeurtenisType(DossierGebeurtenisType.BEZWAAR);
+				c.setBron(bepaalGebeurtenisBron(bezwaar));
+				c.setBezwaarModel(ModelUtil.sModel(bezwaar));
+				return c;
+			})
+			.toList();
+	}
+
+	private String bezwaarOmschrijving(BezwaarMoment bezwaar)
+	{
+		var omschrijving = new StringBuilder();
+		omschrijving.append(getString("gebruik.gegevens.aangepast"));
+
+		if (AanvraagBriefStatus.VERWERKT == bezwaar.getStatus() && bezwaar.getBezwaarBrief() != null)
+		{
+			omschrijving.append(" (").append(getString("label.formulier.getekendbezwaar")).append(")");
+		}
+		return omschrijving.toString();
+	}
+
+	private String getString(String key)
+	{
+		return Application.get().getResourceSettings().getLocalizer().getString(key, null);
 	}
 
 }

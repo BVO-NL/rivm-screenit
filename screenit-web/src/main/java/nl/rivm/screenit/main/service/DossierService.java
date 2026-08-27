@@ -24,6 +24,7 @@ package nl.rivm.screenit.main.service;
 import java.util.Iterator;
 import java.util.List;
 
+import nl.rivm.screenit.main.model.BezwaarDossierGebeurtenis;
 import nl.rivm.screenit.main.model.DossierGebeurtenis;
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenissen;
@@ -64,4 +65,6 @@ public interface DossierService
 	List<DossierGebeurtenis> getCervixDossierGebeurtenissen(Client client);
 
 	boolean isDossierActief(Dossier dossier);
+
+	List<BezwaarDossierGebeurtenis> getBezwaarGebeurtenissen(Client client);
 }

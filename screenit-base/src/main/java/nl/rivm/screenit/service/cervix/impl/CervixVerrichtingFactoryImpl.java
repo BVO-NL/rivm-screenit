@@ -35,12 +35,14 @@ import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixTariefType;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel;
 import nl.rivm.screenit.model.cervix.facturatie.CervixVerrichting;
+import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.HuisartsenportaalSyncService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.cervix.Cervix2023StartBepalingService;
 import nl.rivm.screenit.service.cervix.CervixBaseVerrichtingService;
 import nl.rivm.screenit.service.cervix.CervixVerrichtingFactory;
+import nl.rivm.screenit.util.DSValueUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixHuisartsToDtoUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
@@ -57,6 +59,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation = Propagation.REQUIRED)
 public class CervixVerrichtingFactoryImpl implements CervixVerrichtingFactory
 {
+
+	public static final DSValue COS_NEE = DSValueUtil.maakDsValue("2");
+
 	@Autowired
 	private CervixBaseVerrichtingService verrichtingService;
 
@@ -138,9 +143,9 @@ public class CervixVerrichtingFactoryImpl implements CervixVerrichtingFactory
 
 	private boolean isCos(CervixUitstrijkje uitstrijkje)
 	{
-		return Optional
+		return !Optional
 			.ofNullable(uitstrijkje.getCytologieVerslag().getVerslagContent().getCytologieUitslagBvoBmhk().getCos())
-			.orElse(false);
+			.orElse(COS_NEE).getCode().equals(COS_NEE.getCode());
 	}
 
 	private CervixVerrichting maakVerrichting(CervixMonster monster, CervixTariefType tariefType, Date verrichtingsDatum, CervixHuisartsLocatie huisartsLocatie,
@@ -148,7 +153,7 @@ public class CervixVerrichtingFactoryImpl implements CervixVerrichtingFactory
 	{
 		var client = monster.getOntvangstScreeningRonde().getDossier().getClient();
 
-		ScreeningOrganisatie so = null;
+		ScreeningOrganisatie so;
 		var gemeente = client.getPersoon().getGbaAdres().getGbaGemeente();
 		if (gemeente == null)
 		{

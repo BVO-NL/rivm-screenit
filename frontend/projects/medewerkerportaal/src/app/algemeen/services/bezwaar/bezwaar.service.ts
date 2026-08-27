@@ -22,6 +22,14 @@ import { inject, Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs'
 import { OnderzoeksresultatenActieDto } from '@shared/types/algemeen/dto/onderzoeksresultaten-actie.dto'
+import { BezwaarType, bezwaarTypeLabels, bezwaarTypeSubtitels } from '@/shared/types/algemeen/enum/bezwaar-type'
+import { BezwaarGroupViewWrapper } from '@/shared/types/algemeen/bezwaar-group-view-wrapper'
+import { BezwaarViewWrapper } from '@/shared/types/algemeen/bezwaar-view-wrapper'
+import { BezwaarMomentDto } from '@/shared/types/algemeen/dto/bezwaar-moment.dto'
+import { Bevolkingsonderzoek } from '@/shared/types/bevolkingsonderzoek'
+import { BriefType } from '@/shared/types/algemeen/enum/brief-type'
+import { getCategorieVanBriefType } from '@/shared/utils/brief-utils'
+import { BriefDto } from '@shared/types/algemeen/dto/brief.dto'
 
 @Injectable({
   providedIn: 'root',
@@ -38,7 +46,82 @@ export class BezwaarService {
     return this.http.put<OnderzoeksresultatenActieDto>(`${this.baseUrl}/onderzoeksresultaten-actie/vervang-document`, formData)
   }
 
-  nogmaalsVersturen(actieId: number): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/onderzoeksresultaten-actie/${actieId}/nogmaals-versturen`, null)
+  vervangBezwaarDocument(bezwaarBriefId: number, bestand: File): Observable<void> {
+    const formData = new FormData()
+    formData.append('id', bezwaarBriefId.toString())
+    formData.append('entiteit', 'bezwaar')
+    formData.append('bestand', bestand)
+    return this.http.put<void>(`${this.baseUrl}/bezwaar-moment/vervang-document`, formData)
+  }
+
+  getBezwaarGroupViewWrappers(moment: BezwaarMomentDto | undefined, verzoekTotBezwaarTeZien: boolean) {
+    const groepen: BezwaarGroupViewWrapper[] = []
+
+    if (!moment) {
+      return groepen
+    }
+
+    for (const bezwaar of moment.bezwaren) {
+      if (BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER !== bezwaar.type || verzoekTotBezwaarTeZien) {
+        const groep = this.getBezwaarGroupViewWrapperFromList(groepen, bezwaar.bevolkingsonderzoek)
+        const wrapper = this.getBezwaarViewWrapper(bezwaar.type, true, bezwaar.bevolkingsonderzoek)
+        groep.bezwaren.push(wrapper)
+
+        if (!groepen.includes(groep)) {
+          groepen.push(groep)
+        }
+      }
+    }
+
+    return groepen
+  }
+
+  private getBezwaarGroupViewWrapperFromList(lijstBezwaarGroupViewWrappers: BezwaarGroupViewWrapper[], onderzoek: Bevolkingsonderzoek | undefined) {
+    const wrapperName = onderzoek ?? 'ALGEMEEN'
+    const bestaandGroupWrapper = lijstBezwaarGroupViewWrappers.find((groupWrapper) => wrapperName === groupWrapper.key)
+
+    if (bestaandGroupWrapper) {
+      return bestaandGroupWrapper
+    }
+
+    return this.getGroupWrapper(onderzoek)
+  }
+
+  private getGroupWrapper(onderzoek: Bevolkingsonderzoek | undefined) {
+    if (!onderzoek) {
+      return {
+        key: 'ALGEMEEN',
+        bezwaren: [],
+      }
+    }
+
+    return {
+      key: onderzoek,
+      bevolkingsonderzoek: onderzoek,
+      bezwaren: [],
+    }
+  }
+
+  private getBezwaarViewWrapper(type: BezwaarType, actief: boolean, bevolkingsonderzoek: Bevolkingsonderzoek | undefined): BezwaarViewWrapper {
+    return {
+      type,
+      actief,
+      bevolkingsonderzoek,
+      naam: bezwaarTypeLabels[type],
+      subtitel: bezwaarTypeSubtitels[type],
+    }
+  }
+
+  verstuurBevestigingsbrievenOnderzoeksresultatenActieNogmaals(actieId: number): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/onderzoeksresultaten-actie/${actieId}/bevestigingsbrieven-nogmaals-versturen`, null)
+  }
+
+  verstuurBevestigingsbrievenBezwaarMomentNogmaals(bezwaarMomentId: number): Observable<BriefDto[]> {
+    return this.http.post<BriefDto[]>(`${this.baseUrl}/bezwaar-moment/${bezwaarMomentId}/bevestigingsbrieven-nogmaals-versturen`, null)
+  }
+
+  activeerBrief(briefId: number, briefType: BriefType): Observable<void> {
+    const briefCategorie = getCategorieVanBriefType(briefType)
+    return this.http.post<void>(`${this.baseUrl}/brief/${briefCategorie}/${briefId}/activeren`, null)
   }
 }

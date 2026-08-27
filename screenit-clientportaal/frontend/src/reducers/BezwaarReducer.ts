@@ -18,26 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {BezwaarMoment, geenBezwaarMoment} from '../datatypes/Bezwaar';
-import {BEZWAAR_TOGGLE, BezwaarActions, RESET_LAATSTE_BEZWAAR_MOMENT} from '../actions/BezwaarReduxAction';
+import {BezwaarMoment, geenBezwaarMoment} from "../datatypes/Bezwaar"
+import {BEZWAAR_TOGGLE, BezwaarActions, RESET_LAATSTE_BEZWAAR_MOMENT} from "../actions/BezwaarReduxAction"
 
 function BezwaarReducer(stateSlice: BezwaarMoment = geenBezwaarMoment, action: BezwaarActions): BezwaarMoment {
-    switch (action.type) {
-        case RESET_LAATSTE_BEZWAAR_MOMENT:
-            return action.bezwaarMoment;
-        case BEZWAAR_TOGGLE:
-            return stateSlice.map(b => {
-                    if (b.type !== action.bezwaarType) {
-                        return b
-                    }
-                    return {
-                        ...b,
-                        active: !b.active
-                    }
-                })
-        default:
-            return stateSlice;
-    }
+	switch (action.type) {
+		case RESET_LAATSTE_BEZWAAR_MOMENT:
+			return action.bezwaarMoment
+		case BEZWAAR_TOGGLE:
+			return stateSlice.map(b => {
+				if (b.type !== action.bezwaarType) {
+					return b
+				}
+				return {
+					...b,
+					actief: !b.actief,
+				}
+			})
+		default:
+			return stateSlice
+	}
 }
 
-export default BezwaarReducer;
+export default BezwaarReducer

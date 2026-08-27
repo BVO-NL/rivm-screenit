@@ -22,6 +22,7 @@ package nl.rivm.screenit.main.dto.algemeen;
  */
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
@@ -86,4 +87,6 @@ public class ClientDto extends EntityDto
 	private boolean actief;
 
 	private List<OnderzoeksresultatenActieDto> onderzoeksresultatenActies;
+
+	private List<BezwaarMomentDto> bezwaarMomenten = new ArrayList<>();
 }

@@ -99,7 +99,7 @@ public interface BaseBriefService
 
 	<B extends Brief, MB extends MergedBrieven<?>> void createOrAddMergedBrieven(List<? extends B> items, IBrievenGeneratorHelper<B, MB> briefGenerator) throws Exception;
 
-	<B extends Brief> File maakPdfAVanBrief(B brief) throws Exception;
+	<B extends Brief> File maakPgoPdfAVanBrief(B brief) throws Exception;
 
 	<B extends Brief> File maakPdfVanBrief(B brief, BaseDocumentCreator documentCreator, Consumer<MailMergeContext> mergeContextConsumer) throws Exception;
 

@@ -38,11 +38,11 @@ import {
 import { MatSort, MatSortHeader, MatSortModule } from '@angular/material/sort'
 import { MatTableDataSource } from '@angular/material/table'
 import { NL_DATE_FORMAT } from '@shared/constants'
-import { ClientDto } from '@shared/types/algemeen/dto/client.dto'
 import { VoornaamTussenvoegselAchternaamPipe } from '@shared/pipes/voornaam-tussenvoegsel-achternaam/voornaam-tussenvoegsel-achternaam.pipe'
-import { GeslachtIcoonPipe } from '@shared/pipes/geslacht-icoon/geslacht-icoon.pipe'
+import { GeslachtAfkortingPipe } from '@shared/pipes/geslacht-afkorting/geslacht-afkorting.pipe'
+import { ClientDto } from '@shared/types/algemeen/dto/client.dto'
 import { faAngleRight } from '@fortawesome/pro-light-svg-icons'
-import { differenceInYears } from 'date-fns'
+import { berekenLeeftijd as berekenLeeftijdUtil } from '@shared/utils/date-utils'
 
 @Component({
   selector: 'app-client-zoeken-tabel',
@@ -62,7 +62,7 @@ import { differenceInYears } from 'date-fns'
     MatSortModule,
     MatSortHeader,
     VoornaamTussenvoegselAchternaamPipe,
-    GeslachtIcoonPipe,
+    GeslachtAfkortingPipe,
     DsIconComponent,
     DsNoDataRow,
     DsBadgeComponent,
@@ -108,8 +108,8 @@ export class ClientZoekenTabelComponent {
     return this.basisKolommen
   })
 
-  berekenLeeftijd(geboortedatum: Date): number {
-    return differenceInYears(new Date(), new Date(geboortedatum))
+  berekenLeeftijd(geboortedatum: Date): number | undefined {
+    return berekenLeeftijdUtil(geboortedatum)
   }
 
   navigeerNaarClient(client: ClientDto) {

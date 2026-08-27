@@ -23,10 +23,10 @@ import {Bevolkingsonderzoek} from "./Bevolkingsonderzoek"
 
 export type Bezwaar = {
 	type: BezwaarType,
-	active: boolean,
+	actief: boolean,
 	bevolkingsonderzoek?: Bevolkingsonderzoek
 }
 
 export type BezwaarMoment = Bezwaar[]
 
-export const geenBezwaarMoment = [] as BezwaarMoment;
+export const geenBezwaarMoment = [] as BezwaarMoment

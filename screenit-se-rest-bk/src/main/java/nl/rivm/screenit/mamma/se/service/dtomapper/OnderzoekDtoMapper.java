@@ -24,12 +24,11 @@ package nl.rivm.screenit.mamma.se.service.dtomapper;
 import java.util.ArrayList;
 
 import nl.rivm.screenit.mamma.se.dto.onderzoek.OnderzoekSeDto;
-import nl.rivm.screenit.mamma.se.util.SemverUtil;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 
 class OnderzoekDtoMapper
 {
-	public OnderzoekSeDto createOnderzoekDto(MammaOnderzoek onderzoek, String seVersie)
+	public OnderzoekSeDto createOnderzoekDto(MammaOnderzoek onderzoek)
 	{
 		if (onderzoek != null)
 		{
@@ -38,14 +37,7 @@ class OnderzoekDtoMapper
 			onderzoekDto.setEerderMammogramJaartal(onderzoek.getEerderMammogramJaartal());
 			onderzoekDto.setEerderMammogramZorginstellingId(onderzoek.getEerderMammogramZorginstelling() != null ? onderzoek.getEerderMammogramZorginstelling().getId() : null);
 			onderzoekDto.setSuboptimaleInsteltechniek(onderzoek.getSuboptimaleInsteltechniek());
-			if (SemverUtil.isVersieGreaterOrEqual(seVersie, "26.5"))
-			{
-				onderzoekDto.setRedenFotobespreking(onderzoek.getRedenFotobespreking() != null ? onderzoek.getRedenFotobespreking().normaliseerOudNaarNieuw() : null);
-			}
-			else
-			{
-				onderzoekDto.setRedenFotobespreking(onderzoek.getRedenFotobespreking() != null ? onderzoek.getRedenFotobespreking().normaliseerNieuwNaarOud() : null);
-			}
+			onderzoekDto.setRedenFotobespreking(onderzoek.getRedenFotobespreking());
 			onderzoekDto.setExtraMedewerkerId(onderzoek.getExtraMedewerker() != null ? onderzoek.getExtraMedewerker().getId() : null);
 			onderzoekDto.setOpmerkingMbber(onderzoek.getOpmerkingMbber());
 			onderzoekDto.setOpmerkingVoorRadioloog(onderzoek.getOpmerkingVoorRadioloog());

@@ -67,7 +67,8 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 	@Autowired
 	private MammaBaseTehuisService tehuisService;
 
-	private NativeQuery createQuery(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, boolean count, String sortProperty, Boolean isAscending)
+	private NativeQuery createQuery(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, boolean strictMatchOpToevoeging, boolean count, String sortProperty,
+		Boolean isAscending)
 	{
 		var vandaag = dateSupplier.getLocalDate();
 
@@ -110,7 +111,7 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 		fromString += " left join mamma.screening_ronde laatste_screening_ronde on dossier.laatste_screening_ronde = laatste_screening_ronde.id";
 
 		var whereString = new StringBuilder();
-		whereString.append(" where (dossier.deelnamemodus <> \'").append(Deelnamemodus.SELECTIEBLOKKADE.name()).append("\' or dossier.tehuis = :tehuis)");
+		whereString.append(" where (dossier.deelnamemodus <> '").append(Deelnamemodus.SELECTIEBLOKKADE.name()).append("' or dossier.tehuis = :tehuis)");
 		whereString.append(" and persoon.geboortedatum >= :vanafGeboortedatum");
 		whereString.append(" and persoon.geboortedatum < :totGeboortedatum");
 
@@ -132,11 +133,11 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 
 				Adres tehuisAdres = tehuis.getAdressen().get(i);
 
-				whereString.append(" adres.postcode = upper(\'").append(tehuisAdres.getPostcode()).append("\')");
+				whereString.append(" adres.postcode = upper('").append(tehuisAdres.getPostcode()).append("')");
 				whereString.append(" and adres.huisnummer = ").append(tehuisAdres.getHuisnummer());
 				if (StringUtils.isNotBlank(tehuisAdres.getHuisletter()))
 				{
-					whereString.append(" and lower(adres.huisletter) = lower(\'").append(tehuisAdres.getHuisletter()).append("\')");
+					whereString.append(" and lower(adres.huisletter) = lower('").append(tehuisAdres.getHuisletter()).append("')");
 				}
 				else
 				{
@@ -144,7 +145,7 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 				}
 				if (StringUtils.isNotBlank(tehuisAdres.getHuisnummerToevoeging()))
 				{
-					whereString.append(" and lower(adres.huisnummer_toevoeging) = lower(\'").append(tehuisAdres.getHuisnummerToevoeging()).append("\')");
+					whereString.append(" and lower(adres.huisnummer_toevoeging) = lower('").append(tehuisAdres.getHuisnummerToevoeging()).append("')");
 				}
 				else
 				{
@@ -157,7 +158,7 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 			{
 				if (StringUtils.isNotBlank(zoekAdres.getPostcode()))
 				{
-					whereString.append(" and adres.postcode = upper(\'").append(zoekAdres.getPostcode()).append("\')");
+					whereString.append(" and adres.postcode = upper('").append(zoekAdres.getPostcode()).append("')");
 				}
 				if (zoekAdres.getHuisnummer() != null)
 				{
@@ -165,11 +166,19 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 				}
 				if (StringUtils.isNotBlank(zoekAdres.getHuisletter()))
 				{
-					whereString.append(" and lower(adres.huisletter) = lower(\'").append(zoekAdres.getHuisletter()).append("\')");
+					whereString.append(" and lower(adres.huisletter) = lower('").append(zoekAdres.getHuisletter()).append("')");
+				}
+				else if (strictMatchOpToevoeging)
+				{
+					whereString.append(" and adres.huisletter is null");
 				}
 				if (StringUtils.isNotBlank(zoekAdres.getHuisnummerToevoeging()))
 				{
-					whereString.append(" and lower(adres.huisnummer_toevoeging) = lower(\'").append(zoekAdres.getHuisnummerToevoeging()).append("\')");
+					whereString.append(" and lower(adres.huisnummer_toevoeging) = lower('").append(zoekAdres.getHuisnummerToevoeging()).append("')");
+				}
+				else if (strictMatchOpToevoeging)
+				{
+					whereString.append(" and adres.huisnummer_toevoeging is null");
 				}
 			}
 		}
@@ -186,8 +195,8 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 		{
 			whereString.append(" and ").append(getClientBaseRestrictions("client", "persoon"));
 
-			whereString.append(" and dossier.deelnamemodus <> \'").append(Deelnamemodus.SELECTIEBLOKKADE.name()).append("\'");
-			whereString.append(" and dossier.status = \'").append(DossierStatus.ACTIEF).append("\'");
+			whereString.append(" and dossier.deelnamemodus <> '").append(Deelnamemodus.SELECTIEBLOKKADE.name()).append("'");
+			whereString.append(" and dossier.status = '").append(DossierStatus.ACTIEF).append("'");
 
 			whereString.append(" and (");
 			whereString.append(" dossier.laatste_mammografie_afgerond is null");
@@ -289,9 +298,9 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 	}
 
 	@Override
-	public long countClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres)
+	public long countClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, boolean strictMatchOpToevoeging)
 	{
-		NativeQuery<Long> query = createQuery(tehuis, tehuisSelectie, zoekAdres, true, null, null);
+		NativeQuery<Long> query = createQuery(tehuis, tehuisSelectie, zoekAdres, strictMatchOpToevoeging, true, null, null);
 		if (query == null)
 		{
 			return 0;
@@ -302,7 +311,7 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 	@Override
 	public List<Client> getClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres)
 	{
-		var query = createQuery(tehuis, tehuisSelectie, zoekAdres, false, null, null);
+		var query = createQuery(tehuis, tehuisSelectie, zoekAdres, false, false, null, null);
 		if (query == null)
 		{
 			return new ArrayList<>();
@@ -312,9 +321,10 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 	}
 
 	@Override
-	public List<Client> getClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, int first, int count, String sortProperty, boolean isAscending)
+	public List<Client> getClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, int first, int count, String sortProperty,
+		boolean isAscending)
 	{
-		var query = createQuery(tehuis, tehuisSelectie, zoekAdres, false, sortProperty, isAscending);
+		var query = createQuery(tehuis, tehuisSelectie, zoekAdres, false, false, sortProperty, isAscending);
 		if (query == null)
 		{
 			return new ArrayList<>();

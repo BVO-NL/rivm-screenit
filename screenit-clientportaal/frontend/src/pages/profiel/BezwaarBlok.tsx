@@ -36,11 +36,11 @@ const BezwaarBlok = (props: BezwaarBlokProps) => {
 		<div className={styles.checkBox}>
 			<Checkbox name={props.bezwaar.type}
 					  id={props.bezwaar.type}
-					  defaultChecked={props.bezwaar.active}
+					  defaultChecked={props.bezwaar.actief}
 					  onChange={(event) => {
 						  props.onChange({
 							  type: props.bezwaar.type,
-							  active: event.target.checked,
+							  actief: event.target.checked,
 							  bevolkingsonderzoek: props.bezwaar.bevolkingsonderzoek,
 						  })
 					  }}/>
