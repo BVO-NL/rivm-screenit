@@ -27,7 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nl.rivm.screenit.dto.RolDto;
+import nl.rivm.screenit.main.dto.algemeen.RolDto;
+import nl.rivm.screenit.main.mappers.algemeen.RolMapper;
 import nl.rivm.screenit.main.service.MedewerkerService;
 import nl.rivm.screenit.main.service.RolService;
 import nl.rivm.screenit.main.web.ScreenitSession;
@@ -42,7 +43,6 @@ import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.component.validator.ScreenitUniqueFieldValidator;
 import nl.rivm.screenit.main.web.gebruiker.gedeeld.formulieren.FormulierIndicatingAjaxSubmitLink;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.mappers.RolMapper;
 import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.Permissie;
 import nl.rivm.screenit.model.Rol;

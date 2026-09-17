@@ -35,10 +35,10 @@ import nl.rivm.screenit.model.PostcodeNlProductCode;
 import nl.rivm.screenit.service.DatabaseRunner;
 
 import org.apache.commons.io.FileUtils;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemStream;
-import org.springframework.batch.item.ItemStreamException;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ItemReader;
+import org.springframework.batch.infrastructure.item.ItemStream;
+import org.springframework.batch.infrastructure.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j

@@ -21,7 +21,7 @@
 import { Component, inject } from '@angular/core'
 import { Dialog, DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
-import { DsButtonComponent, DsDescriptionsComponent, DsDropdownComponent, DsInputComponent, DsValidators } from '@topicus-rgp-ds/web'
+import { DsButtonComponent, DsDescriptionsComponent, DsDropdownComponent, DsInputComponent, DsSummaryPanelComponent, DsValidators } from '@topicus-rgp-ds/web'
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ClientContactgegevensDto } from '@shared/types/algemeen/dto/clientcontactgegevens.dto'
 import { DatePipe } from '@angular/common'
@@ -33,7 +33,7 @@ import { filter, take } from 'rxjs'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'
@@ -58,6 +58,7 @@ import { NL_DATE_FORMAT } from '@shared/constants'
     DatePipe,
     EnumLabelPipe,
     AutorisatieDirective,
+    DsSummaryPanelComponent,
   ],
   templateUrl: './client-info-bewerken-modal.component.html',
   styleUrl: './client-info-bewerken-modal.component.scss',

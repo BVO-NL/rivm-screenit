@@ -21,19 +21,19 @@ package nl.rivm.screenit.batch.jobs.mamma.uitnodigen.step.uitnodigen;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.annotation.PostConstruct;
+
 import nl.rivm.screenit.dto.mamma.planning.PlanningRestConstants;
 import nl.rivm.screenit.util.rest.RestApiFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.step.StepContribution;
 import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
 
 @Component
 public class MammaUitnodigenTasklet implements Tasklet

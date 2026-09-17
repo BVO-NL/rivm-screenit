@@ -62,6 +62,7 @@ import nl.rivm.screenit.model.colon.ColonConclusie;
 import nl.rivm.screenit.model.colon.ColonDossier;
 import nl.rivm.screenit.model.colon.ColonFitRegistratie;
 import nl.rivm.screenit.model.colon.ColonFitType;
+import nl.rivm.screenit.model.colon.ColonGeinterpreteerdeUitslag;
 import nl.rivm.screenit.model.colon.ColonHoudbaarheidFitReeks;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
@@ -86,6 +87,7 @@ import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerrichting;
 import nl.rivm.screenit.model.colon.verslag.mdl.MdlVerslagContent;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.model.enums.RedenNietTeBeoordelen;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseHoudbaarheidService;
@@ -103,6 +105,7 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -201,7 +204,7 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 		{
 			for (var fitRegistratie : ronde.getFitRegistraties())
 			{
-				if (fitRegistratie.getUitslag() == null)
+				if (!ColonFitRegistratieUtil.heeftAnalyseResultaat(fitRegistratie))
 				{
 					keuzes.add(TestVervolgKeuzeOptie.FITREGISTRATIE);
 					return;
@@ -659,7 +662,7 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 
 		var vandaag = currentDateSupplier.getLocalDate();
 
-		if (fitRegistratie.getUitslag() != null || fitRegistratie.getGeinterpreteerdeUitslag() != null)
+		if (ColonFitRegistratieUtil.heeftAnalyseResultaat(fitRegistratie) || fitRegistratie.getGeinterpreteerdeUitslag() != null)
 		{
 			var fitHoudbaarheid = houdbaarheidService.getFitHoudbaarheidVoor(fitRegistratie.getBarcode());
 			ColonHoudbaarheidFitReeks houdbaarheidFitReeks = null;
@@ -680,6 +683,10 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 			}
 			fitRegistratie.setAnalyseDatum(DateUtil.toUtilDate(vandaag.minusDays(analyseDatumDiff)));
 			fitRegistratie.setVerwerkingsDatum(DateUtil.toUtilDate(vandaag));
+			if (ColonFitRegistratieUtil.ANALYSE_RESULTAAT_FLAG_PRO.equals(fitRegistratie.getFlag()))
+			{
+				fitRegistratie.setGeinterpreteerdeUitslag(ColonGeinterpreteerdeUitslag.ONGUNSTIG);
+			}
 			uitslagOntvangen(fitRegistratie);
 
 			if (houdbaarheidFitReeks != null && (fitRegistratie.getBarcode().startsWith("TGD") || fitRegistratie.getBarcode().startsWith("TST"))
@@ -693,14 +700,25 @@ public class ColonTestTimelineServiceImpl implements ColonTestTimelineService
 
 	private void uitslagOntvangen(ColonFitRegistratie fitRegistratie)
 	{
-		if (fitRegistratie.getType() != ColonFitType.STUDIE)
-		{
-			fitService.verwerkAnalyseResultaat(fitRegistratie);
-		}
-		else
+		if (fitRegistratie.getType() == ColonFitType.STUDIE)
 		{
 			studieRegistratieService.verwerkRegistratie(fitRegistratie);
 		}
+		else if (isOnbeoordeelbaarMonster(fitRegistratie))
+		{
+
+			fitRegistratie.setRedenNietTeBeoordelen(RedenNietTeBeoordelen.bepaalReden(null));
+			fitService.monsterNietBeoordeelbaar(fitRegistratie);
+		}
+		else
+		{
+			fitService.verwerkAnalyseResultaat(fitRegistratie);
+		}
+	}
+
+	private boolean isOnbeoordeelbaarMonster(ColonFitRegistratie fitRegistratie)
+	{
+		return StringUtils.isNotBlank(fitRegistratie.getFlag()) && !ColonFitRegistratieUtil.ANALYSE_RESULTAAT_FLAG_PRO.equals(fitRegistratie.getFlag());
 	}
 
 	@Override

@@ -78,47 +78,24 @@ public interface ExtendedSpecification<T> extends Specification<T>
 
 	default ExtendedSpecification<T> and(ExtendedSpecification<T> other)
 	{
-
-		Assert.notNull(other, "Specification must not be null");
-		return (r, q, cb) ->
-		{
-			var thisPredicate = toPredicate(r, q, cb);
-			var otherPredicate = other.toPredicate(r, q, cb);
-			if (thisPredicate == null)
-			{
-				return otherPredicate;
-			}
-			else
-			{
-				return otherPredicate == null ? thisPredicate : cb.and(thisPredicate, otherPredicate);
-			}
-		};
+		Assert.notNull(other, "Other specification must not be null");
+		return ExtendedSpecificationComposition.composed(this, other, CriteriaBuilder::and);
 	}
 
 	default ExtendedSpecification<T> or(ExtendedSpecification<T> other)
 	{
-
-		Assert.notNull(other, "Specification must not be null");
-		return (r, q, cb) ->
-		{
-			var thisPredicate = toPredicate(r, q, cb);
-			var otherPredicate = other.toPredicate(r, q, cb);
-			if (thisPredicate == null)
-			{
-				return otherPredicate;
-			}
-			else
-			{
-				return otherPredicate == null ? thisPredicate : cb.or(thisPredicate, otherPredicate);
-			}
-		};
+		Assert.notNull(other, "Other specification must not be null");
+		return ExtendedSpecificationComposition.composed(this, other, CriteriaBuilder::or);
 	}
 
 	static <T> ExtendedSpecification<T> not(ExtendedSpecification<T> spec)
 	{
-
 		Assert.notNull(spec, "Specification must not be null");
-		return (r, q, cb) -> cb.not(spec.toPredicate(r, q, cb));
+		return (r, q, cb) ->
+		{
+			var predicate = spec.toPredicate(r, q, cb);
+			return predicate != null ? cb.not(predicate) : null;
+		};
 	}
 
 	static <T> ExtendedSpecification<T> unrestricted()

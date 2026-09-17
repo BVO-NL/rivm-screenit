@@ -23,7 +23,7 @@ package nl.rivm.screenit.batch.jobs.cervix.verlatedeelnamecovid.step;
 
 import lombok.AllArgsConstructor;
 
-import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.infrastructure.item.ItemReader;
 import org.springframework.stereotype.Component;
 
 @Component

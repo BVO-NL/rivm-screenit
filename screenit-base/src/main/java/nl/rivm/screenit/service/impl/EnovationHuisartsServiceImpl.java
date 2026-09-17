@@ -59,7 +59,7 @@ public class EnovationHuisartsServiceImpl implements EnovationHuisartsService
 	@Transactional
 	public void saveOrUpdate(EnovationHuisarts huisarts)
 	{
-		huisartsRepository.save(huisarts);
+		huisartsRepository.persist(huisarts);
 	}
 
 	@Override

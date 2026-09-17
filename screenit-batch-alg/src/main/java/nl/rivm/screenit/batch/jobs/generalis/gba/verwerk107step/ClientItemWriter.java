@@ -30,10 +30,10 @@ import nl.rivm.screenit.batch.service.GbaService;
 import nl.rivm.screenit.model.gba.GbaVerwerkingsLog;
 import nl.rivm.screenit.model.vertrouwdverbonden.Vo107Bericht;
 
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

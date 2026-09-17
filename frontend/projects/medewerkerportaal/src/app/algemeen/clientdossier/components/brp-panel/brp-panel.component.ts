@@ -27,7 +27,6 @@ import { take } from 'rxjs'
 import { BrpInfoBewerkenModalComponent } from './brp-info-bewerken-modal/brp-info-bewerken-modal.component'
 import { Dialog } from '@angular/cdk/dialog'
 import { DatePipe } from '@angular/common'
-import { LeegPipe } from '@shared/pipes/leeg/leeg.pipe'
 import { EnumNaturalPipe } from '@shared/pipes/enum-natural/enum-natural'
 import { BooleanPipe } from '@shared/pipes/boolean/boolean.pipe'
 import { NotificationService } from '@shared/services/notification/notification.service'
@@ -37,11 +36,12 @@ import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
 import { Required } from '@shared/types/autorisatie/required'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { LegeWaardePipe } from '@shared/pipes/lege-waarde/lege-waarde.pipe'
 
 @Component({
   selector: 'app-brp-panel',
-  imports: [DsCardComponent, DsButtonComponent, DsCardHeaderContentDirective, DsIconComponent, DatePipe, LeegPipe, EnumNaturalPipe, BooleanPipe, AutorisatieDirective],
+  imports: [DsCardComponent, DsButtonComponent, DsCardHeaderContentDirective, DsIconComponent, DatePipe, EnumNaturalPipe, BooleanPipe, AutorisatieDirective, LegeWaardePipe],
   templateUrl: './brp-panel.component.html',
 })
 export class BrpPanelComponent implements OnInit {

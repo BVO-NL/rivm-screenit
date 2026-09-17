@@ -27,11 +27,11 @@ import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.main.dto.colon.ColonFeestdagDto;
 import nl.rivm.screenit.main.exception.ValidatieException;
 import nl.rivm.screenit.main.service.colon.ColonFeestdagService;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.colon.ColonFeestdag;
-import nl.rivm.screenit.model.colon.dto.ColonFeestdagDto;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;

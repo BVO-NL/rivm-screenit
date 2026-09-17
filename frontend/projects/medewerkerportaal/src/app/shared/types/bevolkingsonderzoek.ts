@@ -37,3 +37,9 @@ export const bevolkingsonderzoekLabels: Record<Bevolkingsonderzoek, string> = {
   [Bevolkingsonderzoek.CERVIX]: 'Baarmoederhalskanker',
   [Bevolkingsonderzoek.MAMMA]: 'Borstkanker',
 }
+
+export const bevolkingsonderzoekAfkortingLabels: Record<Bevolkingsonderzoek, string> = {
+  [Bevolkingsonderzoek.COLON]: 'DK',
+  [Bevolkingsonderzoek.CERVIX]: 'BMHK',
+  [Bevolkingsonderzoek.MAMMA]: 'BK',
+}

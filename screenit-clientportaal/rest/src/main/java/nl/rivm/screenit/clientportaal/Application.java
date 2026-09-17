@@ -27,12 +27,8 @@ import nl.rivm.screenit.repository.impl.BaseJpaRepositoryImpl;
 import nl.rivm.screenit.service.DistributedLockService;
 import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 
-import org.apache.catalina.core.StandardHost;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.websocket.servlet.TomcatWebSocketServletWebServerCustomizer;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -52,35 +48,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 public class Application
 {
 
-	public static void main(String[] args)
+	static void main(String[] args)
 	{
 		SpringApplication.run(Application.class, args);
-	}
-
-	@Bean
-	public TomcatWebSocketServletWebServerCustomizer errorValveCustomizer()
-	{
-		return new TomcatWebSocketServletWebServerCustomizer()
-		{
-			@Override
-			public void customize(TomcatServletWebServerFactory factory)
-			{
-				factory.addContextCustomizers(context ->
-				{
-					var parent = context.getParent();
-					if (parent instanceof StandardHost)
-					{
-						var standardHost = (StandardHost) parent;
-						standardHost.setErrorReportValveClass("nl.rivm.screenit.clientportaal.filter.CustomTomcatErrorValve");
-					}
-				});
-			}
-
-			@Override
-			public int getOrder()
-			{
-				return 100; 
-			}
-		};
 	}
 }

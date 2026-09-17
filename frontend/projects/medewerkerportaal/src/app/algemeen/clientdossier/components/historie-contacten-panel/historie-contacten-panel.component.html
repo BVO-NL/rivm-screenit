@@ -1,0 +1,69 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<ds-card cardTitle="Historie contacten" class="no-padding">
+  <table ds-table [dataSource]="dataSource()" matSort matSortActive="datumTijd" matSortDirection="desc" [fullWidth]="true">
+    <ng-container dsColumnDef="datumTijd">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="datumTijd">Datum/tijd</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.datumTijd | date: NL_DATE_TIME_FORMAT : NL_TIMEZONE }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="acties">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="acties">Uitgevoerde actie</th>
+      <td *dsCellDef="let row" ds-cell>
+        @for (actie of row.acties; track $index) {
+          <div>{{ clientContactActieLabel(actie) }}</div>
+        }
+      </td>
+    </ng-container>
+
+    <ng-container dsColumnDef="notitie">
+      <th *dsHeaderCellDef ds-header-cell>Notitie</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.notitie | abbreviate: 100 : true }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="medewerker">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="medewerker.achternaam">Medewerker</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.medewerker | naam: NaamTransform.Medewerker }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="bevolkingsonderzoeken">
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="bevolkingsonderzoeken">Bevolkingsonderzoek</th>
+      <td *dsCellDef="let row" ds-cell>{{ row.bevolkingsonderzoeken | enumLabel: bevolkingsonderzoekLabels }}</td>
+    </ng-container>
+
+    <ng-container dsColumnDef="actie">
+      <th *dsHeaderCellDef ds-header-cell>Actie</th>
+      <td *dsCellDef="let row" ds-cell>
+        <button ds-button-secondary data-testid="btn_bekijk-notitie" (click)="openNotitie(row)">
+          {{ isOpmerkingToegestaan(row) ? 'Bewerk notitie' : 'Bekijk notitie' }}
+        </button>
+      </td>
+    </ng-container>
+
+    <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>
+    <tr ds-row *dsRowDef="let _; columns: displayedColumns"></tr>
+  </table>
+  <ds-paginator
+    [totalNumberOfItems]="contacten().length"
+    [pageSize]="paginaGrootte"
+    [pageSizeOptions]="[5, 10]"
+  />
+</ds-card>

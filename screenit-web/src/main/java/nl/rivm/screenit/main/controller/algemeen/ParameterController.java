@@ -56,7 +56,8 @@ public class ParameterController extends BaseController
 {
 
 	private static final Set<PreferenceKey> TOEGESTANE_PREFERENCE_KEYS = EnumSet.of(
-		PreferenceKey.COLON_START_DIGITALE_INTAKE
+		PreferenceKey.COLON_START_DIGITALE_INTAKE,
+		PreferenceKey.INTAKE_NIET_WIJZIGBAAR
 	);
 
 	private final SimplePreferenceService preferenceService;

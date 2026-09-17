@@ -26,12 +26,13 @@ import java.time.temporal.TemporalAdjusters;
 
 import lombok.AllArgsConstructor;
 
+import nl.rivm.screenit.main.dto.colon.ColonIntakelocatieDto;
+import nl.rivm.screenit.main.dto.colon.ColonSignaleringstermijnDto;
+import nl.rivm.screenit.main.mappers.colon.ColonIntakelocatieMapper;
 import nl.rivm.screenit.main.service.colon.ColonAfspraakslotService;
 import nl.rivm.screenit.main.web.ScreenitSession;
+import nl.rivm.screenit.main.web.security.Required;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.mappers.colon.ColonIntakelocatieMapper;
-import nl.rivm.screenit.model.colon.dto.ColonIntakelocatieDto;
-import nl.rivm.screenit.model.colon.dto.ColonSignaleringstermijnDto;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -39,6 +40,7 @@ import nl.rivm.screenit.service.colon.ColonIntakelocatieService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.wicketstuff.shiro.ShiroConstraint;
@@ -81,6 +83,26 @@ public class ColonIntakelocatieController
 		var huidigAantalAfspraakslots = afspraakslotService.getCurrentAantalAfspraakslots(intakelocatie, periode);
 		var response = intakelocatieMapper.intakelocatieToDto(intakelocatie);
 		response.setHuidigAantalAfspraakslots(huidigAantalAfspraakslots);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("{id}")
+	@Operation(summary = "Haal de intakelocatie op met id", description = "Geeft gegevens van de intakelocatie met het opgegeven id terug.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Gegevens van de intakelocatie"),
+		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+	})
+	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_LOCATIE_ROOSTER,
+		Recht.MEDEWERKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT }, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.COLON }, required = Required.ANY)
+	public ResponseEntity<ColonIntakelocatieDto> getIntakelocatieById(@PathVariable Long id)
+	{
+		var intakelocatie = intakelocatieService.getIntakelocatieById(id);
+		if (intakelocatie == null)
+		{
+			return ResponseEntity.notFound().build();
+		}
+		var response = intakelocatieMapper.intakelocatieToDto(intakelocatie);
 		return ResponseEntity.ok(response);
 	}
 

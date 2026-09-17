@@ -24,6 +24,7 @@ package nl.rivm.screenit.specification;
 import jakarta.persistence.criteria.CriteriaBuilder;
 
 import org.hibernate.query.sqm.NodeBuilder;
+import org.hibernate.query.sqm.tree.SqmRenderContext;
 import org.hibernate.query.sqm.tree.expression.SqmLiteral;
 
 @SuppressWarnings("java:S110")
@@ -36,7 +37,7 @@ public class StringLiteral extends SqmLiteral<String>
 	}
 
 	@Override
-	public void appendHqlString(StringBuilder sb)
+	public void appendHqlString(StringBuilder sb, SqmRenderContext sqmRenderContext)
 	{
 		sb.append("'").append(getLiteralValue()).append("'");
 	}

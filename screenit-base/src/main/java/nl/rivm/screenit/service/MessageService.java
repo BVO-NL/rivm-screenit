@@ -22,6 +22,7 @@ package nl.rivm.screenit.service;
  */
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +44,8 @@ public interface MessageService
 	List<Message> fetchMessages(MessageType type, String context, int maxFetchSize);
 
 	List<Message> fetchMessagesGroterDanId(MessageType type, String context, Long vanafMessageIdExclusief, int maxFetchSize);
+
+	List<Message> fetchMessagesExclusiefIds(MessageType type, String context, Collection<Long> uitgeslotenMessageIds, int maxFetchSize);
 
 	<T> T getContent(Message message) throws JsonProcessingException;
 

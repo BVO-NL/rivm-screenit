@@ -31,10 +31,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @Slf4j
+@Profile("!filler")
 @EnableJpaRepositories(basePackages = { "nl.rivm.screenit" }, repositoryBaseClass = BaseJpaRepositoryImpl.class)
 @ComponentScan(
 	basePackages = { "nl.rivm.screenit", "nl.topicuszorg" },
@@ -50,10 +52,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 public class WebApplicatie
 {
-
-	public static void main(String[] args)
+	static void main(String[] args)
 	{
 		SpringApplication.run(WebApplicatie.class, args);
 	}
-
 }

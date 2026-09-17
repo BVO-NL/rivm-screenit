@@ -59,10 +59,10 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

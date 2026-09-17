@@ -24,6 +24,8 @@ package nl.rivm.screenit.main.exception;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityNotFoundException;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -110,6 +112,15 @@ public class GlobalExceptionHandler
 		LOG.warn(ex.getMessage());
 		var node = objectMapper.createObjectNode();
 		node.put("foutmelding", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(node.toString());
+	}
+
+	@ExceptionHandler(EntityNotFoundException.class)
+	public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex)
+	{
+		LOG.warn(ex.getMessage());
+		var node = objectMapper.createObjectNode();
+		node.put("foutmelding", "De gevraagde gegevens zijn niet gevonden");
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(node.toString());
 	}
 

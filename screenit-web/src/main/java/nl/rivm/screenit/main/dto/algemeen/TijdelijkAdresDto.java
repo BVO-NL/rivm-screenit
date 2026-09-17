@@ -26,27 +26,11 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.dto.EntityDto;
-
 @Getter
 @Setter
-public class TijdelijkAdresDto extends EntityDto
+public class TijdelijkAdresDto extends AdresDto
 {
 	private String clientId;
-
-	private String straatnaam;
-
-	private Integer huisnummer;
-
-	private String huisletter;
-
-	private String huisnummerToevoeging;
-
-	private String aanduidingBijHuisnummer;
-
-	private String postcode;
-
-	private String plaats;
 
 	private LocalDate begindatum;
 

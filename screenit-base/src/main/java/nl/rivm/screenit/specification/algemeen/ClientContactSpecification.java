@@ -26,6 +26,9 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContact;
+import nl.rivm.screenit.model.ClientContactActie;
+import nl.rivm.screenit.model.ClientContactActieType;
+import nl.rivm.screenit.model.ClientContactActie_;
 import nl.rivm.screenit.model.ClientContact_;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
@@ -47,6 +50,18 @@ public class ClientContactSpecification
 	public static Specification<ClientContact> heeftOpmerking()
 	{
 		return (r, q, cb) -> cb.isNotNull(r.get(ClientContact_.opmerking));
+	}
+
+	public static Specification<ClientContact> zonderActieType(ClientContactActieType type)
+	{
+		return (root, query, cb) ->
+		{
+			var subquery = query.subquery(Long.class);
+			var actie = subquery.from(ClientContactActie.class);
+			subquery.select(actie.get(AbstractHibernateObject_.id))
+				.where(cb.equal(actie.get(ClientContactActie_.contact), root), cb.equal(actie.get(ClientContactActie_.type), type));
+			return cb.not(cb.exists(subquery));
+		};
 	}
 
 }

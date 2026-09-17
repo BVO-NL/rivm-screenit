@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
 import nl.rivm.screenit.model.colon.ColonFitAnalyseResultaat;
 import nl.rivm.screenit.service.HibernateService;
 
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 @Component

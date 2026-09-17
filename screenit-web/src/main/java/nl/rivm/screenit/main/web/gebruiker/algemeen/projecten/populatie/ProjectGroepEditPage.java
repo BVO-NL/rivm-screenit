@@ -55,7 +55,6 @@ import nl.rivm.screenit.model.project.ProjectType;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
-import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.ProjectUtil;
 import nl.topicuszorg.wicket.hibernate.cglib.ModelProxyHelper;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -88,9 +87,6 @@ public class ProjectGroepEditPage extends ProjectBasePage
 {
 	@SpringBean
 	private ProjectService projectService;
-
-	@SpringBean
-	private UploadDocumentService uploadDocumentService;
 
 	@SpringBean
 	private LogService logService;
@@ -137,7 +133,7 @@ public class ProjectGroepEditPage extends ProjectBasePage
 
 		add(new Label("projecttitel", Model.of(projectTitel)));
 
-		var form = new Form<ProjectGroep>("form", model);
+		var form = new Form<>("form", model);
 		add(form);
 
 		form.add(ComponentHelper.addTextField(form, "naam", true, 24, false));
@@ -184,13 +180,11 @@ public class ProjectGroepEditPage extends ProjectBasePage
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				var groep = form.getModelObject();
+				groep = ModelProxyHelper.deproxy(groep);
 				if (getPushDatumVeranderd(groep))
 				{
 					dialog.openWith(target, new ConfirmPanel(IDialog.CONTENT_ID, Model.of(getString("confirm.uitnodigingen.pushen")), null, new DefaultConfirmCallback()
 					{
-
-						private static final long serialVersionUID = 1L;
-
 						@Override
 						public void onYesClick(AjaxRequestTarget target)
 						{
@@ -212,6 +206,7 @@ public class ProjectGroepEditPage extends ProjectBasePage
 	private void opslaan(Form<ProjectGroep> form)
 	{
 		var groep = form.getModelObject();
+		groep = ModelProxyHelper.deproxy(groep);
 		var project = groep.getProject();
 		if (groep.getUitnodigenVoorDKvoor() != null && project.getEindDatum().before(groep.getUitnodigenVoorDKvoor()))
 		{
@@ -234,8 +229,8 @@ public class ProjectGroepEditPage extends ProjectBasePage
 						{
 							ScreenitSession.get().warn(String.format(getString("einde.groep.na.einde.instroom"), groep.getNaam()));
 						}
-						var clientenBestand = clientenBestanden.getObject().get(0);
-						projectService.queueProjectBestandVoorPopulatie(ModelProxyHelper.deproxy(groep), clientenBestand.getContentType(), clientenBestand.getClientFileName(),
+						var clientenBestand = clientenBestanden.getObject().getFirst();
+						projectService.queueProjectBestandVoorPopulatie(groep, clientenBestand.getContentType(), clientenBestand.getClientFileName(),
 							clientenBestand.writeToTempFile(), ScreenitSession.get().getIngelogdAccount());
 
 						setResponsePage(new ProjectBestandenOverzicht(ProjectGroepEditPage.this.getProjectModel()));

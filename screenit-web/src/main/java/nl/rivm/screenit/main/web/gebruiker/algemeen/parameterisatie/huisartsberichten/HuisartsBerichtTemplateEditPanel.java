@@ -120,7 +120,7 @@ public class HuisartsBerichtTemplateEditPanel extends GenericPanel<HuisartsBeric
 			{
 				var template = form.getModelObject();
 				template.setAangepast(currentDateSupplier.getDate());
-				templateRepository.save(template);
+				templateRepository.persist(template);
 				logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, ScreenitSession.get().getIngelogdAccount(),
 					"Huisartsbericht template: '" + template.getBerichtType().getNaam() + "' aangepast.", Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX);
 				info("Template is opgeslagen");

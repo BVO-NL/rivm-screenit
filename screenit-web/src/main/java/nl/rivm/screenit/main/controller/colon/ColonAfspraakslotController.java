@@ -32,6 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
 import nl.rivm.screenit.main.controller.BaseController;
+import nl.rivm.screenit.main.dto.colon.ColonAfspraakslotDto;
+import nl.rivm.screenit.main.dto.colon.ColonTijdslotDto;
 import nl.rivm.screenit.main.exception.BeperkingException;
 import nl.rivm.screenit.main.exception.BulkAanmakenException;
 import nl.rivm.screenit.main.exception.BulkVerwijderenException;
@@ -40,8 +42,6 @@ import nl.rivm.screenit.main.service.colon.ColonAfspraakslotService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.colon.RoosterListViewFilter;
-import nl.rivm.screenit.model.colon.dto.ColonAfspraakslotDto;
-import nl.rivm.screenit.model.colon.dto.ColonTijdslotDto;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;

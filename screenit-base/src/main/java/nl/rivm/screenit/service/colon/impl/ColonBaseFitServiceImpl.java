@@ -389,6 +389,7 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 			fitRegistratie.setGeinterpreteerdeUitslag(null);
 			fitRegistratie.setNormWaarde(null);
 			fitRegistratie.setUitslag(null);
+			fitRegistratie.setFlag(null);
 		}
 	}
 
@@ -512,7 +513,7 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 		var fobGold = uitnodiging.getGekoppeldeFitRegistratie();
 		var extra = uitnodiging.getGekoppeldeExtraFitRegistratie();
 		var datum = currentDateSupplier.getDate();
-		if (fobGold != null && (fobGold.getUitslag() != null || fobGold.getGeinterpreteerdeUitslag() != null))
+		if (fobGold != null && (ColonFitRegistratieUtil.heeftUitslag(fobGold) || fobGold.getGeinterpreteerdeUitslag() != null))
 		{
 			uitslagVerwijderen(fobGold);
 			setStatusEnDatum(fobGold, ColonFitRegistratieStatus.VERWIJDERD, datum);
@@ -525,7 +526,7 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 
 		if (extra != null)
 		{
-			if (extra.getUitslag() != null)
+			if (ColonFitRegistratieUtil.heeftUitslag(extra))
 			{
 				setStatusEnDatum(extra, ColonFitRegistratieStatus.VERWIJDERD, datum);
 			}
@@ -858,6 +859,6 @@ public class ColonBaseFitServiceImpl implements ColonBaseFitService
 		{
 			uitnodiging.setGekoppeldeExtraFitRegistratie(fitRegistratie);
 		}
-		fitRegistratieRepository.save(fitRegistratie);
+		fitRegistratieRepository.persist(fitRegistratie);
 	}
 }

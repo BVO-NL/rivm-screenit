@@ -81,10 +81,10 @@ public class MammaScreeningRondeSampleWriter extends MammaAbstractEventWriter<Ma
 	{
 		return entityGraph ->
 		{
-			var uitnodigingenSubgraph = entityGraph.addSubgraph(MammaScreeningRonde_.uitnodigingen);
+			var uitnodigingenSubgraph = entityGraph.addElementSubgraph(MammaScreeningRonde_.uitnodigingen);
 			var briefSubgraph = uitnodigingenSubgraph.addSubgraph(MammaUitnodiging_.BRIEF, MammaBrief.class);
 			briefSubgraph.addSubgraph(MammaBrief_.PROJECT_BRIEF);
-			briefSubgraph.addSubgraph(MammaBrief_.mergedBrieven, MammaMergedBrieven.class).addSubgraph(MergedBrieven_.MERGED_BRIEVEN);
+			briefSubgraph.addTreatedSubgraph(MammaBrief_.mergedBrieven, MammaMergedBrieven.class).addSubgraph(MergedBrieven_.MERGED_BRIEVEN);
 
 			var screeningRondeEventSubgraph = entityGraph.addSubgraph(MammaScreeningRonde_.screeningRondeEvent);
 			screeningRondeEventSubgraph.addSubgraph(MammaKansberekeningScreeningRondeEvent_.dossier);

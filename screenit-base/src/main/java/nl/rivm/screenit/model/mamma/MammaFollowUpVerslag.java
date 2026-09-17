@@ -24,6 +24,7 @@ package nl.rivm.screenit.model.mamma;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 
 import nl.rivm.screenit.model.mamma.verslag.MammaVerslag;
@@ -39,6 +40,7 @@ public class MammaFollowUpVerslag extends MammaVerslag<MammaFollowUpVerslagConte
 
 	@OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	@JoinColumn(nullable = false)
 	private MammaFollowUpVerslagContent verslagContent;
 
 	@Override

@@ -22,51 +22,72 @@ import {useNavigate} from "react-router"
 import styles from "./MammaAfspraakBevestigingsWizard.module.scss"
 import properties from "./MammaAfspraakBevestigingsWizard.json"
 import {BevestigingsType} from "../../../../../datatypes/BevestigingsType"
-import {selectMammaAfspraakBevestigingsoptie, selectMammaAfspraakOptie} from "../../../../../selectors/MammaAfspraakSelectors"
+import {selectMammaAfspraakBevestigingsoptie} from "../../../../../selectors/MammaAfspraakSelectors"
 import {useSelector} from "react-redux"
 import MammaAfspraakBevestigingsWizard from "./MammaAfspraakBevestigingsWizard"
 import {ArrowType} from "../../../../../components/vectors/ArrowIconComponent"
 import Button from "../../../../../components/input/Button"
-import datadogService from "../../../../../services/DatadogService"
-import {AnalyticsCategorie} from "../../../../../datatypes/AnalyticsCategorie"
 import SpanWithHtml from "../../../../../components/span/SpanWithHtml"
 import classNames from "classnames"
-import AfspraakView from "../../../../../components/afspraak_view/AfspraakView"
 import AfsluitenLink from "../../../../../components/afsluiten_link/AfsluitenLink"
-import React, {FC} from "react"
+import {FC, useEffect, useState} from "react"
+import {OpenstaandeOnderzoekenPopup} from "../openstaande-onderzoeken/OpenstaandeOnderzoekenPopup"
+import {State} from "../../../../../datatypes/State"
+import {getOpenstaandeUitnodigingen} from "../../../../../api/OpenstaandeUitnodigingenThunkAction"
+import {useThunkDispatch} from "../../../../../index"
+import MammaAfspraakView from "../../../../../components/mamma_afspraak_view/MammaAfspraakView"
+import HuisartsView from "../../../../../components/huisarts_view/HuisartsView"
+import datadogService from "../../../../../services/DatadogService"
+import {AnalyticsCategorie} from "../../../../../datatypes/AnalyticsCategorie"
 import {useWizardStap} from "../../../../../components/wizard_indicator/WizardIndicatorContext"
 
 const MammaAfspraakOverzichtPage: FC = () => {
 	const navigate = useNavigate()
-	const afspraakBevestiging = useSelector(selectMammaAfspraakBevestigingsoptie)!
-	const afspraakOptie = useSelector(selectMammaAfspraakOptie)!
-
-	const navigeerNaarVorigePagina = (): void => {
-		const url = afspraakBevestiging.toonSmsOptie ? "/mamma/afspraak/herinnering/" : "/mamma/afspraak/bevestiging-selectie/"
-		navigate(url)
-	}
+	const dispatch = useThunkDispatch()
 	const huidigeStap = useWizardStap()
+	const afspraakBevestiging = useSelector(selectMammaAfspraakBevestigingsoptie)!
+	const [toonOpenstaandePopup, setToonOpenstaandePopup] = useState(false)
+	const openstaandeOnderzoeken = useSelector((state: State) => state.client.openstaandeUitnodigingen)
+	const huidigeHuisarts = useSelector((state: State) => state.client.mammaDossier.huisartsHuidigeRonde)
+
+	useEffect(() => {
+		dispatch(getOpenstaandeUitnodigingen())
+	}, [])
+
+	const afsluiten = (): void => {
+		datadogService.stuurEvent("afspraakoverzichtBekeken", AnalyticsCategorie.MAMMA_AFSPRAAK, {
+			stap: huidigeStap,
+		})
+		if (openstaandeOnderzoeken?.length > 0) {
+			setToonOpenstaandePopup(true)
+		} else {
+			navigate("/mamma")
+		}
+	}
 
 	return (
 		<div>
-			<SpanWithHtml value={properties.bevestiging.description}/>
-			<AfspraakView adres={afspraakOptie.adres} postcode={afspraakOptie.postcode} plaats={afspraakOptie.plaats} datumTijd={afspraakOptie.datumTijd} magWijzigen={false}/>
+			{toonOpenstaandePopup && <OpenstaandeOnderzoekenPopup
+				openstaandeOnderzoeken={openstaandeOnderzoeken}
+			/>}
+
+			<MammaAfspraakView tekst={properties.bevestiging.afspraak_bijschrift}/>
+			{
+				huidigeHuisarts && <><SpanWithHtml value={properties.bevestiging.huisarts_bijschrift}/>
+					<HuisartsView huisarts={huidigeHuisarts!} andereHuisartsKiezen={() => navigate("/mamma/afspraak/uw-huisarts?wijzig=true")}/>
+				</>
+			}
 			<SpanWithHtml value={maakOmschrijving()}/>
 
 			<div className={classNames(styles.bevestigenForm, styles.metVorige)}>
 				<Button lightStyle={true}
-				        displayArrow={ArrowType.ARROW_LEFT}
-				        onClick={navigeerNaarVorigePagina}
-				        label={properties.afspraak_maken.button.vorige}/>
+						displayArrow={ArrowType.ARROW_LEFT}
+						onClick={() => navigate("/mamma/afspraak/uw-huisarts/")}
+						label={properties.afspraak_maken.button.vorige}/>
 				<div className={styles.knoppenRechts}>
-					<Button label={properties.afspraak_maken.button.volgende}
-					        onClick={() => {
-								datadogService.stuurEvent("afspraakoverzichtBekeken", AnalyticsCategorie.MAMMA_AFSPRAAK, {
-									stap: huidigeStap,
-								})
-								navigate("/mamma/afspraak/uw-huisarts")
-							}}
-					        displayArrow={ArrowType.ARROW_RIGHT}/>
+					<Button label={properties.afspraak_maken.button.afronden}
+							onClick={afsluiten}
+							displayArrow={ArrowType.ARROW_RIGHT}/>
 					<AfsluitenLink/>
 				</div>
 			</div>

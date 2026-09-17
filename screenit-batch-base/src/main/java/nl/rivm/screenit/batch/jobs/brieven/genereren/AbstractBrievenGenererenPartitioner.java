@@ -31,8 +31,10 @@ import nl.rivm.screenit.repository.algemeen.ScreeningOrganisatieRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.OrganisatieService;
 
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.springframework.data.jpa.domain.Specification.unrestricted;
 
 public abstract class AbstractBrievenGenererenPartitioner extends BasePartitioner
 {
@@ -62,7 +64,7 @@ public abstract class AbstractBrievenGenererenPartitioner extends BasePartitione
 		}
 		else
 		{
-			screeningsorganisaties.addAll(screeningOrganisatieRepository.findAll());
+			screeningsorganisaties.addAll(screeningOrganisatieRepository.findAll(unrestricted()));
 		}
 
 		for (var screeningsorganisatie : screeningsorganisaties)

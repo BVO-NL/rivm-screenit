@@ -84,7 +84,7 @@ public class DigitaalBerichtTemplateServiceImpl implements DigitaalBerichtTempla
 	public void saveOrUpdateDigitaalBerichtTemplate(DigitaalBerichtTemplate template, Account account, String berichtTemplateTypeNaam)
 	{
 		template.setGewijzigdOp(currentDateSupplier.getLocalDateTime());
-		digitaalBerichtTemplateRepository.save(template);
+		digitaalBerichtTemplateRepository.persist(template);
 		maakLogGebeurtenisBijOpslaanTemplate(template, account, berichtTemplateTypeNaam);
 	}
 

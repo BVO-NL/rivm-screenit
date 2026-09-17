@@ -203,11 +203,11 @@ public class DashboardServiceImpl implements DashboardService
 			{
 			case ERROR:
 				dashboardStatus.setLevel(Level.ERROR);
-				dashboardStatusRepository.save(dashboardStatus);
+				dashboardStatusRepository.persist(dashboardStatus);
 				return false;
 			case WARNING:
 				dashboardStatus.setLevel(Level.WARNING);
-				dashboardStatusRepository.save(dashboardStatus);
+				dashboardStatusRepository.persist(dashboardStatus);
 				break;
 			}
 		}

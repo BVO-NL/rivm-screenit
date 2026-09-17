@@ -21,7 +21,7 @@
 import { BezwaarMomentDto } from '@/shared/types/algemeen/dto/bezwaar-moment.dto'
 import { AanvraagBriefStatus } from '@/shared/types/algemeen/enum/aanvraag-brief-status'
 import { BezwaarType } from '@/shared/types/algemeen/enum/bezwaar-type'
-import { Bevolkingsonderzoek } from '@/shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@/shared/types/bevolkingsonderzoek'
 
 export const maakBezwaarMoment = (overrides: Partial<BezwaarMomentDto> = {}): BezwaarMomentDto => ({
   id: 1,

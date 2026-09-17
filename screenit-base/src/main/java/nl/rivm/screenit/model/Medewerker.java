@@ -55,10 +55,10 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 @Entity
-@Table(schema = "algemeen", name = "medewerker",
-	indexes = {
-		@Index(name = "IDX_MEDEWERKER_ACTIEF", columnList = "actief"),
-		@Index(name = "IDX_MEDEWERKER_ACHTERNAAM", columnList = "achternaam") })
+@Table(schema = "algemeen", name = "medewerker", indexes = {
+	@Index(name = "IDX_MEDEWERKER_ACTIEF", columnList = "actief"),
+	@Index(name = "IDX_MEDEWERKER_ACHTERNAAM", columnList = "achternaam")
+})
 @Audited
 @Getter
 @Setter

@@ -29,10 +29,10 @@ import lombok.Setter;
 import nl.rivm.screenit.batch.jobs.mamma.beoordeling.ilm.MammaIlmJobListener;
 import nl.rivm.screenit.util.DateUtil;
 
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.job.flow.FlowExecutionStatus;
 import org.springframework.batch.core.job.flow.JobExecutionDecider;
+import org.springframework.batch.core.step.StepExecution;
 
 @Setter
 public class MammaIlmDecider implements JobExecutionDecider

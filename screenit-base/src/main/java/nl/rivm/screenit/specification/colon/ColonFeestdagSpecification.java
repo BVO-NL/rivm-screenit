@@ -28,7 +28,6 @@ import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.colon.ColonFeestdag;
 import nl.rivm.screenit.model.colon.ColonFeestdag_;
-import nl.rivm.screenit.model.colon.dto.ColonFeestdagDto;
 import nl.rivm.screenit.specification.RangeSpecification;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 
@@ -57,8 +56,8 @@ public class ColonFeestdagSpecification
 		return RangeSpecification.bevat(range, r -> r.get(ColonFeestdag_.datum));
 	}
 
-	public static Specification<ColonFeestdag> isNietFeestdag(ColonFeestdagDto feestdagDto)
+	public static Specification<ColonFeestdag> isNietFeestdag(Long id)
 	{
-		return skipWhenNull(feestdagDto.getId(), (r, q, cb) -> cb.notEqual(r.get(AbstractHibernateObject_.id), feestdagDto.getId()));
+		return skipWhenNull(id, (r, q, cb) -> cb.notEqual(r.get(AbstractHibernateObject_.id), id));
 	}
 }

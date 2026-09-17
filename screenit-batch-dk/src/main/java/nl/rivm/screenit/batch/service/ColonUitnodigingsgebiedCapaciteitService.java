@@ -27,7 +27,7 @@ import java.util.List;
 import nl.rivm.screenit.batch.service.impl.ColonUitnodigingsgebiedSelectieContext;
 import nl.rivm.screenit.model.colon.enums.ColonUitnodigingscategorie;
 
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 
 public interface ColonUitnodigingsgebiedCapaciteitService
 {

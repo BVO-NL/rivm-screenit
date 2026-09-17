@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact.colon;
  * =========================LICENSE_END==================================
  */
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,6 +35,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.PreferenceKey;
+import nl.rivm.screenit.main.exception.EntityNietGevondenException;
+import nl.rivm.screenit.main.service.colon.ColonIntakeafspraakService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
 import nl.rivm.screenit.main.web.component.DateTimeField;
@@ -51,7 +52,6 @@ import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamer;
 import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamerFilter;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
-import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
@@ -62,7 +62,6 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.ColonBaseUitnodigingService;
-import nl.rivm.screenit.service.colon.PlanningService;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
@@ -120,10 +119,10 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 	private OrganisatieParameterService organisatieParameterService;
 
 	@SpringBean
-	private PlanningService planningService;
+	private ColonBaseAfspraakService afspraakService;
 
 	@SpringBean
-	private ColonBaseAfspraakService afspraakService;
+	private ColonIntakeafspraakService intakeafspraakService;
 
 	private final boolean magAfspraakBinnenIntakeNietWijzigPeriodePlaatsen = ScreenitSession.get()
 		.checkPermission(Recht.MEDEWERKER_CLIENT_SR_INTAKE_VERPLAATS_BINNEN_INTAKE_NIET_WIJZIGBAAR_PERIODE, Actie.AANPASSEN);
@@ -618,78 +617,34 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 	public List<String> getOpslaanMeldingen()
 	{
 		nieuweAfspraakModel = null;
-		if (gekozenVrijSlotZonderKamer.getIntakelocatieId() != null && (gekozenVrijSlotZonderKamer.getStartTijd() != null || datumTijdBuitenRooster != null))
+		ColonIntakeAfspraak nieuweAfspraak;
+		try
 		{
-			var intakelocatie = hibernateService.get(ColonIntakelocatie.class, gekozenVrijSlotZonderKamer.getIntakelocatieId());
+			nieuweAfspraak = intakeafspraakService.maakNieuweAfspraak(getModelObject().getClient(), gekozenVrijSlotZonderKamer, DateUtil.toLocalDateTime(datumTijdBuitenRooster));
+		}
+		catch (EntityNietGevondenException ex)
+		{
+			return List.of(ex.getMessage());
+		}
+		catch (IllegalStateException ex)
+		{
+			return List.of(getString(ex.getMessage()));
+		}
 
-			ColonIntakekamer beschikbareKamer;
-			if (Boolean.FALSE.equals(buitenRooster.getObject()))
-			{
-				beschikbareKamer = planningService.getBeschikbareKamer(DateUtil.toLocalDateTime(gekozenVrijSlotZonderKamer.getStartTijd()),
-					gekozenVrijSlotZonderKamer.getIntakelocatieId());
-				if (beschikbareKamer == null)
-				{
-					return List.of(getString("vrije.slot.intussen.bezet"));
-				}
-			}
-			else
-			{
-				var kamers = intakelocatie.getKamers();
-				beschikbareKamer = kamers.stream().filter(k -> Boolean.TRUE.equals(k.getActief())).findFirst().orElse(null);
-			}
+		nieuweAfspraakModel = ModelUtil.ccModel(nieuweAfspraak);
 
-			nieuweAfspraakModel = ModelUtil.ccModel(new ColonIntakeAfspraak());
-			var nieuweAfspraak = nieuweAfspraakModel.getObject();
-			nieuweAfspraak.setKamer(beschikbareKamer);
-			nieuweAfspraak.setBezwaar(false);
-			nieuweAfspraak.setGewijzigdOp(currentDateSupplier.getLocalDateTime());
-			nieuweAfspraak.setAangemaaktOp(currentDateSupplier.getLocalDateTime());
-			nieuweAfspraak.setStatus(ColonAfspraakStatus.GEPLAND);
-
-			if (gekozenVrijSlotZonderKamer.getAfstand() != null)
-			{
-				nieuweAfspraak.setAfstand(BigDecimal.valueOf(gekozenVrijSlotZonderKamer.getAfstand()));
-			}
-			else
-			{
-				nieuweAfspraak.setAfstand(BigDecimal.valueOf(45));
-			}
-
-			var oudeAfspraak = getModelObject();
-			nieuweAfspraak.setScreeningRonde(oudeAfspraak.getScreeningRonde());
-			var client = oudeAfspraak.getClient();
-			nieuweAfspraak.setClient(client);
-			client.getAfspraken().add(nieuweAfspraak);
-
-			if (Boolean.FALSE.equals(buitenRooster.getObject()))
-			{
-				nieuweAfspraak.setVanaf(DateUtil.toLocalDateTime(gekozenVrijSlotZonderKamer.getStartTijd()));
-				nieuweAfspraak.setTot(DateUtil.toLocalDateTime(gekozenVrijSlotZonderKamer.getEindTijd()));
-			}
-			else
-			{
-				nieuweAfspraak.setVanaf(DateUtil.toLocalDateTime(datumTijdBuitenRooster));
-				var duurAfspraakInMinuten = (int) organisatieParameterService.getOrganisatieParameter(intakelocatie, OrganisatieParameterKey.COLON_DUUR_AFSPRAAK_IN_MINUTEN);
-				nieuweAfspraak.setTot(nieuweAfspraak.getVanaf().plusMinutes(duurAfspraakInMinuten));
-			}
-
-			var format = DateUtil.LOCAL_DATE_TIME_FORMAT;
-			var laatsteAfspraak = nieuweAfspraak.getScreeningRonde().getLaatsteAfspraak();
-			if (laatsteAfspraak != null)
-			{
-				return List.of(String.format("coloscopie intake afspraak van %1$s in %2$s van %3$s verplaatsen naar %4$s in %5$s van %6$s",
-					getAfspraakDatumString(laatsteAfspraak.getVanaf(), format), laatsteAfspraak.getKamer().getNaam(), laatsteAfspraak.getKamer().getIntakelocatie().getNaam(),
-					format.format(nieuweAfspraak.getVanaf()), nieuweAfspraak.getKamer().getNaam(), nieuweAfspraak.getKamer().getIntakelocatie().getNaam()));
-			}
-			else
-			{
-				return List.of(String.format("coloscopie intake afspraak wilt maken op %1$s in %2$s van %3$s", format.format(nieuweAfspraak.getVanaf()),
-					nieuweAfspraak.getKamer().getNaam(), nieuweAfspraak.getKamer().getIntakelocatie().getNaam()));
-			}
+		var format = DateUtil.LOCAL_DATE_TIME_FORMAT;
+		var laatsteAfspraak = nieuweAfspraak.getScreeningRonde().getLaatsteAfspraak();
+		if (laatsteAfspraak != null)
+		{
+			return List.of(String.format("coloscopie intake afspraak van %1$s in %2$s van %3$s verplaatsen naar %4$s in %5$s van %6$s",
+				getAfspraakDatumString(laatsteAfspraak.getVanaf(), format), laatsteAfspraak.getKamer().getNaam(), laatsteAfspraak.getKamer().getIntakelocatie().getNaam(),
+				format.format(nieuweAfspraak.getVanaf()), nieuweAfspraak.getKamer().getNaam(), nieuweAfspraak.getKamer().getIntakelocatie().getNaam()));
 		}
 		else
 		{
-			return List.of("Coloscopie intake afspraak kan niet worden verplaatst. Niet alle gegevens zijn geselecteerd");
+			return List.of(String.format("coloscopie intake afspraak wilt maken op %1$s in %2$s van %3$s", format.format(nieuweAfspraak.getVanaf()),
+				nieuweAfspraak.getKamer().getNaam(), nieuweAfspraak.getKamer().getIntakelocatie().getNaam()));
 		}
 	}
 

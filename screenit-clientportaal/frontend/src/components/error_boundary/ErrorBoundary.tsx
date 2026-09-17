@@ -66,7 +66,7 @@ class ErrorBoundary extends Component<Props, State> {
 		return (
 			<>
 				<div className={styles.appErrorBoundary}>
-					<Grid container justifyContent="flex-end">
+					<Grid container sx={{justifyContent: "flex-end"}}>
 						<IconButton href="https:
 						            aria-label="close">
 							<svg className={classNames("MuiSvgIcon-root", "MuiSvgIcon-fontSizeMedium", styles.closeIcon)} focusable="false" aria-hidden="true" viewBox="0 0 24 24"
@@ -78,12 +78,10 @@ class ErrorBoundary extends Component<Props, State> {
 					<Grid
 						container
 						spacing={0}
-						alignItems="center"
-						justifyContent="center"
-						style={{minHeight: "80vh"}}
+						sx={{alignItems: "center", justifyContent: "center", minHeight: "80vh"}}
 					>
 						<Grid size={{xs: this.isSupportedBrowser ? 5 : 8}}>
-							<Grid size={{xs: 10}} justifyContent="center" alignItems="center" container style={{minHeight: "10vh"}}
+							<Grid size={{xs: 10}} container sx={{justifyContent: "center", alignItems: "center", minHeight: "10vh"}}
 							>
 								<MijnBevolkingsOnderzoekLogo/>
 							</Grid>

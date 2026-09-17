@@ -33,7 +33,7 @@ import { tijdStappenValidator } from '@shared/validators/tijd-stappen/tijd-stapp
 import { createMaxAantalBlokkenValidator } from '@shared/validators/max-aantal-blokken/max-aantal-blokken.validator'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { Actie } from '@shared/types/autorisatie/actie'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@/shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'

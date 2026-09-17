@@ -18,6 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-export const isStringNullOfLeeg = (str: string) => {
+export const isStringNullOfLeeg = (str: string | null | undefined) => {
   return !(str != null && str.length > 0)
 }

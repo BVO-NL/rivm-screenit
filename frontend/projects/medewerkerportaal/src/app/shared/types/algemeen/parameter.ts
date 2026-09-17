@@ -18,7 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-export interface Parameter {
-  naam: string
-  waarde: unknown
+import { ParameterKey } from '@shared/types/algemeen/enum/parameter-key'
+
+export interface Parameter<T> {
+  naam: ParameterKey
+  waarde: T
 }

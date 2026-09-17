@@ -21,7 +21,7 @@
 import { Component, inject, signal } from '@angular/core'
 import { BaseDialogComponent } from '@/shared/components/base-dialog/base-dialog.component'
 import { DsButtonComponent } from '@topicus-rgp-ds/web'
-import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
+import { Dialog, DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { DossierGebeurtenisDto } from '@/shared/types/algemeen/dto/dossier-gebeurtenis.dto'
 import { BezwaarLijstComponent } from '../bezwaar-lijst/bezwaar-lijst.component'
 import { BezwaarMomentDto } from '@/shared/types/algemeen/dto/bezwaar-moment.dto'
@@ -30,30 +30,16 @@ import { BriefActie, briefActieLabels } from '@/shared/types/algemeen/enum/brief
 import { EnumLabelPipe } from '@shared/pipes/enum-label/enum-label.pipe'
 import { BrievenLijstComponent } from '@algemeen/clientdossier/components/brieven-lijst/brieven-lijst.component'
 import { SingleFileSelectorComponent } from '@shared/components/single-file-selector/single-file-selector.component'
-import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.directive'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
-import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
-import { Recht } from '@shared/types/autorisatie/recht'
-import { Actie } from '@shared/types/autorisatie/actie'
-import { Required } from '@shared/types/autorisatie/required'
-import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
 import { BezwaarService } from '@algemeen/services/bezwaar/bezwaar.service'
 import { BriefService } from '@algemeen/services/brief/brief.service'
 import { NotificationService } from '@shared/services/notification/notification.service'
-import { take } from 'rxjs'
+import { filter, switchMap, take } from 'rxjs'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component'
 
 @Component({
-  imports: [
-    BaseDialogComponent,
-    BezwaarLijstComponent,
-    DsButtonComponent,
-    EnumLabelPipe,
-    BrievenLijstComponent,
-    SingleFileSelectorComponent,
-    AutorisatieDirective,
-    ReactiveFormsModule,
-  ],
+  imports: [BaseDialogComponent, BezwaarLijstComponent, DsButtonComponent, EnumLabelPipe, BrievenLijstComponent, SingleFileSelectorComponent, ReactiveFormsModule],
   templateUrl: './bezwaar-moment-dialog.component.html',
   styles: `
     app-bezwaar-lijst {
@@ -65,33 +51,32 @@ export class BezwaarMomentDialogComponent {
   protected readonly data: {
     gebeurtenis: DossierGebeurtenisDto
     bezwaarMoment?: BezwaarMomentDto
-    isMeestRecenteBezwaarMoment: boolean
     toonFormulierVervangenDirect?: boolean
   } = inject(DIALOG_DATA)
   private readonly dialogRef = inject(DialogRef)
   private readonly bezwaarService = inject(BezwaarService)
   private readonly briefService = inject(BriefService)
   private readonly notificatieService = inject(NotificationService)
+  private readonly dialogService = inject(Dialog)
 
-  protected readonly briefActies = signal<BriefActie[]>(
-    this.data.isMeestRecenteBezwaarMoment
-      ? (this.data.bezwaarMoment?.briefActies ?? []).filter((actie) => actie !== BriefActie.TEMPLATE_INZIEN && actie !== BriefActie.VERVANGEN)
-      : [],
-  )
+  protected readonly briefActies = signal<BriefActie[]>((this.data.bezwaarMoment?.briefActies ?? []).filter((actie) => actie !== BriefActie.TEMPLATE_INZIEN))
   protected readonly brieven = signal<BriefDto[]>(this.sorteerOpCreatieDatum(this.data.gebeurtenis.brieven))
   protected readonly briefActieLabels = briefActieLabels
-  protected readonly kanVervangen = this.data.isMeestRecenteBezwaarMoment && (this.data.bezwaarMoment?.briefActies.includes(BriefActie.VERVANGEN) ?? false)
   protected readonly laatsteActie = signal<BriefActie | undefined>(undefined)
 
-  protected readonly formulierVervangenConstraint: SecurityConstraint = {
-    recht: [Recht.VERVANGEN_DOCUMENTEN],
-    actie: Actie.AANPASSEN,
-    required: Required.ANY,
-    level: ToegangLevel.REGIO,
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
-  }
   protected readonly toonFormulierVervangen = signal(this.data.toonFormulierVervangenDirect ?? false)
   readonly uploadFormulierCtrl = new FormControl<File | null>(null)
+
+  constructor() {
+    this.uploadFormulierCtrl.valueChanges
+      .pipe(
+        takeUntilDestroyed(),
+        filter((file: File | null) => file != null && this.uploadFormulierCtrl.valid),
+      )
+      .subscribe((file: File | null) => {
+        this.vervangDocument(file!)
+      })
+  }
 
   sluiten() {
     this.dialogRef.close(this.laatsteActie())
@@ -108,6 +93,10 @@ export class BezwaarMomentDialogComponent {
     }
     if (actie === BriefActie.NOGMAALS_VERSTUREN) {
       this.nogmaalsVersturenBrief()
+      return
+    }
+    if (actie === BriefActie.VERVANGEN) {
+      this.toggleFormulierVervangen()
       return
     }
     this.dialogRef.close(actie)
@@ -150,16 +139,23 @@ export class BezwaarMomentDialogComponent {
   }
 
   private nogmaalsVersturenBrief() {
-    const bezwaarBriefId = this.data.bezwaarMoment?.bezwaarBriefId
-    if (bezwaarBriefId == null) {
+    const bezwaarMomentId = this.data.bezwaarMoment?.id
+    if (bezwaarMomentId == null) {
       return
     }
     this.bezwaarService
-      .verstuurBevestigingsbrievenBezwaarMomentNogmaals(bezwaarBriefId)
+      .verstuurBevestigingsbrievenBezwaarMomentNogmaals(bezwaarMomentId)
       .pipe(take(1))
       .subscribe((brieven) => {
         this.notificatieService.success('Bevestigingsbrief succesvol nogmaals verstuurd')
-        this.brieven.set(this.sorteerOpCreatieDatum(brieven))
+        this.brieven.update((oorspronkelijkeBrieven) =>
+          oorspronkelijkeBrieven.map((brief) => {
+            if (brieven.some((nieuweBrief) => nieuweBrief.id === brief.id)) {
+              return brieven.find((nieuweBrief) => nieuweBrief.id === brief.id)!
+            }
+            return brief
+          }),
+        )
         this.laatsteActie.set(BriefActie.NOGMAALS_VERSTUREN)
       })
   }
@@ -168,20 +164,23 @@ export class BezwaarMomentDialogComponent {
     return [...brieven].sort((a, b) => new Date(b.creatieDatum).getTime() - new Date(a.creatieDatum).getTime())
   }
 
-  toggleFormulierVervangen() {
+  private toggleFormulierVervangen(): void {
     this.toonFormulierVervangen.update((vervangen) => !vervangen)
   }
 
-  vervangDocument() {
-    const bestand = this.uploadFormulierCtrl.value
+  vervangDocument(file: File) {
     const bezwaarBriefId = this.data.bezwaarMoment?.bezwaarBriefId
-    if (bestand == null || this.uploadFormulierCtrl.invalid || bezwaarBriefId == null) {
+    if (file == null || this.uploadFormulierCtrl.invalid || bezwaarBriefId == null) {
       return
     }
 
-    this.bezwaarService
-      .vervangBezwaarDocument(bezwaarBriefId, bestand)
-      .pipe(take(1))
+    this.dialogService
+      .open(ConfirmationDialogComponent, { data: { title: 'Bevestiging', body: 'Weet u zeker dat u het document wilt vervangen?' } })
+      .closed.pipe(
+        take(1),
+        filter((bevestiging: unknown) => bevestiging === true),
+        switchMap(() => this.bezwaarService.vervangBezwaarDocument(bezwaarBriefId, file)),
+      )
       .subscribe({
         next: () => {
           this.notificatieService.success('Formulier succesvol vervangen')

@@ -26,13 +26,10 @@ import nl.rivm.screenit.batch.jobs.cervix.zaskoppelen.koppelmetreststep.ZasKoppe
 import nl.rivm.screenit.batch.jobs.cervix.zaskoppelen.koppelmetreststep.ZasKoppelMetRestWriter;
 import nl.rivm.screenit.model.enums.JobType;
 import nl.rivm.screenit.model.inpakcentrum.vaninpakcentrum.InpakcentrumKoppelDataDto;
-import nl.rivm.screenit.util.logging.cxf.ScreenITLoggingSaver;
 
-import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.listener.ExecutionContextPromotionListener;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,22 +39,12 @@ public class ZasKoppelenJobConfiguration extends AbstractJobConfiguration
 {
 
 	@Bean
-	public Job zasKoppelenJob(ZasKoppelenListener listener, ExecutionContextPromotionListener koppelPromotionListener, Step koppelenMetRestStep)
+	public Job zasKoppelenJob(ZasKoppelenListener listener, Step koppelenMetRestStep)
 	{
 		return new JobBuilder(JobType.CERVIX_KOPPELDATA_VERWERKING.name(), repository)
 			.listener(listener)
-			.listener(koppelPromotionListener)
 			.start(koppelenMetRestStep)
 			.build();
-	}
-
-	@Bean
-	public ExecutionContextPromotionListener koppelPromotionListener()
-	{
-		var listener = new ExecutionContextPromotionListener();
-		listener.setKeys(new String[] { "koppelXMLData" });
-		listener.setStatuses(new String[] { ExitStatus.COMPLETED.getExitCode(), ExitStatus.FAILED.getExitCode() });
-		return listener;
 	}
 
 	@Bean
@@ -68,11 +55,5 @@ public class ZasKoppelenJobConfiguration extends AbstractJobConfiguration
 			.reader(reader)
 			.writer(writer)
 			.build();
-	}
-
-	@Bean
-	public ScreenITLoggingSaver screenITLoggingSaver()
-	{
-		return new ScreenITLoggingSaver();
 	}
 }

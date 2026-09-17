@@ -27,10 +27,10 @@ import java.util.List;
 
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
-import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.colon.dto.VrijSlot;
 import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamer;
 import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamerFilter;
+import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 
 public interface PlanningService<T extends VrijSlot>
 {

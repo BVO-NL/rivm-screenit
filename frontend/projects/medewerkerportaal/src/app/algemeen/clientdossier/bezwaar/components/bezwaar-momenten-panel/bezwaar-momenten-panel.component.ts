@@ -76,8 +76,11 @@ import { BezwaarService } from '@algemeen/services/bezwaar/bezwaar.service'
   ],
   templateUrl: './bezwaar-momenten-panel.component.html',
   styles: `
-    .ds-column-acties button {
-      margin-right: var(--spacer-1);
+    .ds-column-acties {
+      display: flex;
+      height: 61px;
+      align-items: center;
+      gap: var(--spacer-1);
     }
   `,
 })
@@ -112,7 +115,6 @@ export class BezwaarMomentenPanelComponent {
       data: {
         gebeurtenis,
         bezwaarMoment: this.client().bezwaarMomenten.find((bm) => bm.id === gebeurtenis.bezwaarMomentId),
-        isMeestRecenteBezwaarMoment: this.isMeestRecenteBezwaarMoment(gebeurtenis),
         toonFormulierVervangenDirect,
       },
     })
@@ -133,7 +135,7 @@ export class BezwaarMomentenPanelComponent {
   }
 
   protected inzienDocument(gebeurtenis: DossierGebeurtenisDto): void {
-    if (!this.isMeestRecenteBezwaarMoment(gebeurtenis) || gebeurtenis.documentId === null) {
+    if (gebeurtenis.documentId === null) {
       return
     }
 
@@ -149,10 +151,6 @@ export class BezwaarMomentenPanelComponent {
   }
 
   getBriefActies(gebeurtenis: DossierGebeurtenisDto): DsMenuItem[][] {
-    if (!this.isMeestRecenteBezwaarMoment(gebeurtenis)) {
-      return [[]]
-    }
-
     return [
       this.client()
         .bezwaarMomenten.find((bm) => bm.id === gebeurtenis.bezwaarMomentId)
@@ -162,10 +160,6 @@ export class BezwaarMomentenPanelComponent {
   }
 
   private aantalActies(gebeurtenis: DossierGebeurtenisDto): number {
-    if (!this.isMeestRecenteBezwaarMoment(gebeurtenis)) {
-      return 0
-    }
-
     const aantalMenuActies = this.getBriefActies(gebeurtenis)[0].length
     const aantalInzienActies = gebeurtenis.documentId !== null ? 1 : 0
     return aantalMenuActies + aantalInzienActies
@@ -175,20 +169,7 @@ export class BezwaarMomentenPanelComponent {
     return this.getBriefActies(gebeurtenis)[0].length > 0
   }
 
-  protected isMeestRecenteBezwaarMoment(gebeurtenis: DossierGebeurtenisDto): boolean {
-    const bezwaarMoment = this.client().bezwaarMomenten.find((moment) => moment.id === gebeurtenis.bezwaarMomentId)
-    if (!bezwaarMoment) {
-      return false
-    }
-
-    return !this.client().bezwaarMomenten.some((moment) => new Date(moment.bezwaarDatum).getTime() > new Date(bezwaarMoment.bezwaarDatum).getTime())
-  }
-
   protected handleItemClick(event: DsMenuItem, gebeurtenis: DossierGebeurtenisDto): void {
-    if (!this.isMeestRecenteBezwaarMoment(gebeurtenis)) {
-      return
-    }
-
     if (event.label === briefActieLabels[BriefActie.VERVANGEN]) {
       this.openBrievenDialog(gebeurtenis, true)
       return

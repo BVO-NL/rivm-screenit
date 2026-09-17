@@ -35,7 +35,7 @@ import nl.rivm.screenit.model.verwerkingverslag.BrievenGenererenRapportageEntry;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractBrievenGenererenListener extends BaseLogListener

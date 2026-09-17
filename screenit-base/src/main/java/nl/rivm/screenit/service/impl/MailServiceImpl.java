@@ -111,7 +111,7 @@ public class MailServiceImpl implements MailService
 		attachments.forEach(mailAttachment ->
 			mailAttachment.setMail(mail));
 
-		mailRepository.save(mail);
+		mailRepository.persist(mail);
 	}
 
 	@Override

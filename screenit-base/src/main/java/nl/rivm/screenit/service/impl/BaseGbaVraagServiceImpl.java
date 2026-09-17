@@ -144,7 +144,7 @@ public class BaseGbaVraagServiceImpl implements BaseGbaVraagService
 		gbaVraag.setReden(reden);
 		gbaVraag.setAanvullendeInformatie(aanvullendeInformatie);
 
-		gbaVraagRepository.save(gbaVraag);
+		gbaVraagRepository.persist(gbaVraag);
 	}
 
 	private boolean heeftOpenstaandeGbaVraag(String bsn, Client client)

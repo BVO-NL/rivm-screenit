@@ -295,11 +295,11 @@ public class BaseBezwaarServiceImpl implements BaseBezwaarService
 		moment.setStatus(AanvraagBriefStatus.VERWERKT);
 		moment.setStatusDatum(nu);
 		moment.setBezwaarDatum(nu);
-		bezwaarMomentRepository.save(moment);
-		bezwaarRepository.saveAll(moment.getBezwaren());
+		bezwaarMomentRepository.persist(moment);
+		bezwaarRepository.persistAll(moment.getBezwaren());
 		client.setLaatstVoltooideBezwaarMoment(moment);
 		client.getBezwaarMomenten().add(moment);
-		clientRepository.save(client);
+		clientRepository.persist(client);
 
 		var briefType = bepaalBevestigingBriefTypeVoorAfrondenBezwaar(moment);
 		maakBevestigingsbrief(moment, briefType);
@@ -330,7 +330,7 @@ public class BaseBezwaarServiceImpl implements BaseBezwaarService
 				onderzoeksresultatenActie.getBrieven().add(brief);
 				brief.setOnderzoeksresultatenActie(onderzoeksresultatenActie);
 
-				onderzoeksresultatenActieRepository.save(onderzoeksresultatenActie);
+				onderzoeksresultatenActieRepository.persist(onderzoeksresultatenActie);
 
 				verwerkLeegDossier(client, bevolkingsonderzoek);
 
@@ -532,7 +532,7 @@ public class BaseBezwaarServiceImpl implements BaseBezwaarService
 		verwijderAdres(client);
 		leegNaamClient(client);
 
-		clientRepository.save(client);
+		clientRepository.persist(client);
 	}
 
 	@Override
@@ -605,7 +605,7 @@ public class BaseBezwaarServiceImpl implements BaseBezwaarService
 		persoon.setAanhef(null);
 		persoon.setTussenvoegsel(null);
 		persoon.setPartnerTussenvoegsel(null);
-		persoonRepository.save(persoon);
+		persoonRepository.persist(persoon);
 	}
 
 	private void verwijderBezwaarMoment(BezwaarMoment bezwaarMoment)
@@ -619,7 +619,7 @@ public class BaseBezwaarServiceImpl implements BaseBezwaarService
 		if (brief != null)
 		{
 			bezwaarMoment.setBezwaarBrief(null);
-			bezwaarMomentRepository.save(bezwaarMoment);
+			bezwaarMomentRepository.persist(bezwaarMoment);
 			uploadDocumentService.delete(brief);
 		}
 
@@ -812,7 +812,7 @@ public class BaseBezwaarServiceImpl implements BaseBezwaarService
 		var brief = briefService.maakBezwaarBrief(moment.getClient(), briefType, currentDateSupplier.getDate());
 		brief.setBezwaarMoment(moment);
 		moment.getBrieven().add(brief);
-		bezwaarMomentRepository.save(moment);
+		bezwaarMomentRepository.persist(moment);
 	}
 
 	private void bezwaarAangepastLogging(Account account, BezwaarMoment moment)
@@ -938,7 +938,7 @@ public class BaseBezwaarServiceImpl implements BaseBezwaarService
 		leegDossiers(client);
 
 		client.setGbaStatus(GbaStatus.BEZWAAR);
-		clientRepository.save(client);
+		clientRepository.persist(client);
 
 		baseGbaVraagService.verzoekVerwijderIndicatieBijBezwaarBrp(client);
 	}
@@ -961,7 +961,7 @@ public class BaseBezwaarServiceImpl implements BaseBezwaarService
 		persoon.setTelefoonnummer2(null);
 		persoon.setTitel(null);
 		persoon.setTitelCode(null);
-		persoonRepository.save(persoon);
+		persoonRepository.persist(persoon);
 	}
 
 	private void bezwaarWetenSchappelijkOnderzoekEnKwaliteitswaarborging(BezwaarMoment moment)

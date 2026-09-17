@@ -22,6 +22,7 @@ package nl.rivm.screenit.service.impl;
  */
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,6 +54,8 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContact;
 import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.ClientContactActieType;
+import nl.rivm.screenit.model.ClientContactActieTypeFilter;
+import nl.rivm.screenit.model.ClientContact_;
 import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.OnderzoeksresultatenActie;
@@ -103,6 +106,7 @@ import nl.rivm.screenit.model.mamma.enums.MammaOnderzoekStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaUitstelGeannuleerdReden;
 import nl.rivm.screenit.model.mamma.enums.MammaVerzettenReden;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
+import nl.rivm.screenit.repository.algemeen.ClientContactActieRepository;
 import nl.rivm.screenit.repository.algemeen.ClientContactRepository;
 import nl.rivm.screenit.service.BaseAfmeldService;
 import nl.rivm.screenit.service.BaseBezwaarService;
@@ -155,9 +159,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.model.ClientContactManier.AANVRAGEN_FORMULIEREN;
+import static nl.rivm.screenit.specification.algemeen.ClientContactActieSpecification.heeftType;
 import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification.heeftClient;
 import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification.heeftClientId;
 import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification.heeftOpmerking;
+import static nl.rivm.screenit.specification.algemeen.ClientContactSpecification.zonderActieType;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -274,9 +280,61 @@ public class ClientContactServiceImpl implements ClientContactService
 	@Autowired
 	private ClientContactRepository clientContactRepository;
 
+	@Autowired
+	private ClientContactActieRepository clientContactActieRepository;
+
+	@Override
+	public Optional<ClientContact> getClientContactById(Long id)
+	{
+		return clientContactRepository.findById(id);
+	}
+
+	@Override
+	@Transactional
+	public ClientContact maakClientContact(Client client, LocalDateTime datum, List<ClientContactActieType> acties, String opmerking,
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		var contact = new ClientContact();
+		contact.setOpmerking(opmerking);
+		contact.setClient(client);
+		contact.setDatum(DateUtil.toUtilDate(datum));
+		contact.setOrganisatieMedewerker(ingelogdeOrganisatieMedewerker);
+		if (acties != null)
+		{
+			acties.forEach(type ->
+			{
+				var actie = new ClientContactActie();
+				actie.setType(type);
+				actie.setContact(contact);
+				contact.getActies().add(actie);
+			});
+		}
+		clientContactRepository.persist(contact);
+		clientContactActieRepository.persistAll(contact.getActies());
+		logClientContact(contact, ingelogdeOrganisatieMedewerker);
+		return contact;
+	}
+
+	@Override
+	@Transactional
+	public ClientContact updateClientContact(ClientContact contact, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		clientContactRepository.persist(contact);
+		clientContactActieRepository.persistAll(contact.getActies());
+		logClientContact(contact, ingelogdeOrganisatieMedewerker);
+		return contact;
+	}
+
+	@Override
+	@Transactional
+	public ClientContact verwijderNotitie(ClientContact contact, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		contact.setOpmerking(null);
+		return updateClientContact(contact, ingelogdeOrganisatieMedewerker);
+	}
+
 	@Override
 	@Transactional(
-		propagation = Propagation.REQUIRED,
 		rollbackFor = { DataAccessException.class, MammaTijdNietBeschikbaarException.class, GenericJDBCException.class,
 			MammaStandplaatsVanPostcodeOnbekendException.class })
 	public void saveClientContact(ClientContact contact, Map<ClientContactActieType, Map<ExtraOpslaanKey, Object>> extraOpslaanObjecten, Account account)
@@ -396,10 +454,16 @@ public class ClientContactServiceImpl implements ClientContactService
 		}
 		if (isOrganisatieMedewerker)
 		{
-			var uitgevoerdeActies = contact.getActies().stream().map(a -> a.getType().name()).collect(Collectors.joining(", "));
-			logService.logGebeurtenis(LogGebeurtenis.CLIENTCONTACT_REGISTREREN, account, client, "Aangemaakt met vervolgstap(pen): " + uitgevoerdeActies);
+			logClientContact(contact, account);
 			hibernateService.saveOrUpdate(contact);
 		}
+	}
+
+	private void logClientContact(ClientContact contact, Account account)
+	{
+		var client = contact.getClient();
+		var uitgevoerdeActies = contact.getActies().stream().map(a -> a.getType().name()).collect(Collectors.joining(", "));
+		logService.logGebeurtenis(LogGebeurtenis.CLIENTCONTACT_REGISTREREN, account, client, "Aangemaakt met vervolgstap(pen): " + uitgevoerdeActies);
 	}
 
 	private ClientContactActie deelnamewensenRegistreren(ClientContactActie actie, Client client, Map<ExtraOpslaanKey, Object> extraOpslaanParams, Account account)
@@ -1768,5 +1832,18 @@ public class ClientContactServiceImpl implements ClientContactService
 			return clientContactRepository.findWith(spec, q -> q.sortBy(Sort.by(ascending ? ASC : DESC, sortProperty))).all(first, count);
 		}
 		return clientContactRepository.findAll(spec);
+	}
+
+	@Override
+	public List<ClientContact> getClientContacten(Client client, ClientContactActieTypeFilter actieTypeFilter)
+	{
+		var specification = heeftClient(client);
+		if (actieTypeFilter != null)
+		{
+			specification = specification.and(actieTypeFilter.moetVoorkomen()
+				? heeftType(actieTypeFilter.type()).with(ClientContact_.acties)
+				: zonderActieType(actieTypeFilter.type()));
+		}
+		return clientContactRepository.findAll(specification);
 	}
 }

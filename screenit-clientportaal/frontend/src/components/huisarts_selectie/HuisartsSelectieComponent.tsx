@@ -51,20 +51,16 @@ import bvoStyle from "../BvoStyle.module.scss"
 
 export interface HuisartsSelectieComponentProps {
 	description: string
-
 	huidigeHuisarts?: Huisarts
 	geenHuisartsTekst?: string
 	mammaHuidigeGeenHuisartsOptie?: MammaGeenHuisartsOptie
-
 	magOntkoppelen: boolean
 	toonBlob: boolean
-
 	analyticsCategorie: AnalyticsCategorie
-
-	onHuisartsGekozen: (huisarts: Huisarts) => void
-	onHuisartsVerwijderen: () => void
-	onAnnulerenVerwijderen: () => void
-	onBevestigenVerwijderen: () => void
+	onHuisartsGekozen?: (huisarts: Huisarts) => void
+	onHuisartsVerwijderen?: () => void
+	onAnnulerenVerwijderen?: () => void
+	onBevestigenVerwijderen?: () => void
 
 	contactUrl: string
 }
@@ -224,7 +220,7 @@ const HuisartsSelectieComponent: FC<HuisartsSelectieComponentProps> = ({
 										AnalyticsCategorie.MAMMA,
 									)
 									setToonVerwijderPopup(true)
-									onHuisartsVerwijderen()
+									onHuisartsVerwijderen?.()
 								}
 							}}
 							linkTekst={getString(
@@ -324,7 +320,7 @@ const HuisartsSelectieComponent: FC<HuisartsSelectieComponentProps> = ({
 						huisarts={gekozenHuisarts}
 						type={HuisartsBevestigingsPopupType.BEVESTIGEN}
 						onPrimaireKnop={() => {
-							onHuisartsGekozen(gekozenHuisarts)
+							onHuisartsGekozen?.(gekozenHuisarts)
 							showToast(
 								getString(properties.gedeeld.toasts.opgeslagen.title),
 								getString(properties.gedeeld.toasts.opgeslagen.description),
@@ -341,11 +337,11 @@ const HuisartsSelectieComponent: FC<HuisartsSelectieComponentProps> = ({
 						onPrimaireKnop={() => {
 							setToonVerwijderPopup(false)
 							setGekozenHuisarts(undefined)
-							onBevestigenVerwijderen()
+							onBevestigenVerwijderen?.()
 						}}
 						onSecundaireKnop={() => {
 							setToonVerwijderPopup(false)
-							onAnnulerenVerwijderen()
+							onAnnulerenVerwijderen?.()
 						}}/>
 				)}
 			</div>

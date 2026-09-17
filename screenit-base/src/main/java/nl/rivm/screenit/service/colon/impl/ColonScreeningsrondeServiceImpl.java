@@ -115,8 +115,8 @@ public class ColonScreeningsrondeServiceImpl implements ColonScreeningsrondeServ
 			var gekoppeldeFitRegistratie = uitnodiging.getGekoppeldeFitRegistratie();
 			var gekoppeldeFitRegistratieExtra = uitnodiging.getGekoppeldeExtraFitRegistratie();
 
-			return gekoppeldeFitRegistratieExtra != null && gekoppeldeFitRegistratieExtra.getUitslag() != null
-				|| gekoppeldeFitRegistratie != null && gekoppeldeFitRegistratie.getUitslag() != null
+			return ColonFitRegistratieUtil.heeftUitslag(gekoppeldeFitRegistratieExtra)
+				|| ColonFitRegistratieUtil.heeftUitslag(gekoppeldeFitRegistratie)
 				|| uitnodiging.getAntwoordFormulier() != null;
 		}
 		return false;

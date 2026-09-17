@@ -36,10 +36,10 @@ export type AfspraakMakenBasePageProps = {
 const MammaAfspraakBevestigingsWizard = (props: AfspraakMakenBasePageProps): React.JSX.Element => {
 	const alleStappen = [
 		{url: "bevestigen", label: "Uw afspraak"},
-		{label: "Bevestigen", url: "bevestiging-selectie"},
-		{label: "Herinneren", url: "herinnering"},
-		{url: "overzicht", label: "Overzicht"},
+		{url: "bevestiging-selectie", label: "Bevestiging"},
+		{url: "herinnering", label: "Herinnering"},
 		{url: "uw-huisarts", label: "Uw huisarts"},
+		{url: "overzicht", label: "Overzicht"},
 	]
 
 	const [wizardStappen, setWizardStappen] = useState(alleStappen)

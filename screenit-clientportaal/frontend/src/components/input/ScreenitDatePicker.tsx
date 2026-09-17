@@ -22,7 +22,7 @@ import {DatePicker, DateValidationError, LocalizationProvider} from "@mui/x-date
 import styles from "./ScreenitDatePicker.module.scss"
 import {FormikErrors} from "formik"
 import {getBovengrensUitLijst, getOndergrensUitLijst, isWerkdag, lijstBevatMeegegevenDatum} from "../../utils/DateUtil"
-import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3"
+import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns"
 import {nl} from "date-fns/locale"
 import {PickerChangeHandlerContext} from "@mui/x-date-pickers/models"
 
@@ -54,9 +54,10 @@ const ScreenitDatePicker = (props: ScreenitDatePickerProps) => {
 						format="dd-MM-yyyy"
 						label={props.label}
 						value={props.value}
+						data-testid={`datepicker_${props.propertyName}`}
 						onChange={props.onChange}
 						shouldDisableDate={(date) => shouldDisableDate(date, ondergrens, bovengrens, props.beschikbareDagen, props.alleenWerkdagen)}
-						slotProps={{textField: {variant: "standard", inputProps: {"data-testid": `input_${props.propertyName}`}}}}
+						slotProps={{textField: {variant: "standard", slotProps: {htmlInput: {"data-testid": `input_${props.propertyName}`}}}}}
 					/>
 
 				</LocalizationProvider>
@@ -66,7 +67,7 @@ const ScreenitDatePicker = (props: ScreenitDatePickerProps) => {
 	)
 }
 
-export function shouldDisableDate(date: Date | null, ondergrens?: Date, bovengrens?: Date, beschikbareDagen?: Date[], alleenWerkdagen?: boolean) {
+export function shouldDisableDate(date: Date | null, ondergrens?: Date, bovengrens?: Date, beschikbareDagen?: Date[], alleenWerkdagen?: boolean): boolean {
 	if (date !== null && alleenWerkdagen && !isWerkdag(date)) {
 		return true
 	}

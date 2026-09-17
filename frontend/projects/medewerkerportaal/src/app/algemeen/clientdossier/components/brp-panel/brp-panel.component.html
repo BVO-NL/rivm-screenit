@@ -28,23 +28,23 @@
   <div class="client-gegevens-lijst">
     <div class="client-gegevens-rij">
       <span class="client-gegevens-label">Indicatie status</span>
-      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.indicatieStatus | enumNatural | leeg }}</span>
+      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.indicatieStatus | enumNatural | legeWaarde }}</span>
     </div>
     <div class="client-gegevens-rij">
       <span class="client-gegevens-label">Datum laatste BRP-mutatie</span>
-      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.datumLaatsteBrpMutatie | date: 'dd-MM-yyyy' | leeg }}</span>
+      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.datumLaatsteBrpMutatie | date: 'dd-MM-yyyy' | legeWaarde }}</span>
     </div>
     <div class="client-gegevens-rij">
       <span class="client-gegevens-label">Laatst aangevraagd op</span>
-      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.laatstAangevraagdOp | date: 'dd-MM-yyyy HH:mm:ss' | leeg }}</span>
+      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.laatstAangevraagdOp | date: 'dd-MM-yyyy HH:mm:ss' | legeWaarde }}</span>
     </div>
     <div class="client-gegevens-rij">
       <span class="client-gegevens-label">Tijdelijk BRP-adres</span>
-      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.tijdelijkBrpAdres | boolean | leeg }}</span>
+      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.tijdelijkBrpAdres | boolean | legeWaarde }}</span>
     </div>
     <div class="client-gegevens-rij">
       <span class="client-gegevens-label">Vertrokken uit Nederland</span>
-      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.datumVertrokkenUitNederland | date: 'dd-MM-yyyy' | leeg }}</span>
+      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.datumVertrokkenUitNederland | date: 'dd-MM-yyyy' | legeWaarde }}</span>
     </div>
   </div>
 </ds-card>

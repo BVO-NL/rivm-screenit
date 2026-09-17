@@ -279,9 +279,9 @@ public class ColonFitRegistratieInzienPanel extends AbstractGebeurtenisDetailPan
 
 				magVerwijderen = false;
 			}
-			else if (registratie != null)
+			else if (registratie != null && !ColonFitRegistratieUtil.magVerwijderen(registratie))
 			{
-				magVerwijderen = ColonFitRegistratieUtil.magVerwijderen(registratie);
+				magVerwijderen = false;
 			}
 		}
 		return magVerwijderen;

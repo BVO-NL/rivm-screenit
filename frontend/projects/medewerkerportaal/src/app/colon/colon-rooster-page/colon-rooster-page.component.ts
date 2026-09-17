@@ -20,8 +20,8 @@
  */
 import { Component, effect, inject, Signal } from '@angular/core'
 import { RoosterComponent } from '@/colon/colon-rooster-page/components/rooster/rooster.component'
-import { ColonService } from '@/colon/services/colon.service'
-import { Intakelocatie } from '@shared/types/intakelocatie'
+import { ColonIntakelocatieService } from '@colon/services/colon-intakelocatie/colon-intakelocatie.service'
+import { ColonIntakelocatie } from '@shared/types/colon/colon-intakelocatie'
 import { DsContextualNotificationsComponent, DsContextualNotificationService } from '@topicus-rgp-ds/web'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RoosterService } from '@/colon/colon-rooster-page/services/rooster.service'
@@ -52,10 +52,10 @@ import { take } from 'rxjs'
   imports: [RoosterComponent, DsContextualNotificationsComponent, PageComponent],
 })
 export class ColonRoosterPageComponent {
-  private readonly colonService: ColonService = inject(ColonService)
+  private readonly colonService: ColonIntakelocatieService = inject(ColonIntakelocatieService)
   private readonly roosterService: RoosterService = inject(RoosterService)
   private readonly notificationService = inject(DsContextualNotificationService)
-  intakelocatie: Signal<Intakelocatie | undefined> = toSignal(this.colonService.fetchIntakelocatie())
+  intakelocatie: Signal<ColonIntakelocatie | undefined> = toSignal(this.colonService.fetchIntakelocatie())
 
   constructor() {
     this.roosterService.fetchSignaleringstermijn().pipe(take(1)).subscribe()

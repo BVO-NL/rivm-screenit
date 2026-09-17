@@ -31,7 +31,7 @@ import nl.rivm.screenit.model.inpakcentrum.vaninpakcentrum.InpakcentrumKoppelDat
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.service.LogService;
 
-import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.infrastructure.item.ItemReader;
 import org.springframework.stereotype.Component;
 
 @Component

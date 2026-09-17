@@ -24,7 +24,7 @@ package nl.rivm.screenit.batch.jobs.aftergba;
 import nl.rivm.screenit.batch.jobs.helpers.BaseLogListener;
 import nl.rivm.screenit.model.logging.LogEvent;
 
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.job.JobExecution;
 
 public abstract class BaseAfterGbaListener extends BaseLogListener
 {

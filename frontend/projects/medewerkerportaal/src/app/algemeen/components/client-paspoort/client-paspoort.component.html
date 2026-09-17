@@ -19,12 +19,9 @@
   =========================LICENSE_END==================================
   -->
 @if (paspoort(); as paspoort) {
-  <div class="client-paspoort" data-testid="client-paspoort">
-    <div class="client-paspoort-naam">
-      <span class="naam" data-testid="naam">{{ naam() }}</span>
-      <span class="geslacht" data-testid="geslacht" *appAutorisatie="genderIdentiteitConstraint">({{ paspoort.geslacht | geslachtAfkorting: 'x' }})</span>
-    </div>
-
+  <ds-horizontal-information-bar data-testid="client-paspoort"
+                                 [name]="(paspoort | naam: NaamTransform.VoorlettersTussenvoegselAanspreekvormAchternaam) + ' ' + (paspoort.geslacht | geslachtAfkorting: 'x')"
+                                 [isExpandable]="false">
     @if (paspoort.overlijdensdatum) {
       <ds-description label="Overlijdensdatum" data-testid="overlijdensdatum">
         <ng-template ds-description-custom-template>
@@ -47,5 +44,5 @@
     @if (!adresGelijkAanBrp()) {
       <ds-description [label]="postadresLabel()" data-testid="adres" [value]="adres()"/>
     }
-  </div>
+  </ds-horizontal-information-bar>
 }

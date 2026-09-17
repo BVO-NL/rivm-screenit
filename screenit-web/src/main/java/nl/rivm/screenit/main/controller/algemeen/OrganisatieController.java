@@ -26,15 +26,16 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.dto.OrganisatieDto;
 import nl.rivm.screenit.main.controller.BaseController;
+import nl.rivm.screenit.main.dto.algemeen.OrganisatieDto;
+import nl.rivm.screenit.main.controller.BaseController;
+import nl.rivm.screenit.main.mappers.algemeen.OrganisatieMapper;
 import nl.rivm.screenit.main.mappers.mamma.MammaScreeningsEenheidMapper;
 import nl.rivm.screenit.main.model.algemeen.dto.OrganisatieZoekFilterDto;
 import nl.rivm.screenit.main.service.mamma.MammaBeoordelingsEenheidService;
 import nl.rivm.screenit.main.service.mamma.MammaScreeningsEenheidService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.mappers.OrganisatieMapper;
 import nl.rivm.screenit.model.OrganisatieType;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;

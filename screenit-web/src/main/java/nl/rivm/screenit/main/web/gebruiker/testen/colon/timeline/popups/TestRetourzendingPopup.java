@@ -32,6 +32,7 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.RetourredenAfhandeling;
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.service.HibernateService;
+import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -69,7 +70,8 @@ public class TestRetourzendingPopup extends AbstractTestBasePopupPanel
 		List<ColonUitnodiging> uitnodigingVoorRetourzending = new ArrayList<>();
 		for (var uitnodiging : ronde.getUitnodigingen())
 		{
-			if (uitnodiging.isVerstuurdDoorInpakcentrum() && uitnodiging.getGekoppeldeFitRegistratie().getUitslag() == null && uitnodiging.getAntwoordFormulier() == null)
+			if (uitnodiging.isVerstuurdDoorInpakcentrum() && !ColonFitRegistratieUtil.heeftAnalyseResultaat(uitnodiging.getGekoppeldeFitRegistratie())
+				&& uitnodiging.getAntwoordFormulier() == null)
 			{
 				uitnodigingVoorRetourzending.add(uitnodiging);
 				List<ColonUitnodiging> uitnodigingen = new ArrayList<>();
@@ -92,7 +94,7 @@ public class TestRetourzendingPopup extends AbstractTestBasePopupPanel
 					for (var i = 0; i < ronde.getUitnodigingen().size(); i++)
 					{
 						var uitnodiging = ronde.getUitnodigingen().get(i);
-						if (uitnodiging.isVerstuurdDoorInpakcentrum() && uitnodiging.getGekoppeldeFitRegistratie().getUitslag() == null
+						if (uitnodiging.isVerstuurdDoorInpakcentrum() && !ColonFitRegistratieUtil.heeftAnalyseResultaat(uitnodiging.getGekoppeldeFitRegistratie())
 							&& uitnodiging.getAntwoordFormulier() == null)
 						{
 							var uitnodigingen = uitnodigingenMap.get(uitnodigingVoorRetourzending.get(i).getUitnodigingsId());

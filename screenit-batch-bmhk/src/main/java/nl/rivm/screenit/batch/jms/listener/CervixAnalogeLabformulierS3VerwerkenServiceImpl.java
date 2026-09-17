@@ -136,7 +136,7 @@ public class CervixAnalogeLabformulierS3VerwerkenServiceImpl implements CervixAn
 		labformulier.setStatus(CervixLabformulierStatus.GESCAND);
 		labformulier.setStatusDatum(currentDateSupplier.getDate());
 
-		labformulierRepository.save(labformulier);
+		labformulierRepository.persist(labformulier);
 		labformulierService.koppelEnBewaarLabformulier(labformulier);
 		logService.logGebeurtenis(LogGebeurtenis.CERVIX_LABFORMULIER_GESCAND,
 			new LogEvent("Laboratorium: " + labformulier.getLaboratorium().getNaam() + ", Monster-id: " + labformulier.getBarcode() + ", ObjectID: " + labformulier.getObjid()),

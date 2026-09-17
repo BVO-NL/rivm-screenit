@@ -40,10 +40,10 @@ import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -95,8 +95,8 @@ public class ColonFitRegistratieKoppelenMetRestWriter implements ItemWriter<Inpa
 				fitService.koppelTestIndienMogelijk(fitBarcodeGold, ColonFitType.GOLD, uitnodiging, datumVerstuurd, screeningRonde);
 				fitService.koppelTestIndienMogelijk(fitBarcodeExtra, ColonFitType.STUDIE, uitnodiging, datumVerstuurd, screeningRonde);
 
-				uitnodigingRepository.save(uitnodiging);
-				screeningRondeRepository.save(screeningRonde);
+				uitnodigingRepository.persist(uitnodiging);
+				screeningRondeRepository.persist(screeningRonde);
 
 				logEvent.setAantalFitRegistratiesVerwerkt(logEvent.getAantalFitRegistratiesVerwerkt() + 1);
 			}

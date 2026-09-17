@@ -21,7 +21,7 @@ package nl.rivm.screenit.main.mappers.mamma;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.dto.OrganisatieDto;
+import nl.rivm.screenit.main.dto.algemeen.OrganisatieDto;
 import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
 import nl.rivm.screenit.model.mamma.MammaScreeningsEenheid;
 

@@ -25,7 +25,7 @@ import lombok.AllArgsConstructor;
 
 import nl.topicuszorg.cloud.distributedsessions.jetty.RedisSessionDataStoreFactory;
 
-import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.jetty.servlet.JettyServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.stereotype.Component;
 

@@ -58,6 +58,7 @@ import org.apache.wicket.validation.validator.RangeValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 public abstract class CervixKlaarzettenHuisartsPanel extends GenericPanel<CervixHuisarts>
 {
@@ -82,7 +83,7 @@ public abstract class CervixKlaarzettenHuisartsPanel extends GenericPanel<Cervix
 	{
 		super(id, ModelUtil.ccModel(arts));
 
-		alleWoonplaatsen = ModelUtil.listRModel(woonplaatsRepository.findAll(Sort.by(Woonplaats_.NAAM)));
+		alleWoonplaatsen = ModelUtil.listRModel(woonplaatsRepository.findAll(Specification.unrestricted(), Sort.by(Woonplaats_.NAAM)));
 
 		var form = new ScreenitForm<>("form", getModel());
 		add(form);

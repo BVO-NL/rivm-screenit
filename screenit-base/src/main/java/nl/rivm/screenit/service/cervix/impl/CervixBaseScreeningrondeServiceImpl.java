@@ -142,7 +142,7 @@ public class CervixBaseScreeningrondeServiceImpl implements CervixBaseScreeningr
 					if (anderUitnodiging.getGeannuleerdDatum() == null)
 					{
 						anderUitnodiging.setGeannuleerdDatum(DateUtil.toUtilDate(dateSupplier.getLocalDateTime().minusSeconds(1)));
-						uitnodigingRepository.save(anderUitnodiging);
+						uitnodigingRepository.persist(anderUitnodiging);
 						break;
 					}
 				}
@@ -161,8 +161,8 @@ public class CervixBaseScreeningrondeServiceImpl implements CervixBaseScreeningr
 
 		var ronde = client.getCervixDossier().getLaatsteScreeningRonde();
 		ronde.setUitstel(uitstel);
-		uitstelRepository.save(uitstel);
-		clientRepository.save(client);
+		uitstelRepository.persist(uitstel);
+		clientRepository.persist(client);
 
 		annuleerHerinnering(ronde);
 		annuleerNietVerstuurdeZAS(ronde);
@@ -170,7 +170,7 @@ public class CervixBaseScreeningrondeServiceImpl implements CervixBaseScreeningr
 		var laatsteBrief = client.getCervixDossier().getLaatsteScreeningRonde().getLaatsteBrief();
 		if (laatsteBrief != null && !BriefUtil.isGegenereerd(laatsteBrief))
 		{
-			briefRepository.save((CervixBrief) BriefUtil.setTegenhouden(laatsteBrief, true));
+			briefRepository.persist((CervixBrief) BriefUtil.setTegenhouden(laatsteBrief, true));
 		}
 
 		logService.logGebeurtenis(wijziging ? LogGebeurtenis.UITSTEL_GEWIJZIGD : LogGebeurtenis.UITSTEL_AANGEVRAAGD, account, client,
@@ -200,7 +200,7 @@ public class CervixBaseScreeningrondeServiceImpl implements CervixBaseScreeningr
 			if (uitstel.getGeannuleerdDatum() == null)
 			{
 				uitstel.setGeannuleerdDatum(DateUtil.minusTijdseenheid(dateSupplier.getDate(), 50, ChronoUnit.MILLIS));
-				uitstelRepository.save(uitstel);
+				uitstelRepository.persist(uitstel);
 			}
 		}
 	}
@@ -277,7 +277,7 @@ public class CervixBaseScreeningrondeServiceImpl implements CervixBaseScreeningr
 						{
 							var specificatie = boekRegel.getSpecificatie();
 							specificatie.getBoekRegels().remove(boekRegel);
-							betaalopdrachtRegelSpecificatieRepository.save(specificatie);
+							betaalopdrachtRegelSpecificatieRepository.persist(specificatie);
 						}
 					}
 					hibernateService.delete(verrichting);

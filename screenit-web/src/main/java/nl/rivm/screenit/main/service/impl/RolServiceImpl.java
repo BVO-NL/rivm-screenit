@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 
-import nl.rivm.screenit.dto.PermissieDto;
-import nl.rivm.screenit.dto.RolDto;
+import nl.rivm.screenit.main.dto.algemeen.PermissieDto;
+import nl.rivm.screenit.main.dto.algemeen.RolDto;
 import nl.rivm.screenit.main.service.MedewerkerService;
 import nl.rivm.screenit.main.service.RolService;
 import nl.rivm.screenit.model.Account;
@@ -102,7 +102,7 @@ public class RolServiceImpl implements RolService
 
 		var opslaanRol = hibernateService.get(Rol.class, rolId);
 		opslaanRol.setActief(nieuwInActief);
-		rolRepository.save(opslaanRol);
+		rolRepository.persist(opslaanRol);
 
 		logService.logGebeurtenis(logGebeurtenis, ingelogdAccount, melding);
 	}
@@ -185,7 +185,7 @@ public class RolServiceImpl implements RolService
 	public List<Rol> getActieveRollen(Collection<Bevolkingsonderzoek> bevolkingsonderzoeken)
 	{
 		return rolRepository.findWith(isActief(true).and(filterBevolkingsonderzoek(bevolkingsonderzoeken)), q -> q)
-			.fetch(g -> g.addSubgraph(Rol_.permissies))
+			.fetch(g -> g.addElementSubgraph(Rol_.permissies))
 			.all();
 	}
 

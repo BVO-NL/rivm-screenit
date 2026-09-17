@@ -39,10 +39,10 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -106,10 +106,10 @@ public class ZasKoppelMetRestWriter implements ItemWriter<InpakcentrumKoppelData
 					}
 					var datumVerstuurd = DateUtil.parseDateForPattern(verzondenUitnodiging.getDatumVerzending(), Constants.DEFAULT_DATE_FORMAT);
 					zas.setVerstuurd(datumVerstuurd);
-					zasRepository.save(zas);
+					zasRepository.persist(zas);
 				}
 
-				uitnodigingRepository.save(uitnodiging);
+				uitnodigingRepository.persist(uitnodiging);
 
 				logEvent.setAantalZasVerwerkt(logEvent.getAantalZasVerwerkt() + 1);
 			}

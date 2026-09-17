@@ -32,7 +32,7 @@ import nl.rivm.screenit.model.logging.ZasKoppelingBeeindigdLogEvent;
 import nl.rivm.screenit.service.HibernateService;
 
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.stereotype.Component;
 
 @Component

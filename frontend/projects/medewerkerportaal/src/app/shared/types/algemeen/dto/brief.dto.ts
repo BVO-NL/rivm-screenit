@@ -19,14 +19,15 @@
  * =========================LICENSE_END==================================
  */
 import { BriefType } from '../enum/brief-type'
+import { EntityDto } from '@shared/types/algemeen/dto/entity.dto'
 
-export interface BriefDto {
-  id: number
+export interface BriefDto extends EntityDto {
   briefType: BriefType
   documentNaam: string
   verstuurdVoorAfdrukkenOp?: Date
   tegengehouden: boolean
   vervangen: boolean
+  gegenereerd: boolean
   herdrukBrief?: BriefDto
   creatieDatum: Date
 }

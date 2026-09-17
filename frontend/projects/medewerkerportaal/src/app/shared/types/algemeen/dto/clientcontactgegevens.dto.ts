@@ -18,26 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {NaamGebruik} from '../enum/naam-gebruik'
-import {Geslacht} from '../enum/geslacht'
-import {Doelgroep} from '@shared/types/algemeen/enum/doelgroep'
-import {Aanspreekvorm} from '@shared/types/algemeen/enum/aanspreekvorm'
+import { NaamGebruik } from '../enum/naam-gebruik'
+import { Geslacht } from '../enum/geslacht'
+import { Doelgroep } from '@shared/types/algemeen/enum/doelgroep'
+import { Aanspreekvorm } from '@shared/types/algemeen/enum/aanspreekvorm'
+import { PersoonDto } from '@shared/types/algemeen/dto/persoon.dto'
 
-export interface ClientContactgegevensDto {
-  clientId: number,
-  voornaam: string
-  achternaam: string
-  tussenvoegsel: string
+export interface ClientContactgegevensDto extends PersoonDto {
+  clientId: number
   titel: string
-  geboortedatum: Date,
+  geboortedatum: Date
   bsn: string
-  naamGebruik: NaamGebruik,
+  naamGebruik: NaamGebruik
   partnerTussenvoegsel: string
   partnerAchternaam: string
   geslacht: Geslacht
-  overlijdensdatum: Date,
-  mobielNummer: string,
-  extraNummer: string,
+  overlijdensdatum: Date
+  mobielNummer: string
+  extraNummer: string
   emailAdres: string
   doelgroepen: Doelgroep[]
   dubbeleTijdReden: string

@@ -23,12 +23,9 @@ import { Geslacht } from '@shared/types/algemeen/enum/geslacht'
 import { GbaStatus } from '@shared/types/algemeen/enum/gba-status'
 import { OnderzoeksresultatenActieDto } from '@shared/types/algemeen/dto/onderzoeksresultaten-actie.dto'
 import { BezwaarMomentDto } from '@shared/types/algemeen/dto/bezwaar-moment.dto'
+import { PersoonDto } from '@shared/types/algemeen/dto/persoon.dto'
 
-export interface ClientDto {
-  id: number
-  voornaam: string
-  achternaam: string
-  tussenvoegsel: string
+export interface ClientDto extends PersoonDto {
   titel: string
   geboortedatum: Date
   postcode: string

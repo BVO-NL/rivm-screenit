@@ -23,9 +23,6 @@ package nl.rivm.screenit.wsb.config.cxf;
 
 import lombok.AllArgsConstructor;
 
-import nl.rivm.screenit.util.logging.cxf.ScreenITLoggingInInterceptor;
-import nl.rivm.screenit.util.logging.cxf.ScreenITLoggingOutInterceptor;
-import nl.rivm.screenit.util.logging.cxf.ScreenITLoggingSaver;
 import nl.rivm.screenit.wsb.pd.interceptor.ScreenITFaultListener;
 
 import org.apache.cxf.Bus;

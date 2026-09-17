@@ -377,9 +377,9 @@ public class PlanningControllerLoggingFilter implements Filter
 		}
 
 		@Override
-		public void sendRedirect(String location) throws IOException
+		public void sendRedirect(String location, int statusCode, boolean clearBuffer) throws IOException
 		{
-			original.sendRedirect(location);
+			original.sendRedirect(location, statusCode, clearBuffer);
 		}
 
 		@Override

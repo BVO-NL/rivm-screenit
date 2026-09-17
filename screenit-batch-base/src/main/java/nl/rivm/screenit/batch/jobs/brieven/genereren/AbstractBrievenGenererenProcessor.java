@@ -26,7 +26,7 @@ import java.lang.reflect.ParameterizedType;
 import nl.rivm.screenit.model.Brief;
 import nl.rivm.screenit.service.HibernateService;
 
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractBrievenGenererenProcessor<B extends Brief> implements ItemProcessor<Long, B>

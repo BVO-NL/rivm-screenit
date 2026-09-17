@@ -210,7 +210,7 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 			}
 			organisatieParameter.setValue(value);
 			organisatieParameter.setParameterNaam(key.name());
-			organisatieParameterRepository.save(organisatieParameter);
+			organisatieParameterRepository.persist(organisatieParameter);
 			return organisatieParameter;
 		}
 		else

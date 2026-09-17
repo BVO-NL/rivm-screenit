@@ -33,7 +33,7 @@ import jakarta.persistence.criteria.From;
 
 import lombok.AllArgsConstructor;
 
-import nl.rivm.screenit.dto.OrganisatieMedewerkerRolDto;
+import nl.rivm.screenit.main.dto.algemeen.OrganisatieMedewerkerRolDto;
 import nl.rivm.screenit.main.service.MedewerkerService;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.Medewerker_;

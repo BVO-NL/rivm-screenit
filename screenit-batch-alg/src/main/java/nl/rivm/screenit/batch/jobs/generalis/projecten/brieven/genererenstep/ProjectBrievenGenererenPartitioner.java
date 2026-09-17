@@ -29,7 +29,7 @@ import nl.rivm.screenit.batch.repository.ProjectBriefRepository;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.service.BaseBriefService;
 
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

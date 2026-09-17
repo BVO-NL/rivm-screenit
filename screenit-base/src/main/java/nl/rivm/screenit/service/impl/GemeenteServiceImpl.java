@@ -72,7 +72,7 @@ public class GemeenteServiceImpl implements GemeenteService
 		uitnodigingsGebied.setGemeente(gemeente);
 		uitnodigingsGebied.setNaam(gemeente.getNaam());
 
-		gemeenteRepository.save(gemeente);
+		gemeenteRepository.persist(gemeente);
 		hibernateService.saveOrUpdate(uitnodigingsGebied);
 	}
 

@@ -43,7 +43,7 @@ import nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.hibernate.ScrollableResults;
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 
 import static nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification.laatsteScreeningRondeJoin;
 

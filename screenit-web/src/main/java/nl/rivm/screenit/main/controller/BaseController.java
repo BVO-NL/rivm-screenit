@@ -21,13 +21,26 @@ package nl.rivm.screenit.main.controller;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.main.exception.EntityNietGevondenException;
 import nl.rivm.screenit.main.web.ScreenitSession;
+import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.service.ClientService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class BaseController
 {
-	public OrganisatieMedewerker getIngelogdeGebruiker()
+	@Autowired
+	protected ClientService clientService;
+
+	protected OrganisatieMedewerker getIngelogdeGebruiker()
 	{
 		return ScreenitSession.get().getIngelogdeOrganisatieMedewerker();
+	}
+
+	protected Client getClientOfGooiNotFoundException(Long clientId)
+	{
+		return clientService.getClientById(clientId).orElseThrow(() -> new EntityNietGevondenException("Client", clientId));
 	}
 }

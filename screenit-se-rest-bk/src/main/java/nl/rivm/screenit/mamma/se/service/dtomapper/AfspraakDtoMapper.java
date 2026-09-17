@@ -223,8 +223,8 @@ public class AfspraakDtoMapper
 		adres.setHuisnummerAanduiding(tijdelijkAdres.getHuisnummerAanduiding());
 		adres.setPostcode(tijdelijkAdres.getPostcode());
 		adres.setPlaats(tijdelijkAdres.getPlaats());
-		adres.setStartDatum(tijdelijkAdres.getStartDatum());
-		adres.setEindDatum(tijdelijkAdres.getEindDatum());
+		adres.setStartDatum(DateUtil.toLocalDate(tijdelijkAdres.getStartDatum()));
+		adres.setEindDatum(DateUtil.toLocalDate(tijdelijkAdres.getEindDatum()));
 
 		return adres;
 	}

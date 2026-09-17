@@ -45,6 +45,8 @@ public class BriefDto
 
 	private boolean vervangen;
 
+	private boolean gegenereerd;
+
 	private BriefDto herdrukBrief;
 
 	private Date creatieDatum;

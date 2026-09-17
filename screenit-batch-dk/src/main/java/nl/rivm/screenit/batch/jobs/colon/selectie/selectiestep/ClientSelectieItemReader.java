@@ -25,8 +25,8 @@ import nl.rivm.screenit.model.colon.ClientCategorieEntry;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemStreamException;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ItemStreamException;
 import org.springframework.stereotype.Component;
 
 @Component

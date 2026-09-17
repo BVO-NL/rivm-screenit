@@ -36,6 +36,9 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.exceptions.HeeftAfsprakenException;
 import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
 import nl.rivm.screenit.exceptions.TijdBlokOverlapException;
+import nl.rivm.screenit.main.dto.colon.ColonBlokkadeDto;
+import nl.rivm.screenit.main.dto.colon.ColonHerhalingDto;
+import nl.rivm.screenit.main.dto.colon.ColonTijdslotDto;
 import nl.rivm.screenit.main.exception.BulkAanmakenException;
 import nl.rivm.screenit.main.exception.BulkVerwijderenException;
 import nl.rivm.screenit.main.exception.ValidatieException;
@@ -45,9 +48,6 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.ColonHerhalingsfrequentie;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.RoosterListViewFilter;
-import nl.rivm.screenit.model.colon.dto.ColonBlokkadeDto;
-import nl.rivm.screenit.model.colon.dto.ColonHerhalingDto;
-import nl.rivm.screenit.model.colon.dto.ColonTijdslotDto;
 import nl.rivm.screenit.model.colon.enums.ColonTijdslotType;
 import nl.rivm.screenit.model.colon.planning.ColonBlokkade;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
@@ -117,7 +117,7 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 		{
 			var blokkadesPerKamer = splitBlokkade(blokkade, blokkadeDto.getAlleKamers(), intakelocatie);
 			logAction(blokkade, organisatieMedewerker, intakelocatie, null, LogGebeurtenis.COLON_BLOKKADES_NIEUW, null, null);
-			blokkadeRepository.saveAll(blokkadesPerKamer);
+			blokkadeRepository.persistAll(blokkadesPerKamer);
 		}
 	}
 
@@ -145,7 +145,7 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 			{
 				logAction(blokkade, organisatieMedewerker, intakelocatie, null, LogGebeurtenis.COLON_BLOKKADES_NIEUW, blokkadeDto.getHerhaling(), null);
 
-				blokkadeRepository.saveAll(blokkadesPerKamer);
+				blokkadeRepository.persistAll(blokkadesPerKamer);
 			}
 		}
 		catch (BulkAanmakenException ex)
@@ -160,7 +160,7 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 			{
 				logAction(blokkade, organisatieMedewerker, intakelocatie, null, LogGebeurtenis.COLON_BLOKKADES_NIEUW, blokkadeDto.getHerhaling(), ex);
 
-				blokkadeRepository.saveAll(blokkadesPerKamer);
+				blokkadeRepository.persistAll(blokkadesPerKamer);
 			}
 		}
 	}
@@ -323,7 +323,7 @@ public class ColonBlokkadeServiceImpl implements ColonBlokkadeService
 		{
 			converteerBlokkade(blokkadeDto, intakelocatie, blokkade);
 			logAction(blokkade, ingelogdeOrganisatieMedewerker, intakelocatie, originalBlokkade, LogGebeurtenis.COLON_BLOKKADES_WIJZIG, null, null);
-			blokkadeRepository.save(blokkade);
+			blokkadeRepository.persist(blokkade);
 		}
 	}
 

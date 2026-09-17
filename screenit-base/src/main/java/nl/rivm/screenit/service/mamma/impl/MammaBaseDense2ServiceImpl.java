@@ -370,7 +370,7 @@ public class MammaBaseDense2ServiceImpl implements MammaBaseDense2Service
 			return;
 		}
 		mammografie.setDensiteit(null);
-		mammografieRepository.save(mammografie);
+		mammografieRepository.persist(mammografie);
 	}
 
 	private Sort getSorteerVolgorde()

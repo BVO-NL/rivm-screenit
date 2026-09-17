@@ -21,6 +21,7 @@ package nl.rivm.screenit.batch.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -202,7 +203,7 @@ public class BriefafdrukopdrachtSendBevestigingScheduler extends Briefafdrukopdr
 		{
 
 			var vrijePlekken = queueStateService.aantalVrijePlekkenInSendBevestigingCache();
-			var opgehaaldeBerichten = fetchMessages(queueStateService.getSendBevestigingFetchCursorMessageId(), vrijePlekken);
+			var opgehaaldeBerichten = fetchMessages(queueStateService.getWachtOpCommHubOpdrachtSendBevestigingCache().keySet(), vrijePlekken);
 			if (opgehaaldeBerichten == 0)
 			{
 				break;
@@ -356,18 +357,17 @@ public class BriefafdrukopdrachtSendBevestigingScheduler extends Briefafdrukopdr
 		}
 	}
 
-	private int fetchMessages(long vanafMessageIdExclusief, int maxFetchSize)
+	private int fetchMessages(Collection<Long> uitgeslotenMessageIds, int maxFetchSize)
 	{
 		var fetchedCount = new AtomicReference<>(0);
 		if (maxFetchSize > 0)
 		{
 			databaseRunner.runInSessionOnly(() ->
 			{
-				var berichten = messageService.fetchMessagesGroterDanId(MessageType.BRIEF_AFDRUKKEN_SEND, batchApplicationType.name(), vanafMessageIdExclusief, maxFetchSize);
+				var berichten = messageService.fetchMessagesExclusiefIds(MessageType.BRIEF_AFDRUKKEN_SEND, batchApplicationType.name(), uitgeslotenMessageIds, maxFetchSize);
 				berichten.forEach(message ->
 				{
 					voegMessageToeAanMap(queueStateService.getWachtOpCommHubOpdrachtSendBevestigingCache(), message);
-					queueStateService.updateSendBevestigingFetchCursorMessageId(message.getId());
 				});
 				fetchedCount.set(berichten.size());
 			});

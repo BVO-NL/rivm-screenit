@@ -21,7 +21,7 @@
 import { computed, inject, Injectable } from '@angular/core'
 import { ClientZoekenFilterDto } from '@shared/types/algemeen/dto/client-zoeken-filter.dto'
 import { ClientDto } from '@shared/types/algemeen/dto/client.dto'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 import { TijdelijkAdresDto } from '@shared/types/algemeen/dto/tijdelijk-adres.dto'
 import { BvoStatusDto } from '@shared/types/algemeen/dto/bvo-status.dto'
 import { map, Observable, of, switchMap, tap, throwError } from 'rxjs'

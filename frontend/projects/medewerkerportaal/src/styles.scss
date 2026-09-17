@@ -25,12 +25,6 @@
 @use 'styles/grid' as *;
 @use 'styles/functions';
 
-app-root {
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 131px);
-}
-
 :root {
   --fc-page-bg-color: #fff;
   --fc-neutral-bg-color: hsla(0, 0%, 82%, 0.3);
@@ -83,6 +77,7 @@ app-root {
 
   --ds-color-primary: #54026e;
   --ds-color-primary-tint: #ccb3d4;
+  --ds-primary-text-color: #475055;
   --ds-text-color: #454545;
   --border-color: rgb(225, 233, 239);
   --stale-background-color: #f9f9f9;
@@ -94,6 +89,7 @@ app-root {
   --clientgegevens-label-color: #6b7280;
   --empty-state-icon-color: #b9c7d0;
   --default-line-height: 1.25rem;
+  --digitaal-badge-color: #7202CA;
 
   --spacer-0: #{functions.get-spacer(0)};
   --spacer-1: #{functions.get-spacer(1)};
@@ -101,6 +97,13 @@ app-root {
   --spacer-3: #{functions.get-spacer(3)};
   --spacer-4: #{functions.get-spacer(4)};
   --spacer-5: #{functions.get-spacer(5)};
+}
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 131px);
+  color: var(--ds-primary-text-color);
 }
 
 input::-webkit-outer-spin-button,
@@ -111,6 +114,10 @@ input::-webkit-inner-spin-button {
 
 input[type='number'] {
   -moz-appearance: textfield;
+}
+
+h2 {
+  font-size: 24px;
 }
 
 .pdf-inzien-dialog {

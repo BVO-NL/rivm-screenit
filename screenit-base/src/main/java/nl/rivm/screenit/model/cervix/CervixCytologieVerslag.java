@@ -33,6 +33,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -61,6 +62,7 @@ public class CervixCytologieVerslag extends CervixVerslag<CervixCytologieVerslag
 
 	@OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	@JoinColumn(nullable = false)
 	private CervixCytologieVerslagContent verslagContent;
 
 	@Enumerated(EnumType.STRING)

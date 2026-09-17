@@ -21,7 +21,7 @@
 import { NL_DATE_FORMAT } from '@/shared/constants'
 import { BriefDto } from '@/shared/types/algemeen/dto/brief.dto'
 import { DatePipe } from '@angular/common'
-import { Component, computed, input } from '@angular/core'
+import { Component, input } from '@angular/core'
 import {
   DsCell,
   DsCellDef,
@@ -35,6 +35,7 @@ import {
   DsTableComponent,
 } from '@topicus-rgp-ds/web'
 import { DatumTijdPipe } from '@shared/pipes/datum-tijd/datum-tijd.pipe'
+import { BriefStatusPipe } from '@shared/pipes/brief-status/brief-status.pipe'
 
 @Component({
   selector: 'app-brieven-lijst',
@@ -51,6 +52,7 @@ import { DatumTijdPipe } from '@shared/pipes/datum-tijd/datum-tijd.pipe'
     DsHeaderCellDef,
     DatumTijdPipe,
     DatePipe,
+    BriefStatusPipe,
   ],
   templateUrl: './brieven-lijst.component.html',
   styles: `
@@ -65,30 +67,4 @@ export class BrievenLijstComponent {
   protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
 
   protected readonly trackByBriefId = (_: number, brief: BriefDto): number => brief.id
-
-  private readonly meestRecenteBriefPerGroep = computed(() => {
-    const meestRecentePerGroep = new Map<number, BriefDto>()
-    for (const brief of this.brieven()) {
-      const groepId = brief.herdrukBrief?.id ?? brief.id
-      const huidigeMeestRecente = meestRecentePerGroep.get(groepId)
-      if (!huidigeMeestRecente || new Date(brief.creatieDatum).getTime() > new Date(huidigeMeestRecente.creatieDatum).getTime()) {
-        meestRecentePerGroep.set(groepId, brief)
-      }
-    }
-    return meestRecentePerGroep
-  })
-
-  protected getBriefStatus(row: BriefDto): string {
-    const groepId = row.herdrukBrief?.id ?? row.id
-    if (this.meestRecenteBriefPerGroep().get(groepId)?.id !== row.id) {
-      return 'Vervangen'
-    }
-    if (row.tegengehouden) {
-      return 'Tegengehouden'
-    }
-    if (row.vervangen) {
-      return 'Vervangen'
-    }
-    return 'Verzonden'
-  }
 }

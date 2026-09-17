@@ -39,9 +39,7 @@ import nl.rivm.screenit.main.mappers.algemeen.BriefMapper;
 import nl.rivm.screenit.main.mappers.algemeen.ClientMapper;
 import nl.rivm.screenit.main.mappers.algemeen.OnderzoeksresultatenActieMapper;
 import nl.rivm.screenit.main.model.BriefActie;
-import nl.rivm.screenit.main.service.BriefService;
 import nl.rivm.screenit.main.service.algemeen.BezwaarService;
-import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -50,7 +48,6 @@ import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.repository.algemeen.BezwaarMomentRepository;
 import nl.rivm.screenit.repository.algemeen.OnderzoeksresultatenActieRepository;
-import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.DateUtil;
 
@@ -82,8 +79,6 @@ public class BezwaarController extends BaseController
 {
 	private final BezwaarService bezwaarService;
 
-	private final ClientService clientService;
-
 	private final ClientMapper clientMapper;
 
 	private OnderzoeksresultatenActieRepository onderzoeksresultatenActieRepository;
@@ -93,8 +88,6 @@ public class BezwaarController extends BaseController
 	private UploadDocumentService uploadDocumentService;
 
 	private OnderzoeksresultatenActieMapper onderzoeksresultatenActieMapper;
-
-	private BriefService briefService;
 
 	private BriefMapper briefMapper;
 
@@ -227,7 +220,7 @@ public class BezwaarController extends BaseController
 		var actie = onderzoeksresultatenActieRepository.findById(id)
 			.orElseThrow(() -> new EntityNietGevondenException("OnderzoeksresultatenActie", id));
 
-		bezwaarService.verstuurBevestigingsbrievenOnderzoeksresultatenActieNogmaals(actie, ScreenitSession.get().getIngelogdAccount());
+		bezwaarService.verstuurBevestigingsbrievenOnderzoeksresultatenActieNogmaals(actie, getIngelogdeGebruiker());
 
 		return ResponseEntity.ok().build();
 	}
@@ -252,7 +245,7 @@ public class BezwaarController extends BaseController
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 
-		var brieven = bezwaarService.verstuurBevestigingsbrievenBezwaarMomentNogmaals(bezwaarMoment, ScreenitSession.get().getIngelogdAccount());
+		var brieven = bezwaarService.verstuurBevestigingsbrievenBezwaarMomentNogmaals(bezwaarMoment, getIngelogdeGebruiker());
 
 		return ResponseEntity.ok(brieven.stream().map(briefMapper::briefNaarDto).toList());
 	}

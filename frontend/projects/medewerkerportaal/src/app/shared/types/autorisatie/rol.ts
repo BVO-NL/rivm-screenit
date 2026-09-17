@@ -18,11 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 import { Permissie } from '@shared/types/autorisatie/permissie'
+import { EntityDto } from '@shared/types/algemeen/dto/entity.dto'
 
-export interface Rol {
-  id: number
+export interface Rol extends EntityDto {
   parentRol?: Rol
   naam: string
   description: string

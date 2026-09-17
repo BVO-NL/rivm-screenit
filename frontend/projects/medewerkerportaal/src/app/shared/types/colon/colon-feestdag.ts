@@ -19,9 +19,9 @@
  * =========================LICENSE_END==================================
  */
 import { ColonRoosterBeperking } from '@shared/types/colon/colon-rooster-beperking'
+import { EntityDto } from '@shared/types/algemeen/dto/entity.dto'
 
-export interface ColonFeestdagDto {
-  id: number
+export interface ColonFeestdagDto extends EntityDto {
   naam: string
   datum: string
   beperking: ColonRoosterBeperking

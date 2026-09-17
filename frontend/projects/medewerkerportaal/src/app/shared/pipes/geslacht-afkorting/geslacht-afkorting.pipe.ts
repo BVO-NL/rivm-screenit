@@ -18,15 +18,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Pipe, PipeTransform } from '@angular/core'
+import { inject, Pipe, PipeTransform } from '@angular/core'
 import { Geslacht, geslachtAfkorting } from '../../types/algemeen/enum/geslacht'
+import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
+import { Recht } from '@shared/types/autorisatie/recht'
+import { Actie } from '@shared/types/autorisatie/actie'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
+import { Required } from '@shared/types/autorisatie/required'
 
 @Pipe({
   name: 'geslachtAfkorting',
   pure: true,
 })
 export class GeslachtAfkortingPipe implements PipeTransform {
+  private autorisatieService = inject(AutorisatieService)
   transform(geslacht: Geslacht | undefined | null, fallback: string = ''): string {
-    return geslacht ? geslachtAfkorting[geslacht] : fallback
+    if (
+      !this.autorisatieService.isToegestaan({
+        recht: [Recht.MEDEWERKER_TOON_GENDERINDETITEIT],
+        actie: Actie.INZIEN,
+        bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+        level: ToegangLevel.LANDELIJK,
+        required: Required.ANY,
+      })
+    ) {
+      return ''
+    }
+    return geslacht ? `(${geslachtAfkorting[geslacht]})` : fallback
   }
 }

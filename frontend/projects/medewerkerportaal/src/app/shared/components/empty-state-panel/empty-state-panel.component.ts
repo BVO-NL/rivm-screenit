@@ -21,6 +21,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { DsIconComponent } from '@topicus-rgp-ds/web'
+import { faFile } from '@fortawesome/pro-solid-svg-icons'
 
 @Component({
   selector: 'app-empty-state-panel',
@@ -30,7 +31,8 @@ import { DsIconComponent } from '@topicus-rgp-ds/web'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmptyStatePanelComponent {
-  icon = input.required<IconDefinition>()
+  defaultIcon = faFile
+  icon = input<IconDefinition>(this.defaultIcon)
   titel = input.required<string>()
   subtekst = input('')
 }

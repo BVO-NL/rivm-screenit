@@ -29,7 +29,7 @@ import { FeestdagenService } from '@/colon/colon-feestdagen-beheer-page/services
 import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.directive'
 import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
 import { Actie } from '@shared/types/autorisatie/actie'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@/shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'

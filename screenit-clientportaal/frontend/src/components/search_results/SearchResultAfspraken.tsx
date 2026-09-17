@@ -50,7 +50,7 @@ const SearchResultAfspraken = (props: SearchResultProps) => {
 						value2={props.col1[2]}
 						enlargeValue2={props.enlargeText === undefined ? true : props.enlargeText}/>}
 				</Col>
-				<Col sm={4} className={styles.col}>
+				<Col sm={4} className={classNames(styles.col, styles.locationColumn)}>
 					{props.col2 && <SearchResultColumn
 						head={props.col2[0]}
 						value1={props.col2[1]}

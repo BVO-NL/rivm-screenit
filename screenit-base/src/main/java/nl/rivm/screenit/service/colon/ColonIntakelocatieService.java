@@ -43,4 +43,6 @@ public interface ColonIntakelocatieService
 	void saveIntakelocatieDigitaleIntake(ColonIntakelocatie intakelocatie, String digitaleIntakeTekst, Boolean digitaleIntakeEnabled, Boolean clientenHogeAsaScoreNietBehandelen,
 		OrganisatieMedewerker inOrganisatieMedewerker);
 
+	ColonIntakelocatie getIntakelocatieById(Long id);
+
 }

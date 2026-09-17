@@ -52,9 +52,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Profile("!test")
 public class BriefafdrukopdrachtQueueMonitorScheduler extends BriefafdrukopdrachtMessageQueueHandler
 {
-	private static final int QUEUE_NOT_YET_DEQUEUED_SIZE_THRESHOLD = 500;
-
-	private static final int QUEUE_TE_VERSTUREN_SIZE_THRESHOLD = 1000;
 
 	private boolean queueSizeWarning;
 
@@ -103,9 +100,12 @@ public class BriefafdrukopdrachtQueueMonitorScheduler extends Briefafdrukopdrach
 
 	private void logQueueSizeProblemen(Long queueSizeTeVersturen, Long queueSizeNotYetDequeued, Long queueSizeError)
 	{
+		var queueTeVersturenSizeThreshold = communicatieHubClientConfig.getBriefafdrukopdrachtMonitoring().getQueueTeVersturenSizeThreshold();
+		var queueNotYetDequeuedSizeThreshold = communicatieHubClientConfig.getBriefafdrukopdrachtMonitoring().getQueueNotYetDequeuedSizeThreshold();
+
 		var oldQueueSizeWarningValue = queueSizeWarning;
-		var queueTeVersturenTeGroot = queueSizeTeVersturen > QUEUE_TE_VERSTUREN_SIZE_THRESHOLD;
-		var queueNotYetDequeuedTeGroot = queueSizeNotYetDequeued > QUEUE_NOT_YET_DEQUEUED_SIZE_THRESHOLD;
+		var queueTeVersturenTeGroot = queueSizeTeVersturen > queueTeVersturenSizeThreshold;
+		var queueNotYetDequeuedTeGroot = queueSizeNotYetDequeued > queueNotYetDequeuedSizeThreshold;
 		var queueErrorTeGroot = queueSizeError > 0;
 		var nieuweOverschrijding = queueTeVersturenTeGroot && !queueTeVersturenWarning
 			|| queueNotYetDequeuedTeGroot && !queueNotYetDequeuedWarning
@@ -119,13 +119,13 @@ public class BriefafdrukopdrachtQueueMonitorScheduler extends Briefafdrukopdrach
 		if (nieuweOverschrijding)
 		{
 			LOG.warn("Queue size wordt te groot! Te versturen {}>{}, Nog niet afgemeld {}>{}, Foutmeldingen {}>0",
-				queueSizeTeVersturen, QUEUE_TE_VERSTUREN_SIZE_THRESHOLD,
-				queueSizeNotYetDequeued, QUEUE_NOT_YET_DEQUEUED_SIZE_THRESHOLD,
+				queueSizeTeVersturen, queueTeVersturenSizeThreshold,
+				queueSizeNotYetDequeued, queueNotYetDequeuedSizeThreshold,
 				queueSizeError);
 			logService.logGebeurtenis(LogGebeurtenis.BRIEF_AFDRUK_OPDRACHT_QUEUE_ERG_GROOT,
-				"In een van queues staan te veel berichten: Te versturen %s>%s, Nog niet afgemeld %s>%s, Foutmeldingen %s>0"
-					.formatted(queueSizeTeVersturen, QUEUE_TE_VERSTUREN_SIZE_THRESHOLD,
-						queueSizeNotYetDequeued, QUEUE_NOT_YET_DEQUEUED_SIZE_THRESHOLD,
+				"In een van de queues staan te veel berichten: Te versturen %s>%s, Nog niet afgemeld %s>%s, Foutmeldingen %s>0"
+					.formatted(queueSizeTeVersturen, queueTeVersturenSizeThreshold,
+						queueSizeNotYetDequeued, queueNotYetDequeuedSizeThreshold,
 						queueSizeError),
 				getBevolkingsonderzoeken());
 		}
@@ -150,7 +150,7 @@ public class BriefafdrukopdrachtQueueMonitorScheduler extends Briefafdrukopdrach
 			{
 				sendBevestigingVertraagdWarning = true;
 				logService.logGebeurtenis(LogGebeurtenis.BRIEF_AFDRUK_OPDRACHT_SEND_BEVESTIGING_VERTRAAGD,
-					"Een of meer briefafdrukopdrachten hebben niet binnen %s minuten een send bevestiging ontvangen. Oudste bericht wacht al %s minuten (message id: '%s'). Aantal wachtende berichten: %s."
+					"Een of meerdere briefafdrukopdrachten hebben niet binnen %s minuten een send bevestiging ontvangen. Oudste bericht wacht al %s minuten (message id: '%s'). Aantal wachtende berichten: %s."
 						.formatted(
 							TimeUnit.MILLISECONDS.toMinutes(waarschuwingDrempelMs),
 							duurWachten.toMinutes(),

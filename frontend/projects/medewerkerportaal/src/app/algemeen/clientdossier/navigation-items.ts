@@ -20,7 +20,7 @@
  */
 import { DsNavigationSidebarCategoryItem, DsNavigationSidebarItem } from '@topicus-rgp-ds/web'
 import { faUserCircle } from '@fortawesome/pro-light-svg-icons'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 
 interface BvoNavigationItem {
   bvo: Bevolkingsonderzoek
@@ -30,51 +30,51 @@ interface BvoNavigationItem {
 const bvoNavigationItems: BvoNavigationItem[] = [
   {
     bvo: Bevolkingsonderzoek.CERVIX,
-    item: <DsNavigationSidebarItem>(<unknown>{
+    item: ({
       label: 'Baarmoederhalskanker',
       icon: 'femalereproductive-system-outline',
       routerLink: '/client/dossier/baarmoederhalskanker',
-    }),
+    } as unknown) as DsNavigationSidebarItem,
   },
   {
     bvo: Bevolkingsonderzoek.MAMMA,
-    item: <DsNavigationSidebarItem>(<unknown>{
+    item: ({
       label: 'Borstkanker',
       icon: 'breasts-outline',
       routerLink: '/client/dossier/borstkanker',
-    }),
+    } as unknown) as DsNavigationSidebarItem,
   },
   {
     bvo: Bevolkingsonderzoek.COLON,
-    item: <DsNavigationSidebarItem>(<unknown>{
+    item: ({
       label: 'Darmkanker',
       icon: 'intestine-outline',
       routerLink: '/client/dossier/darmkanker',
-    }),
+    } as unknown) as DsNavigationSidebarItem,
   },
 ]
 
 export const getClientDossierNavigationItems = (actieveBvos: Bevolkingsonderzoek[]): (DsNavigationSidebarItem | DsNavigationSidebarCategoryItem)[] => {
   const items: (DsNavigationSidebarItem | DsNavigationSidebarCategoryItem)[] = [
-    <DsNavigationSidebarCategoryItem>{
+    ({
       label: 'Algemeen',
-      menuItems: <(DsNavigationSidebarItem | DsNavigationSidebarCategoryItem)[]>[
-        <DsNavigationSidebarItem>{
+      menuItems: [
+        ({
           label: 'Overzicht',
           icon: faUserCircle,
           routerLink: '/client/dossier/overzicht',
-        },
-      ],
-    },
+        } as DsNavigationSidebarItem),
+      ] as (DsNavigationSidebarItem | DsNavigationSidebarCategoryItem)[],
+    } as DsNavigationSidebarCategoryItem),
   ]
 
   const bvoMenuItems = bvoNavigationItems.filter(({ bvo }) => actieveBvos.includes(bvo)).map(({ item }) => item)
 
   if (bvoMenuItems.length > 0) {
-    items.push(<DsNavigationSidebarCategoryItem>{
+    items.push(({
       label: 'Bevolkingsonderzoek',
       menuItems: bvoMenuItems,
-    })
+    } as DsNavigationSidebarCategoryItem))
   }
 
   return items

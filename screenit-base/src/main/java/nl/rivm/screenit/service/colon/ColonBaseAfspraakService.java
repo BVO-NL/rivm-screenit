@@ -79,7 +79,7 @@ public interface ColonBaseAfspraakService
 
 	boolean heeftClientIntakeAfspraakMetConclusieBezwaar(String bsn);
 
-	void saveIntakeafspraak(ColonIntakeAfspraak afspraak);
+	void verstuurDigitaleIntakeafspraak(ColonIntakeAfspraak afspraak);
 
 	boolean isDigitaleAfspraakBeschikbaar();
 }

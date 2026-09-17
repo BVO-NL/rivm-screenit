@@ -34,11 +34,11 @@ import nl.rivm.screenit.repository.impl.FluentJpaQueryImpl;
 import nl.rivm.screenit.service.HibernateService;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftIdIn;

@@ -48,16 +48,12 @@ import nl.rivm.screenit.service.MailService;
 
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.configuration.JobLocator;
-import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.configuration.JobRegistry;
+import org.springframework.batch.core.job.parameters.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.launch.JobRestartException;
 import org.springframework.batch.core.launch.NoSuchJobException;
-import org.springframework.batch.core.launch.NoSuchJobExecutionException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -70,13 +66,10 @@ public class JMSStartJobListener implements SessionAwareMessageListener<ActiveMQ
 	private static final String JMS_MESSAGE_ID = "JMSMessageId";
 
 	@Autowired
-	private JobLocator jobLocator;
+	private JobRegistry jobRegistry;
 
 	@Autowired
-	private JobLauncher launcher;
-
-	@Autowired
-	private JobExplorer jobExplorer;
+	private JobRepository jobRepository;
 
 	@Autowired
 	private JobOperator jobOperator;
@@ -166,8 +159,12 @@ public class JMSStartJobListener implements SessionAwareMessageListener<ActiveMQ
 			var jobParametersBuilder = new JobParametersBuilder();
 			overrideParametersWithSaved(jobParametersBuilder, jobArgs);
 
-			var job = jobLocator.getJob(jobType.name());
-			launcher.run(job, jobParametersBuilder.toJobParameters());
+			var job = jobRegistry.getJob(jobType.name());
+			if (job == null)
+			{
+				throw new NoSuchJobException("Geen job gevonden voor jobtype: " + jobType);
+			}
+			jobOperator.start(job, jobParametersBuilder.toJobParameters());
 		}
 		catch (Exception e)
 		{
@@ -218,13 +215,12 @@ public class JMSStartJobListener implements SessionAwareMessageListener<ActiveMQ
 	{
 		var jobParamsToSave = new HashMap<String, Serializable>();
 
-		for (var entry : jobParametersBuilder.toJobParameters().getParameters().entrySet())
+		for (var jobParameter : jobParametersBuilder.toJobParameters().parameters())
 		{
-			var name = entry.getKey();
-			var jobParameter = entry.getValue();
+			var name = jobParameter.name();
 			if (JMS_MESSAGE_ID.equals(name) || Arrays.stream(JobStartParameter.values()).anyMatch(p -> p.name().equals(name)))
 			{
-				jobParamsToSave.put(name, (Serializable) jobParameter.getValue());
+				jobParamsToSave.put(name, (Serializable) jobParameter.value());
 			}
 		}
 		return jobParamsToSave;
@@ -292,17 +288,17 @@ public class JMSStartJobListener implements SessionAwareMessageListener<ActiveMQ
 			}
 			else
 			{
-				var jobInstances = jobExplorer.getJobInstances(batchJob.getJobType().name().toLowerCase(), 0, 1);
+				var jobInstances = jobRepository.getJobInstances(jobType.name().toLowerCase(), 0, 1);
 				if (!jobInstances.isEmpty())
 				{
-					var jobExecutions = jobExplorer.getJobExecutions(jobInstances.get(0));
+					var jobExecutions = jobRepository.getJobExecutions(jobInstances.getFirst());
 					if (!jobExecutions.isEmpty())
 					{
 						for (var jobExecution : jobExecutions)
 						{
 							if (ExitStatus.FAILED.equals(jobExecution.getExitStatus()))
 							{
-								jobOperator.restart(jobExecution.getId());
+								jobOperator.restart(jobExecution);
 								break;
 							}
 						}
@@ -314,15 +310,7 @@ public class JMSStartJobListener implements SessionAwareMessageListener<ActiveMQ
 		{
 			LOG.error("Could not deserialize object from message", e);
 		}
-		catch (JobRestartException | JobInstanceAlreadyCompleteException | JobParametersInvalidException e)
-		{
-			LOG.error("Job could not be started", e);
-		}
-		catch (NoSuchJobException e)
-		{
-			LOG.error("Job of specified type could not be found", e);
-		}
-		catch (NoSuchJobExecutionException e)
+		catch (JobRestartException e)
 		{
 			LOG.error("Job could not be resumed", e);
 		}

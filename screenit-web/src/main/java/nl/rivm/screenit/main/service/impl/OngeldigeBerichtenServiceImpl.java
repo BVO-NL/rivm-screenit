@@ -116,7 +116,7 @@ public class OngeldigeBerichtenServiceImpl implements OngeldigeBerichtenService
 	public void verwijderenOngeldigBericht(MeldingOngeldigCdaBericht meldingOngeldigCdaBericht)
 	{
 		meldingOngeldigCdaBericht.setActief(false);
-		meldingOngeldigCdaBerichtRepository.save(meldingOngeldigCdaBericht);
+		meldingOngeldigCdaBerichtRepository.persist(meldingOngeldigCdaBericht);
 		LOG.info("MeldingOngeldigCdaBericht " + meldingOngeldigCdaBericht.getId() + " gedeactiveerd");
 	}
 
@@ -150,6 +150,6 @@ public class OngeldigeBerichtenServiceImpl implements OngeldigeBerichtenService
 	@Transactional
 	public void slaMeldingOp(MeldingOngeldigCdaBericht meldingOngeldigCdaBericht)
 	{
-		meldingOngeldigCdaBerichtRepository.save(meldingOngeldigCdaBericht);
+		meldingOngeldigCdaBerichtRepository.persist(meldingOngeldigCdaBericht);
 	}
 }

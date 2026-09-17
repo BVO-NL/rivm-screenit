@@ -43,6 +43,7 @@ import {showToast} from "../../../../../utils/ToastUtil"
 import {ToastMessageType} from "../../../../../datatypes/toast/ToastMessage"
 import {maakAfspraakBevestiging} from "../../../../../api/MammaAfspraakMakenThunkAction"
 import {useWizardStap} from "../../../../../components/wizard_indicator/WizardIndicatorContext"
+import MammaAfspraakView from "../../../../../components/mamma_afspraak_view/MammaAfspraakView"
 
 const MammaAfspraakHerinneringPage: FC = () => {
 	const validatieSchema: Yup.AnyObjectSchema = Yup.object().shape({
@@ -64,7 +65,7 @@ const MammaAfspraakHerinneringPage: FC = () => {
 	const stuurEventEnGaVerder = async (): Promise<void> => {
 		verstuurEvent()
 		await maakBevestiging()
-		navigate("/mamma/afspraak/overzicht")
+		navigate("/mamma/afspraak/uw-huisarts")
 	}
 
 	const verstuurEvent = (): void => {
@@ -86,6 +87,7 @@ const MammaAfspraakHerinneringPage: FC = () => {
 
 	return (
 		<div>
+			<MammaAfspraakView tekst={getString(properties.afspraak_maken.herinnering.afspraak_bijschrift)}/>
 			<SpanWithHtml className={styles.infoText} value={properties.afspraak_maken.herinnering.description}/>
 			<Formik
 				initialValues={afspraakBevestiging}

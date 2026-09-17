@@ -25,6 +25,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
+import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
 import org.springframework.data.jpa.repository.Query;
@@ -32,6 +33,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface ColonIntakeAfspraakRepository extends BaseJpaRepository<ColonIntakeAfspraak>
 {
+	List<ColonIntakeAfspraak> findAllByClientIdAndStatusOrderByVanafDesc(Long clientId, ColonAfspraakStatus status);
+
 	@Query(nativeQuery = true, value = "with time_table as ("
 		+ " select make_time(cast(extract(HOUR from papp.vanaf) as INTEGER), cast(extract(MINUTE from papp.vanaf) as INTEGER), cast (extract(SECOND from papp.vanaf) as DOUBLE PRECISION)) as start_time,"
 		+ " make_time(cast(extract(HOUR from papp.tot) as INTEGER), cast(extract(MINUTE from papp.tot) as INTEGER), cast (extract(SECOND from papp.tot) as DOUBLE PRECISION)) as end_time"

@@ -373,7 +373,7 @@ const routes: RouteDef[] = [
 	{
 		private: true,
 		path: "/mamma/afspraak/bevestiging-selectie/",
-		name: "Bevestigen",
+		name: "Bevestiging",
 		component: MammaAfspraakBevestigingSelectiePage,
 		bvo: Bevolkingsonderzoek.MAMMA,
 		requiredContactActions: [ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN],
@@ -381,7 +381,7 @@ const routes: RouteDef[] = [
 	{
 		private: true,
 		path: "/mamma/afspraak/herinnering/",
-		name: "Herinneren",
+		name: "Herinnering",
 		component: MammaAfspraakHerinneringPage,
 		bvo: Bevolkingsonderzoek.MAMMA,
 		requiredContactActions: [ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN, ClientContactActieType.MAMMA_AFSPRAAK_MAKEN],

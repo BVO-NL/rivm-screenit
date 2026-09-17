@@ -38,9 +38,8 @@ import {setMammaAfspraakBevestigingsoptieReduxAction} from "../../../../../actio
 import {ToastMessageType} from "../../../../../datatypes/toast/ToastMessage"
 import React, {FC, useState} from "react"
 import BasePopup from "../../../../../components/popup/BasePopup"
-import SpanWithHtml from "../../../../../components/span/SpanWithHtml"
-import AfspraakView from "../../../../../components/afspraak_view/AfspraakView"
 import {useWizardStap} from "../../../../../components/wizard_indicator/WizardIndicatorContext"
+import MammaAfspraakView from "../../../../../components/mamma_afspraak_view/MammaAfspraakView"
 
 const MammaAfspraakBevestigenPage: FC = () => {
 	const dispatch = useThunkDispatch()
@@ -61,6 +60,9 @@ const MammaAfspraakBevestigenPage: FC = () => {
 
 		try {
 			await dispatch(maakAfspraak(afspraakOptie))
+			showToast(getString(properties.afspraak_maken.toast.title),
+				getString(properties.afspraak_maken.toast.description),
+			)
 			navigate("/mamma/afspraak/bevestiging-selectie")
 		} catch (error: any) {
 			if (error.response.data === "tijd.niet.beschikbaar") {
@@ -87,17 +89,15 @@ const MammaAfspraakBevestigenPage: FC = () => {
 
 	return (
 		<div>
-			<SpanWithHtml className={styles.infoText} value={properties.page.description.afspraak_maken}/>
-			<AfspraakView adres={afspraakOptie.adres} postcode={afspraakOptie.postcode} plaats={afspraakOptie.plaats} datumTijd={afspraakOptie.datumTijd}
-			              andereAfspraakKiezen={() => andereAfspraakKiezen("wijzigenAfspraakGeklikt")} magWijzigen={true}/>
+			<MammaAfspraakView tekst={properties.page.description.afspraak_maken}/>
 			<div className={styles.bevestigenForm}>
 				{afspraakBevestigingMislukt ? <Button label={properties.afspraak_maken.button.andere_afspraak}
-				                                      onClick={() => andereAfspraakKiezen("wijzigenAfspraakGeklikt")}
-				                                      displayArrow={ArrowType.ARROW_RIGHT}/> :
+													  onClick={() => andereAfspraakKiezen("wijzigenAfspraakGeklikt")}
+													  displayArrow={ArrowType.ARROW_RIGHT}/> :
 					<>
-						<Button label={getString(properties.afspraak_maken.button.volgende)}
-						        displayArrow={ArrowType.ARROW_RIGHT}
-						        onClick={afspraakMaken}/>
+						<Button label={getString(properties.afspraak_maken.button.bevestigen)}
+								displayArrow={ArrowType.ARROW_RIGHT}
+								onClick={afspraakMaken}/>
 						<NavLink onClick={() => setToonBevestigingsPopup(true)} className={styles.andereOptie}>
 							{getString(properties.afspraak_maken.button.afsluiten)}</NavLink>
 					</>
@@ -107,11 +107,11 @@ const MammaAfspraakBevestigenPage: FC = () => {
 			{
 				toonBevestigingsPopup &&
 				<BasePopup title={properties.afspraak_maken.annuleren_bevestigingspopup.title}
-				           description={properties.afspraak_maken.annuleren_bevestigingspopup.description}>
+						   description={properties.afspraak_maken.annuleren_bevestigingspopup.description}>
 					<div className={classNames(styles.bevestigenForm, styles.inPopup)}>
 						<Button label={properties.afspraak_maken.annuleren_bevestigingspopup.button_bevestigen}
-						        displayArrow={ArrowType.ARROW_RIGHT}
-						        onClick={() => setToonBevestigingsPopup(false)}/>
+								displayArrow={ArrowType.ARROW_RIGHT}
+								onClick={() => setToonBevestigingsPopup(false)}/>
 						<NavLink onClick={() => andereAfspraakKiezen("afsluitenAfspraakMaken")}>
 							{properties.afspraak_maken.annuleren_bevestigingspopup.button_annuleren}</NavLink>
 					</div>

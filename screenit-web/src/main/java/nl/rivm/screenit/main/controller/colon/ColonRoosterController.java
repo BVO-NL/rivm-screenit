@@ -27,15 +27,16 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.main.dto.colon.ColonRoosterBeperkingenDto;
+import nl.rivm.screenit.main.dto.colon.ColonRoosterInstellingenDto;
+import nl.rivm.screenit.main.dto.colon.KamerDto;
 import nl.rivm.screenit.main.exception.ValidatieException;
 import nl.rivm.screenit.main.service.colon.ColonIntakekamerService;
 import nl.rivm.screenit.main.service.colon.ColonRoosterBeperkingService;
 import nl.rivm.screenit.main.web.ScreenitSession;
+import nl.rivm.screenit.main.web.security.Required;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
-import nl.rivm.screenit.model.colon.dto.ColonRoosterBeperkingenDto;
-import nl.rivm.screenit.model.colon.dto.ColonRoosterInstellingenDto;
-import nl.rivm.screenit.model.colon.dto.KamerDto;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
@@ -129,7 +130,8 @@ public class ColonRoosterController
 		@ApiResponse(responseCode = "200", description = "Roosterinstellingen succesvol opgehaald"),
 		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
 	})
-	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
+	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_LOCATIE_ROOSTER,
+		Recht.MEDEWERKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT }, required = Required.ANY, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
 	public ColonRoosterInstellingenDto getInstellingen()
 	{

@@ -38,11 +38,11 @@ import {
 import { MatSort, MatSortHeader, MatSortModule } from '@angular/material/sort'
 import { MatTableDataSource } from '@angular/material/table'
 import { NL_DATE_FORMAT } from '@shared/constants'
-import { VoornaamTussenvoegselAchternaamPipe } from '@shared/pipes/voornaam-tussenvoegsel-achternaam/voornaam-tussenvoegsel-achternaam.pipe'
-import { GeslachtAfkortingPipe } from '@shared/pipes/geslacht-afkorting/geslacht-afkorting.pipe'
 import { ClientDto } from '@shared/types/algemeen/dto/client.dto'
 import { faAngleRight } from '@fortawesome/pro-light-svg-icons'
 import { berekenLeeftijd as berekenLeeftijdUtil } from '@shared/utils/date-utils'
+import { NaamPipe, NaamTransform } from '@shared/pipes/naam/naam.pipe'
+import { GeslachtAfkortingPipe } from '@shared/pipes/geslacht-afkorting/geslacht-afkorting.pipe'
 
 @Component({
   selector: 'app-client-zoeken-tabel',
@@ -61,11 +61,11 @@ import { berekenLeeftijd as berekenLeeftijdUtil } from '@shared/utils/date-utils
     MatSort,
     MatSortModule,
     MatSortHeader,
-    VoornaamTussenvoegselAchternaamPipe,
-    GeslachtAfkortingPipe,
     DsIconComponent,
     DsNoDataRow,
     DsBadgeComponent,
+    NaamPipe,
+    GeslachtAfkortingPipe,
   ],
   templateUrl: './client-zoeken-tabel.component.html',
   styleUrl: './client-zoeken-tabel.component.scss',
@@ -73,15 +73,22 @@ import { berekenLeeftijd as berekenLeeftijdUtil } from '@shared/utils/date-utils
 export class ClientZoekenTabelComponent {
   protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
   protected readonly navigeerIcoon = faAngleRight
+  protected readonly NaamTransform = NaamTransform
+  protected readonly dataSource = new MatTableDataSource<ClientDto>([])
+  protected readonly isEenClientOverleden = computed(() => this.clienten().some((client) => client.overlijdensdatum))
+  protected readonly displayedColumns = computed(() => {
+    if (this.isEenClientOverleden()) {
+      const kolommen = [...this.basisKolommen]
+      kolommen.splice(3, 0, 'overlijdensdatum')
+      return kolommen
+    }
+    return this.basisKolommen
+  })
 
   clienten = input.required<ClientDto[]>()
-
   navigate = output<ClientDto>()
 
   private readonly matSort = viewChild(MatSort)
-
-  protected readonly dataSource = new MatTableDataSource<ClientDto>([])
-
   private readonly basisKolommen = ['naam', 'bsn', 'geboortedatum', 'plaats', 'postcode', 'straat', 'navigeer']
 
   constructor() {
@@ -96,17 +103,6 @@ export class ClientZoekenTabelComponent {
       }
     })
   }
-
-  protected isEenClientOverleden = computed(() => this.clienten().some((client) => client.overlijdensdatum))
-
-  protected displayedColumns = computed(() => {
-    if (this.isEenClientOverleden()) {
-      const kolommen = [...this.basisKolommen]
-      kolommen.splice(3, 0, 'overlijdensdatum')
-      return kolommen
-    }
-    return this.basisKolommen
-  })
 
   berekenLeeftijd(geboortedatum: Date): number | undefined {
     return berekenLeeftijdUtil(geboortedatum)

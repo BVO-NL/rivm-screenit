@@ -118,7 +118,7 @@ public class MammaBaseBlokkadeServiceImpl implements MammaBaseBlokkadeService
 		if (StringUtils.isNotBlank(melding))
 		{
 			logService.logGebeurtenis(LogGebeurtenis.MAMMA_BLOKKADE, ingelogdeOrganisatieMedewerker, melding, Bevolkingsonderzoek.MAMMA);
-			blokkadeRepository.save(blokkade);
+			blokkadeRepository.persist(blokkade);
 			conceptPlanningsApplicatie.sendBlokkade(blokkade, isNieuw);
 		}
 	}

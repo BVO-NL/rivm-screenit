@@ -25,7 +25,11 @@ import { Pipe, PipeTransform } from '@angular/core'
   pure: true,
 })
 export class AbbreviatePipe implements PipeTransform {
-  transform(value: string, length: number, ellipsis = false): unknown {
+  transform(value: string | null | undefined, length: number, ellipsis = false): string {
+    if (value == null) {
+      return ''
+    }
+
     let abbreviation = value.slice(0, Math.min(value.length, length))
     if (ellipsis && value.length > length) {
       abbreviation += '...'

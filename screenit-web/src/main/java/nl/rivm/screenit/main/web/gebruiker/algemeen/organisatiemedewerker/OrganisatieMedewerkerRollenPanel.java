@@ -27,7 +27,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import nl.rivm.screenit.dto.OrganisatieMedewerkerRolDto;
+import nl.rivm.screenit.main.dto.algemeen.OrganisatieMedewerkerRolDto;
+import nl.rivm.screenit.main.mappers.algemeen.OrganisatieMedewerkerRolMapper;
 import nl.rivm.screenit.main.service.MedewerkerService;
 import nl.rivm.screenit.main.service.RolService;
 import nl.rivm.screenit.main.web.ScreenitSession;
@@ -37,7 +38,6 @@ import nl.rivm.screenit.main.web.component.dropdown.RequiredScreenitDropdown;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitListMultipleChoice;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.component.table.ActiefHeaderInFormPanel;
-import nl.rivm.screenit.mappers.OrganisatieMedewerkerRolMapper;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerkerRol;
 import nl.rivm.screenit.model.Rol;

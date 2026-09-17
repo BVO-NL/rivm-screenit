@@ -39,6 +39,12 @@
                     </div>
                     <input type="text" wicket:id="uitslag">
                 </div>
+                <div class="control-group" wicket:id="flagContainer">
+                    <label class="control-label">Flag i.p.v. uitslag (PRO = boven meetbereik, SS = onbeoordeelbaar monster):</label>
+                    <div class="controls">
+                        <select wicket:id="flag"></select>
+                    </div>
+                </div>
                 <div class="control-group">
                     <wicket:enclosure child="geinterpreteerdeUitslag">
                         <label class="control-label">Uitslag studiebuis:</label>

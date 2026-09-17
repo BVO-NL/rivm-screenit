@@ -30,15 +30,28 @@
       [errorMessage]="{required: 'De geboortedatum is verplicht', invalidDate: 'De ingevoerde datum is niet valide', maximumDatum: 'De geboortedatum mag niet in de toekomst liggen'}"
     />
     <div class="adres-velden">
-      <ds-input label="Postcode + huisnummer" placeholder="Postcode" formControlName="postcode" data-testid="postcode_input"
+      <ds-input label="Postcode + huisnummer"
+                placeholder="Postcode"
+                formControlName="postcode"
+                autocomplete="off"
+                data-testid="postcode_input"
                 [errorMessage]="{ invalidPostcode: 'Voer een geldige postcode in (bijv. 1234AB)' }"/>
       <ds-input label="&#160;" placeholder="Huisnr" formControlName="huisnummer" data-testid="huisnummer_input"
                 inputmode="numeric" appAlleenCijfers
+                autocomplete="off"
                 [errorMessage]="{ maxlength: 'Huisnummer mag maximaal 10 tekens zijn', pattern: 'Huisnummer mag alleen cijfers bevatten' }"/>
     </div>
-    <ds-input label="BSN" placeholder="BSN" formControlName="bsn" data-testid="bsn_input"
+    <ds-input label="BSN"
+              placeholder="BSN"
+              formControlName="bsn"
+              data-testid="bsn_input"
+              autocomplete="off"
               [errorMessage]="{ invalidBsn: 'Voer een geldig BSN in' }"/>
-    <ds-input label="Briefkenmerk" placeholder="KXXXX" formControlName="briefkenmerk" data-testid="briefkenmerk_input"
+    <ds-input label="Briefkenmerk"
+              placeholder="KXXXX"
+              formControlName="briefkenmerk"
+              data-testid="briefkenmerk_input"
+              autocomplete="off"
               [errorMessage]="{ pattern: 'Briefkenmerk moet beginnen met een K' }"/>
   </div>
 
@@ -46,16 +59,51 @@
     <div class="geavanceerde-velden-card" data-testid="geavanceerde_velden">
       <span class="geavanceerde-velden-titel">Geavanceerd zoeken</span>
       <div class="zoeken-velden geavanceerde-velden">
-        <ds-input label="A-nummer" placeholder="A-nummer" formControlName="anummer" data-testid="anummer_input"/>
-        <ds-input label="Mobiel nummer" placeholder="06-34567890" formControlName="mobielnummer" data-testid="mobielnummer_input"
+        <ds-input label="A-nummer"
+                  placeholder="A-nummer"
+                  formControlName="anummer"
+                  data-testid="anummer_input"
+                  autocomplete="off"/>
+        <ds-input label="Mobiel nummer"
+                  placeholder="06-34567890"
+                  formControlName="mobielnummer"
+                  data-testid="mobielnummer_input"
+                  autocomplete="off"
                   [errorMessage]="'Het telefoonnummer is incorrect.'"/>
-        <ds-input label="E-mailadres" placeholder="E-mailadres" formControlName="emailadres" data-testid="emailadres_input"
-                  [errorMessage]="'Het emailadres is incorrect.'"/>
-        <ds-input label="BK uitnodigingsnummer" placeholder="BK uitnodigingsnummer" formControlName="bkUitnodigingsnummer" data-testid="bk_uitnodigingsnummer_input" type="number"/>
-        <ds-input label="BMHK monsterID" placeholder="BMHK monsterID" formControlName="bmhkMonsterId" data-testid="bmhk_monster_id_input"/>
-        <ds-input label="BMHK uitnodigingsID" placeholder="BMHK uitnodigingsID" formControlName="bmhkUitnodigingsId" data-testid="bmhk_uitnodigings_id_input" type="number"/>
-        <ds-input label="DK barcode" placeholder="Barcode" formControlName="dkBarcode" data-testid="dk_barcode_input"/>
-        <ds-input label="DK uitnodigingsID" placeholder="DK uitnodigingsID" formControlName="dkUitnodigingsId" data-testid="dk_uitnodigings_id_input" type="number"/>
+        <ds-input label="E-mailadres"
+                  placeholder="E-mailadres"
+                  formControlName="emailadres"
+                  data-testid="emailadres_input"
+                  autocomplete="off"
+                  [errorMessage]="'Het e-mailadres is incorrect.'"/>
+        <ds-input label="BK uitnodigingsnummer"
+                  placeholder="BK uitnodigingsnummer"
+                  formControlName="bkUitnodigingsnummer"
+                  data-testid="bk_uitnodigingsnummer_input"
+                  autocomplete="off"
+                  type="number"/>
+        <ds-input label="BMHK monsterID"
+                  placeholder="BMHK monsterID"
+                  formControlName="bmhkMonsterId"
+                  data-testid="bmhk_monster_id_input"
+                  autocomplete="off"/>
+        <ds-input label="BMHK uitnodigingsID"
+                  placeholder="BMHK uitnodigingsID"
+                  formControlName="bmhkUitnodigingsId"
+                  data-testid="bmhk_uitnodigings_id_input"
+                  autocomplete="off"
+                  type="number"/>
+        <ds-input label="DK barcode"
+                  placeholder="Barcode"
+                  formControlName="dkBarcode"
+                  data-testid="dk_barcode_input"
+                  autocomplete="off"/>
+        <ds-input label="DK uitnodigingsID"
+                  placeholder="DK uitnodigingsID"
+                  formControlName="dkUitnodigingsId"
+                  data-testid="dk_uitnodigings_id_input"
+                  type="number"
+                  autocomplete="off"/>
       </div>
     </div>
   }

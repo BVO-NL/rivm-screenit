@@ -28,10 +28,10 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.batch.jobs.mamma.dense2.MammaDense2Constants;
 import nl.rivm.screenit.service.mamma.MammaBaseDense2Service;
 
-import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.step.StepContribution;
 import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;

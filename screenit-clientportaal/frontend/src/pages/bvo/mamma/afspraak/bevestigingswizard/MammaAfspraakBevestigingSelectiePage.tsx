@@ -36,13 +36,14 @@ import {useSelector} from "react-redux"
 import {selectMammaAfspraakBevestigingsoptie} from "../../../../../selectors/MammaAfspraakSelectors"
 import {useThunkDispatch} from "../../../../../index"
 import {FormControlLabel, Radio, RadioGroup} from "@mui/material"
-import SpanWithHtml from "../../../../../components/span/SpanWithHtml"
 import AfsluitenLink from "../../../../../components/afsluiten_link/AfsluitenLink"
 import React, {FC} from "react"
 import {showToast} from "../../../../../utils/ToastUtil"
 import {ToastMessageType} from "../../../../../datatypes/toast/ToastMessage"
 import {maakAfspraakBevestiging} from "../../../../../api/MammaAfspraakMakenThunkAction"
 import {useWizardStap} from "../../../../../components/wizard_indicator/WizardIndicatorContext"
+import MammaAfspraakView from "../../../../../components/mamma_afspraak_view/MammaAfspraakView"
+import SpanWithHtml from "../../../../../components/span/SpanWithHtml"
 
 const MammaAfspraakBevestigingSelectiePage: FC = () => {
 	const validatieSchema: Yup.AnyObjectSchema = Yup.object().shape({
@@ -96,7 +97,7 @@ const MammaAfspraakBevestigingSelectiePage: FC = () => {
 	}
 
 	const navigeerNaarVolgendePagina = (): void => {
-		const url = afspraakBevestiging.toonSmsOptie ? "/mamma/afspraak/herinnering/" : "/mamma/afspraak/overzicht/"
+		const url = afspraakBevestiging.toonSmsOptie ? "/mamma/afspraak/herinnering/" : "/mamma/afspraak/uw-huisarts/"
 		navigate(url)
 	}
 
@@ -116,7 +117,9 @@ const MammaAfspraakBevestigingSelectiePage: FC = () => {
 
 	return (
 		<div>
+			<MammaAfspraakView tekst={getString(properties.afspraak_maken.bevestiging.afspraak_bijschrift)}/>
 			<SpanWithHtml className={styles.infoText} value={getString(properties.afspraak_maken.bevestiging.keuze_vraag)}/>
+
 			<Formik initialValues={initialValues}
 					validationSchema={validatieSchema}
 					onSubmit={verstuurEventEnNavigate}>

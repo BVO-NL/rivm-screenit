@@ -406,13 +406,15 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private void addFitRegistraties(CellStyle cellStyleDateTime, Sheet sheet, ColonScreeningRonde ronde)
 	{
-		ronde.getFitRegistraties().stream().filter(test -> test.getStatus() == ColonFitRegistratieStatus.UITGEVOERD && test.getUitslag() != null).forEach(test ->
-		{
-			var interpretatie = ColonFitRegistratieUtil.getInterpretatie(test, test.getStatus(), false).toLowerCase();
-			addRow(sheet, "Uitslag FIT (" + interpretatie + ")", colonBaseFitService.getToonbareWaarde(test),
-				test.getStatusDatum(),
-				cellStyleDateTime);
-		});
+		ronde.getFitRegistraties().stream()
+			.filter(test -> test.getStatus() == ColonFitRegistratieStatus.UITGEVOERD && ColonFitRegistratieUtil.heeftUitslag(test))
+			.forEach(test ->
+			{
+				var interpretatie = ColonFitRegistratieUtil.getInterpretatie(test, test.getStatus(), false).toLowerCase();
+				addRow(sheet, "Uitslag FIT (" + interpretatie + ")", colonBaseFitService.getToonbareWaarde(test),
+					test.getStatusDatum(),
+					cellStyleDateTime);
+			});
 	}
 
 	private void addIntakeConclusies(CellStyle cellStyleDate, CellStyle cellStyleDateTime, Sheet sheet, ColonScreeningRonde ronde)

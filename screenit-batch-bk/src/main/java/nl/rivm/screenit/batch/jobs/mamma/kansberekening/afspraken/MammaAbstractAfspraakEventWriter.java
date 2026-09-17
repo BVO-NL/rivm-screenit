@@ -56,11 +56,11 @@ public abstract class MammaAbstractAfspraakEventWriter extends MammaAbstractEven
 			afspraakEvent = new MammaKansberekeningAfspraakEvent();
 			afspraakEvent.setAfspraak(afspraak);
 			afspraak.setAfspraakEvent(afspraakEvent);
-			afspraakEventRepository.save(afspraakEvent);
+			afspraakEventRepository.persist(afspraakEvent);
 		}
 
 		baseKansberekeningService.updateAfspraakEvent(afspraak, zetOpkomst());
-		afspraakEventRepository.save(afspraakEvent);
+		afspraakEventRepository.persist(afspraakEvent);
 
 		aantalContextOphogen(getContextKey());
 

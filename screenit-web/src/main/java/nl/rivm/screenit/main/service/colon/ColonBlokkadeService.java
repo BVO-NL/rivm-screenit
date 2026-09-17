@@ -25,16 +25,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.annotation.Nullable;
+
 import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
+import nl.rivm.screenit.main.dto.colon.ColonBlokkadeDto;
+import nl.rivm.screenit.main.dto.colon.ColonHerhalingDto;
+import nl.rivm.screenit.main.dto.colon.ColonTijdslotDto;
 import nl.rivm.screenit.main.exception.BulkAanmakenException;
 import nl.rivm.screenit.main.exception.BulkVerwijderenException;
 import nl.rivm.screenit.main.exception.ValidatieException;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.RoosterListViewFilter;
-import nl.rivm.screenit.model.colon.dto.ColonBlokkadeDto;
-import nl.rivm.screenit.model.colon.dto.ColonHerhalingDto;
-import nl.rivm.screenit.model.colon.dto.ColonTijdslotDto;
 import nl.rivm.screenit.model.colon.planning.ColonBlokkade;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -42,8 +44,6 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import org.springframework.data.domain.Sort;
 
 import com.google.common.collect.Range;
-
-import jakarta.annotation.Nullable;
 
 public interface ColonBlokkadeService
 {

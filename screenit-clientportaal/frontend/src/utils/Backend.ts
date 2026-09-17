@@ -26,17 +26,26 @@ import {showToast} from "./ToastUtil"
 import httpStatus from "../datatypes/HttpStatus"
 import {countRequest, countResponse} from "./SpinnerCounterUtil"
 import {getCookie} from "./CookieUtil"
-import ky, {HTTPError} from "ky"
+import ky, {AfterResponseState, BeforeErrorState, BeforeRequestState, isHTTPError, KyRequest, KyResponse} from "ky"
 
 const BASE_URL = "/api"
-const statussen = [httpStatus.NOT_MODIFIED, httpStatus.NOT_FOUND, httpStatus.CONFLICT, httpStatus.UNPROCESSABLE_ENTITY]
+const statussen = [httpStatus.NOT_MODIFIED, httpStatus.NOT_FOUND, httpStatus.CONFLICT, httpStatus.UNPROCESSABLE_ENTITY, httpStatus.ACCEPTED]
+
+export async function vervangLegeBodyDoorNull(response: KyResponse): Promise<KyResponse> {
+	const clone = response.clone()
+	const text = await clone.text()
+	if (text === "") {
+		response.text = async () => "null"
+	}
+	return response
+}
 
 export const ScreenitBackend = ky.create({
-	prefixUrl: BASE_URL,
+	prefix: BASE_URL,
 	parseJson: text => transformDates(JSON.parse(text)),
 	hooks: {
 		beforeRequest: [
-			request => {
+			({request}: BeforeRequestState): KyRequest => {
 				countRequest()
 				if (keycloak?.token !== undefined && request.headers) {
 					request.headers.set("Authorization", `Bearer ${keycloak.token}`)
@@ -46,20 +55,21 @@ export const ScreenitBackend = ky.create({
 				if (xsrfToken) {
 					request.headers.set("X-XSRF-TOKEN", xsrfToken)
 				}
+				return request
 			},
 		],
 		afterResponse: [
-			async (input, options, response) => {
+			async ({response}: AfterResponseState): Promise<KyResponse> => {
 				countResponse()
-				return response
+				return vervangLegeBodyDoorNull(response)
 			},
 		],
 		beforeError: [
-			(error: HTTPError) => {
-				countResponse()
-				if (!statussen.includes(error.response?.status)) {
+			({error}: BeforeErrorState): Error => {
+				if (isHTTPError(error) && !statussen.includes(error.response.status)) {
 					showToast(undefined, properties.foutmelding, ToastMessageType.ERROR)
 				}
+				countResponse()
 				return error
 			},
 		],

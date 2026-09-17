@@ -26,6 +26,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
+import nl.rivm.screenit.main.dto.colon.ColonAfspraakslotDto;
+import nl.rivm.screenit.main.dto.colon.ColonTijdslotDto;
 import nl.rivm.screenit.main.exception.BeperkingException;
 import nl.rivm.screenit.main.exception.BulkAanmakenException;
 import nl.rivm.screenit.main.exception.BulkVerwijderenException;
@@ -33,8 +35,6 @@ import nl.rivm.screenit.main.exception.ValidatieException;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.RoosterListViewFilter;
-import nl.rivm.screenit.model.colon.dto.ColonAfspraakslotDto;
-import nl.rivm.screenit.model.colon.dto.ColonTijdslotDto;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakslotStatus;
 import nl.rivm.screenit.model.colon.enums.ColonRoosterBeperking;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;

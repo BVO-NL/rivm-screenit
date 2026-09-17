@@ -29,11 +29,11 @@ import nl.rivm.screenit.model.vertrouwdverbonden.Vo105Bericht;
 import nl.rivm.screenit.model.vertrouwdverbonden.utils.VoxHelper;
 
 import org.apache.commons.io.IOUtils;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemStreamException;
-import org.springframework.batch.item.ItemStreamWriter;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ItemStreamException;
+import org.springframework.batch.infrastructure.item.ItemStreamWriter;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.stereotype.Component;
 
 @Component

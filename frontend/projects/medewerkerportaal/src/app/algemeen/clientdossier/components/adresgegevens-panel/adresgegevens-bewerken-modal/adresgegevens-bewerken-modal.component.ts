@@ -20,7 +20,7 @@
  */
 import { Component, inject } from '@angular/core'
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
-import { DsButtonComponent, DsDatepickerComponent, DsDescriptionsComponent, DsInputComponent, DsValidators } from '@topicus-rgp-ds/web'
+import { DsButtonComponent, DsDatepickerComponent, DsDescriptionsComponent, DsInputComponent, DsSummaryPanelComponent, DsValidators } from '@topicus-rgp-ds/web'
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { take } from 'rxjs'
 import { addDays, isValid } from 'date-fns'
@@ -34,7 +34,7 @@ import { createEinddatumNaBegindatumValidator } from '@shared/validators/datum/d
 
 @Component({
   selector: 'app-adresgegevens-bewerken-modal',
-  imports: [BaseDialogComponent, DsButtonComponent, DsDatepickerComponent, ReactiveFormsModule, DsInputComponent, DsDescriptionsComponent],
+  imports: [BaseDialogComponent, DsButtonComponent, DsDatepickerComponent, ReactiveFormsModule, DsInputComponent, DsDescriptionsComponent, DsSummaryPanelComponent],
   templateUrl: './adresgegevens-bewerken-modal.component.html',
   styleUrl: './adresgegevens-bewerken-modal.component.scss',
 })
@@ -51,25 +51,23 @@ export class AdresgegevensBewerkenModalComponent {
   private readonly notificationService = inject(NotificationService)
   private readonly clientService = inject(ClientService)
 
-  adresgegevensForm: FormGroup = this.formBuilder.group({
-    tijdelijkAdres: this.formBuilder.group(
-      {
-        straatnaam: [this.tijdelijkAdres?.straatnaam ?? '', Validators.required],
-        huisnummer: [this.tijdelijkAdres?.huisnummer ?? null, [Validators.required, Validators.min(1)]],
-        huisletter: [this.tijdelijkAdres?.huisletter ?? '', huisletterValidator],
-        huisnummerToevoeging: [this.tijdelijkAdres?.huisnummerToevoeging ?? ''],
-        huisnummerAanduiding: [this.tijdelijkAdres?.aanduidingBijHuisnummer ?? ''],
-        postcode: [this.tijdelijkAdres?.postcode ?? '', [Validators.required, trimmedValidator(DsValidators.postcode)]],
-        plaats: [this.tijdelijkAdres?.plaats ?? '', Validators.required],
-        begindatum: [this.tijdelijkAdres?.begindatum ?? null, Validators.required],
-        einddatum: [this.tijdelijkAdres?.einddatum ?? null, Validators.required],
-      },
-      { validators: createEinddatumNaBegindatumValidator() },
-    ),
-  })
+  adresgegevensForm: FormGroup = this.formBuilder.group(
+    {
+      straat: [this.tijdelijkAdres?.straat ?? '', Validators.required],
+      huisnummer: [this.tijdelijkAdres?.huisnummer ?? null, [Validators.required, Validators.min(1)]],
+      huisletter: [this.tijdelijkAdres?.huisletter ?? '', huisletterValidator],
+      huisnummerToevoeging: [this.tijdelijkAdres?.huisnummerToevoeging ?? ''],
+      huisnummerAanduiding: [this.tijdelijkAdres?.huisnummerAanduiding ?? ''],
+      postcode: [this.tijdelijkAdres?.postcode ?? '', [Validators.required, trimmedValidator(DsValidators.postcode)]],
+      plaats: [this.tijdelijkAdres?.plaats ?? '', Validators.required],
+      begindatum: [this.tijdelijkAdres?.begindatum ?? null, Validators.required],
+      einddatum: [this.tijdelijkAdres?.einddatum ?? null, Validators.required],
+    },
+    { validators: createEinddatumNaBegindatumValidator() },
+  )
 
   get begindatumCtrl(): FormControl {
-    return this.adresgegevensForm.get('tijdelijkAdres.begindatum') as FormControl
+    return this.adresgegevensForm.get('begindatum') as FormControl
   }
 
   get minEinddatum(): string {
@@ -109,16 +107,15 @@ export class AdresgegevensBewerkenModalComponent {
   }
 
   naarTijdelijkAdresDto(): TijdelijkAdresDto {
-    const form = this.adresgegevensForm.value
-    const tijdelijkAdresForm = form.tijdelijkAdres
+    const tijdelijkAdresForm = this.adresgegevensForm.value
 
     return {
       clientId: this.tijdelijkAdres.clientId,
-      straatnaam: tijdelijkAdresForm.straatnaam || undefined,
+      straat: tijdelijkAdresForm.straat || undefined,
       huisnummer: tijdelijkAdresForm.huisnummer || undefined,
       huisletter: tijdelijkAdresForm.huisletter || undefined,
       huisnummerToevoeging: tijdelijkAdresForm.huisnummerToevoeging || undefined,
-      aanduidingBijHuisnummer: tijdelijkAdresForm.huisnummerAanduiding || undefined,
+      huisnummerAanduiding: tijdelijkAdresForm.huisnummerAanduiding || undefined,
       postcode: tijdelijkAdresForm.postcode || undefined,
       plaats: tijdelijkAdresForm.plaats || undefined,
       begindatum: tijdelijkAdresForm.begindatum || null,

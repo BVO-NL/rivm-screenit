@@ -21,17 +21,21 @@ package nl.rivm.screenit.repository;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.jspecify.annotations.NullMarked;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.repository.Repository;
 
+@NullMarked
 @NoRepositoryBean
-public interface BaseJpaRepository<T> extends JpaRepository<T, Long>, JpaSpecificationExecutor<T>
+public interface BaseJpaRepository<T> extends Repository<T, Long>, JpaSpecificationExecutor<T>
 {
 	long countDistinct(Specification<T> spec);
 
@@ -41,4 +45,23 @@ public interface BaseJpaRepository<T> extends JpaRepository<T, Long>, JpaSpecifi
 
 	<R, P> R findWith(Specification<T> specification, Class<P> resultTtype, Function<FluentJpaQuery<T, P>, R> queryFunction);
 
+	T getReferenceById(Long id);
+
+	Optional<T> findById(Long id);
+
+	List<T> findAllById(Iterable<Long> ids);
+
+	boolean existsById(Long id);
+
+	long count();
+
+	<S extends T> S persist(S entity);
+
+	<S extends T> List<S> persistAll(Iterable<S> entities);
+
+	void delete(T entity);
+
+	void deleteById(Long id);
+
+	void deleteAll(Iterable<? extends T> entities);
 }

@@ -26,7 +26,7 @@ import { MammaVisitatieStatus, mammaVisitatieStatusLijst } from '@shared/types/m
 import { OrganisatieService } from '@/algemeen/services/organisatie/organisatie.service'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { Actie } from '@shared/types/autorisatie/actie'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'

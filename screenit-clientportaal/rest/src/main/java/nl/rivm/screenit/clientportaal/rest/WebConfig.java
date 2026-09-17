@@ -21,8 +21,6 @@ package nl.rivm.screenit.clientportaal.rest;
  * =========================LICENSE_END==================================
  */
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.clientportaal.rest.mapping.CustomObjectMapper;
@@ -30,12 +28,10 @@ import nl.rivm.screenit.clientportaal.rest.mapping.CustomObjectMapper;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
-import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableWebMvc
@@ -56,25 +52,9 @@ public class WebConfig implements WebMvcConfigurer
 	}
 
 	@Override
-	public void extendMessageConverters(List<HttpMessageConverter<?>> converters)
-	{
-		converters.stream()
-			.filter(MappingJackson2HttpMessageConverter.class::isInstance)
-			.map(MappingJackson2HttpMessageConverter.class::cast)
-			.forEach(converter -> converter.setObjectMapper(customObjectMapper));
-	}
-
-	@Override
-	public void configureContentNegotiation(ContentNegotiationConfigurer configurer)
+	public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder)
 	{
 
-		configurer.favorPathExtension(false);
-	}
-
-	@Override
-	public void configurePathMatch(PathMatchConfigurer matcher)
-	{
-
-		matcher.setUseSuffixPatternMatch(false);
+		builder.withJsonConverter(new MappingJackson2HttpMessageConverter(customObjectMapper));
 	}
 }

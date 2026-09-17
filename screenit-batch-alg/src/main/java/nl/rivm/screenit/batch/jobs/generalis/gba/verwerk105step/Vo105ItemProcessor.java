@@ -34,9 +34,9 @@ import nl.rivm.screenit.model.vertrouwdverbonden.enums.Vo105_ArecordVeld;
 import nl.rivm.screenit.model.vertrouwdverbonden.utils.VoxHelper;
 import nl.rivm.screenit.service.HibernateService;
 
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

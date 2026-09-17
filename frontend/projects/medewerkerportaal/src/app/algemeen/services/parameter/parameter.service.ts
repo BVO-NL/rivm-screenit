@@ -25,9 +25,10 @@ import { Observable, tap } from 'rxjs'
 import { Parameter } from '@shared/types/algemeen/parameter'
 import { isBefore, startOfDay } from 'date-fns'
 import { parseDate } from '@shared/utils/date-utils'
+import { ParameterKey } from '@shared/types/algemeen/enum/parameter-key'
 
 interface ParameterState {
-  parameters: Parameter[]
+  parameters: Parameter<unknown>[]
 }
 
 @Injectable({
@@ -36,11 +37,15 @@ interface ParameterState {
 export class ParameterService extends BaseService<ParameterState> {
   private http = inject(HttpClient)
 
-  getParameters(): Observable<Parameter[]> {
-    return this.http.get<Parameter[]>('/api/parameters').pipe(tap((response) => this.set('parameters', response)))
+  getParameters<T>(): Observable<Parameter<T>[]> {
+    return this.http.get<Parameter<T>[]>('/api/parameters').pipe(tap((response) => this.set('parameters', response)))
   }
 
-  isVanafDatumBereikt(naam: string): boolean {
+  getParameterWaarde<T>(parameter: ParameterKey, fallback: T): T {
+    return (this.select('parameters')()?.find((p) => p.naam === parameter)?.waarde as T) ?? fallback
+  }
+
+  isVanafDatumBereikt(naam: ParameterKey): boolean {
     const parameter = this.select('parameters')()?.find((p) => p.naam === naam)
     if (!parameter?.waarde) {
       return false
@@ -50,6 +55,6 @@ export class ParameterService extends BaseService<ParameterState> {
   }
 
   isDigitaleIntakeBeschikbaar(): boolean {
-    return this.isVanafDatumBereikt('COLON_START_DIGITALE_INTAKE')
+    return this.isVanafDatumBereikt(ParameterKey.COLON_START_DIGITALE_INTAKE)
   }
 }

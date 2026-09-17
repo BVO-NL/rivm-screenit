@@ -216,7 +216,7 @@ public class ClientServiceImpl implements ClientService
 	{
 		logContactgegevensWijzigingen(client, dto, ingelogdAccount);
 		zetContactgegevensInClient(dto, client);
-		clientRepository.save(client);
+		clientRepository.persist(client);
 	}
 
 	private void logContactgegevensWijzigingen(Client client, ClientContactgegevensDto dto, Account ingelogdAccount)

@@ -21,6 +21,7 @@ package nl.rivm.screenit.repository.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -33,7 +34,8 @@ import nl.rivm.screenit.repository.FluentJpaQuery;
 import nl.topicuszorg.hibernate.object.model.HibernateObject;
 
 import org.hibernate.proxy.HibernateProxy;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +48,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+@NullMarked
 @Transactional(propagation = Propagation.SUPPORTS)
 
 public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaRepository<T, Long> implements BaseJpaRepository<T>
@@ -67,8 +70,6 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	@Override
 	public Optional<T> findFirst(Specification<T> specification, Sort sort)
 	{
-
-		Assert.notNull(specification, "Specification must not be null");
 		var typedQuery = getQuery(specification, sort);
 		typedQuery.setMaxResults(1);
 		return typedQuery.getResultList().stream().findFirst();
@@ -83,15 +84,14 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	@Override
 	public <R, P> R findWith(Specification<T> specification, Class<P> projectionType, Function<FluentJpaQuery<T, P>, R> queryFunction)
 	{
-
 		Assert.notNull(specification, "Specification must not be null");
 		var fluentQuery = new FluentJpaQueryImpl<>(specification, entityManager, getDomainClass(), projectionType);
 		return queryFunction.apply(fluentQuery);
 	}
 
-	@Override
 	@Transactional
-	public <S extends T> @NotNull S save(@NotNull S entity)
+	@Override
+	public <S extends T> S persist(S entity)
 	{
 		entityManager.persist(entity);
 		if (entity instanceof HibernateProxy proxy)
@@ -105,6 +105,24 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 			}
 		}
 		return entity;
+	}
+
+	@Transactional
+	@Override
+	public <S extends T> List<S> persistAll(Iterable<S> entities)
+	{
+		List<S> result = new ArrayList<>();
+		for (S entity : entities)
+		{
+			result.add(persist(entity));
+		}
+		return result;
+	}
+
+	@Override
+	public <S extends T> S save(S entity)
+	{
+		throw new UnsupportedOperationException("Gebruik persist() i.p.v. save() ivm onverwacht merge-gedrag bij geneste transient entiteiten.");
 	}
 
 	@Override
@@ -146,23 +164,18 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	@Override
 	public Page<T> findAll(Pageable pageable)
 	{
-
-		return findAll(Specification.unrestricted(), pageable);
+		return super.findAll(pageable);
 	}
 
 	@Override
 	public Optional<T> findOne(Specification<T> spec)
 	{
-
-		Assert.notNull(spec, "Specification must not be null");
 		return super.findOne(spec);
 	}
 
 	@Override
 	public List<T> findAll(Specification<T> spec)
 	{
-
-		Assert.notNull(spec, "Specification must not be null");
 		return super.findAll(spec);
 	}
 
@@ -177,8 +190,6 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	@Override
 	public List<T> findAll(Specification<T> spec, Sort sort)
 	{
-
-		Assert.notNull(spec, "Specification must not be null");
 		return super.findAll(spec, sort);
 	}
 
@@ -203,8 +214,6 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	@Override
 	public boolean exists(Specification<T> spec)
 	{
-
-		Assert.notNull(spec, "Specification must not be null");
 		return super.exists(spec);
 	}
 
@@ -227,9 +236,15 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	}
 
 	@Override
-	public <S extends T, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction)
+	public <S extends T, R extends @Nullable Object> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction)
 	{
 		return super.findBy(example, queryFunction);
+	}
+
+	@Override
+	public <S extends T, R extends @Nullable Object> R findBy(Specification<T> spec, Function<? super SpecificationFluentQuery<S>, R> queryFunction)
+	{
+		return super.findBy(spec, queryFunction);
 	}
 
 	@Override
@@ -241,8 +256,6 @@ public class BaseJpaRepositoryImpl<T extends HibernateObject> extends SimpleJpaR
 	@Override
 	public long count(Specification<T> spec)
 	{
-
-		Assert.notNull(spec, "Specification must not be null");
 		return super.count(spec);
 	}
 }

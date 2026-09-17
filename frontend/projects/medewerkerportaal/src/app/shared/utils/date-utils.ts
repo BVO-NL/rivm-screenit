@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import { differenceInYears, format, isBefore, isValid, parse, parseISO, startOfDay } from 'date-fns'
-import { COMPACT_DATE_FORMAT, DATE_FORMAT, ISO_DATE_FORMAT, LOCAL_TIME_FORMAT, NL_DATE_FORMAT, TIME_FORMAT } from '@shared/constants'
+import { COMPACT_DATE_FORMAT, DATE_FORMAT, ISO_DATE_FORMAT, LONG_TIME_FORMAT, NL_DATE_FORMAT, TIME_FORMAT } from '@shared/constants'
 
 export function getDateFormat(date: string): string {
   if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(date)) {
@@ -59,7 +59,7 @@ export function parseDateTime(time: string, date: Date): Date {
 }
 
 export function formatTimeAsISO(time: string, date: Date = new Date()): string {
-  const timeFormat = /^\d{2}:\d{2}:\d{2}.*/.test(time) ? LOCAL_TIME_FORMAT : TIME_FORMAT
+  const timeFormat = /^\d{2}:\d{2}:\d{2}.*/.test(time) ? LONG_TIME_FORMAT : TIME_FORMAT
   return formatDateAsISO(parse(time, timeFormat, date))
 }
 

@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.dto.EntityDto;
+import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.NaamGebruik;
 
@@ -66,6 +67,8 @@ public class ClientDto extends EntityDto
 	private String partnerTussenvoegsel;
 
 	private String partnerAchternaam;
+
+	private GbaStatus gbaStatus;
 
 	@Schema(description = "Heeft de client een tijdelijk adres?")
 	private boolean isTijdelijkAdres;

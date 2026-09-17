@@ -159,7 +159,7 @@ public class CoordinatenServiceImpl implements CoordinatenService
 		}
 		gemeente.get().setLatitude(new BigDecimal(latitude));
 		gemeente.get().setLongitude(new BigDecimal(longitude));
-		gemeenteRepository.save(gemeente.get());
+		gemeenteRepository.persist(gemeente.get());
 	}
 
 	@Override
@@ -179,6 +179,6 @@ public class CoordinatenServiceImpl implements CoordinatenService
 		}
 		bestaandeCoordinaten.setLatitude(new BigDecimal(lat));
 		bestaandeCoordinaten.setLongitude(new BigDecimal(lon));
-		coordinatenRepository.save(bestaandeCoordinaten);
+		coordinatenRepository.persist(bestaandeCoordinaten);
 	}
 }

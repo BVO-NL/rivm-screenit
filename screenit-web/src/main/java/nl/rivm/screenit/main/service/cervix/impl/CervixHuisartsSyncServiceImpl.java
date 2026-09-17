@@ -158,7 +158,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 		{
 			huisarts.setPostadres(setAdres(dto.getPostadres(), mutatieDatum));
 		}
-		huisartsRepository.save(huisarts);
+		huisartsRepository.persist(huisarts);
 		logService.logGebeurtenis(LogGebeurtenis.ORGANISATIE_WIJZIG, huisarts.getOrganisatieMedewerkers().get(0), "Huisarts: " + huisarts.getNaam(), Bevolkingsonderzoek.CERVIX);
 		return huisarts;
 	}
@@ -214,7 +214,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 		{
 			locatie.setLocatieAdres(setAdres(dto.getLocatieAdres(), mutatieDatum));
 		}
-		huisartsLocatieRepository.save(locatie);
+		huisartsLocatieRepository.persist(locatie);
 		logService.logGebeurtenis(LogGebeurtenis.ORGANISATIE_WIJZIG, huisarts.getOrganisatieMedewerkers().get(0),
 			"Huisarts: " + huisarts.getNaam() + " locatie: " + locatie.getNaam(), Bevolkingsonderzoek.CERVIX);
 		return locatie;
@@ -268,7 +268,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 		{
 			adres.setGbaGemeente(adres.getWoonplaats().getGemeente());
 		}
-		huisartsAdresRepository.save(adres);
+		huisartsAdresRepository.persist(adres);
 		return adres;
 	}
 
@@ -327,7 +327,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 		var voorbladBrief = briefService.maakRegioBrief(so, BriefType.REGIO_UITSTRIJKEND_ARTS_VOORBLAD_LABFORMULIER, nu, null);
 		aanvraag.setVoorbladBrief(voorbladBrief);
 
-		labformulierAanvraagRepository.save(aanvraag);
+		labformulierAanvraagRepository.persist(aanvraag);
 	}
 
 	@Override
@@ -381,7 +381,7 @@ public class CervixHuisartsSyncServiceImpl implements CervixHuisartsSyncService
 		}
 		else
 		{
-			labformulierAanvraagRepository.save(aanvraag.get());
+			labformulierAanvraagRepository.persist(aanvraag.get());
 		}
 	}
 }

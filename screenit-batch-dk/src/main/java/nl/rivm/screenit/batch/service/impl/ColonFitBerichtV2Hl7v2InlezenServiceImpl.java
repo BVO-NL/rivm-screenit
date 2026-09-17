@@ -124,8 +124,8 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 		var rapportage = new ColonFitAnalyseResultaatSetVerwerkingRapportage();
 		rapportage.setDatumVerwerking(currentDateSupplier.getDate());
 		verwerkingLogEvent.setRapportage(rapportage);
-		fitVerwerkingRapportageRepository.save(rapportage);
-		fitVerwerkingBeeindigdLogEventRepository.save(verwerkingLogEvent);
+		fitVerwerkingRapportageRepository.persist(rapportage);
+		fitVerwerkingBeeindigdLogEventRepository.persist(verwerkingLogEvent);
 
 		var hapiMsg = transformToMessage(bericht.getHl7Bericht());
 
@@ -144,8 +144,8 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 		bericht.setStatusDatum(currentDateSupplier.getDate());
 		bericht.setStatus(BerichtStatus.VERWERKT);
 
-		fitVerwerkingRapportageRepository.save(rapportage);
-		fitVerwerkingBeeindigdLogEventRepository.save(verwerkingLogEvent);
+		fitVerwerkingRapportageRepository.persist(rapportage);
+		fitVerwerkingBeeindigdLogEventRepository.persist(verwerkingLogEvent);
 		logService.logGebeurtenis(LogGebeurtenis.COLON_JOB_FIT_ANALYSE_RESULTATEN_OPSLAAN_AFGEROND, verwerkingLogEvent, Bevolkingsonderzoek.COLON);
 	}
 
@@ -174,7 +174,7 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 					resultaat.setInstrumentId(result.getInstrumentID());
 					fitUitslagVerwerking(result, resultaat);
 					resultaat.setAnalyseResultaatSet(resultaatSet);
-					fitAnalyseResultaatRepository.save(resultaat);
+					fitAnalyseResultaatRepository.persist(resultaat);
 
 					if (ColonFitAnalyseResultaatType.CLIENT != resultaatType)
 					{
@@ -191,7 +191,7 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 					LOG.warn(melding);
 				}
 				verslagEntry.setAantalVerwerkingen(verslagEntry.getAantalVerwerkingen() + 1);
-				fitVerwerkingRapportageEntryRepository.save(verslagEntry);
+				fitVerwerkingRapportageEntryRepository.persist(verslagEntry);
 			}
 			catch (Exception e)
 			{
@@ -290,7 +290,7 @@ public class ColonFitBerichtV2Hl7v2InlezenServiceImpl implements ColonFitBericht
 			resultaatSet.setNaamBestand(result.getBestandsNaam());
 			resultaatSet.setPathBestand("");
 
-			fitAnalyseResultaatSetRepository.save(resultaatSet);
+			fitAnalyseResultaatSetRepository.persist(resultaatSet);
 
 			return resultaatSet;
 		});

@@ -18,7 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-export interface MedewerkerDto {
-  id: number
-  naam: string
+import { EntityDto } from '@shared/types/algemeen/dto/entity.dto'
+import { PersoonDto } from '@shared/types/algemeen/dto/persoon.dto'
+
+export interface MedewerkerDto extends PersoonDto {
+
 }

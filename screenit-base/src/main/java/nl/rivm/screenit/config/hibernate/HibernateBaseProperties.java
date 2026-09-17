@@ -57,7 +57,6 @@ public final class HibernateBaseProperties
 		properties.put(MappingSettings.DEFAULT_SCHEMA, "gedeeld");
 		properties.put(GlobalTemporaryTableStrategy.CREATE_ID_TABLES, "false");
 		properties.put(GlobalTemporaryTableStrategy.DROP_ID_TABLES, "false");
-		properties.put("hibernate.jdbc.use_streams_for_binary", "true");
 		properties.put("hibernate.listeners.envers.autoRegister", "true");
 		properties.put(AvailableSettings.STATEMENT_BATCH_SIZE, "20");
 		properties.put(AvailableSettings.STATEMENT_INSPECTOR, CustomStatementInspector.class.getName());

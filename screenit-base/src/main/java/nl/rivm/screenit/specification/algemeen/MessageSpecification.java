@@ -21,10 +21,13 @@ package nl.rivm.screenit.specification.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Collection;
+
 import nl.rivm.screenit.model.messagequeue.Message;
 import nl.rivm.screenit.model.messagequeue.MessageType;
 import nl.rivm.screenit.model.messagequeue.Message_;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.skipWhenNull;
@@ -44,6 +47,15 @@ public class MessageSpecification
 	public static Specification<Message> filterMessageIdGroterDan(Long messageId)
 	{
 		return skipWhenNull(messageId, (r, q, cb) -> cb.greaterThan(r.get(Message_.id), messageId));
+	}
+
+	public static Specification<Message> filterMessageIdsNietIn(Collection<Long> messageIds)
+	{
+		if (CollectionUtils.isEmpty(messageIds))
+		{
+			return (r, q, cb) -> cb.conjunction();
+		}
+		return (r, q, cb) -> cb.not(r.get(Message_.id).in(messageIds));
 	}
 
 	public static Specification<Message> heeftTypeEnContext(MessageType type, String context)

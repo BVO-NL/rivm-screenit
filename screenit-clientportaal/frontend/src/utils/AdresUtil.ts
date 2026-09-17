@@ -52,7 +52,7 @@ const formatPostcode = (postcode: string): string => {
 	}
 	const cleaned = postcode.replace(/\s+/g, "")
 	if (cleaned.length === 6) {
-		return cleaned.substring(0, 4) + " " + cleaned.substring(4).toUpperCase()
+		return `${cleaned.substring(0, 4)} ${cleaned.substring(4).toUpperCase()}`
 	}
 	return postcode
 }
@@ -91,7 +91,7 @@ export const getAdres = (adres: Adres): string => {
 		let s = adres.straat!
 		const huisnummerVolledig = getHuisnummerVolledig(adres)
 		if (huisnummerVolledig) {
-			s += " " + huisnummerVolledig
+			s += ` ${huisnummerVolledig}`
 		}
 		return s
 	} else if (!isNullOfLeeg(adres.locatieBeschrijving)) {
@@ -138,13 +138,13 @@ export const createKixCode = (adres: Adres): string => {
 		kixcode += adres.huisnummer
 	}
 	if (adres.huisnummerToevoeging) {
-		kixcode += "X" + adres.huisnummerToevoeging.replace(/[^A-Za-z0-9]/g, "").toUpperCase()
+		kixcode += `X${adres.huisnummerToevoeging.replace(/[^A-Za-z0-9]/g, "").toUpperCase()}`
 	}
 	if (adres.huisnummerAanduiding) {
-		kixcode += "X" + adres.huisnummerAanduiding.replace(/[^A-Za-z0-9]/g, "").toUpperCase()
+		kixcode += `X${adres.huisnummerAanduiding.replace(/[^A-Za-z0-9]/g, "").toUpperCase()}`
 	}
 	if (adres.huisletter) {
-		kixcode += "X" + adres.huisletter.toUpperCase()
+		kixcode += `X${adres.huisletter.toUpperCase()}`
 	}
 	return kixcode
 }
@@ -156,5 +156,5 @@ const locatiebeschrijvingGevuld = (adres: Adres): boolean => {
 	return !isNullOfLeeg(adres.locatieBeschrijving)
 }
 export const getAdresStringMetHtmlSeparator = (adres: string): string => {
-	return adres.replaceAll(",", "<br>");
+	return adres.replaceAll(",", "<br>")
 }

@@ -26,8 +26,8 @@ import java.util.Map;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
-import org.springframework.batch.core.partition.support.Partitioner;
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.core.partition.Partitioner;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class BasePartitioner implements Partitioner

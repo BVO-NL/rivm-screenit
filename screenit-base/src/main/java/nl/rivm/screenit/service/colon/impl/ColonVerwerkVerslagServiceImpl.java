@@ -104,7 +104,7 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 	public void verwerkInDossier(MdlVerslag verslag)
 	{
 		verslag.setVervolgbeleid(dossierBaseService.getVervolgbeleid(verslag));
-		mdlVerslagRepository.save(verslag);
+		mdlVerslagRepository.persist(verslag);
 
 		var screeningRonde = verslag.getScreeningRonde();
 		var nu = currentDateSupplier.getDate();

@@ -41,7 +41,7 @@ import org.springframework.jms.core.JmsTemplate;
 
 @Configuration
 @AllArgsConstructor
-@Profile("!test")
+@Profile("!test && !filler")
 public class JmsConfig
 {
 	private final ApplicationConfig appConfig;

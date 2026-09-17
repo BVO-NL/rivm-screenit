@@ -28,8 +28,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.controller.BaseController;
+import nl.rivm.screenit.main.dto.algemeen.MedewerkerDto;
 import nl.rivm.screenit.main.mappers.algemeen.MedewerkerMapper;
-import nl.rivm.screenit.main.model.algemeen.dto.MedewerkerDto;
 import nl.rivm.screenit.main.service.MedewerkerService;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.OrganisatieType;

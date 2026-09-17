@@ -19,15 +19,34 @@
   =========================LICENSE_END==================================
   -->
 <ds-page-header title="Cliëntdossier" [fullHeight]="true" (backButtonClicked)="naarClientZoeken()">
-  <ds-tab-group [selectedIndex]="0">
-    <ds-tab titel="Cliëntgegevens">
+  <ds-tab-group [selectedIndex]="actieveTabIndex" (selectedIndexChange)="refresh($event)">
+    <ds-tab [titel]="tabLabels[0]">
       <ng-template dsLazyContentDirective>
         <app-clientgegevens-tab [client]="client()"/>
       </ng-template>
     </ds-tab>
+    @if (isAfsprakenTabZichtbaar()) {
+      <ds-tab [titel]="tabLabels[1]">
+        <ng-template dsLazyContentDirective>
+          <app-afspraken-tab/>
+        </ng-template>
+      </ds-tab>
+    }
+    <ds-tab [titel]="tabLabels[2]" *appAutorisatie="meldingenConstraint" [count]="aantalMeldingen()">
+      <ng-template dsLazyContentDirective>
+        <app-meldingen-tab/>
+      </ng-template>
+    </ds-tab>
+    @if (isCisHistorieTabZichtbaar()) {
+      <ds-tab [titel]="tabLabels[3]">
+        <ng-template dsLazyContentDirective>
+          <app-cis-historie-tab/>
+        </ng-template>
+      </ds-tab>
+    }
   </ds-tab-group>
 
-  <button ds-button-secondary (click)="naarClientZoeken()">
+  <button ds-button-secondary (click)="naarClientZoeken()" data-testid="client_zoeken_btn">
     <ds-icon [icon]="faSearch"/>
     Cliënt zoeken
   </button>

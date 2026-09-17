@@ -23,15 +23,18 @@ import { Component, input } from '@angular/core'
 @Component({
   selector: 'app-page',
   imports: [],
-  template: `<div class="pagina" [class.pagina--zonder-marge]="zonderMarge()">
-    @if (titel()) {
-      <div class="header">
-        <h1 class="pagina--titel">{{ titel() }}</h1>
-        <ng-content select="[header-actions]" />
-      </div>
-    }
-    <ng-content />
-  </div> `,
+  template: `
+	  <div class="pagina" [class.pagina--zonder-marge]="zonderMarge()">
+		  @if (titel()) {
+			  <div class="pagina--header">
+				  <h1 class="pagina--titel">{{ titel() }}</h1>
+				  <ng-content select="[header-actions]"/>
+			  </div>
+		  }
+		  <div class="pagina--content">
+			  <ng-content/>
+		  </div>
+	  </div> `,
   styles: `
     :host {
       display: flex;
@@ -41,7 +44,7 @@ import { Component, input } from '@angular/core'
     }
 
     .pagina {
-      margin: 10px;
+      padding: var(--spacer-3);
       display: flex;
       flex-direction: column;
       flex: 1;
@@ -50,12 +53,12 @@ import { Component, input } from '@angular/core'
       &.pagina--zonder-marge {
         margin: 0;
 
-        .header {
-          margin: 10px 10px 0;
+        &--header {
+          margin: var(--spacer-3) var(--spacer-3) 0;
         }
       }
 
-      .header {
+      &--header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -68,6 +71,10 @@ import { Component, input } from '@angular/core'
         margin: 10px 10px 15px 15px;
         line-height: 40px;
         text-rendering: optimizelegibility;
+      }
+
+      &--content {
+        height: 100%;
       }
     }
   `,

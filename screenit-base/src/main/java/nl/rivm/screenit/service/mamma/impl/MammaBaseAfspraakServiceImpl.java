@@ -585,7 +585,7 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 					capaciteitBlok.getAfspraken().add(afspraak);
 					afspraak.setCapaciteitBlok(capaciteitBlok);
 				}
-				capaciteitBlokRepository.save(capaciteitBlok);
+				capaciteitBlokRepository.persist(capaciteitBlok);
 			}
 		}
 		return aantalAfspraken;

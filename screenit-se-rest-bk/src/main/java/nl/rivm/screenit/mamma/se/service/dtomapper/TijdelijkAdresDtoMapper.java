@@ -23,14 +23,15 @@ package nl.rivm.screenit.mamma.se.service.dtomapper;
 
 import nl.rivm.screenit.mamma.se.dto.TijdelijkAdresSeDto;
 import nl.rivm.screenit.model.TijdelijkAdres;
+import nl.rivm.screenit.util.DateUtil;
 
 public class TijdelijkAdresDtoMapper
 {
 	public TijdelijkAdres updateTijdelijkAdres(TijdelijkAdres tijdelijkAdres, TijdelijkAdresSeDto tijdelijkAdresSeDto)
 	{
 		tijdelijkAdres.setStraat(tijdelijkAdresSeDto.getStraat());
-		tijdelijkAdres.setStartDatum(tijdelijkAdresSeDto.getStartDatum());
-		tijdelijkAdres.setEindDatum(tijdelijkAdresSeDto.getEindDatum());
+		tijdelijkAdres.setStartDatum(DateUtil.toUtilDate(tijdelijkAdresSeDto.getStartDatum()));
+		tijdelijkAdres.setEindDatum(DateUtil.toUtilDate(tijdelijkAdresSeDto.getEindDatum()));
 		tijdelijkAdres.setPostcode(tijdelijkAdresSeDto.getPostcode());
 		tijdelijkAdres.setPlaats(tijdelijkAdresSeDto.getPlaats());
 		tijdelijkAdres.setHuisnummer(tijdelijkAdresSeDto.getHuisnummer());

@@ -30,7 +30,7 @@ import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.stereotype.Component;
 
 @Component

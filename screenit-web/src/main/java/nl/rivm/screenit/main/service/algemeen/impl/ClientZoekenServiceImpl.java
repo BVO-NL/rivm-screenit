@@ -226,11 +226,11 @@ public class ClientZoekenServiceImpl implements ClientZoekenService
 			return nieuwTijdelijkAdres;
 		});
 
-		tijdelijkBrpAdres.setStraat(tijdelijkAdresDto.getStraatnaam());
+		tijdelijkBrpAdres.setStraat(tijdelijkAdresDto.getStraat());
 		tijdelijkBrpAdres.setHuisnummer(tijdelijkAdresDto.getHuisnummer());
 		tijdelijkBrpAdres.setHuisletter(tijdelijkAdresDto.getHuisletter());
 		tijdelijkBrpAdres.setHuisnummerToevoeging(tijdelijkAdresDto.getHuisnummerToevoeging());
-		tijdelijkBrpAdres.setHuisnummerAanduiding(tijdelijkAdresDto.getAanduidingBijHuisnummer());
+		tijdelijkBrpAdres.setHuisnummerAanduiding(tijdelijkAdresDto.getHuisnummerAanduiding());
 		tijdelijkBrpAdres.setPostcode(tijdelijkAdresDto.getPostcode());
 		tijdelijkBrpAdres.setPlaats(tijdelijkAdresDto.getPlaats());
 

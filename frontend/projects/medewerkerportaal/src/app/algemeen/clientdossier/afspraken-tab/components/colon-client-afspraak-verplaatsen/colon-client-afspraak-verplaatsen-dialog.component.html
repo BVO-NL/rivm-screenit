@@ -1,0 +1,45 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<ds-fullscreen-wizard header="Tijdstip wijzigen" (wizardClosed)="sluitWizard()" [stepsAreSkippable]="false" [detailedStepper]="true">
+  <ds-wizard-step [title]="steps().AFSPRAAK_KIEZEN.titel"
+                  [subtitle]="steps().AFSPRAAK_KIEZEN.subtitel"
+                  [nextAction]="steps().AFSPRAAK_KIEZEN.nextAction"
+                  [cancelAction]="steps().AFSPRAAK_KIEZEN.cancelAction"
+                  [stepControl]="steps().AFSPRAAK_KIEZEN.stepControl"
+  >
+    <app-colon-client-afspraak-zoeken [geselecteerdSlot]="geselecteerdSlot()" (geselecteerdSlotChange)="selecteerSlot($event)"/>
+  </ds-wizard-step>
+  <ds-wizard-step [title]="steps().AFSPRAAK_BEVESTIGEN.titel"
+                  [subtitle]="steps().AFSPRAAK_BEVESTIGEN.subtitel"
+                  [nextAction]="steps().AFSPRAAK_BEVESTIGEN.nextAction"
+                  [cancelAction]="steps().AFSPRAAK_BEVESTIGEN.cancelAction"
+                  [previousAction]="steps().AFSPRAAK_BEVESTIGEN.previousAction"
+                  [stepControl]="steps().AFSPRAAK_BEVESTIGEN.stepControl">
+    <app-colon-client-afspraak-bevestiging [afspraakslot]="geselecteerdSlot()" [huidigeAfspraak]="afspraak()" [(request)]="aanmakenRequest"/>
+  </ds-wizard-step>
+  <ds-wizard-step [title]="steps().SAMENVATTING.titel"
+                  [subtitle]="steps().SAMENVATTING.subtitel"
+                  [cancelAction]="steps().SAMENVATTING.cancelAction"
+                  [previousAction]="steps().SAMENVATTING.previousAction"
+                  [completeAction]="steps().SAMENVATTING.completeAction">
+    <app-colon-client-afspraak-samenvatting [request]="aanmakenRequest()"/>
+  </ds-wizard-step>
+</ds-fullscreen-wizard>

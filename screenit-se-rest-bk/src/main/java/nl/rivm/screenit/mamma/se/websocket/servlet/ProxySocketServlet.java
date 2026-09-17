@@ -23,8 +23,8 @@ package nl.rivm.screenit.mamma.se.websocket.servlet;
 
 import nl.rivm.screenit.mamma.se.websocket.socket.SeProxyWebsocket;
 
-import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServlet;
-import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServletFactory;
+import org.eclipse.jetty.ee11.websocket.server.JettyWebSocketServlet;
+import org.eclipse.jetty.ee11.websocket.server.JettyWebSocketServletFactory;
 
 public class ProxySocketServlet extends JettyWebSocketServlet
 {

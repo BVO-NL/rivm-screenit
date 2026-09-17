@@ -26,7 +26,7 @@ import java.util.HashMap;
 import nl.rivm.screenit.batch.jobs.brieven.AbstractBrievenGenererenListener;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.stereotype.Component;
 
 @Component

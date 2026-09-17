@@ -38,8 +38,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
 import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.batch.core.launch.NoSuchJobException;
-import org.springframework.batch.core.launch.NoSuchJobExecutionException;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.SessionAwareMessageListener;
@@ -52,13 +51,16 @@ public class JMSJobStatusListener implements SessionAwareMessageListener<ActiveM
 
 	private final JobOperator jobOperator;
 
+	private final JobRepository jobRepository;
+
 	private final JmsTemplate jmsTemplate;
 
 	private final Scheduler scheduler;
 
-	public JMSJobStatusListener(JobOperator jobOperator, JmsTemplate jmsTemplate, Scheduler scheduler)
+	public JMSJobStatusListener(JobOperator jobOperator, JobRepository jobRepository, JmsTemplate jmsTemplate, Scheduler scheduler)
 	{
 		this.jobOperator = jobOperator;
+		this.jobRepository = jobRepository;
 		this.jmsTemplate = jmsTemplate;
 		this.scheduler = scheduler;
 	}
@@ -92,21 +94,12 @@ public class JMSJobStatusListener implements SessionAwareMessageListener<ActiveM
 						job.setJobName(jobName);
 						serverStatus.getJobs().add(job);
 
-						try
+						for (var jobExecution : jobRepository.findRunningJobExecutions(jobName))
 						{
-							var executionIDs = jobOperator.getRunningExecutions(jobName);
-							for (var executionID : executionIDs)
-							{
-								var jobInstance = new JobInstance();
-								job.getInstances().add(jobInstance);
-								jobInstance.setSamenvatting(jobOperator.getSummary(executionID));
-							}
+							var jobInstance = new JobInstance();
+							job.getInstances().add(jobInstance);
+							jobInstance.setSamenvatting(jobExecution.toString());
 						}
-						catch (NoSuchJobException | NoSuchJobExecutionException e)
-						{
-							LOG.error("Job not found", e);
-						}
-
 					}
 					return ActiveMQHelper.getActiveMqObjectMessage(serverStatus);
 				});
@@ -122,13 +115,12 @@ public class JMSJobStatusListener implements SessionAwareMessageListener<ActiveM
 						LOG.info("Stop job {}", jobName);
 						try
 						{
-							var executionIDs = jobOperator.getRunningExecutions(jobName);
-							for (var executionID : executionIDs)
+							for (var jobExecution : jobRepository.findRunningJobExecutions(jobName))
 							{
-								jobOperator.stop(executionID);
+								jobOperator.stop(jobExecution);
 							}
 						}
-						catch (NoSuchJobException | NoSuchJobExecutionException | JobExecutionNotRunningException e)
+						catch (JobExecutionNotRunningException e)
 						{
 							LOG.error("Fout bij stoppen job {}", jobName, e);
 						}

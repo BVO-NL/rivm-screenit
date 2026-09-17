@@ -18,18 +18,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {inject, Injectable} from '@angular/core'
-import {ApiService} from '@shared/services/api/api.service'
-import {BaseService} from '@shared/services/base/base.service'
-import {Observable, take, tap} from 'rxjs'
-import {SecurityConstraint} from '@shared/types/autorisatie/security-constraint'
-import {Medewerker} from '@shared/types/autorisatie/medewerker'
-import {Actie} from '@shared/types/autorisatie/actie'
-import {ToegangLevel} from '@shared/types/autorisatie/toegang-level'
-import {OrganisatieType} from '@/shared/types/algemeen/organisatie-type'
+import { inject, Injectable } from '@angular/core'
+import { ApiService } from '@shared/services/api/api.service'
+import { BaseService } from '@shared/services/base/base.service'
+import { Observable, take, tap } from 'rxjs'
+import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
+import { Actie } from '@shared/types/autorisatie/actie'
+import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
+import { OrganisatieType } from '@/shared/types/algemeen/organisatie-type'
+import { OrganisatieMedewerkerDto } from '@shared/types/algemeen/dto/organisatie-medewerker.dto'
+import { Rol } from '@shared/types/autorisatie/rol'
+import { MedewerkerRol } from '@shared/types/algemeen/dto/medewerker-rol'
 
 interface AutorisatieState {
-  medewerker: Medewerker
+  medewerker: OrganisatieMedewerkerDto
 }
 
 @Injectable({
@@ -40,8 +42,8 @@ export class AutorisatieService extends BaseService<AutorisatieState> {
   private actieOrder = [Actie.INZIEN, Actie.AANPASSEN, Actie.TOEVOEGEN, Actie.VERWIJDEREN]
   private levelOrder = [ToegangLevel.EIGEN, ToegangLevel.ORGANISATIE, ToegangLevel.REGIO, ToegangLevel.LANDELIJK]
 
-  getMedewerker(): Observable<Medewerker> {
-    return this.api.get<Medewerker>('/api/autorisatie/medewerker').pipe(
+  getMedewerker(): Observable<OrganisatieMedewerkerDto> {
+    return this.api.get<OrganisatieMedewerkerDto>('/api/autorisatie/medewerker').pipe(
       take(1),
       tap((res) => {
         this.set('medewerker', res)
@@ -56,6 +58,9 @@ export class AutorisatieService extends BaseService<AutorisatieState> {
 
   isToegestaan(constraint: SecurityConstraint): boolean {
     const medewerker = this.select('medewerker')()
+    if (!medewerker) {
+      return false
+    }
 
     const inScope = this.inScope(medewerker, constraint)
     const heeftRecht = this.heeftRecht(medewerker, constraint)
@@ -63,20 +68,20 @@ export class AutorisatieService extends BaseService<AutorisatieState> {
     return inScope && heeftRecht
   }
 
-  private heeftRecht(medewerker: Medewerker, constraint: SecurityConstraint): boolean {
+  private heeftRecht(medewerker: OrganisatieMedewerkerDto, constraint: SecurityConstraint): boolean {
     const rollenBinnenOnderzoeken = medewerker.rollen
-      .map((medewerkerRol) => medewerkerRol.rol)
-      .filter((rol) => rol.bevolkingsonderzoeken.some((onderzoek) => constraint.bevolkingsonderzoekScopes.includes(onderzoek)) && rol.actief)
+      .map((medewerkerRol: MedewerkerRol) => medewerkerRol.rol)
+      .filter((rol: Rol) => rol.bevolkingsonderzoeken.some((onderzoek) => constraint.bevolkingsonderzoekScopes.includes(onderzoek)) && rol.actief)
     const permissiesBinnenRollen = rollenBinnenOnderzoeken.map((rol) => rol.permissies).flat()
     return permissiesBinnenRollen.some(
       (permissie) =>
         constraint.recht.includes(permissie.recht) &&
         this.actieOrder.indexOf(permissie.actie as Actie) >= this.actieOrder.indexOf(constraint.actie) &&
-        this.levelOrder.indexOf(permissie.toegangLevel as ToegangLevel) >= this.levelOrder.indexOf(constraint.level),
+        (constraint.level === undefined || this.levelOrder.indexOf(permissie.toegangLevel as ToegangLevel) >= this.levelOrder.indexOf(constraint.level)),
     )
   }
 
-  private inScope(medewerker: Medewerker, constraint: SecurityConstraint): boolean {
+  private inScope(medewerker: OrganisatieMedewerkerDto, constraint: SecurityConstraint): boolean {
     if (constraint.organisatieTypeScopes) {
       let valtBinnenOrganisatieTypeScopes = false
       for (const type of constraint.organisatieTypeScopes) {

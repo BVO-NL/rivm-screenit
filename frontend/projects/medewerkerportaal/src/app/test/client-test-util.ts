@@ -32,6 +32,7 @@ export const maakClient = (overrides: Partial<ClientDto> = {}): ClientDto => ({
   voornaam: 'Jan',
   achternaam: 'Jansen',
   tussenvoegsel: '',
+  voorletters: '',
   titel: '',
   geboortedatum: new Date('1990-01-01'),
   postcode: '1234AB',
@@ -56,10 +57,12 @@ export const maakClientContactgegevens = (overrides: Partial<ClientContactgegeve
   const client = maakClient()
 
   return {
+    id: client.id,
     clientId: client.id,
     voornaam: client.voornaam,
     achternaam: client.achternaam,
     tussenvoegsel: client.tussenvoegsel,
+    voorletters: client.voorletters,
     titel: client.titel,
     geboortedatum: client.geboortedatum,
     bsn: client.bsn,
@@ -83,7 +86,7 @@ export const maakClientPaspoort = (overrides: Partial<ClientPaspoortDto> = {}): 
   const client = maakClient()
 
   return {
-    clientId: client.id,
+    id: client.id,
     voornaam: client.voornaam,
     achternaam: client.achternaam,
     tussenvoegsel: client.tussenvoegsel,

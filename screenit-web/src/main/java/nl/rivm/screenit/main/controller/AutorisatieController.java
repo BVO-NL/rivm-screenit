@@ -23,10 +23,10 @@ package nl.rivm.screenit.main.controller;
 
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.dto.OrganisatieMedewerkerDto;
+import nl.rivm.screenit.main.dto.algemeen.OrganisatieMedewerkerDto;
+import nl.rivm.screenit.main.mappers.algemeen.OrganisatieMedewerkerMapper;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
-import nl.rivm.screenit.mappers.OrganisatieMedewerkerMapper;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 

@@ -25,10 +25,10 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 import nl.rivm.screenit.PreferenceKey;
+import nl.rivm.screenit.main.dto.colon.ColonRoosterBeperkingenDto;
 import nl.rivm.screenit.main.exception.ValidatieException;
 import nl.rivm.screenit.main.service.colon.ColonIntakeafspraakService;
 import nl.rivm.screenit.main.service.colon.ColonRoosterBeperkingService;
-import nl.rivm.screenit.model.colon.dto.ColonRoosterBeperkingenDto;
 import nl.rivm.screenit.model.colon.enums.ColonRoosterBeperking;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 

@@ -1,0 +1,62 @@
+/*-
+ * ========================LICENSE_START=================================
+ * medewerkerportaal
+ * %%
+ * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * =========================LICENSE_END==================================
+ */
+:host {
+  display: block;
+  width: 100%;
+}
+
+ds-card:has(.geen-afspraak) {
+  min-height: 200px;
+}
+
+.afspraak-gegevens {
+  display: grid;
+  gap: 1rem;
+}
+
+.afspraak-gegevens-rij {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.afspraak-gegevens-kop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.afspraak-gegevens-label {
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--ds-secondary-text-color);
+}
+
+.geen-afspraak {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 1rem;
+  min-height: 200px;
+
+  app-empty-state-panel {
+    position: static;
+    transform: none;
+  }
+}

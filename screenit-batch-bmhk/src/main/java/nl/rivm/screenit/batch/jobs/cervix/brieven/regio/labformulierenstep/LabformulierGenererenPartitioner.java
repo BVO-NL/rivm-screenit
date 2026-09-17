@@ -26,7 +26,7 @@ import java.util.Map;
 import nl.rivm.screenit.batch.jobs.brieven.genereren.AbstractBrievenGenererenPartitioner;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.stereotype.Component;
 
 @Component

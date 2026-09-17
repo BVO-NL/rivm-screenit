@@ -49,13 +49,13 @@ public class CervixBMHKLaboratoriumServiceImpl implements CervixBMHKLaboratorium
 	{
 		var gekoppeldeGemeentes = laboratorium.getGemeentes();
 		gekoppeldeGemeentes.forEach(gemeente -> gemeente.setBmhkLaboratorium(laboratorium));
-		gemeenteRepository.saveAll(gekoppeldeGemeentes);
+		gemeenteRepository.persistAll(gekoppeldeGemeentes);
 
 		mogelijkeGemeentes.stream()
 			.filter(gemeente -> !gekoppeldeGemeentes.contains(gemeente) && laboratorium.equals(gemeente.getBmhkLaboratorium()))
 			.forEach(gemeente -> gemeente.setBmhkLaboratorium(null));
-		gemeenteRepository.saveAll(mogelijkeGemeentes);
+		gemeenteRepository.persistAll(mogelijkeGemeentes);
 
-		bmhkLaboratoriumRepository.save(laboratorium);
+		bmhkLaboratoriumRepository.persist(laboratorium);
 	}
 }

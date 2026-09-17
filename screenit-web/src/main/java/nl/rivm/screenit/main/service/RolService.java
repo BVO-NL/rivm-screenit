@@ -24,7 +24,7 @@ package nl.rivm.screenit.main.service;
 import java.util.Collection;
 import java.util.List;
 
-import nl.rivm.screenit.dto.RolDto;
+import nl.rivm.screenit.main.dto.algemeen.RolDto;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerkerRol;

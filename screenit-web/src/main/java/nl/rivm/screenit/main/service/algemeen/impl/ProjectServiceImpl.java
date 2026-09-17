@@ -62,6 +62,7 @@ import nl.rivm.screenit.service.impl.ProjectUitslagVerwerkThread;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -167,7 +168,7 @@ public class ProjectServiceImpl implements ProjectService
 	@Override
 	public List<Project> getProjecten()
 	{
-		return projectRepository.findAll(Sort.by(Sort.Order.asc(Project_.NAAM)));
+		return projectRepository.findAll(Specification.unrestricted(), Sort.by(Sort.Order.asc(Project_.NAAM)));
 	}
 
 	@Override

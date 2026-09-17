@@ -106,7 +106,7 @@ public class ColonIntakelocatieServiceImpl implements ColonIntakelocatieService
 	@Transactional
 	public void saveIntakelocatieBeschrijving(ColonIntakelocatie intakelocatie, String locatieBeschrijving, OrganisatieMedewerker organisatieMedewerker)
 	{
-		intakelocatieRepository.save(intakelocatie);
+		intakelocatieRepository.persist(intakelocatie);
 		var locatieBeschrijvingParameter = organisatieParameterService.maakOfUpdateOrganisatieParameter(OrganisatieParameterKey.COLON_INTAKELOCATIE_BESCHRIJVING,
 			locatieBeschrijving, intakelocatie);
 		organisatieParameterService.saveOrUpdateOrganisatieParameters(List.of(locatieBeschrijvingParameter),
@@ -127,5 +127,11 @@ public class ColonIntakelocatieServiceImpl implements ColonIntakelocatieService
 			clientenHogeAsaScoreNietBehandelen.toString(), intakelocatie);
 		organisatieParameterService.saveOrUpdateOrganisatieParameters(
 			List.of(digitaleIntakeTekstParameter, digitaleIntakeEnabledParameter, clientenHogeAsaScoreNietBehandelenParameter), organisatieMedewerker);
+	}
+
+	@Override
+	public ColonIntakelocatie getIntakelocatieById(Long id)
+	{
+		return intakelocatieRepository.getReferenceById(id);
 	}
 }

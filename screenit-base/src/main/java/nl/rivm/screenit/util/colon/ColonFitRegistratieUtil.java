@@ -68,6 +68,16 @@ public final class ColonFitRegistratieUtil
 		return ANALYSE_RESULTAAT_FLAG_PRO.equals(fitRegistratie.getFlag()) || fitRegistratie.getUitslag().compareTo(fitRegistratie.getNormWaarde()) >= 0;
 	}
 
+	public static boolean heeftAnalyseResultaat(ColonFitRegistratie fitRegistratie)
+	{
+		return fitRegistratie != null && (fitRegistratie.getUitslag() != null || StringUtils.isNotBlank(fitRegistratie.getFlag()));
+	}
+
+	public static boolean heeftUitslag(ColonFitRegistratie fitRegistratie)
+	{
+		return fitRegistratie != null && (fitRegistratie.getUitslag() != null || ANALYSE_RESULTAAT_FLAG_PRO.equals(fitRegistratie.getFlag()));
+	}
+
 	public static boolean isGunstig(ColonFitRegistratie fitRegistratie)
 	{
 		if (fitRegistratie != null && fitRegistratie.getGeinterpreteerdeUitslag() != null && fitRegistratie.getType().equals(ColonFitType.STUDIE))
@@ -128,13 +138,13 @@ public final class ColonFitRegistratieUtil
 
 			if (fitRegistratie != null)
 			{
-				if (fitRegistratie.getUitslag() == null)
+				if (heeftUitslag(fitRegistratie))
 				{
-					return ColonFitRegistratieStatus.ACTIEF;
+					return ColonFitRegistratieStatus.UITGEVOERD;
 				}
 				else
 				{
-					return ColonFitRegistratieStatus.UITGEVOERD;
+					return ColonFitRegistratieStatus.ACTIEF;
 				}
 			}
 		}
@@ -223,6 +233,6 @@ public final class ColonFitRegistratieUtil
 	public static boolean magVerwijderen(ColonFitRegistratie registratie)
 	{
 		return registratie.getStatus() != ColonFitRegistratieStatus.VERWIJDERD && registratie.getType() == ColonFitType.GOLD
-			&& (registratie.getUitslag() != null || registratie.getGeinterpreteerdeUitslag() != null);
+			&& (heeftUitslag(registratie) || registratie.getGeinterpreteerdeUitslag() != null);
 	}
 }

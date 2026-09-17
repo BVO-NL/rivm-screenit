@@ -31,7 +31,7 @@ import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.OrganisatieService;
 
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.stereotype.Component;
 
 @Component

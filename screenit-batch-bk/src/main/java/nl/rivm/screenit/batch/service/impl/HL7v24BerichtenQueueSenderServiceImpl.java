@@ -53,6 +53,7 @@ import nl.rivm.screenit.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -171,7 +172,7 @@ public class HL7v24BerichtenQueueSenderServiceImpl implements HL7v24BerichtenQue
 
 	private boolean verwerkIMSBerichtenQueue(MammaHL7ConnectieContext connectionContext)
 	{
-		var mammaHL7v24Messages = hl7v24MessageRepository.findAll(PageRequest.of(0, MAMMA_IMS_QUEUE_VERWERK_SIZE, Sort.by(Sort.Order.asc("id"))));
+		var mammaHL7v24Messages = hl7v24MessageRepository.findAll(Specification.unrestricted(), PageRequest.of(0, MAMMA_IMS_QUEUE_VERWERK_SIZE, Sort.by(Sort.Order.asc("id"))));
 
 		var queueSize = hl7v24MessageRepository.count();
 		if (!mammaHL7v24Messages.isEmpty())

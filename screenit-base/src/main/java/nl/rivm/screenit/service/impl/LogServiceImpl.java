@@ -170,17 +170,6 @@ public class LogServiceImpl implements LogService
 
 	@Override
 	@Transactional
-	public void createAndSaveLogInformatie(OrganisatieMedewerker ingelogd, LogGebeurtenis logGebeurtenis, String omschrijving)
-	{
-		if (logGebeurtenis != null)
-		{
-			var logEvent = getLogEvent(logGebeurtenis.getDefaultLevel(), omschrijving);
-			logGebeurtenis(logGebeurtenis, logEvent, ingelogd, getBvos(logGebeurtenis));
-		}
-	}
-
-	@Override
-	@Transactional
 	public void logGebeurtenis(LogGebeurtenis gebeurtenis, Account account, Bevolkingsonderzoek... bevolkingsonderzoeken)
 	{
 		logGebeurtenis(gebeurtenis, new ArrayList<>(), account, bevolkingsonderzoeken);
@@ -356,7 +345,7 @@ public class LogServiceImpl implements LogService
 			logRegel.setBevolkingsonderzoeken(new ArrayList<>());
 		}
 
-		logRegelRepository.save(logRegel);
+		logRegelRepository.persist(logRegel);
 		dashboardService.updateDashboard(logRegel, dashboardOrganisaties);
 	}
 

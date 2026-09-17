@@ -40,25 +40,25 @@ import nl.rivm.screenit.dao.colon.RoosterDao;
 import nl.rivm.screenit.exceptions.HeeftAfsprakenException;
 import nl.rivm.screenit.exceptions.OpslaanVerwijderenTijdBlokException;
 import nl.rivm.screenit.exceptions.TijdBlokOverlapException;
+import nl.rivm.screenit.main.dto.colon.ColonAfspraakslotDto;
+import nl.rivm.screenit.main.dto.colon.ColonHerhalingDto;
+import nl.rivm.screenit.main.dto.colon.ColonRoosterBeperkingenDto;
+import nl.rivm.screenit.main.dto.colon.ColonTijdslotDto;
 import nl.rivm.screenit.main.exception.BeperkingException;
 import nl.rivm.screenit.main.exception.BulkAanmakenException;
 import nl.rivm.screenit.main.exception.BulkVerwijderenException;
 import nl.rivm.screenit.main.exception.ValidatieException;
+import nl.rivm.screenit.main.mappers.colon.ColonAfspraakslotMapper;
 import nl.rivm.screenit.main.service.colon.ColonAfspraakslotService;
 import nl.rivm.screenit.main.service.colon.ColonBlokkadeService;
 import nl.rivm.screenit.main.service.colon.ColonFeestdagService;
 import nl.rivm.screenit.main.service.colon.ColonRoosterBeperkingService;
 import nl.rivm.screenit.main.service.colon.RoosterService;
-import nl.rivm.screenit.mappers.colon.ColonAfspraakslotMapper;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.colon.ColonHerhalingsfrequentie;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.RoosterListViewFilter;
-import nl.rivm.screenit.model.colon.dto.ColonAfspraakslotDto;
-import nl.rivm.screenit.model.colon.dto.ColonHerhalingDto;
-import nl.rivm.screenit.model.colon.dto.ColonRoosterBeperkingenDto;
-import nl.rivm.screenit.model.colon.dto.ColonTijdslotDto;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakslotStatus;
 import nl.rivm.screenit.model.colon.enums.ColonIntakeafspraakType;
@@ -159,7 +159,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 				afspraakslotDto.getHerhaling());
 
 			var transformedAfspraakslots = splitAfspraakslots(aanTeMakenAfspraakslots, afspraakslotDto.getAantalBlokken(), intakelocatie);
-			afspraakslotRepository.saveAll(transformedAfspraakslots);
+			afspraakslotRepository.persistAll(transformedAfspraakslots);
 		}
 	}
 
@@ -181,7 +181,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 				logAction(afspraakslot, afspraakslotDto.getAantalBlokken(), organisatieMedewerker, intakelocatie, null, LogGebeurtenis.AFSPRAAKSLOT_NIEUW,
 					afspraakslotDto.getHerhaling());
 
-				afspraakslotRepository.saveAll(aanTeMakenAfspraakslots);
+				afspraakslotRepository.persistAll(aanTeMakenAfspraakslots);
 			}
 		}
 		catch (BulkAanmakenException ex)
@@ -199,7 +199,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 				melding += ". " + ex.getSamenvatting();
 				logService.logGebeurtenis(LogGebeurtenis.AFSPRAAKSLOT_NIEUW, organisatieMedewerker, melding, Bevolkingsonderzoek.COLON);
 
-				afspraakslotRepository.saveAll(aanTeMakenAfspraakslots);
+				afspraakslotRepository.persistAll(aanTeMakenAfspraakslots);
 			}
 		}
 	}
@@ -225,7 +225,7 @@ public class ColonAfspraakslotServiceImpl implements ColonAfspraakslotService
 		{
 			converteerAfspraakslot(afspraakslotDto, intakelocatie, dbAfspraakslot);
 			logAction(dbAfspraakslot, afspraakslotDto.getAantalBlokken(), organisatieMedewerker, intakelocatie, originalAfspraakslot, LogGebeurtenis.AFSPRAAKSLOT_WIJZIG, null);
-			afspraakslotRepository.save(dbAfspraakslot);
+			afspraakslotRepository.persist(dbAfspraakslot);
 		}
 	}
 

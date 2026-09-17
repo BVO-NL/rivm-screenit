@@ -20,26 +20,28 @@
   -->
 <app-base-dialog size="xl" titel="Contactgegevens aanpassen">
   <div body>
-    <div class="contactgegevens-paspoort">
-      <div class="col">
-        <ds-description
-          label="Burgerservicenummer"
-          value="{{ clientData.bsn }}"/>
-        <ds-description
-          label="Geboortenaam"
-          value="{{ (clientData.tussenvoegsel ? clientData.tussenvoegsel + ' ' : '') + clientData.achternaam }}"/>
+    <ds-summary-panel>
+      <div class="row">
+        <div class="col">
+          <ds-description
+            label="Burgerservicenummer"
+            value="{{ clientData.bsn }}"/>
+          <ds-description
+            label="Geboortenaam"
+            value="{{ (clientData.tussenvoegsel ? clientData.tussenvoegsel + ' ' : '') + clientData.achternaam }}"/>
+        </div>
+        <div class="col">
+          <ds-description
+            label="Geboortedatum"
+            value="{{ clientData.geboortedatum | date:NL_DATE_FORMAT }}"/>
+          <ds-description
+            *appAutorisatie="genderIdentiteitConstraint"
+            label="Genderidentiteit"
+            value="{{ clientData.geslacht | enumLabel: geslachtLabel }}"/>
+        </div>
       </div>
-      <div class="col">
-        <ds-description
-          label="Geboortedatum"
-          value="{{ clientData.geboortedatum | date:NL_DATE_FORMAT }}"/>
-        <ds-description
-          *appAutorisatie="genderIdentiteitConstraint"
-          label="Genderidentiteit"
-          value="{{ clientData.geslacht | enumLabel: geslachtLabel }}"/>
-      </div>
-    </div>
-    <form [formGroup]="contactgegevensForm" class="form-in-modal" novalidate>
+    </ds-summary-panel>
+    <form [formGroup]="contactgegevensForm" class="mt-3" novalidate>
 
       <div class="contactgegevens-inputs" *appAutorisatie="contactgegevensConstraint">
         <ds-input

@@ -37,7 +37,7 @@ import { ColonFeestdagDto } from '@shared/types/colon/colon-feestdag'
 import { ColonTijdslotStatus } from '@shared/types/colon/colon-tijdslot-status'
 import { ColonTijdslotFilter } from '@shared/types/colon/colon-tijdslot-filter'
 import { ColonTijdslot } from '@shared/types/colon/colon-tijdslot'
-import { ColonService } from '@/colon/services/colon.service'
+import { ColonIntakelocatieService } from '@colon/services/colon-intakelocatie/colon-intakelocatie.service'
 
 interface RoosterState {
   instellingen: ColonRoosterInstellingen
@@ -51,7 +51,7 @@ interface RoosterState {
 export class RoosterService extends BaseService<RoosterState> {
   onRefresh: Subject<boolean> = new Subject<boolean>()
   private api: ApiService = inject(ApiService)
-  private colonService: ColonService = inject(ColonService)
+  private colonService: ColonIntakelocatieService = inject(ColonIntakelocatieService)
   private roosterBaseUrl = '/api/colon/rooster'
   private roosterAfspraakslotBaseUrl = '/api/colon/rooster/afspraakslot'
   private roosterBlokkadeBaseUrl = '/api/colon/rooster/blokkade'
@@ -269,7 +269,11 @@ export class RoosterService extends BaseService<RoosterState> {
     return this.handleTijdslotChangeResponse(this.api.del(`${this.roosterBlokkadeBaseUrl}/${blokkadeIds.join(',')}?alleenValidatie=${alleenValidatie}&bulk=true`))
   }
 
-  private handleTijdslotChangeResponse(response: Observable<unknown>, actie: 'toevoegen' | 'aanpassen' | 'verwijderen' | null = null, alleenValidatie = false): Observable<unknown> {
+  private handleTijdslotChangeResponse(
+    response: Observable<unknown>,
+    actie: 'toevoegen' | 'aanpassen' | 'verwijderen' | null = null,
+    alleenValidatie = false,
+  ): Observable<unknown> {
     return response.pipe(
       switchMap((response) => {
         if (

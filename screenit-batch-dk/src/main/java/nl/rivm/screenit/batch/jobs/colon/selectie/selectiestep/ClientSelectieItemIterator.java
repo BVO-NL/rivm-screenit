@@ -25,7 +25,7 @@ import java.util.Iterator;
 
 import nl.rivm.screenit.model.colon.ClientCategorieEntry;
 
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 
 interface ClientSelectieItemIterator extends Iterator<ClientCategorieEntry>
 {

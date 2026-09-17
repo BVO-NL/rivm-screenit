@@ -18,26 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, computed, inject, input } from '@angular/core'
+import { Component, computed, inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { DatePipe } from '@angular/common'
-import { DsBadgeComponent, DsDescriptionCustomTemplateDirective, DsDescriptionsComponent } from '@topicus-rgp-ds/web'
+import { DsBadgeComponent, DsDescriptionCustomTemplateDirective, DsDescriptionsComponent, DsHorizontalInformationBarComponent } from '@topicus-rgp-ds/web'
 import { switchMap } from 'rxjs'
 import { ClientService } from '@/algemeen/services/client/client.service'
 import { ClientPaspoortDto } from '@shared/types/algemeen/dto/client-paspoort.dto'
 import { NL_DATE_FORMAT } from '@shared/constants'
-import { NaamUtils } from '@shared/utils/naam-utils'
 import { LegeWaardePipe } from '@shared/pipes/lege-waarde/lege-waarde.pipe'
-import { GeslachtAfkortingPipe } from '@shared/pipes/geslacht-afkorting/geslacht-afkorting.pipe'
 import { berekenLeeftijd } from '@shared/utils/date-utils'
-import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.directive'
-import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
-import { Recht } from '@shared/types/autorisatie/recht'
-import { Actie } from '@shared/types/autorisatie/actie'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
-import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
-import { Required } from '@shared/types/autorisatie/required'
 import { DoelgroepBadgesComponent } from '@shared/components/doelgroep-badges/doelgroep-badges.component'
+import { NaamPipe, NaamTransform } from '@shared/pipes/naam/naam.pipe'
+import { GeslachtAfkortingPipe } from '@shared/pipes/geslacht-afkorting/geslacht-afkorting.pipe'
 
 @Component({
   selector: 'app-client-paspoort',
@@ -47,33 +40,24 @@ import { DoelgroepBadgesComponent } from '@shared/components/doelgroep-badges/do
     DsDescriptionCustomTemplateDirective,
     DsBadgeComponent,
     LegeWaardePipe,
+    NaamPipe,
     GeslachtAfkortingPipe,
-    AutorisatieDirective,
     DoelgroepBadgesComponent,
+    DsHorizontalInformationBarComponent,
   ],
   templateUrl: './client-paspoort.component.html',
   styleUrl: './client-paspoort.component.scss',
   providers: [DatePipe],
 })
 export class ClientPaspoortComponent {
-  readonly clientId = input.required<number>()
   private readonly clientService = inject(ClientService)
+  protected readonly clientId = this.clientService.clientId
   private readonly datePipe = inject(DatePipe)
 
   protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
-  protected readonly genderIdentiteitConstraint: SecurityConstraint = {
-    recht: [Recht.MEDEWERKER_TOON_GENDERINDETITEIT],
-    actie: Actie.INZIEN,
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
-    level: ToegangLevel.LANDELIJK,
-    required: Required.ANY,
-  }
+  protected readonly NaamTransform = NaamTransform
   protected readonly paspoort = toSignal<ClientPaspoortDto | undefined>(toObservable(this.clientId).pipe(switchMap((clientId) => this.clientService.getClientPaspoort(clientId))), {
     initialValue: undefined,
-  })
-  protected readonly naam = computed(() => {
-    const paspoort = this.paspoort()
-    return paspoort ? NaamUtils.voorlettersTussenvoegselEnAanspreekAchternaam(paspoort) : ''
   })
   protected readonly telefoonnummer = computed(() => {
     const paspoort = this.paspoort()

@@ -46,7 +46,7 @@ const AfspraakView = (props: AfspraakViewProps): JSX.Element => {
 
 	return (
 		<div className={classNames(BevolkingsonderzoekStyle[bvo!], styles.afspraakDiv)}>
-			<VerticalDividerComponent className={styles.verticalRectangle}/>
+			<VerticalDividerComponent className={styles.verticalRectangle} heightSubtraction={25}/>
 			<Row className={styles.afspraakGegevensRow}>
 				<Col sm={5}>
 					{props.digitaleIntake ? <>
@@ -59,7 +59,8 @@ const AfspraakView = (props: AfspraakViewProps): JSX.Element => {
 					</>}
 				</Col>
 				<Col sm={5} className={styles.locatieColumn}>
-					<span className={classNames(bvoStyles.bvoText)}>{getString(props.digitaleIntake ? properties.headers.digitale_intake.locatie : properties.headers.locatie)}</span>
+					<span
+						className={classNames(bvoStyles.bvoText)}>{getString(props.digitaleIntake ? properties.headers.digitale_intake.locatie : properties.headers.locatie)}</span>
 					<span>{props.naamIntakelocatie}</span>
 					<span>{props.adres}</span>
 					<span>{props.postcode} {props.plaats}</span>

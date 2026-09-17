@@ -46,7 +46,7 @@ public class ClientTooltipServiceImpl implements ClientTooltipService
 	@Transactional
 	public void saveOrUpdate(ClientTooltip tooltip)
 	{
-		clientTooltipRepository.save(tooltip);
+		clientTooltipRepository.persist(tooltip);
 	}
 
 }

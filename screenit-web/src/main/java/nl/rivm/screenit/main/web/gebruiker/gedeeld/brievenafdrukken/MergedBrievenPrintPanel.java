@@ -91,7 +91,7 @@ public abstract class MergedBrievenPrintPanel<MB extends MergedBrieven<?>> exten
 						cervixHuisartsService.updateLabformulierAanvraag((CervixRegioMergedBrieven) mergedBrieven);
 					}
 				}
-				mergedBrievenRepository.save(model.getObject());
+				mergedBrievenRepository.persist(model.getObject());
 				logAction(mergedBrieven);
 				sluiten(target);
 			}

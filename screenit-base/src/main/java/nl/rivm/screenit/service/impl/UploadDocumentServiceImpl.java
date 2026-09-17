@@ -125,7 +125,7 @@ public class UploadDocumentServiceImpl implements UploadDocumentService
 
 		if (save(document, path))
 		{
-			uploadDocumentRepository.save(document);
+			uploadDocumentRepository.persist(document);
 		}
 
 		if (tmpFile != null && !tmpFile.delete())
@@ -163,7 +163,7 @@ public class UploadDocumentServiceImpl implements UploadDocumentService
 			LOG.debug("Bestand voor UploadDocument {} vervangen", uploadDocument.getId());
 		}
 
-		uploadDocumentRepository.save(uploadDocument);
+		uploadDocumentRepository.persist(uploadDocument);
 	}
 
 	@Override

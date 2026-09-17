@@ -69,24 +69,23 @@ export const nuTimestamp = (): string => format(nu(), TIMESTAMP_FORMAT)
 export const nuTijdUrenMinuten = (): string => format(nu(), TIJD_FORMAT)
 
 export const ligtTussenData = (
-	datum: Date,
-	startDatum: Date | null,
-	eindDatum: Date | null,
+	isoDatum: string,
+	isoStartDatum: string | null,
+	isoEindDatum: string | null,
 ): boolean => {
-	if (startDatum && eindDatum) {
-		return (
-			(isAfter(datum, startDatum) || isEqual(datum, startDatum)) &&
-			(isBefore(datum, eindDatum) || isEqual(datum, eindDatum))
-		)
+	if (!isoStartDatum && !isoEindDatum) {
+		return false
 	}
-	if (startDatum) {
-		return isAfter(datum, startDatum) || isEqual(datum, startDatum)
-	}
-	if (eindDatum) {
-		return isBefore(datum, eindDatum) || isEqual(datum, eindDatum)
-	}
-	return false
+	const datum = isoDatumNaarDate(isoDatum)
+	const startDatum = isoStartDatum ? isoDatumNaarDate(isoStartDatum) : null
+	const eindDatum = isoEindDatum ? isoDatumNaarDate(isoEindDatum) : null
+
+	const opOfNaStartDatum = !startDatum || isAfter(datum, startDatum) || isEqual(datum, startDatum)
+	const opOfVoorEindDatum = !eindDatum || isBefore(datum, eindDatum) || isEqual(datum, eindDatum)
+	return opOfNaStartDatum && opOfVoorEindDatum
 }
+
+const isoDatumNaarDate = (isoDatum: string): Date => parseISO(isoDatum)
 
 export const datumFormaat = (isoDatum: string | Date | null | undefined): string => isoDatum ? format(new Date(String(isoDatum)), NL_DATUM_FORMAT) : ""
 

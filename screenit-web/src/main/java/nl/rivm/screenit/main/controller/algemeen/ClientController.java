@@ -26,7 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import nl.rivm.screenit.main.controller.BaseController;
 import nl.rivm.screenit.main.dto.algemeen.BezwaarDossierGebeurtenisDto;
@@ -38,22 +38,19 @@ import nl.rivm.screenit.main.dto.algemeen.ClientPaspoortDto;
 import nl.rivm.screenit.main.dto.algemeen.ClientZoekenFilterDto;
 import nl.rivm.screenit.main.dto.algemeen.ScreeningRondeGebeurtenisDto;
 import nl.rivm.screenit.main.dto.algemeen.TijdelijkAdresDto;
-import nl.rivm.screenit.main.exception.EntityNietGevondenException;
 import nl.rivm.screenit.main.mappers.algemeen.ClientMapper;
 import nl.rivm.screenit.main.mappers.algemeen.DossierGebeurtenisWrapper;
 import nl.rivm.screenit.main.mappers.algemeen.ScreeningRondeGebeurtenisWrapper;
 import nl.rivm.screenit.main.model.DossierGebeurtenis;
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
-import nl.rivm.screenit.main.service.BriefService;
 import nl.rivm.screenit.main.service.DossierService;
 import nl.rivm.screenit.main.service.algemeen.BezwaarService;
 import nl.rivm.screenit.main.service.algemeen.BvoStatusService;
 import nl.rivm.screenit.main.service.algemeen.ClientZoekenService;
 import nl.rivm.screenit.main.service.algemeen.ProjectService;
-import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.main.web.ScreenitSession;
+import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.mappers.ProjectClientMapper;
-import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.algemeen.dto.ProjectClientDto;
 import nl.rivm.screenit.model.enums.Actie;
@@ -64,7 +61,6 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.ClientContactService;
-import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 
@@ -87,7 +83,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RestController
 @RequestMapping("/client")
 @Tag(name = "Clienten", description = "Beheer en zoek clientgegevens")
@@ -108,10 +104,6 @@ public class ClientController extends BaseController
 	private final ICurrentDateSupplier currentDateSupplier;
 
 	private final BvoStatusService bvoStatusService;
-
-	private final ClientService clientService;
-
-	private final BriefService briefService;
 
 	private final DossierService dossierService;
 
@@ -399,11 +391,6 @@ public class ClientController extends BaseController
 		}
 		clientContactService.saveTijdelijkAdres(account, client, tijdelijkAdres);
 		return ResponseEntity.ok().build();
-	}
-
-	private Client getClientOfGooiNotFoundException(Long clientId)
-	{
-		return clientService.getClientById(clientId).orElseThrow(() -> new EntityNietGevondenException("Client", clientId));
 	}
 
 	@Operation(summary = "Haal de projecten voor de client op", description = "Haal de projecten op waar de client actief in is")

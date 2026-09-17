@@ -24,11 +24,9 @@ package nl.rivm.screenit.mamma.se.proxy.configuration;
 import nl.rivm.screenit.webcommons.config.CsrfCustomAccessDeniedHandler;
 import nl.rivm.screenit.webcommons.config.SpaCsrfTokenRequestHandler;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -47,7 +45,7 @@ public class SecurityConfig
 	private String IMS_CONTEXT_BRIDGE_URL;
 
 	@Bean
-	SecurityFilterChain filterChain(HttpSecurity http) throws Exception
+	SecurityFilterChain filterChain(HttpSecurity http)
 	{
 		http.csrf(csrf -> csrf
 				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -64,12 +62,6 @@ public class SecurityConfig
 				.addHeaderWriter(new StaticHeadersWriter("Content-Security-Policy", getContentSecurityPolicy())));
 
 		return http.build();
-	}
-
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception
-	{
-		auth.inMemoryAuthentication();
 	}
 
 	private String getContentSecurityPolicy()

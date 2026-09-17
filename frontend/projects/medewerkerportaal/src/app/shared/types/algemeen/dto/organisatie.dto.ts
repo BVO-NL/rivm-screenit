@@ -19,9 +19,9 @@
  * =========================LICENSE_END==================================
  */
 import { OrganisatieType } from '../organisatie-type'
+import { EntityDto } from '@shared/types/algemeen/dto/entity.dto'
 
-export interface OrganisatieDto {
-  id: number
+export interface OrganisatieDto extends EntityDto {
   naam: string
   organisatieType: OrganisatieType
   actief: boolean

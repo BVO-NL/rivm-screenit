@@ -21,15 +21,16 @@
 import classNames from "classnames"
 import styles from "./WizardIndicator.module.scss"
 import {useWizardStap} from "./WizardIndicatorContext"
+import {FC} from "react"
 
 export type WizardIndicatorProps = {
 	stappen: { label: string, url: string }[]
 	className: string
 }
-const WizardIndicator = (props: WizardIndicatorProps) => {
+const WizardIndicator: FC<WizardIndicatorProps> = (props: WizardIndicatorProps) => {
 	const huidigeStap = useWizardStap()
 
-	function getStepClass(step: number) {
+	function getStepClass(step: number): string {
 		return classNames(
 			styles.step,
 			{

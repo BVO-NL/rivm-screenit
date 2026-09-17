@@ -1,0 +1,55 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<div class="p-4">
+  <h2 class="mb-3">Samenvatting</h2>
+
+  @if (request(); as request) {
+    <ds-summary-panel headertitle="Afspraak details">
+      <div class="row mb-3">
+        <ds-description class="col" label="Betreft" value="Intake afspraak"/>
+        <ds-description class="col" label="Datum" [value]="request.afspraakslot.startTijd | datumTijd:NL_DAY_DATE_FORMAT:TIME_FORMAT:'uur'"/>
+      </div>
+      <div class="row">
+        <ds-description class="col" label="Locatie">
+          <ng-template ds-description-custom-template>
+            <div>{{ request.afspraakslot.intakelocatie.adres.straat }} {{ request.afspraakslot.intakelocatie.adres.huisnummer }}</div>
+            <div>{{ request.afspraakslot.intakelocatie.adres.postcode }} {{ request.afspraakslot.intakelocatie.adres.plaats }}</div>
+          </ng-template>
+        </ds-description>
+
+        <ds-description class="col" label="Locatiebeschrijving" [value]="request.afspraakslot.intakelocatie.adres.locatieBeschrijving | legeWaarde"/>
+      </div>
+
+    </ds-summary-panel>
+
+    @if (request.briefType) {
+      <ds-summary-panel headertitle="Brief">
+        <ds-description label="Brieftype" [value]="request.briefType | enumLabel: briefTypeLabels"/>
+      </ds-summary-panel>
+    }
+
+    @if (request.notitie) {
+      <ds-summary-panel headertitle="Notitie">
+        {{ request.notitie }}
+      </ds-summary-panel>
+    }
+  }
+</div>

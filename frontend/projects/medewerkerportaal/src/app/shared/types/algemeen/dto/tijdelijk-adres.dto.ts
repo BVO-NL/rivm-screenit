@@ -18,15 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-export interface TijdelijkAdresDto {
+import { AdresDto } from '@shared/types/algemeen/dto/adres.dto'
+
+export interface TijdelijkAdresDto extends AdresDto {
   clientId: string
-  straatnaam: string
-  huisnummer: number
-  huisletter: string
-  huisnummerToevoeging: string
-  aanduidingBijHuisnummer: string
-  postcode: string
-  plaats: string
   begindatum?: string | null
   einddatum?: string | null
 }

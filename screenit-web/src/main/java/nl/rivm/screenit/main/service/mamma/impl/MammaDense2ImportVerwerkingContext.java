@@ -268,7 +268,7 @@ public class MammaDense2ImportVerwerkingContext extends BaseProjectBestandVerwer
 		projectGroep.setGroepInvoer(GroepInvoer.CRITERIA);
 		projectGroep.setActiefDatum(getBean(ICurrentDateSupplier.class).getDate());
 		projectGroep.setPopulatie(0);
-		return getBean(ProjectGroepRepository.class).save(projectGroep);
+		return getBean(ProjectGroepRepository.class).persist(projectGroep);
 	}
 
 	private @NotNull MammaDense2Studiegroep getStudiegroep()

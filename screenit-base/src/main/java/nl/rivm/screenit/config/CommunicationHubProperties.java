@@ -51,7 +51,31 @@ public class CommunicationHubProperties
 
 	private String smsSender;
 
+	private BriefafdrukopdrachtMonitoringProperties briefafdrukopdrachtMonitoring = new BriefafdrukopdrachtMonitoringProperties();
+
 	private BriefafdrukopdrachtSendBevestigingProperties briefafdrukopdrachtSendBevestiging = new BriefafdrukopdrachtSendBevestigingProperties();
+
+	@Setter
+	public static class BriefafdrukopdrachtMonitoringProperties
+	{
+		private static final int DEFAULT_QUEUE_NOT_YET_DEQUEUED_SIZE_THRESHOLD = 2500;
+
+		private static final int DEFAULT_QUEUE_TE_VERSTUREN_SIZE_THRESHOLD = 2000;
+
+		private Integer queueNotYetDequeuedSizeThreshold;
+
+		private Integer queueTeVersturenSizeThreshold;
+
+		public long getQueueNotYetDequeuedSizeThreshold()
+		{
+			return positiefOfDefault(queueNotYetDequeuedSizeThreshold, DEFAULT_QUEUE_NOT_YET_DEQUEUED_SIZE_THRESHOLD);
+		}
+
+		public long getQueueTeVersturenSizeThreshold()
+		{
+			return positiefOfDefault(queueTeVersturenSizeThreshold, DEFAULT_QUEUE_TE_VERSTUREN_SIZE_THRESHOLD);
+		}
+	}
 
 	@Setter
 	public static class BriefafdrukopdrachtSendBevestigingProperties
@@ -68,7 +92,7 @@ public class CommunicationHubProperties
 
 		private static final int DEFAULT_OUTAGE_MULTIPLIER = 6;
 
-		private static final long DEFAULT_LANG_GEEN_PARAGON_WAARSCHUWING_MS = TimeUnit.MINUTES.toMillis(10);
+		private static final long DEFAULT_LANG_GEEN_PARAGON_WAARSCHUWING_MS = TimeUnit.HOURS.toMillis(1);
 
 		private Long initPollIntervalMs;
 
@@ -119,9 +143,10 @@ public class CommunicationHubProperties
 			return positiefOfDefault(langdurigGeenParagonWaarschuwingMs, DEFAULT_LANG_GEEN_PARAGON_WAARSCHUWING_MS);
 		}
 
-		private static <T extends Number> T positiefOfDefault(T waarde, T defaultWaarde)
-		{
-			return waarde != null && waarde.longValue() > 0 ? waarde : defaultWaarde;
-		}
+	}
+
+	private static <T extends Number> T positiefOfDefault(T waarde, T defaultWaarde)
+	{
+		return waarde != null && waarde.longValue() > 0 ? waarde : defaultWaarde;
 	}
 }

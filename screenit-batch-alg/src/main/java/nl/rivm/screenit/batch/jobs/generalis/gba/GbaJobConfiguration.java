@@ -47,12 +47,12 @@ import nl.rivm.screenit.model.vertrouwdverbonden.Vo105Bericht;
 import nl.rivm.screenit.model.vertrouwdverbonden.Vo107Bericht;
 
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.ItemProcessListener;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.FlowExecutionStatus;
 import org.springframework.batch.core.listener.ExecutionContextPromotionListener;
+import org.springframework.batch.core.listener.ItemProcessListener;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -33,10 +33,10 @@ import { createDatumTijdInVerledenValidator, createStartEindTijdValidator, valid
 import { formatDateAsISO, formatDateStringAsTime, formatNLDate, formatTimeAsISO } from '@shared/utils/date-utils'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component'
-import { ColonService } from '@/colon/services/colon.service'
+import { ColonIntakelocatieService } from '@colon/services/colon-intakelocatie/colon-intakelocatie.service'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@/shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'
@@ -77,7 +77,7 @@ export class BlokkadeBewerkenDialogComponent {
   private readonly blokkade: ColonBlokkade = inject(DIALOG_DATA)
   private readonly dialogRef = inject(DialogRef)
   private readonly dialog: Dialog = inject(Dialog)
-  private readonly colonService: ColonService = inject(ColonService)
+  private readonly colonService: ColonIntakelocatieService = inject(ColonIntakelocatieService)
   private readonly autorisatieService: AutorisatieService = inject(AutorisatieService)
   private readonly notificationService: NotificationService = inject(NotificationService)
   private readonly dialogService = inject(Dialog)

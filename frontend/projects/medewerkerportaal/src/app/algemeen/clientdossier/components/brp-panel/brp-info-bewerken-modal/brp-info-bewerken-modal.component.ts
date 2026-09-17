@@ -35,7 +35,7 @@ import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
 import { Required } from '@shared/types/autorisatie/required'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 
 @Component({
   selector: 'app-brp-info-bewerken-modal',
@@ -61,11 +61,11 @@ export class BrpInfoBewerkenModalComponent implements OnInit {
   }
 
   brpGegevensForm: FormGroup = this.formBuilder.group({
-    straatnaam: [this.tijdelijkAdres()?.straatnaam ?? '', [Validators.required, Validators.maxLength(56)]],
+    straat: [this.tijdelijkAdres()?.straat ?? '', [Validators.required, Validators.maxLength(56)]],
     huisnummer: [this.tijdelijkAdres()?.huisnummer ?? '', huisnummerValidator],
     huisletter: [this.tijdelijkAdres()?.huisletter ?? ''],
     huisnummerToevoeging: [this.tijdelijkAdres()?.huisnummerToevoeging ?? ''],
-    aanduidingBijHuisnummer: [this.tijdelijkAdres()?.aanduidingBijHuisnummer ?? ''],
+    huisnummerAanduiding: [this.tijdelijkAdres()?.huisnummerAanduiding ?? ''],
     postcode: [this.tijdelijkAdres()?.postcode ?? '', DsValidators.postcode],
     plaats: [this.tijdelijkAdres()?.plaats ?? ''],
   })
@@ -82,11 +82,11 @@ export class BrpInfoBewerkenModalComponent implements OnInit {
     if (this.brpInfo && this.brpInfo.id && this.brpGegevensForm.valid) {
       const tijdelijkAdres: TijdelijkAdresDto = {
         clientId: String(this.brpInfo.id),
-        straatnaam: this.brpGegevensForm.value.straatnaam ?? '',
+        straat: this.brpGegevensForm.value.straat ?? '',
         huisnummer: this.brpGegevensForm.value.huisnummer ?? 0,
         huisletter: this.brpGegevensForm.value.huisletter ?? '',
         huisnummerToevoeging: this.brpGegevensForm.value.huisnummerToevoeging ?? '',
-        aanduidingBijHuisnummer: this.brpGegevensForm.value.aanduidingBijHuisnummer ?? '',
+        huisnummerAanduiding: this.brpGegevensForm.value.huisnummerAanduiding ?? '',
         postcode: this.brpGegevensForm.value.postcode ?? '',
         plaats: this.brpGegevensForm.value.plaats ?? '',
       }
@@ -128,11 +128,11 @@ export class BrpInfoBewerkenModalComponent implements OnInit {
       .subscribe((tijdelijkAdres) => {
         this.tijdelijkAdres.set(tijdelijkAdres ?? undefined)
         this.brpGegevensForm.patchValue({
-          straatnaam: tijdelijkAdres?.straatnaam ?? '',
+          straat: tijdelijkAdres?.straat ?? '',
           huisnummer: tijdelijkAdres?.huisnummer ?? '',
           huisletter: tijdelijkAdres?.huisletter ?? '',
           huisnummerToevoeging: tijdelijkAdres?.huisnummerToevoeging ?? '',
-          aanduidingBijHuisnummer: tijdelijkAdres?.aanduidingBijHuisnummer ?? '',
+          huisnummerAanduiding: tijdelijkAdres?.huisnummerAanduiding ?? '',
           postcode: tijdelijkAdres?.postcode ?? '',
           plaats: tijdelijkAdres?.plaats ?? '',
         })

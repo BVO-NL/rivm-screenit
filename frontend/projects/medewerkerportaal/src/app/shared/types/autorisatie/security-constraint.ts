@@ -22,12 +22,12 @@ import { Actie } from '@shared/types/autorisatie/actie'
 import { Required } from '@shared/types/autorisatie/required'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@/shared/types/algemeen/organisatie-type'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 
 export interface SecurityConstraint {
   actie: Actie
   required: Required
-  level: ToegangLevel
+  level?: ToegangLevel
   recht: string[]
   organisatieTypeScopes?: OrganisatieType[]
   bevolkingsonderzoekScopes: Bevolkingsonderzoek[]

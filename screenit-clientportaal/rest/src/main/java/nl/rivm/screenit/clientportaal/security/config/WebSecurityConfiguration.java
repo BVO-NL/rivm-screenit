@@ -28,15 +28,12 @@ import nl.rivm.screenit.clientportaal.security.userdetails.ScreenitUserDetailsSe
 import nl.rivm.screenit.webcommons.config.CsrfCustomAccessDeniedHandler;
 import nl.rivm.screenit.webcommons.config.SpaCsrfTokenRequestHandler;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -53,7 +50,7 @@ public class WebSecurityConfiguration
 	private final ScreenitUserDetailsService userDetailsService;
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception
+	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
 	{
 		httpSecurity
 			.cors(withDefaults())
@@ -81,13 +78,5 @@ public class WebSecurityConfiguration
 			.addFilterAfter(new MDCLogFilter(), BearerTokenAuthenticationFilter.class);
 
 		return httpSecurity.build();
-	}
-
-	@Autowired
-	protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception
-	{
-		authenticationManagerBuilder
-			.userDetailsService(userDetailsService)
-			.passwordEncoder(new BCryptPasswordEncoder());
 	}
 }

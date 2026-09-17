@@ -21,7 +21,6 @@ package nl.rivm.screenit.mamma.se.controller;
  * =========================LICENSE_END==================================
  */
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,8 +50,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @RestController
 @RequestMapping("/api/authenticatie")
 @RequiredArgsConstructor
@@ -68,15 +65,13 @@ public class AuthenticatieController extends AuthorizedController
 
 	private final ConfiguratieService configuratieService;
 
-	private final ObjectMapper objectMapper;
-
 	@RequestMapping(value = "/inloggen/{genereerLogging}", method = RequestMethod.POST)
 	public ResponseEntity login(@RequestHeader(value = "Authorization") String credentials,
 		@PathVariable String genereerLogging,
 		@RequestHeader(value = SERequestHeader.SE_PROXY_DATUMTIJD) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime proxyDatumTijd,
 		@RequestHeader(value = "versie", required = false) String seVersie,
 		@RequestHeader(value = "nfcServerVersie", required = false) String nfcServerVersie,
-		@RequestHeader(value = "Yubikey") String yubikey, @RequestHeader(value = "navigatie") String navigatie, HttpServletRequest request) throws IOException
+		@RequestHeader(value = "Yubikey") String yubikey, @RequestHeader(value = "navigatie") String navigatie, HttpServletRequest request)
 	{
 		var base64Credentials = Base64.decodeToString(credentials.substring(6));
 		var credentialArray = StringUtils.split(base64Credentials, ":", 2);
@@ -120,7 +115,7 @@ public class AuthenticatieController extends AuthorizedController
 
 			configuratieService.voegParametersToe(result, seVersie, ingelogdeScreeningsEenheid);
 
-			return ResponseEntity.ok(objectMapper.readTree(objectMapper.writeValueAsString(result)));
+			return ResponseEntity.ok(result);
 		}
 
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(loginDto);

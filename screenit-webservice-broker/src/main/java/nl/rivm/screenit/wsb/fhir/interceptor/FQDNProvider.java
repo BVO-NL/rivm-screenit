@@ -25,8 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.inject.Inject;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
@@ -41,16 +40,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Slf4j
 @Configuration
 @EnableScheduling
+@RequiredArgsConstructor
 public class FQDNProvider
 {
-
 	private static final String JOB_OMSCHRIJVING = "Reset de FQDNs vanuit de parameterisatie";
 
-	@Inject
-	private SimplePreferenceService simplePreferenceService;
+	private final SimplePreferenceService simplePreferenceService;
 
-	@Inject
-	private DatabaseRunner databaseRunner;
+	private final DatabaseRunner databaseRunner;
 
 	private List<String> validFQDNs = new ArrayList<>();
 

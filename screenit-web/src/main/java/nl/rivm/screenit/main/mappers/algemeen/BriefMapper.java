@@ -42,6 +42,7 @@ public interface BriefMapper
 		@Mapping(target = "verstuurdVoorAfdrukkenOp", source = "verstuurdVoorAfdrukkenOp"),
 		@Mapping(target = "tegengehouden", source = "brief", qualifiedByName = "tegengehouden"),
 		@Mapping(target = "vervangen", source = "vervangen"),
+		@Mapping(target = "gegenereerd", source = "gegenereerd"),
 		@Mapping(target = "herdrukBrief", source = "brief", qualifiedByName = "herdrukBrief"),
 		@Mapping(target = "creatieDatum", source = "creatieDatum"),
 	})

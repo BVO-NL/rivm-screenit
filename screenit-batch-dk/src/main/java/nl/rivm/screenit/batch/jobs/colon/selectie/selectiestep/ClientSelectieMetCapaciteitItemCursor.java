@@ -34,7 +34,7 @@ import nl.rivm.screenit.batch.jobs.BatchConstants;
 import nl.rivm.screenit.batch.service.impl.ColonUitnodigingsgebiedSelectieContext;
 import nl.rivm.screenit.model.colon.ClientCategorieEntry;
 
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 
 @Slf4j
 public class ClientSelectieMetCapaciteitItemCursor implements ClientSelectieItemIterator

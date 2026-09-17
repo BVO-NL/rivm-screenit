@@ -21,7 +21,7 @@ package nl.rivm.screenit.mamma.se.dto;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class TijdelijkAdresSeDto extends SeDto
 {
@@ -39,9 +39,9 @@ public class TijdelijkAdresSeDto extends SeDto
 
 	private String plaats;
 
-	private Date startDatum;
+	private LocalDate startDatum;
 
-	private Date eindDatum;
+	private LocalDate eindDatum;
 
 	public String getStraat()
 	{
@@ -113,22 +113,22 @@ public class TijdelijkAdresSeDto extends SeDto
 		this.plaats = plaats;
 	}
 
-	public Date getStartDatum()
+	public LocalDate getStartDatum()
 	{
 		return startDatum;
 	}
 
-	public void setStartDatum(Date startDatum)
+	public void setStartDatum(LocalDate startDatum)
 	{
 		this.startDatum = startDatum;
 	}
 
-	public Date getEindDatum()
+	public LocalDate getEindDatum()
 	{
 		return eindDatum;
 	}
 
-	public void setEindDatum(Date eindDatum)
+	public void setEindDatum(LocalDate eindDatum)
 	{
 		this.eindDatum = eindDatum;
 	}

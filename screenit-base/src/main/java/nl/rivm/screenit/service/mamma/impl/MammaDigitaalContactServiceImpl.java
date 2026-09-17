@@ -211,7 +211,7 @@ public class MammaDigitaalContactServiceImpl implements MammaDigitaalContactServ
 				.orElseThrow(() -> new IllegalStateException("Kan geen afspraak vinden met id: " + entry.getKey()));
 
 			opgehaaldeAfspraak.setSmsStatus(SmsStatus.VERSTUURD);
-			baseAfspraakRepository.save(opgehaaldeAfspraak);
+			baseAfspraakRepository.persist(opgehaaldeAfspraak);
 
 			clientDigitaalBerichtService.saveOrUpdate(maakClientBerichtSmsVerstuurd(opgehaaldeAfspraak, entry.getValue()));
 		}
@@ -230,7 +230,7 @@ public class MammaDigitaalContactServiceImpl implements MammaDigitaalContactServ
 		var persoon = afspraak.getUitnodiging().getScreeningRonde().getDossier().getClient();
 		afspraak.setSmsStatus(SmsStatus.GEFAALD);
 		clientDigitaalBerichtService.saveOrUpdate(maakClientBerichtSmsGefaald(afspraak, DigitaalBerichtTemplateType.MAMMA_AFSPRAAK_HERINNERING, persoon));
-		baseAfspraakRepository.save(afspraak);
+		baseAfspraakRepository.persist(afspraak);
 	}
 
 	private MammaDigitaalClientBericht maakClientBerichtSmsGefaald(MammaAfspraak afspraak, DigitaalBerichtTemplateType digitaalBerichtTemplateType, Client client)

@@ -72,7 +72,7 @@ public class MedewerkerParameterServiceImpl implements MedewerkerParameterServic
 				parameter.setMedewerker(medewerker);
 				parameter.setKey(key);
 				parameter.setValue(genormaliseerdeWaarde);
-				medewerkerParameterRepository.save(parameter);
+				medewerkerParameterRepository.persist(parameter);
 			}
 		}
 	}

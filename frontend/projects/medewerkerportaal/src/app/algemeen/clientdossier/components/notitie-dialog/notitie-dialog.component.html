@@ -1,0 +1,67 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog [titel]="titel()" size="lg">
+  <form body class="form-in-modal" novalidate>
+    @if (!isNieuweNotitie()) {
+      <ds-summary-panel class="display-block mb-3">
+        <div class="row">
+          <ds-description
+            class="col"
+            label="Datum/tijd"
+            value="{{ bestaandeContact.datumTijd | date: NL_DATE_TIME_FORMAT : NL_TIMEZONE }}"/>
+          @if (dialogData.toonHistorieGegevens) {
+            <ds-description
+              class="col" label="Uitgevoerde actie" [value]="actiesLabel"/>
+          }
+          <ds-description class="col" label="Medewerker"
+                          value="{{ bestaandeContact.medewerker | naam: NaamTransform.Medewerker }}"/>@if (dialogData.toonHistorieGegevens) {
+          <ds-description class="col" label="Bevolkingsonderzoek" value="{{ bestaandeContact.bevolkingsonderzoeken | enumLabel: bevolkingsonderzoekLabels }}"/>
+        }
+        </div>
+      </ds-summary-panel>
+    }
+
+    @if (dialogData.readonly) {
+      {{ dialogData.contact.notitie }}
+    } @else {
+      <ds-textarea
+        data-testid="textarea_notitie"
+        label="Notitie"
+        [formControl]="notitieCtrl"
+        [errorMessage]="{ maxlength: 'De notitie mag maximaal 2048 tekens zijn' }"
+        placeholder="Voeg hier je notitie toe"
+      />
+    }
+  </form>
+  @if (magVerwijderen()) {
+    <div verwijder-button>
+      <button ds-button-delete data-testid="btn_verwijderen" (click)="verwijderNotitie()">Notitie verwijderen</button>
+    </div>
+  }
+  <ng-container buttons>
+    <button ds-button-tertiary data-testid="btn_annuleren" (click)="sluitDialog()">{{ dialogData.readonly ? 'Sluiten' : 'Annuleren' }}</button>
+    @if (isNieuweNotitie()) {
+      <button ds-button-primary data-testid="btn_toevoegen" (click)="notitieToevoegen()" [disabled]="notitieCtrl.invalid">Notitie toevoegen</button>
+    } @else if (!dialogData.readonly) {
+      <button ds-button-primary data-testid="btn_opslaan" (click)="wijzigingenOpslaan()" [disabled]="notitieCtrl.invalid">Wijzigingen opslaan</button>
+    }
+  </ng-container>
+</app-base-dialog>

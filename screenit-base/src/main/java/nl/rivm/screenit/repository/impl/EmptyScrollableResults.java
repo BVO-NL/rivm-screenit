@@ -39,6 +39,12 @@ public class EmptyScrollableResults implements ScrollableResults
 	}
 
 	@Override
+	public boolean isClosed()
+	{
+		return true;
+	}
+
+	@Override
 	public boolean next()
 	{
 		return false;
@@ -100,6 +106,12 @@ public class EmptyScrollableResults implements ScrollableResults
 	public int getRowNumber()
 	{
 		return -1;
+	}
+
+	@Override
+	public int getPosition()
+	{
+		return 0;
 	}
 
 	@Override

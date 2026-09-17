@@ -22,12 +22,17 @@ package nl.rivm.screenit.main.service.colon;
  */
 
 import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.WerklijstIntakeFilter;
+import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamer;
+import nl.rivm.screenit.model.enums.BriefType;
 
 import org.springframework.data.domain.Sort;
 
@@ -40,5 +45,10 @@ public interface ColonIntakeafspraakService
 	long countAfsprakenOpDagVanDeWeek(DayOfWeek dagVanDeWeek);
 
 	long countAfsprakenInNacht(LocalTime beginTijd, LocalTime eindTijd);
+
+	ColonIntakeAfspraak verplaatsAfspraak(Client client, VrijSlotZonderKamer gekozenVrijSlotZonderKamer, LocalDateTime datumTijdBuitenRooster, BriefType briefType,
+		boolean briefTegenhouden, boolean verwezenMedischeRedenenDoorInfolijn, String opmerking, OrganisatieMedewerker organisatieMedewerker);
+
+	ColonIntakeAfspraak maakNieuweAfspraak(Client client, VrijSlotZonderKamer gekozenVrijSlotZonderKamer, LocalDateTime datumTijdBuitenRooster);
 
 }

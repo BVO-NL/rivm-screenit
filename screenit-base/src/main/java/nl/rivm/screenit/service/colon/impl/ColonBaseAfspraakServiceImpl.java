@@ -110,6 +110,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Range;
 
+import static nl.rivm.screenit.specification.ExtendedSpecification.not;
 import static nl.rivm.screenit.specification.RangeSpecification.overlapt;
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.heeftBsn;
@@ -121,6 +122,7 @@ import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecificat
 import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification.heeftIntakeafspraakType;
 import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification.heeftStatus;
 import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification.heeftStatusIn;
+import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification.isDigitaleIntakeVerstuurd;
 import static nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification.onderdeelVanLaatsteScreeningRonde;
 import static nl.rivm.screenit.specification.colon.ColonTijdslotSpecification.heeftVanaf;
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
@@ -129,6 +131,8 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 @Service
 public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 {
+	private static final int DIGITALE_INTAKE_WERKLIJST_TERMIJN_UREN = 168;
+
 	@Autowired
 	private ColonIntakeAfspraakRepository afspraakRepository;
 
@@ -295,7 +299,8 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		if (ColonAfspraakStatus.GEPLAND == zoekFilter.getStatus())
 		{
 
-			specification = specification.and(heeftStatus(ColonAfspraakStatus.GEPLAND));
+			specification = specification.and(heeftStatus(ColonAfspraakStatus.GEPLAND))
+				.and(not(isDigitaleIntakeVerstuurd(true)));
 			if (vanaf == null || !vanaf.isAfter(vandaag))
 			{
 				vanaf = vandaag;
@@ -324,12 +329,9 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		else
 		{
 			var heeftGeenConclusie = ColonConclusieSpecification.heeftGeenType().with(conclusieJoin());
-			if (totEnMet != null && totEnMet.isBefore(vandaag))
+			if (totEnMet == null || !totEnMet.isBefore(vandaag))
 			{
-				heeftGeenConclusie = heeftGeenConclusie.and(heeftAfspraakVoor(totEnMet.atStartOfDay()));
-			}
-			else
-			{
+
 				heeftGeenConclusie = heeftGeenConclusie.and(heeftAfspraakVoor(vandaag.atStartOfDay()));
 			}
 
@@ -342,14 +344,17 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 					.and(ColonIntakeAfspraakSpecification.heeftGeenNieuweAfspraak())
 				);
 
+			var isDigitaleIntakeAfgehandeld = ColonConclusieSpecification.heeftGeenType().with(conclusieJoin()).and(isDigitaleIntakeVerstuurd(true));
+
+			var conclusieVoorwaarden = heeftGeenConclusie.or(heeftConclusieOnHold).or(isDoorverwezenOmMedischeRedenen).or(isDigitaleIntakeAfgehandeld);
 			if (totEnMet != null)
 			{
-				heeftConclusieOnHold = heeftConclusieOnHold.and(heeftAfspraakVoor(totEnMet.atStartOfDay()));
-				isDoorverwezenOmMedischeRedenen = isDoorverwezenOmMedischeRedenen.and(heeftAfspraakVoor(totEnMet.atStartOfDay()));
+				conclusieVoorwaarden = conclusieVoorwaarden.and(heeftAfspraakVoor(totEnMet.atStartOfDay()));
 			}
 
 			specification = specification.and(ColonDossierSpecification.heeftVolgendeUitnodigingNaInterval().with(dossierJoin()));
-			specification = specification.and(heeftGeenConclusie.or(heeftConclusieOnHold).or(isDoorverwezenOmMedischeRedenen));
+			specification = specification.and(not(isDigitaleIntakeNietVerstuurdBinnenWerklijstTermijn(currentDateSupplier.getLocalDateTime())));
+			specification = specification.and(conclusieVoorwaarden);
 		}
 
 		if (ColonAfspraakStatus.UITGEVOERD != zoekFilter.getStatus())
@@ -357,13 +362,24 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 			specification = specification.and(ColonScreeningRondeSpecification.heeftGeenAfgerondeMdlVerslagen().with(screeningRondeJoin()));
 		}
 
+		ExtendedSpecification<ColonIntakeAfspraak> datumVenster = null;
 		if (vanaf != null)
 		{
-			specification = specification.and((heeftAfspraakNa(vanaf.atStartOfDay())));
+			datumVenster = heeftAfspraakNa(vanaf.atStartOfDay());
 		}
 		if (zoekFilter.getStatus() != null && totEnMet != null)
 		{
-			specification = specification.and((heeftAfspraakVoor(totEnMet.atStartOfDay())));
+			var voorTotEnMet = heeftAfspraakVoor(totEnMet.atStartOfDay());
+			datumVenster = datumVenster == null ? voorTotEnMet : datumVenster.and(voorTotEnMet);
+		}
+		if (datumVenster != null)
+		{
+			if (ColonAfspraakStatus.GEPLAND == zoekFilter.getStatus())
+			{
+				var referentieMomentTermijn = vandaag.equals(vanaf) ? currentDateSupplier.getLocalDateTime() : vanaf.atStartOfDay();
+				datumVenster = datumVenster.or(heeftAfspraakVoor(vanaf.atStartOfDay()).and(isDigitaleIntakeNietVerstuurdBinnenWerklijstTermijn(referentieMomentTermijn)));
+			}
+			specification = specification.and(datumVenster);
 		}
 		if (zoekFilter.getConclusieTypeFilter() != null)
 		{
@@ -381,6 +397,12 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 			specification = specification.and(heeftIntakeafspraakType(zoekFilter.getIntakeafspraakType()));
 		}
 		return specification;
+	}
+
+	private ExtendedSpecification<ColonIntakeAfspraak> isDigitaleIntakeNietVerstuurdBinnenWerklijstTermijn(LocalDateTime referentieMoment)
+	{
+		var termijnGrens = referentieMoment.minusHours(DIGITALE_INTAKE_WERKLIJST_TERMIJN_UREN);
+		return isDigitaleIntakeVerstuurd(false).and(heeftAfspraakNa(termijnGrens));
 	}
 
 	private Function<From<?, ? extends ColonIntakeAfspraak>, From<?, ? extends Persoon>> persoonJoin()
@@ -949,9 +971,9 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 
 	@Override
 	@Transactional
-	public void saveIntakeafspraak(ColonIntakeAfspraak afspraak)
+	public void verstuurDigitaleIntakeafspraak(ColonIntakeAfspraak afspraak)
 	{
-		afspraakRepository.save(afspraak);
+		afspraak.setDigitaleIntakeVerstuurd(true);
 	}
 
 	public boolean isDigitaleAfspraakBeschikbaar()

@@ -42,8 +42,6 @@ public class BriefafdrukopdrachtMessageQueueStateService
 	@Setter
 	private long laatsteSendBevestigingCacheBijvulMoment;
 
-	private long sendBevestigingFetchCursorMessageId;
-
 	private final Map<Long, BriefafdrukopdrachtSendBevestigingPollStatus> wachtOpCommHubOpdrachtSendBevestigingCache = new ConcurrentHashMap<>();
 
 	boolean isSendBevestigingCacheVol()
@@ -74,11 +72,6 @@ public class BriefafdrukopdrachtMessageQueueStateService
 	void resetOpeenvolgendeSendBevestigingTechnischeFouten()
 	{
 		opeenvolgendeSendBevestigingTechnischeFouten = 0;
-	}
-
-	void updateSendBevestigingFetchCursorMessageId(long messageId)
-	{
-		sendBevestigingFetchCursorMessageId = Math.max(sendBevestigingFetchCursorMessageId, messageId);
 	}
 
 	void resetSendBevestigingVoortgangState()

@@ -45,12 +45,12 @@
     <ng-container dsColumnDef="acties">
       <th *dsHeaderCellDef ds-header-cell data-testid="acties_kolom_header">{{ actiesHeaderLabel() }}</th>
       <td *dsCellDef="let row" ds-cell>
-        @if (isMeestRecenteBezwaarMoment(row) && row.documentId !== null) {
+        @if (row.documentId !== null) {
           <button ds-button-secondary ds-button-icon aria-label="Inzien" data-testid="inzien_document_button" (click)="inzienDocument(row)">
             <ds-icon [icon]="faEye"/>
           </button>
         }
-        @if (isMeestRecenteBezwaarMoment(row) && heeftBriefActies(row)) {
+        @if (heeftBriefActies(row)) {
           <button
             ds-button-secondary
             dsButtonMenu

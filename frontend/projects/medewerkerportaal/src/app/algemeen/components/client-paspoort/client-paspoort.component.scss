@@ -18,23 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-.client-paspoort {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 24px;
-  padding: 20px 0 20px 25px;
-  background: #fff;
+:host {
+  display: block;
+  width: 100%;
+  padding: 0;
 }
-
-.client-paspoort-naam {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  font-weight: 700;
-  font-size: 1.2rem;
-  margin-right: 25px;
-}
-
-

@@ -46,7 +46,7 @@ import nl.rivm.screenit.service.colon.ColonDossierBaseService;
 import nl.rivm.screenit.util.DateUtil;
 
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.stereotype.Component;
 
 import com.google.common.primitives.Ints;

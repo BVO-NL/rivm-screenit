@@ -21,8 +21,8 @@ package nl.rivm.screenit.main.service.colon;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.main.dto.colon.ColonRoosterBeperkingenDto;
 import nl.rivm.screenit.main.exception.ValidatieException;
-import nl.rivm.screenit.model.colon.dto.ColonRoosterBeperkingenDto;
 
 public interface ColonRoosterBeperkingService
 {

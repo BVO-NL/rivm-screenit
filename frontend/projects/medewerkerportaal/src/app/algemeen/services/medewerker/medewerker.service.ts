@@ -20,7 +20,7 @@
  */
 import { inject, Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
-import { Medewerker } from '@shared/types/autorisatie/medewerker'
+import { MedewerkerDto } from '@shared/types/algemeen/dto/medewerker.dto'
 import { Recht } from '@shared/types/autorisatie/recht'
 
 @Injectable({
@@ -35,6 +35,6 @@ export class MedewerkerService {
     if (recht) {
       url += '?recht=' + recht
     }
-    return this.http.get<Medewerker[]>(url)
+    return this.http.get<MedewerkerDto[]>(url)
   }
 }

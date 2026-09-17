@@ -21,28 +21,14 @@ package nl.rivm.screenit.main.mappers.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.model.algemeen.dto.MedewerkerDto;
+import nl.rivm.screenit.main.dto.algemeen.MedewerkerDto;
 import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
 import nl.rivm.screenit.model.Medewerker;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.Named;
 
 @Mapper(config = ScreenitMapperConfig.class)
 public interface MedewerkerMapper
 {
-	@Mappings({
-		@Mapping(target = "id", source = "id"),
-		@Mapping(target = "naam", source = "medewerker", qualifiedByName = "medewerkerNaam"),
-	})
 	MedewerkerDto medewerkerToMedewerkerDto(Medewerker medewerker);
-
-	@Named("medewerkerNaam")
-	default String naam(Medewerker medewerker)
-	{
-		return medewerker.getNaamVolledig();
-	}
-
 }

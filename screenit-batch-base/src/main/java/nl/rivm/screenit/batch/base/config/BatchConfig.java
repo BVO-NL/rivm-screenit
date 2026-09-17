@@ -23,12 +23,14 @@ package nl.rivm.screenit.batch.base.config;
 
 import javax.sql.DataSource;
 
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.JobRegistry;
+import org.springframework.batch.core.configuration.support.MapJobRegistry;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.dao.Jackson2ExecutionContextStringSerializer;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
@@ -51,6 +53,12 @@ public class BatchConfig
 	public TaskExecutor taskExecutor()
 	{
 		return new SyncTaskExecutor();
+	}
+
+	@Bean
+	public JobRegistry jobRegistry()
+	{
+		return new MapJobRegistry();
 	}
 
 	@Bean

@@ -65,7 +65,7 @@ public class MammaAfspraakReserveringServiceImpl implements MammaAfspraakReserve
 		reservering.setOpkomstkans(afspraak.getOpkomstkans().getOpkomstkans());
 		reservering.setVanaf(DateUtil.toLocalDateTime(afspraak.getVanaf()));
 		reservering.setAangemaaktOp(currentDateSupplier.getLocalDateTime());
-		var opgeslagenReservering = afspraakReserveringRepository.save(reservering);
+		var opgeslagenReservering = afspraakReserveringRepository.persist(reservering);
 		LOG.info("BK Afspraak reservering aangemaakt voor vanaf: '{}' capaciteitBlokId: '{}' clientId: '{}'",
 			reservering.getVanaf(), reservering.getCapaciteitBlok().getId(), reservering.getClient().getId());
 		return opgeslagenReservering;

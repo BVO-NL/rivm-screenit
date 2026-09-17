@@ -37,12 +37,11 @@ ds-tab-group {
   min-height: 0;
   display: flex;
   flex-direction: column;
-
-  ::ng-deep > *:last-child {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-  }
 }
 
+::ng-deep > ds-tab.ds-tab-content--visible {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}

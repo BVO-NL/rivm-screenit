@@ -7,7 +7,7 @@
     },
     "description": {
       "afspraak_verzetten": "U bent uitgenodigd voor het bevolkingsonderzoek borstkanker. U gaat naar een van onze onderzoekscentra voor het onderzoek. <br><br>Komt de afspraak voor het onderzoek u niet uit? Dan kunt u uw afspraak verzetten.<br>Hieronder ziet u waar en wanneer er afspraken beschikbaar zijn (dit kan even duren).<br>In de kalender ziet u op welke dagen u een afspraak kunt maken. U kunt ook een andere plaats kiezen.",
-      "afspraak_maken": "<p>Hieronder ziet u de gegevens van uw afspraak.</p>Wilt u deze afspraak definitief maken, klik dan op de blauwe knop.<br/ >Wilt u uw onderzoek toch liever op een ander moment? Kies dan voor 'Wijzigen'."
+      "afspraak_maken": "<p>Hieronder ziet u de gegevens van uw afspraak.</p>Wilt u deze afspraak definitief maken, klik dan op de blauwe 'Afspraak bevestigen' knop.<br/ >Wilt u uw onderzoek toch liever op een ander moment? Kies dan voor 'Wijzigen'."
     }
   },
   "blob": {
@@ -24,7 +24,8 @@
       "per_post": "Per post",
       "geen_bevestiging": "Geen bevestiging",
       "controleer_email": "Controleer uw e-mailadres of vul het in",
-      "keuze_vraag": "Uw afspraak is gemaakt!<br /><br />Wilt u de gegevens van uw afspraak per mail of per post ontvangen?"
+      "afspraak_bijschrift": "Uw afspraak is gemaakt!",
+      "keuze_vraag": "Wilt u de gegevens van uw afspraak per mail of per post ontvangen?"
     },
     "failure": {
       "title": "Gekozen afspraak niet meer beschikbaar",
@@ -43,7 +44,8 @@
       "afsluiten": "Afsluiten",
       "afronden": "Afronden",
       "wijzigen": "Wijzigen",
-      "andere_afspraak": "Andere afspraak maken"
+      "andere_afspraak": "Andere afspraak maken",
+      "bevestigen": "Afspraak bevestigen"
     },
     "annuleren_bevestigingspopup": {
       "title": "Uw afspraak is nog niet ingepland",
@@ -52,7 +54,8 @@
       "button_annuleren": "Afspraak annuleren"
     },
     "toast": {
-      "title": "U heeft een afspraak gemaakt voor het bevolkingsonderzoek borstkanker.",
+      "title": "Uw afspraak voor het bevolkingsonderzoek borstkanker is gemaakt.",
+      "description": "Sluit dit scherm nog niet af: in de volgende stappen regelt u belangrijke zaken rondom uw afspraak.",
       "brief_melding": "U krijgt binnen een paar dagen een brief met de gegevens van uw afspraak. Neem deze brief mee naar uw afspraak. ",
       "geen_brief": "U heeft zelf de afspraak genoteerd. Neem uw uitnodigingsbrief mee naar uw afspraak.",
       "geen_wijzigingen": "Geen wijzigingen opgeslagen",
@@ -63,6 +66,7 @@
       }
     },
     "herinnering": {
+      "afspraak_bijschrift": "Hieronder ziet u de gegevens van uw afspraak:",
       "description": "Wilt u voorafgaand aan uw afspraak per SMS een herinnering ontvangen?<br />Controleer uw telefoonnummer of vul het in.",
       "stuur_herinnering": "Stuur mij een herinnering per SMS."
     }
@@ -93,7 +97,9 @@
   },
   "bevestiging": {
     "titel": "Uw afspraak",
-    "description": "Hieronder ziet u de gegevens van uw afspraak.",
+    "afspraak_bijschrift": "Hieronder ziet u de gegevens van uw afspraak:",
+    "huisarts_bijschrift": "Hieronder ziet u de gegevens van uw doorgegeven huisarts:",
+    "description": "Hieronder ziet u de gegevens van uw afspraak:",
     "mail": "U ontvang een bevestiging van uw afspraak per mail.",
     "brief": "U ontvangt binnen enkele dagen een bevestiging van uw afspraak per brief.",
     "sms": "<br><br>Enkele dagen voor uw afspraak ontvangt u een SMS-bericht ter herinnering.",
@@ -107,7 +113,7 @@
       "bekend": {
         "title": "Huisartsgegevens controleren",
         "description": "U heeft eerder uw huisarts doorgegeven:",
-        "bevestiging_vraag": "Is dit nog steeds uw huisarts? Klik dan op de blauwe knop ‘Afronden’<br />Wilt u een andere huisarts doorgeven, klik dan op ‘Wijzigen’."
+        "bevestiging_vraag": "Is dit nog steeds uw huisarts? Klik dan op de blauwe knop ‘Volgende’.<br />Wilt u een andere huisarts doorgeven, klik dan op ‘Wijzigen’."
       },
       "onbekend": {
         "title": "Huisarts doorgeven",
@@ -125,7 +131,8 @@
       "description": "Dit is uw huisarts:",
       "button_bevestigen": "Huisarts verwijderen",
       "button_annuleren": "Gegevens laten staan"
-    }
+    },
+    "afspraak_bijschrift": "Hieronder ziet u de gegevens van uw afspraak:"
   },
   "mamma": {
     "tussenpagina": {

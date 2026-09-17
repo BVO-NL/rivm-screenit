@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-export interface Permissie {
-  id: number
+import { EntityDto } from '@shared/types/algemeen/dto/entity.dto'
+
+export interface Permissie extends EntityDto {
   actief: boolean
   recht: string
   actie: string

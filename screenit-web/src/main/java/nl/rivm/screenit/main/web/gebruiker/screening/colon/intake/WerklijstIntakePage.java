@@ -38,7 +38,6 @@ import nl.rivm.screenit.main.web.component.ScreenitDateTextField;
 import nl.rivm.screenit.main.web.component.dropdown.ScreenitDropdown;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
-import nl.rivm.screenit.main.web.component.table.AjaxCheckboxCellPanel;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.ClientColumn;
 import nl.rivm.screenit.main.web.component.table.EnumPropertyColumn;
@@ -110,7 +109,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.shiro.ShiroConstraint;
@@ -491,14 +489,18 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<ColonIntakeAfspraak>> item, String componentId, IModel<ColonIntakeAfspraak> rowModel)
 			{
-				if (ColonAfspraakUtil.isDigitaal(rowModel.getObject()))
+				var afspraak = rowModel.getObject();
+				if (ColonAfspraakUtil.isDigitaal(afspraak) && !afspraak.isDigitaleIntakeVerstuurd())
 				{
-					item.add(new AjaxCheckboxCellPanel<>(componentId, rowModel, new PropertyModel<>(rowModel, "digitaleIntakeVerstuurd"))
+					item.add(new ColonDigitaleIntakeVerstuurdCellPanel(componentId, dialog)
 					{
 						@Override
-						protected void onUpdate(AjaxRequestTarget target)
+						protected void onVerstuurd(AjaxRequestTarget target)
 						{
-							afspraakService.saveIntakeafspraak(rowModel.getObject());
+							var teVersturenAfspraak = rowModel.getObject();
+							afspraakService.verstuurDigitaleIntakeafspraak(teVersturenAfspraak);
+							target.add(table);
+							target.add(aantalLabel);
 						}
 					});
 				}
@@ -821,7 +823,7 @@ public abstract class WerklijstIntakePage extends ColonScreeningBasePage
 	{
 		List<MedewerkerMenuItem> contextMenuItems = new ArrayList<>();
 		contextMenuItems.add(new MedewerkerMenuItem("label.werklijst.geplande", ColonGeplandeIntakesWerklijstPage.class));
-		contextMenuItems.add(new MedewerkerMenuItem("label.werklijst.openstaande", ColonOpenstaanteIntakesWerklijstPage.class)
+		contextMenuItems.add(new MedewerkerMenuItem("label.werklijst.openstaande", ColonOpenstaandeIntakesWerklijstPage.class)
 		{
 
 			@Override

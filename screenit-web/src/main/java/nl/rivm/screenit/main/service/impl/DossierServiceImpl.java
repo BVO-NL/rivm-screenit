@@ -462,7 +462,7 @@ public class DossierServiceImpl implements DossierService
 			typeGebeurtenis = TypeGebeurtenis.COLON_FIT_UITSLAG_ONBETROUWBAAR;
 			break;
 		default:
-			if (fitRegistratie.getUitslag() != null)
+			if (ColonFitRegistratieUtil.heeftUitslag(fitRegistratie))
 			{
 				typeGebeurtenis = TypeGebeurtenis.COLON_FIT_UITSLAG_ONTVANGEN;
 			}

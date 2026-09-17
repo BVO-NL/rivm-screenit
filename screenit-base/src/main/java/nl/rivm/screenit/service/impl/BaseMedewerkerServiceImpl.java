@@ -173,7 +173,7 @@ public class BaseMedewerkerServiceImpl implements BaseMedewerkerService
 			organisatieMedewerker.setActief(Boolean.FALSE);
 			inactiveerOrganisatieMedewerkersMetRol(organisatieMedewerker.getRollen());
 		});
-		medewerkerRepository.save(medewerker);
+		medewerkerRepository.persist(medewerker);
 
 		if (StringUtils.isNotBlank(medewerker.getEmailextra()))
 		{
@@ -193,7 +193,7 @@ public class BaseMedewerkerServiceImpl implements BaseMedewerkerService
 				rol.setEindDatum(currentDateSupplier.getDate());
 			}
 		});
-		organisatieMedewerkerRolRepository.saveAll(medewerkersMetRol);
+		organisatieMedewerkerRolRepository.persistAll(medewerkersMetRol);
 
 	}
 

@@ -27,7 +27,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.dto.EntityDto;
-import nl.rivm.screenit.dto.OrganisatieDto;
+import nl.rivm.screenit.main.dto.algemeen.OrganisatieDto;
 import nl.rivm.screenit.model.mamma.enums.MammaVisitatieStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,14 +38,21 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class MammaVisitatieDto extends EntityDto
 {
 	private String omschrijving;
+
 	private Date gestartOp;
+
 	private Date afgerondOp;
+
 	private Date aangemaaktOp;
 
 	@Schema(description = "Naam van de medewerker die de visitatie heeft aangemaakt")
 	private String aangemaaktDoor;
+
 	private MammaVisitatieStatus status;
+
 	private OrganisatieDto beoordelingseenheid;
+
 	private Long rapportageDocumentId;
+
 	private Long vragenlijstDocumentId;
 }

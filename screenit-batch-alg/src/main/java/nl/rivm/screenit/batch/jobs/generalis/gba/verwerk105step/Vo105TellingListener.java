@@ -35,9 +35,9 @@ import nl.rivm.screenit.repository.algemeen.GbaVraagRepository;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.ItemProcessListener;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.core.listener.ItemProcessListener;
+import org.springframework.batch.core.listener.StepExecutionListener;
+import org.springframework.batch.core.step.StepExecution;
 import org.springframework.stereotype.Component;
 
 @Component

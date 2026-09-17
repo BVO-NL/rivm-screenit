@@ -142,7 +142,7 @@ public class BezwaarServiceImpl implements BezwaarService
 		if (isVervangen)
 		{
 			bezwaarMoment.setBezwaarBrief(nieuwDocument);
-			bezwaarMomentRepository.save(bezwaarMoment);
+			bezwaarMomentRepository.persist(bezwaarMoment);
 			return true;
 		}
 
@@ -160,7 +160,7 @@ public class BezwaarServiceImpl implements BezwaarService
 		if (isVervangen)
 		{
 			actie.setGetekendeBrief(nieuwDocument);
-			onderzoeksresultatenActieRepository.save(actie);
+			onderzoeksresultatenActieRepository.persist(actie);
 			return true;
 		}
 		return false;
@@ -229,23 +229,31 @@ public class BezwaarServiceImpl implements BezwaarService
 		var magDocumentVervangen = ScreenitSession.get().checkPermission(Recht.VERVANGEN_DOCUMENTEN, Actie.AANPASSEN);
 
 		var acties = new ArrayList<BriefActie>();
-		if (magNogmaalsVersturen)
+
+		if (bezwaarMoment.getClient().getLaatstVoltooideBezwaarMoment().getId().equals(bezwaarMoment.getId()))
+		{
+			if (magNogmaalsVersturen)
+			{
+				acties.add(BriefActie.TEMPLATE_INZIEN);
+				acties.add(BriefActie.NOGMAALS_VERSTUREN);
+			}
+
+			if (magTegenhouden)
+			{
+				acties.add(BriefActie.TEGENHOUDEN);
+			}
+			if (magDoorvoeren)
+			{
+				acties.add(BriefActie.ACTIVEREN);
+			}
+			if (magDocumentVervangen)
+			{
+				acties.add(BriefActie.VERVANGEN);
+			}
+		}
+		else if (magNogmaalsVersturen)
 		{
 			acties.add(BriefActie.TEMPLATE_INZIEN);
-			acties.add(BriefActie.NOGMAALS_VERSTUREN);
-		}
-
-		if (magTegenhouden)
-		{
-			acties.add(BriefActie.TEGENHOUDEN);
-		}
-		if (magDoorvoeren)
-		{
-			acties.add(BriefActie.ACTIVEREN);
-		}
-		if (magDocumentVervangen)
-		{
-			acties.add(BriefActie.VERVANGEN);
 		}
 		return acties;
 	}

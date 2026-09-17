@@ -21,8 +21,10 @@ package nl.rivm.screenit.service;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import nl.rivm.screenit.dto.mamma.afspraken.IMammaAfspraakWijzigenFilter;
 import nl.rivm.screenit.model.Aanhef;
@@ -32,6 +34,7 @@ import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContact;
 import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.ClientContactActieType;
+import nl.rivm.screenit.model.ClientContactActieTypeFilter;
 import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.TijdelijkAdres;
@@ -42,6 +45,15 @@ import nl.rivm.screenit.model.mamma.MammaAfspraak;
 
 public interface ClientContactService
 {
+
+	Optional<ClientContact> getClientContactById(Long id);
+
+	ClientContact maakClientContact(Client client, LocalDateTime datum, List<ClientContactActieType> acties, String opmerking,
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
+	ClientContact updateClientContact(ClientContact contact, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
+	ClientContact verwijderNotitie(ClientContact contact, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	void saveClientContact(ClientContact contact, Map<ClientContactActieType, Map<ExtraOpslaanKey, Object>> extraOpslaanObjecten, Account ingelogdeOrganisatieMedewerker);
 
@@ -89,6 +101,8 @@ public interface ClientContactService
 	boolean isAfspraakTijdBezet(MammaAfspraak nieuweAfspraak, IMammaAfspraakWijzigenFilter afspraakWijzigenFilter);
 
 	List<ClientContact> getClientContacten(Client client, long first, long count, String sortProperty, boolean ascending);
+
+	List<ClientContact> getClientContacten(Client client, ClientContactActieTypeFilter actieTypeFilter);
 
 	Long countClientContactenMetOpmerking(Long clientId);
 

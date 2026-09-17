@@ -38,6 +38,7 @@ import { BezwaarLijstComponent } from '../bezwaar-lijst/bezwaar-lijst.component'
   templateUrl: './bezwaar-panel.component.html',
   host: {
     '[class.display-none]': '!isZichtbaar()',
+    '[class.display-block]': 'isZichtbaar()',
   },
 })
 export class BezwaarPanelComponent {

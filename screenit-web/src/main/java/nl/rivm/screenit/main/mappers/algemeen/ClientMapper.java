@@ -96,14 +96,15 @@ public interface ClientMapper
 		@Mapping(target = "actief", source = "client", qualifiedByName = "isActief"),
 		@Mapping(target = "onderzoeksresultatenActies", source = "onderzoeksresultatenActies"),
 		@Mapping(target = "bezwaarMomenten", source = "bezwaarMomenten"),
+		@Mapping(target = "gbaStatus", source = "gbaStatus"),
 	})
 	ClientDto clientToClientDto(Client client, @Context ClientService clientService, @Context BezwaarService bezwaarService);
 
 	@Mappings({
 		@Mapping(source = "startDatum", target = "begindatum"),
 		@Mapping(source = "eindDatum", target = "einddatum"),
-		@Mapping(source = "straat", target = "straatnaam"),
-		@Mapping(source = "huisnummerAanduiding", target = "aanduidingBijHuisnummer"),
+		@Mapping(source = "straat", target = "straat"),
+		@Mapping(source = "huisnummerAanduiding", target = "huisnummerAanduiding"),
 		@Mapping(target = "clientId", ignore = true)
 	})
 	TijdelijkAdresDto tijdelijkAdresToDto(TijdelijkAdres tijdelijkAdres);
@@ -111,8 +112,8 @@ public interface ClientMapper
 	@Mappings({
 		@Mapping(source = "begindatum", target = "startDatum"),
 		@Mapping(source = "einddatum", target = "eindDatum"),
-		@Mapping(source = "straatnaam", target = "straat"),
-		@Mapping(source = "aanduidingBijHuisnummer", target = "huisnummerAanduiding"),
+		@Mapping(source = "straat", target = "straat"),
+		@Mapping(source = "huisnummerAanduiding", target = "huisnummerAanduiding"),
 		@Mapping(target = "id", ignore = true),
 		@Mapping(target = "soort", ignore = true),
 		@Mapping(target = "geheimadres", ignore = true),
@@ -130,8 +131,8 @@ public interface ClientMapper
 	@Mappings({
 		@Mapping(source = "begindatum", target = "startDatum"),
 		@Mapping(source = "einddatum", target = "eindDatum"),
-		@Mapping(source = "straatnaam", target = "straat"),
-		@Mapping(source = "aanduidingBijHuisnummer", target = "huisnummerAanduiding"),
+		@Mapping(source = "straat", target = "straat"),
+		@Mapping(source = "huisnummerAanduiding", target = "huisnummerAanduiding"),
 		@Mapping(target = "id", ignore = true),
 		@Mapping(target = "soort", ignore = true),
 		@Mapping(target = "geheimadres", ignore = true),
@@ -357,15 +358,16 @@ public interface ClientMapper
 
 	@Mappings({
 		@Mapping(target = "clientId", source = "id"),
-		@Mapping(target = "straatnaam", source = "persoon.tijdelijkGbaAdres.straat"),
+		@Mapping(target = "straat", source = "persoon.tijdelijkGbaAdres.straat"),
 		@Mapping(target = "huisnummer", source = "persoon.tijdelijkGbaAdres.huisnummer"),
 		@Mapping(target = "huisletter", source = "persoon.tijdelijkGbaAdres.huisletter"),
 		@Mapping(target = "huisnummerToevoeging", source = "persoon.tijdelijkGbaAdres.huisnummerToevoeging"),
-		@Mapping(target = "aanduidingBijHuisnummer", source = "persoon.tijdelijkGbaAdres.huisnummerAanduiding"),
+		@Mapping(target = "huisnummerAanduiding", source = "persoon.tijdelijkGbaAdres.huisnummerAanduiding"),
 		@Mapping(target = "postcode", source = "persoon.tijdelijkGbaAdres.postcode"),
 		@Mapping(target = "plaats", source = "persoon.tijdelijkGbaAdres.plaats"),
 		@Mapping(target = "begindatum", ignore = true),
 		@Mapping(target = "einddatum", ignore = true),
+		@Mapping(target = "locatieBeschrijving", ignore = true),
 	})
 	TijdelijkAdresDto clientToBrpTijdelijkAdres(Client client);
 

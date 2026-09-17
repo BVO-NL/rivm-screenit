@@ -28,7 +28,7 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.GunstigeUitslagBeeindigdLogEvent;
 import nl.rivm.screenit.model.logging.LogEvent;
 
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.stereotype.Component;
 
 @Component

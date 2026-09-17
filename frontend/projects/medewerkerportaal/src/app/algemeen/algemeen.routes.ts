@@ -25,7 +25,7 @@ import { Actie } from '@shared/types/autorisatie/actie'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { Required } from '@shared/types/autorisatie/required'
 import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 
 export const algemeenRoutes: Routes = [
   {

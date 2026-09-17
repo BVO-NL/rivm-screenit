@@ -24,9 +24,9 @@ package nl.rivm.screenit.main.service.colon;
 import java.util.List;
 import java.util.Optional;
 
+import nl.rivm.screenit.main.dto.colon.ColonFeestdagDto;
 import nl.rivm.screenit.main.exception.ValidatieException;
 import nl.rivm.screenit.model.colon.ColonFeestdag;
-import nl.rivm.screenit.model.colon.dto.ColonFeestdagDto;
 
 public interface ColonFeestdagService
 {

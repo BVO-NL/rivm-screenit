@@ -20,7 +20,7 @@
  */
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { DsButtonComponent, DsDatepickerComponent, DsIconComponent, DsInputComponent, DsToggleComponent, DsValidators } from '@topicus-rgp-ds/web'
-import { afterNextRender, Component, ElementRef, inject, output, signal, viewChild } from '@angular/core'
+import { afterNextRender, Component, ElementRef, inject, output, Renderer2, signal, viewChild } from '@angular/core'
 import { FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { faSearch } from '@fortawesome/pro-light-svg-icons'
 import { ClientZoekenFilterDto } from '@shared/types/algemeen/dto/client-zoeken-filter.dto'
@@ -33,7 +33,7 @@ import { AlleenCijfersDirective } from '@shared/directives/alleen-cijfers/alleen
 import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.directive'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
-import { Bevolkingsonderzoek } from '@shared/types/autorisatie/bevolkingsonderzoek'
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 import { Required } from '@shared/types/autorisatie/required'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
@@ -61,10 +61,11 @@ export class ClientZoekenFilterComponent {
   protected readonly searchIcon = faSearch
   private readonly formBuilder = inject(FormBuilder)
   private readonly notificationService = inject(NotificationService)
+  private readonly renderer = inject(Renderer2)
   private readonly geboortedatumPicker = viewChild('geboortedatum', { read: ElementRef })
   private readonly minimumGeboortedatum = new FormControl(new Date())
   zoeken = output<ClientZoekenFilterDto>()
-  geavanceerdZoekenActief = signal(false)
+  readonly geavanceerdZoekenActief = signal(false)
   protected readonly geavanceerdZoekenConstraint: SecurityConstraint = {
     recht: [Recht.MEDEWERKER_CLIENT_ZOEKEN_UITGEBREID],
     actie: Actie.INZIEN,
@@ -94,7 +95,12 @@ export class ClientZoekenFilterComponent {
 
   constructor() {
     afterNextRender(() => {
-      this.geboortedatumPicker()?.nativeElement?.querySelector('input')?.focus()
+      const geboortedatumInput = this.geboortedatumPicker()?.nativeElement?.querySelector('input')
+      if (geboortedatumInput) {
+        geboortedatumInput.focus()
+        this.renderer.setAttribute(geboortedatumInput, 'autocomplete', 'off')
+      }
+
     })
 
     this.zoekenForm
@@ -166,7 +172,7 @@ export class ClientZoekenFilterComponent {
   protected heeftGeldigePostcodeHuisnummerCombinatie(): boolean {
     const { postcode, huisnummer } = this.zoekenForm.value
     const beideIngevuld = Boolean(postcode) && Boolean(huisnummer)
-    const beideLeeg = !Boolean(postcode) && !Boolean(huisnummer)
+    const beideLeeg = !postcode && !huisnummer
     return beideIngevuld || beideLeeg
   }
 

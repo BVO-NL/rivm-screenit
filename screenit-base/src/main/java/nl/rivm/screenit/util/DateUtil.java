@@ -774,6 +774,18 @@ public final class DateUtil
 
 	public static @Nullable Date transformObjectToDate(Object datum)
 	{
-		return datum instanceof Date ? (Date) datum : datum instanceof Temporal ? toUtilDate((Temporal) datum) : null;
+		if (datum instanceof Date date)
+		{
+			return date;
+		}
+		if (datum instanceof Temporal temporal)
+		{
+			return toUtilDate(temporal);
+		}
+		if (datum instanceof String string && StringUtils.isNotBlank(string))
+		{
+			return parseZonedIsoDatum(string);
+		}
+		return null;
 	}
 }

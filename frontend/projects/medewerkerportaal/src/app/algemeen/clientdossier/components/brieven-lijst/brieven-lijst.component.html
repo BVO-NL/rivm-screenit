@@ -22,7 +22,7 @@
   <ng-container dsColumnDef="status">
     <th *dsHeaderCellDef ds-header-cell>Status</th>
     <td *dsCellDef="let row" ds-cell data-testid="brief_status">
-      <div>{{ getBriefStatus(row) }}</div>
+      <div>{{ row | briefStatus : brieven() }}</div>
       @if (row.herdrukBrief) {
         <div class="herdruk">Herdruk van {{ row.herdrukBrief.creatieDatum | date: NL_DATE_FORMAT }}</div>
       }
@@ -36,7 +36,7 @@
 
   <ng-container dsColumnDef="datum">
     <th *dsHeaderCellDef ds-header-cell>Datum/tijd</th>
-    <td *dsCellDef="let row" ds-cell data-testid="brief_datum">{{ (row.herdrukBrief?.creatieDatum ?? row.creatieDatum) | datumTijd }}</td>
+    <td *dsCellDef="let row" ds-cell data-testid="brief_datum">{{ row.creatieDatum | datumTijd }}</td>
   </ng-container>
 
   <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>

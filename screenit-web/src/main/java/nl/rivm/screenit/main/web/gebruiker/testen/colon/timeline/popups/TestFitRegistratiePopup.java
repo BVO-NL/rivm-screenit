@@ -44,6 +44,7 @@ import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -62,6 +63,8 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class TestFitRegistratiePopup extends AbstractTestBasePopupPanel
 {
+	private static final BigDecimal GEEN_SNELKEUZE = BigDecimal.valueOf(-1);
+
 	@SpringBean
 	private ColonTestTimelineService testTimelineService;
 
@@ -95,14 +98,14 @@ public class TestFitRegistratiePopup extends AbstractTestBasePopupPanel
 		fitContainer.setVisible(false);
 		add(fitContainer);
 
-		var fitRegistratiesZonderUitslag = new ArrayList<ColonFitRegistratie>();
+		var nogTeVerwerkenFitRegistraties = new ArrayList<ColonFitRegistratie>();
 		for (var ronde : getModelObject().get(0).getColonDossier().getScreeningRondes())
 		{
 			for (var fitRegistratie : ronde.getFitRegistraties())
 			{
-				if (heeftGeenAnalyseResultaat(fitRegistratie))
+				if (isNogTeVerwerken(fitRegistratie))
 				{
-					fitRegistratiesZonderUitslag.add(fitRegistratie);
+					nogTeVerwerkenFitRegistraties.add(fitRegistratie);
 					var fitRegistraties = new ArrayList<ColonFitRegistratie>();
 					fitRegistraties.add(fitRegistratie);
 					var fitRegistratiesModel = new SimpleListHibernateModel<>(fitRegistraties);
@@ -110,7 +113,7 @@ public class TestFitRegistratiePopup extends AbstractTestBasePopupPanel
 				}
 			}
 		}
-		IModel<List<ColonFitRegistratie>> fitRegistratiesListModel = ModelUtil.listModel(fitRegistratiesZonderUitslag);
+		IModel<List<ColonFitRegistratie>> fitRegistratiesListModel = ModelUtil.listModel(nogTeVerwerkenFitRegistraties);
 
 		if (getModelObject().size() > 1)
 		{
@@ -121,9 +124,9 @@ public class TestFitRegistratiePopup extends AbstractTestBasePopupPanel
 					for (var i = 0; i < ronde.getFitRegistraties().size(); i++)
 					{
 						var fitRegistratie = ronde.getFitRegistraties().get(i);
-						if (heeftGeenAnalyseResultaat(fitRegistratie))
+						if (isNogTeVerwerken(fitRegistratie))
 						{
-							var testFitRegistraties = fitRegistratiesMap.get(fitRegistratiesZonderUitslag.get(i).getId());
+							var testFitRegistraties = fitRegistratiesMap.get(nogTeVerwerkenFitRegistraties.get(i).getId());
 							testFitRegistraties.add(fitRegistratie);
 						}
 					}
@@ -190,9 +193,9 @@ public class TestFitRegistratiePopup extends AbstractTestBasePopupPanel
 		add(fitRegistratieDropDown);
 	}
 
-	private boolean heeftGeenAnalyseResultaat(ColonFitRegistratie fitRegistratie)
+	private boolean isNogTeVerwerken(ColonFitRegistratie fitRegistratie)
 	{
-		return fitRegistratie.getUitslag() == null && fitRegistratie.getGeinterpreteerdeUitslag() == null;
+		return !ColonFitRegistratieUtil.heeftAnalyseResultaat(fitRegistratie) && fitRegistratie.getGeinterpreteerdeUitslag() == null;
 	}
 
 	private WebMarkupContainer getFitContainer()
@@ -202,40 +205,82 @@ public class TestFitRegistratiePopup extends AbstractTestBasePopupPanel
 
 		var studieRegistratie = testModel != null && testModel.getObject().getType() == ColonFitType.STUDIE;
 		var uitslagText = new TextField<BigDecimal>("uitslag", new PropertyModel<>(testModel, "uitslag"));
+		uitslagText.setEnabled(!heeftFlag());
 		container.add(uitslagText.setOutputMarkupId(true).setVisible(!studieRegistratie));
 
 		DropDownChoice<ColonGeinterpreteerdeUitslag> geinterpreteerdeUitslagDropDown = new ScreenitDropdown<>("geinterpreteerdeUitslag",
 			new PropertyModel<>(testModel, "geinterpreteerdeUitslag"), Arrays.asList(ColonGeinterpreteerdeUitslag.values()), new EnumChoiceRenderer<>());
 		container.add(geinterpreteerdeUitslagDropDown.setRequired(true).setVisible(studieRegistratie));
 
-		var uitslagValueModel = Model.of(new BigDecimal(-1));
+		var normWaardeGold = BigDecimal.valueOf(preferenceService.getInteger(PreferenceKey.COLON_FIT_NORM_WAARDE.name())).divide(BigDecimal.valueOf(100));
+		var ongunstigeUitslagWaarde = normWaardeGold.add(BigDecimal.ONE);
+
+		var uitslagValueModel = Model.of(GEEN_SNELKEUZE);
 		var radioGroup = new RadioGroup<BigDecimal>("uitslagSnel", uitslagValueModel);
+		var flagDropDown = new ScreenitDropdown<String>("flag", new PropertyModel<>(testModel, "flag"),
+			List.of(ColonFitRegistratieUtil.ANALYSE_RESULTAAT_FLAG_PRO, ColonFitRegistratieUtil.ANALYSE_RESULTAAT_FLAG_SS));
+		var flagContainer = new WebMarkupContainer("flagContainer");
+
 		radioGroup.add(new AjaxFormChoiceComponentUpdatingBehavior()
 		{
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
 				testModel.getObject().setUitslag(uitslagValueModel.getObject());
-				target.add(uitslagText);
+				testModel.getObject().setFlag(null);
+				radioGroup.setRequired(true);
+				uitslagText.setEnabled(true);
+				target.add(uitslagText, flagContainer);
 			}
 
 		});
 
-		var normWaardeGold = BigDecimal.valueOf(preferenceService.getInteger(PreferenceKey.COLON_FIT_NORM_WAARDE.name())).divide(BigDecimal.valueOf(100));
-		radioGroup.setRequired(true);
-		add(radioGroup);
+		flagDropDown.setNullValid(true);
+		flagDropDown.add(new AjaxFormComponentUpdatingBehavior("change")
+		{
+			@Override
+			protected void onUpdate(AjaxRequestTarget target)
+			{
+				var flag = testModel.getObject().getFlag();
+				var heeftFlag = StringUtils.isNotBlank(flag);
+				if (heeftFlag)
+				{
+					testModel.getObject().setUitslag(null);
+				}
+				uitslagValueModel.setObject(ColonFitRegistratieUtil.ANALYSE_RESULTAAT_FLAG_PRO.equals(flag) ? ongunstigeUitslagWaarde : GEEN_SNELKEUZE);
+				radioGroup.setRequired(!heeftFlag);
+				uitslagText.setEnabled(!heeftFlag);
+				target.add(uitslagText, radioGroup);
+			}
+		});
+		flagContainer.setOutputMarkupPlaceholderTag(true);
+		flagContainer.add(flagDropDown);
+		container.add(flagContainer.setVisible(!studieRegistratie));
+
+		radioGroup.setRequired(!heeftFlag());
 		radioGroup.add(new Radio<>("gunstig", Model.of(BigDecimal.ZERO)));
-		radioGroup.add(new Radio<>("ongunstig", Model.of(normWaardeGold.add(BigDecimal.ONE))));
-		container.add(radioGroup.setVisible(!studieRegistratie));
+		radioGroup.add(new Radio<>("ongunstig", Model.of(ongunstigeUitslagWaarde)));
+		container.add(radioGroup.setOutputMarkupId(true).setVisible(!studieRegistratie));
 
 		container.add(new CheckBox("verlopen", verlopenModel));
 
 		return container;
 	}
 
+	private boolean heeftFlag()
+	{
+		return testModel != null && StringUtils.isNotBlank(testModel.getObject().getFlag());
+	}
+
 	@Override
 	protected void opslaan()
 	{
+		if (heeftFlag() && testModel.getObject().getUitslag() != null)
+		{
+			error("Geef of een uitslag of een flag op, niet beide. Bij een flag levert het lab geen uitslagwaarde aan.");
+			return;
+		}
+
 		List<ColonFitRegistratie> testFitRegistraties = new ArrayList<>();
 		if (testModel.getObject().getId() != null)
 		{
@@ -249,6 +294,7 @@ public class TestFitRegistratiePopup extends AbstractTestBasePopupPanel
 				if (!ColonFitRegistratieStatus.NIETTEBEOORDELEN.equals(fitRegistratie.getStatus()))
 				{
 					fitRegistratie.setUitslag(testModel.getObject().getUitslag());
+					fitRegistratie.setFlag(testModel.getObject().getFlag());
 					if (fitRegistratie.getType().equals(ColonFitType.STUDIE))
 					{
 						try

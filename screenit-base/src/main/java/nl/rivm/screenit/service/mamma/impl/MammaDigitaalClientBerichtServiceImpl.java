@@ -65,7 +65,7 @@ public class MammaDigitaalClientBerichtServiceImpl extends DigitaalClientBericht
 	@Override
 	public void saveOrUpdate(MammaDigitaalClientBericht digitaalBericht)
 	{
-		var clientBerichtNieuw = digitaalClientBerichtRepository.save(digitaalBericht);
+		var clientBerichtNieuw = digitaalClientBerichtRepository.persist(digitaalBericht);
 		updateRondeBijNieuwBericht(clientBerichtNieuw);
 	}
 

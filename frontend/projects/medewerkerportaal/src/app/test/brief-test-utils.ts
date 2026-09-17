@@ -28,6 +28,7 @@ export const maakBrief = (overrides: Partial<BriefDto> = {}): BriefDto => ({
   verstuurdVoorAfdrukkenOp: new Date('2026-02-01'),
   tegengehouden: false,
   vervangen: false,
+  gegenereerd: false,
   creatieDatum: new Date('2026-01-01'),
   ...overrides,
 })

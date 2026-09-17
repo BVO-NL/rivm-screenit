@@ -25,7 +25,7 @@
     <form [formGroup]="brpGegevensForm" class="form-in-modal" novalidate>
       <ds-input
         label="Straatnaam"
-        formControlName="straatnaam"
+        formControlName="straat"
         placeholder="Straatnaam"
         [errorMessage]="{maxlength: 'Straatnaam mag maximaal 56 tekens zijn'}"
       />
@@ -58,7 +58,7 @@
         />
         <ds-input
           label="Aanduiding"
-          formControlName="aanduidingBijHuisnummer"
+          formControlName="huisnummerAanduiding"
           id="aanduidingBijHuisnummer"
           [errorMessage]="{ maxlength: 'Aanduiding mag maximaal 2 tekens zijn'}"
           maxlength="2"

@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Entity } from '@shared/types/entity'
+import { EntityDto } from '@shared/types/algemeen/dto/entity.dto'
 
-export interface ColonKamer extends Entity {
+export interface ColonKamer extends EntityDto {
   naam: string
   order?: number
 }

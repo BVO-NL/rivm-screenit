@@ -24,8 +24,6 @@ package nl.rivm.screenit.wsb.fhir.servlet.dstu3.v1;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Singleton;
-
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.wsb.fhir.interceptor.FhirCertificaatInterceptor;
@@ -39,7 +37,6 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 
 @Slf4j
-@Singleton
 public class CervixDigitaleLabformulierenFhirRestfulServlet extends RestfulServer
 {
 

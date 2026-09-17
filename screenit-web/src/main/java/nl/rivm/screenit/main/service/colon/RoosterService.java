@@ -26,13 +26,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import nl.rivm.screenit.main.dto.colon.ColonHerhalingDto;
+import nl.rivm.screenit.main.dto.colon.ColonTijdslotDto;
 import nl.rivm.screenit.main.exception.ValidatieException;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.ColonAfspraakslotListViewWrapper;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.RoosterListViewFilter;
-import nl.rivm.screenit.model.colon.dto.ColonHerhalingDto;
-import nl.rivm.screenit.model.colon.dto.ColonTijdslotDto;
 import nl.rivm.screenit.model.colon.enums.ColonTijdslotType;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.colon.planning.ColonTijdslot;

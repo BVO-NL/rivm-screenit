@@ -26,7 +26,7 @@
     <th *dsHeaderCellDef ds-header-cell mat-sort-header="achternaam">Naam</th>
     <td *dsCellDef="let row" ds-cell>
         <span class="naam-met-icoon">
-          {{ row | voornaamTussenvoegselAchternaam }} ({{ row.geslacht | geslachtAfkorting }})
+          {{ row | naam: NaamTransform.Volledig }} {{ row.geslacht | geslachtAfkorting }}
         </span>
     </td>
   </ng-container>

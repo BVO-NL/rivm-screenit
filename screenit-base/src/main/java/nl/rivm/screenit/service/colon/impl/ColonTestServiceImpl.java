@@ -93,6 +93,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.specification.colon.ColonAfspraakslotSpecification.heeftAfspraak;
+import static org.springframework.data.jpa.domain.Specification.unrestricted;
 
 @Slf4j
 @Service
@@ -934,11 +935,11 @@ public class ColonTestServiceImpl implements ColonTestService
 				afspraak.setAfspraakslot(null);
 				hibernateService.saveOrUpdate(afspraak);
 				afspraakslot.setAfspraak(null);
-				afspraakslotRepository.save(afspraakslot);
+				afspraakslotRepository.persist(afspraakslot);
 			}
 		}
 
-		var alleAfspraakslots = afspraakslotRepository.findAll();
+		var alleAfspraakslots = afspraakslotRepository.findAll(unrestricted());
 		afspraakslotRepository.deleteAll(alleAfspraakslots);
 
 		return alleAfspraakslots.size();

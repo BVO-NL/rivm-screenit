@@ -58,6 +58,11 @@
 		margin-top: 5px;
 	}
 
+	.locationColumn {
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
 	.hoverOverlay {
 		opacity: 0;
 		position: absolute;

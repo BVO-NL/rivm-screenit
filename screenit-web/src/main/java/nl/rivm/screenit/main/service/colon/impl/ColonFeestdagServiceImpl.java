@@ -27,16 +27,16 @@ import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 
+import nl.rivm.screenit.main.dto.colon.ColonFeestdagDto;
 import nl.rivm.screenit.main.exception.FeestdagValidatieException;
 import nl.rivm.screenit.main.exception.ValidatieException;
+import nl.rivm.screenit.main.mappers.colon.ColonFeestdagMapper;
 import nl.rivm.screenit.main.service.colon.ColonFeestdagService;
 import nl.rivm.screenit.main.service.colon.RoosterService;
 import nl.rivm.screenit.main.web.ScreenitSession;
-import nl.rivm.screenit.mappers.colon.ColonFeestdagMapper;
 import nl.rivm.screenit.model.colon.ColonFeestdag;
 import nl.rivm.screenit.model.colon.ColonFeestdag_;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
-import nl.rivm.screenit.model.colon.dto.ColonFeestdagDto;
 import nl.rivm.screenit.model.colon.planning.ColonAfspraakslot;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -108,7 +108,7 @@ public class ColonFeestdagServiceImpl implements ColonFeestdagService
 
 		var feestdag = feestdagMapper.colonFeestdagDtoToColonFeestdag(feestdagDto);
 		logAction(String.format("Feestdag %s op %s is aangemaakt", feestdag.getNaam(), feestdag.getDatum()));
-		return feestdagRepository.save(feestdag);
+		return feestdagRepository.persist(feestdag);
 	}
 
 	@Override
@@ -128,7 +128,7 @@ public class ColonFeestdagServiceImpl implements ColonFeestdagService
 		feestdag.setBeperking(feestdagDto.getBeperking());
 		feestdag.setNaam(feestdagDto.getNaam());
 		logAction(String.format("Feestdag %s op %s is gewijzigd", feestdag.getNaam(), feestdag.getDatum()));
-		return feestdagRepository.save(feestdag);
+		return feestdagRepository.persist(feestdag);
 	}
 
 	@Override
@@ -192,7 +192,7 @@ public class ColonFeestdagServiceImpl implements ColonFeestdagService
 		var heeftFeestdagenMetOverlap = feestdagRepository.exists(
 			isActief()
 				.and(heeftDatumInRange(feestdagDto.getDatum(), feestdagDto.getDatum()))
-				.and(isNietFeestdag(feestdagDto))
+				.and(isNietFeestdag(feestdagDto.getId()))
 		);
 
 		if (heeftFeestdagenMetOverlap)

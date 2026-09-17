@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.service;
 
 import java.util.List;
 
-import nl.rivm.screenit.dto.OrganisatieMedewerkerRolDto;
+import nl.rivm.screenit.main.dto.algemeen.OrganisatieMedewerkerRolDto;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;

@@ -21,12 +21,9 @@
 import { NaamGebruik } from '@shared/types/algemeen/enum/naam-gebruik'
 import { Geslacht } from '@shared/types/algemeen/enum/geslacht'
 import { Doelgroep } from '@shared/types/algemeen/enum/doelgroep'
+import { PersoonDto } from '@shared/types/algemeen/dto/persoon.dto'
 
-export interface ClientPaspoortDto {
-  clientId: number
-  voornaam: string
-  achternaam: string
-  tussenvoegsel: string
+export interface ClientPaspoortDto extends PersoonDto {
   titel: string
   partnerTussenvoegsel: string
   partnerAchternaam: string

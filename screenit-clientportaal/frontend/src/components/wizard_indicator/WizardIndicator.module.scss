@@ -32,6 +32,10 @@ $step-inactive: #d0dbe7;
 	flex: 1;
 	cursor: default;
 	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-height: 55px;
+	justify-content: space-between;
 
 	.line {
 		height: 0;
@@ -51,7 +55,12 @@ $step-inactive: #d0dbe7;
 	}
 
 	.label {
-		margin-bottom: 5px;
+		line-height: 20px;
+		overflow-wrap: break-word;
+		height: 20px;
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
 	}
 }
 

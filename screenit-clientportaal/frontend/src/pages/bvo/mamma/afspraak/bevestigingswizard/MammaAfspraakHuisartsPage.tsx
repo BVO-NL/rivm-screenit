@@ -32,7 +32,7 @@ import {Huisarts, MammaGeenHuisartsOptie} from "../../../../../datatypes/Huisart
 import {bevestigVorige} from "../../../../../api/HuisartsThunkAction"
 import {showToast} from "../../../../../utils/ToastUtil"
 import {getContactUrl} from "../../../../../utils/UrlUtil"
-import {useNavigate} from "react-router"
+import {useNavigate, useSearchParams} from "react-router"
 import huisartsProperties from "../../../gedeeld/huisarts/HuisartsPage.json"
 import AfsluitenLink from "../../../../../components/afsluiten_link/AfsluitenLink"
 import {FC, useEffect, useRef, useState} from "react"
@@ -45,67 +45,53 @@ import SpanWithHtml from "../../../../../components/span/SpanWithHtml"
 import huisartsPageStyles from "../../../gedeeld/huisarts/HuisartsPage.module.scss"
 import HuisartsView from "../../../../../components/huisarts_view/HuisartsView"
 import {useWizardStap} from "../../../../../components/wizard_indicator/WizardIndicatorContext"
-import {OpenstaandeOnderzoekenPopup} from "../openstaande-onderzoeken/OpenstaandeOnderzoekenPopup"
-import {getOpenstaandeUitnodigingen} from "../../../../../api/OpenstaandeUitnodigingenThunkAction"
 import {useThunkDispatch} from "../../../../../index"
+import MammaAfspraakView from "../../../../../components/mamma_afspraak_view/MammaAfspraakView"
+import {selectMammaAfspraakBevestigingsoptie} from "../../../../../selectors/MammaAfspraakSelectors"
 
 const MammaAfspraakHuisartsPage: FC = () => {
 	const bvo = useSelectedBvo()
 	const dispatch = useThunkDispatch()
 	const huidigeHuisarts = useSelector((state: State) => state.client.mammaDossier.huisartsHuidigeRonde)
 	const vorigeHuisarts = useSelector((state: State) => state.client.mammaDossier.huisartsVorigeRonde)
-	const openstaandeOnderzoeken = useSelector((state: State) => state.client.openstaandeUitnodigingen)
 	const mammaHuidigeGeenHuisartsOptie: MammaGeenHuisartsOptie | undefined = useSelector((state: State) => bvo === Bevolkingsonderzoek.MAMMA ? state.client.mammaDossier.geenHuisartsOptieHuidigeRonde : undefined)
 	const mammaVorigeGeenHuisartsOptie: MammaGeenHuisartsOptie | undefined = useSelector((state: State) => bvo === Bevolkingsonderzoek.MAMMA ? state.client.mammaDossier.geenHuisartsOptieVorigeRonde : undefined)
 	const magHuisartsOntkoppelen = true
 	const navigate = useNavigate()
 	const huidigeStap = useWizardStap()
-	const [toonOpenstaandePopup, setToonOpenstaandePopup] = useState(false)
+	const afspraakBevestiging = useSelector(selectMammaAfspraakBevestigingsoptie)!
 
 	const initieleHuisarts = useRef(huidigeHuisarts)
-	const [gekozenHuisarts, setGekozenHuisarts] = useState<Huisarts | undefined>(undefined)
-	const [toonVerwijderPopup, setToonVerwijderPopup] = useState(false)
 	const [toonWijzigen, setToonWijzigen] = useState(false)
+	const [gekozenHuisarts, setGekozenHuisarts] = useState<Huisarts | null>(null)
+	const [searchParams] = useSearchParams()
 
-	function heeftOpenstaandeOnderzoeken(): boolean {
-		return !!openstaandeOnderzoeken && openstaandeOnderzoeken.length > 0
-	}
+	useEffect(() => {
+		if (searchParams.get("wijzig")) {
+			setToonWijzigen(true)
+		}
+	}, [searchParams])
 
-	function bevestigHuisarts(): void {
+	async function submit(): Promise<void> {
 		if (gekozenHuisarts) {
-			opslaanEnAfronden()
-			return
+			showToast(
+				huisartsProperties.gedeeld.toasts.opgeslagen.title,
+				huisartsProperties.gedeeld.toasts.opgeslagen.description,
+			)
+
+			const huisartsBekend = initieleHuisarts.current ? "huisarts bekend" : "huisarts niet bekend"
+			datadogService.stuurEvent("huisartsToegevoegd", AnalyticsCategorie.MAMMA_AFSPRAAK, {
+				naam: huisartsBekend,
+				stap: huidigeStap,
+			})
 		}
 
 		if (vorigeHuisarts) {
-			dispatch(
-				bevestigVorige(vorigeHuisarts, mammaVorigeGeenHuisartsOptie, Bevolkingsonderzoek.MAMMA),
-			).then(() => opslaanEnAfronden())
-			return
+			await dispatch(bevestigVorige(vorigeHuisarts, mammaVorigeGeenHuisartsOptie, Bevolkingsonderzoek.MAMMA))
 		}
 
-		opslaanEnAfronden()
+		navigate("/mamma/afspraak/overzicht/")
 	}
-
-	function opslaanEnAfronden(): void {
-		showToast(
-			huisartsProperties.gedeeld.toasts.opgeslagen.title,
-			huisartsProperties.gedeeld.toasts.opgeslagen.description,
-		)
-		if (heeftOpenstaandeOnderzoeken()) {
-			setToonOpenstaandePopup(true)
-		} else {
-			navigeerNaarHome()
-		}
-	}
-
-	function navigeerNaarHome(): void {
-		navigate("/mamma")
-	}
-
-	useEffect(() => {
-		dispatch(getOpenstaandeUitnodigingen())
-	}, [])
 
 	function getGeenHuisartsOptieTekst(optie?: MammaGeenHuisartsOptie): string {
 		switch (optie) {
@@ -122,14 +108,15 @@ const MammaAfspraakHuisartsPage: FC = () => {
 		}
 	}
 
+	function navigeerNaarVorigePagina(): void {
+		const url = afspraakBevestiging.toonSmsOptie ? "/mamma/afspraak/herinnering/" : "/mamma/afspraak/bevestiging-selectie/"
+		navigate(url)
+	}
+
 	return (
-		toonOpenstaandePopup ? (
-			<OpenstaandeOnderzoekenPopup
-				openstaandeOnderzoeken={openstaandeOnderzoeken}
-			/>
-		) : (
+		<>
 			<div>
-			<div>
+				<MammaAfspraakView tekst={getString(properties.huisarts.afspraak_bijschrift)}/>
 				{huidigeHuisarts && !toonWijzigen ? (
 					<div>
 						<p>
@@ -149,47 +136,25 @@ const MammaAfspraakHuisartsPage: FC = () => {
 						huidigeHuisarts={huidigeHuisarts}
 						geenHuisartsTekst={getGeenHuisartsOptieTekst()}
 						magOntkoppelen={magHuisartsOntkoppelen}
+						onHuisartsGekozen={(huisarts) => setGekozenHuisarts(huisarts)}
 						mammaHuidigeGeenHuisartsOptie={mammaHuidigeGeenHuisartsOptie}
 						analyticsCategorie={AnalyticsCategorie.MAMMA_AFSPRAAK}
-						onHuisartsGekozen={h => {
-							setGekozenHuisarts(h)
-						}}
-						onHuisartsVerwijderen={() => {
-							setToonVerwijderPopup(true)
-						}}
-						onAnnulerenVerwijderen={() => {
-							datadogService.stuurEvent("HuisartsVerwijderenAnnuleren", AnalyticsCategorie.MAMMA)
-							setToonVerwijderPopup(false)
-						}}
-						onBevestigenVerwijderen={() => {
-							datadogService.stuurEvent("HuisartsVerwijderd", AnalyticsCategorie.MAMMA)
-							setToonVerwijderPopup(false)
-							showToast(huisartsProperties.gedeeld.toasts.geen.title, huisartsProperties.gedeeld.toasts.geen.description)
-						}}
 						contactUrl={getContactUrl()}
 						toonBlob={true}
 					/>
 				)}
 			</div>
 			<div className={classNames(styles.bevestigenForm, styles.metVorige)}>
-				<Button lightStyle={true} displayArrow={ArrowType.ARROW_LEFT} onClick={() => navigate("/mamma/afspraak/overzicht/")}
+				<Button lightStyle={true} displayArrow={ArrowType.ARROW_LEFT} onClick={navigeerNaarVorigePagina}
 						label={properties.afspraak_maken.button.vorige}/>
 				<div className={styles.knoppenRechts}>
 					<SubmitButton displayArrow={ArrowType.ARROW_RIGHT}
-								  label={properties.afspraak_maken.button.afronden}
-								  onClick={() => {
-									  const huisartsBekend = initieleHuisarts.current ? "huisarts bekend" : "huisarts niet bekend"
-									  datadogService.stuurEvent("huisartsToegevoegd", AnalyticsCategorie.MAMMA_AFSPRAAK, {
-										  naam: huisartsBekend,
-										  stap: huidigeStap,
-									  })
-									  bevestigHuisarts()
-								  }}/>
+								  label={properties.afspraak_maken.button.volgende}
+								  onClick={submit}/>
 					<AfsluitenLink/>
 				</div>
 			</div>
-		</div>
-		)
+		</>
 	)
 }
 

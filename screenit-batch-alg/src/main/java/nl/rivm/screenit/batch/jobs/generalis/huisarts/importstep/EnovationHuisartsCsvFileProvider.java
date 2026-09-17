@@ -24,7 +24,9 @@ package nl.rivm.screenit.batch.jobs.generalis.huisarts.importstep;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipInputStream;
@@ -62,7 +64,7 @@ public class EnovationHuisartsCsvFileProvider implements CsvFileProvider
 
 			if (url.getUserInfo() != null)
 			{
-				var basicAuth = "Basic " + jakarta.xml.bind.DatatypeConverter.printBase64Binary(url.getUserInfo().getBytes());
+				var basicAuth = "Basic " + Base64.getEncoder().encodeToString(url.getUserInfo().getBytes(StandardCharsets.UTF_8));
 				uc.setRequestProperty("Authorization", basicAuth);
 			}
 

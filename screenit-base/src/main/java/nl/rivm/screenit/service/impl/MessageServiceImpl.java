@@ -22,6 +22,7 @@ package nl.rivm.screenit.service.impl;
  */
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,7 +83,7 @@ public class MessageServiceImpl implements MessageService
 			newMessage.setContent(objectMapper.writeValueAsString(content));
 			newMessage.setAanmaakMoment(currentDateSupplier.getDate());
 			newMessage.setContext(context);
-			return messageRepository.save(newMessage);
+			return messageRepository.persist(newMessage);
 		}
 		catch (JsonProcessingException e)
 		{
@@ -115,6 +116,16 @@ public class MessageServiceImpl implements MessageService
 		return messageRepository.findAll(
 				heeftTypeEnContext(type, context)
 					.and(MessageSpecification.filterMessageIdGroterDan(vanafMessageIdExclusief)),
+				PageRequest.of(0, maxFetchSize, Sort.by(Sort.Order.asc(Message_.ID))))
+			.getContent();
+	}
+
+	@Override
+	public List<Message> fetchMessagesExclusiefIds(MessageType type, String context, Collection<Long> uitgeslotenMessageIds, int maxFetchSize)
+	{
+		return messageRepository.findAll(
+				heeftTypeEnContext(type, context)
+					.and(MessageSpecification.filterMessageIdsNietIn(uitgeslotenMessageIds)),
 				PageRequest.of(0, maxFetchSize, Sort.by(Sort.Order.asc(Message_.ID))))
 			.getContent();
 	}

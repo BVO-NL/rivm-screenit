@@ -54,6 +54,6 @@ public class MdlVerslag extends ColonVerslag<MdlVerslagContent>
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-	@JoinColumn(foreignKey = @jakarta.persistence.ForeignKey(name = "none"))
+	@JoinColumn(nullable = false, foreignKey = @jakarta.persistence.ForeignKey(name = "none"))
 	private MdlVerslagContent verslagContent;
 }

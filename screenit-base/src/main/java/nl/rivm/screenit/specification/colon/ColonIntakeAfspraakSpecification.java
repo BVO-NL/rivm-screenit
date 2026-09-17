@@ -266,4 +266,12 @@ public class ColonIntakeAfspraakSpecification
 	{
 		return (r, q, cb) -> cb.equal(r.get(ColonIntakeAfspraak_.intakeafspraakType), intakeafspraakType);
 	}
+
+	public static ExtendedSpecification<ColonIntakeAfspraak> isDigitaleIntakeVerstuurd(boolean verstuurd)
+	{
+		return (r, q, cb) -> cb.and(
+			cb.equal(r.get(ColonIntakeAfspraak_.intakeafspraakType), ColonIntakeafspraakType.DIGITAAL),
+			cb.equal(r.get(ColonIntakeAfspraak_.digitaleIntakeVerstuurd), verstuurd));
+	}
+
 }

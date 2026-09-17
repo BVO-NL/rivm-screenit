@@ -22,7 +22,7 @@ package nl.rivm.screenit.main.mappers.mamma;
  */
 
 import nl.rivm.screenit.main.dto.mamma.visitatie.MammaVisitatieDto;
-import nl.rivm.screenit.mappers.OrganisatieMapper;
+import nl.rivm.screenit.main.mappers.algemeen.OrganisatieMapper;
 import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
 import nl.rivm.screenit.model.mamma.MammaVisitatie;
 

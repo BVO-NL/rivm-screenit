@@ -350,7 +350,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 		var volgnummer = onderzoeken.stream().filter(o -> o.getOnderdeel() == visitatieOnderdeel).mapToInt(MammaVisitatieOnderzoek::getVolgnummer).max().orElse(0) + 1;
 		visitatieOnderzoek.setVolgnummer(volgnummer);
 		onderzoeken.add(visitatieOnderzoek);
-		visitatieOnderzoekRepository.save(visitatieOnderzoek);
+		visitatieOnderzoekRepository.persist(visitatieOnderzoek);
 	}
 
 	private String verwerkRegel(MammaFotobespreking fotobespreking, ClientenBestandVerwerkingContext context)
@@ -704,7 +704,7 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 		visitatie.setStatus(MammaVisitatieStatus.INGEPLAND);
 		visitatie.setAangemaaktOp(dateSuppier.getDate());
 
-		visitatieRepository.save(visitatie);
+		visitatieRepository.persist(visitatie);
 		return visitatie;
 	}
 

@@ -1,0 +1,66 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<ds-card [cardTitle]="titel()">
+  @if (afspraak(); as afspraak) {
+    <div class="afspraak-gegevens" data-testid="geplande_afspraak">
+      <div class="afspraak-gegevens-rij">
+        <div class="afspraak-gegevens-kop">
+          <span class="afspraak-gegevens-label">Datum/tijd</span>
+          @if (isColonIntakeafspraak() && afspraak.digitaal) {
+            <ds-badge data-testid="digitale_afspraak_badge" type="category" categoryColor=var(--digitaal-badge-color) label="Digitaal"/>
+          }
+        </div>
+        @if (isColonIntakeafspraak() && afspraak.digitaal) {
+          <span>{{ afspraak.vanaf | datumNaarWeek }}</span>
+        } @else {
+          <span>{{ afspraak.vanaf | datumTijd: NL_LONG_DATE_FORMAT : TIME_FORMAT }} uur</span>
+        }
+      </div>
+      <div class="afspraak-gegevens-rij">
+        <span class="afspraak-gegevens-label">Locatie</span>
+        <span>{{ afspraak.locatie.naam }}</span>
+        <span>{{ afspraak.locatie.adres.straat }} {{ afspraak.locatie.adres.huisnummer }}</span>
+        <span>{{ afspraak.locatie.adres.postcode }} {{ afspraak.locatie.adres.plaats }}</span>
+      </div>
+      <div class="afspraak-gegevens-rij">
+        <span class="afspraak-gegevens-label">Locatiebeschrijving</span>
+        <span>{{ afspraak.locatieBeschrijving || '-' }}</span>
+      </div>
+    </div>
+    @if (magAfspraakWijzigen()) {
+      <ng-template ds-footer-actions-right>
+        <button data-testid="tijdstip_wijzigen" ds-button-tertiary (click)="openTijdstipWijzigenPopup(afspraak)">Tijdstip wijzigen</button>
+        <button data-testid="locatie_wijzigen" ds-button-secondary>Locatie wijzigen</button>
+      </ng-template>
+    }
+  } @else {
+    <div class="geen-afspraak" data-testid="geen_afspraak">
+      <app-empty-state-panel
+        [icon]="faCalendar"
+        titel="Geen afspraak gevonden"
+        [subtekst]="magNieuweAfspraakMaken() ? 'De cliënt kan een afspraak maken voor het onderzoek.' : ''"
+      />
+      @if (magNieuweAfspraakMaken()) {
+        <button data-testid="maak_afspraak" ds-button-primary [disabled]="true" type="button">Maak afspraak</button>
+      }
+    </div>
+  }
+</ds-card>

@@ -19,14 +19,23 @@
  * =========================LICENSE_END==================================
  */
 import { Pipe, PipeTransform } from '@angular/core'
-import { LOCAL_TIME_FORMAT, NL_LONG_DATE_FORMAT } from '@shared/constants'
+import { LONG_TIME_FORMAT, NL_LONG_DATE_FORMAT } from '@shared/constants'
 import { format } from 'date-fns'
 
 @Pipe({
   name: 'datumTijd',
 })
 export class DatumTijdPipe implements PipeTransform {
-  transform(value: Date | null, datumFormat = NL_LONG_DATE_FORMAT, tijdFormat = LOCAL_TIME_FORMAT): unknown {
-    return value ? `${format(value, datumFormat)} om ${format(value, tijdFormat)}` : ''
+  transform(value: Date | string | null, datumFormat = NL_LONG_DATE_FORMAT, tijdFormat = LONG_TIME_FORMAT, postfix = ''): string {
+    if (!value) {
+      return ''
+    }
+
+    const datum = new Date(value)
+    let resultaat = `${format(datum, datumFormat)} om ${format(datum, tijdFormat)}`
+    if (postfix !== '') {
+      resultaat += ` ${postfix}`
+    }
+    return resultaat
   }
 }
