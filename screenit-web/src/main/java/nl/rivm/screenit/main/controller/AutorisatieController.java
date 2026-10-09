@@ -53,8 +53,7 @@ public class AutorisatieController
 	@GetMapping("/medewerker")
 	@Operation(summary = "Haal de ingelogde medewerker op", description = "Geeft de organisatie-medewerker terug die hoort bij de huidige sessie.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Organisatie-medewerker succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Organisatie-medewerker succesvol opgehaald")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {}, altijdToegestaan = true, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })

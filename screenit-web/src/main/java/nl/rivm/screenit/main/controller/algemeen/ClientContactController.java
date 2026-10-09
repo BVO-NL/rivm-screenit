@@ -76,8 +76,7 @@ public class ClientContactController
 		description = "Haal de client contacten op voor de gegeven client. Zonder 'type' worden alle contacten teruggegeven; met 'type' wordt gefilterd op contacten die dat "
 			+ "actietype wel (moetVoorkomen=true, standaard) of juist niet (moetVoorkomen=false) hebben.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Lijst met client contacten"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Lijst met client contacten")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_CLIENT_CONTACT }, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -93,8 +92,7 @@ public class ClientContactController
 	@GetMapping("{clientId}/aantal-meldingen")
 	@Operation(summary = "Haal het aantal client contacten met opmerking op")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Aantal client contacten met een opmerking"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Aantal client contacten met een opmerking")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_CLIENT_CONTACT }, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -107,8 +105,7 @@ public class ClientContactController
 	@PostMapping
 	@Operation(summary = "Maak client contact aan")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Client contact aangemaakt"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Client contact aangemaakt")
 	})
 	@SecurityConstraint(actie = Actie.TOEVOEGEN, constraint = ShiroConstraint.HasPermission, recht = {
 		Recht.MEDEWERKER_CLIENT_CONTACT }, bevolkingsonderzoekScopes = {
@@ -126,8 +123,7 @@ public class ClientContactController
 	@Operation(summary = "Sla notitie wijzigingen aan client contact op")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Notitie van client contact bijgewerkt"),
-		@ApiResponse(responseCode = "404", description = "Client contact niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Client contact niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = {
 		Recht.MEDEWERKER_CLIENT_CONTACT }, bevolkingsonderzoekScopes = {
@@ -145,8 +141,7 @@ public class ClientContactController
 	@Operation(summary = "Verwijder alleen de notitie van een client contact")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Notitie van client contact verwijderd"),
-		@ApiResponse(responseCode = "404", description = "Client contact niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Client contact niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.VERWIJDEREN, constraint = ShiroConstraint.HasPermission, recht = {
 		Recht.MEDEWERKER_CLIENT_CONTACT }, bevolkingsonderzoekScopes = {
@@ -162,8 +157,7 @@ public class ClientContactController
 	@Operation(summary = "Verwijder client contact")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Client contact verwijderd"),
-		@ApiResponse(responseCode = "404", description = "Client contact niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Client contact niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.VERWIJDEREN, constraint = ShiroConstraint.HasPermission, recht = {
 		Recht.MEDEWERKER_CLIENT_CONTACT }, bevolkingsonderzoekScopes = {

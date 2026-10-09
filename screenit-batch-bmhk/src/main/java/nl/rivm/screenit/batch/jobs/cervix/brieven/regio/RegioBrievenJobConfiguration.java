@@ -67,7 +67,8 @@ public class RegioBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step regioBrievenCleanupStep(RegioBrievenCleanUpReader reader, RegioBrievenCleanUpWriter writer)
 	{
 		return new StepBuilder("regioBrievenCleanupStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -117,7 +118,8 @@ public class RegioBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step regioBrievenControleStep(RegioBrievenControleReader reader, RegioBrievenControleWriter writer)
 	{
 		return new StepBuilder("regioBrievenControleStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -127,7 +129,8 @@ public class RegioBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step regioBrievenGenererenStep(RegioBrievenGenererenReader reader, RegioBrievenGenererenProcessor processor, RegioBrievenGenererenWriter writer)
 	{
 		return new StepBuilder("regioBrievenGenererenStep", repository)
-			.<Long, CervixRegioBrief> chunk(250, transactionManager)
+			.<Long, CervixRegioBrief> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)
@@ -138,7 +141,8 @@ public class RegioBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step labformulierenGenererenStep(LabformulierGenererenReader reader, LabformulierGenererenWriter writer)
 	{
 		return new StepBuilder("labformulierenGenererenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

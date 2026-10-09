@@ -51,7 +51,8 @@ public class ZasKoppelenJobConfiguration extends AbstractJobConfiguration
 	public Step koppelenMetRestStep(ZasKoppelMetRestReader reader, ZasKoppelMetRestWriter writer)
 	{
 		return new StepBuilder("koppelenMetRestStep", repository)
-			.<InpakcentrumKoppelDataDto, InpakcentrumKoppelDataDto> chunk(250, transactionManager)
+			.<InpakcentrumKoppelDataDto, InpakcentrumKoppelDataDto> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

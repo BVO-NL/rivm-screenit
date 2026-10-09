@@ -38,6 +38,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { ClientService } from '@/algemeen/services/client/client.service'
 import { ActiefIndicatorComponent } from '@shared/components/actief-indicator/actief-indicator.component'
 import { BvoIndicatorComponent } from '@shared/components/bvo-indicator/bvo-indicator.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-projecten-panel',
@@ -65,6 +66,7 @@ import { BvoIndicatorComponent } from '@shared/components/bvo-indicator/bvo-indi
 export class ProjectenPanelComponent {
   private readonly projectService = inject(ProjectService)
   private readonly clientService = inject(ClientService)
+  protected readonly strings = inject(StringsService).getStrings()
 
   protected projecten = toSignal(this.projectService.getProjectenVoorClient(this.clientService.clientId()), { initialValue: [] })
   protected readonly displayedColumns = ['bevolkingsonderzoeken', 'naam', 'status']

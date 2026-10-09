@@ -106,3 +106,17 @@ ds-tab-group {
     height: calc(100% - 54px);
   }
 }
+
+.notitie .ds-summary-panel__content {
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-5);
+  line-height: 1.25rem;
+}
+
+.ds-footer__footer-actions:empty {
+  display: none;
+}
+
+ds-footer:not(:has(.ds-footer__footer-actions:not(:empty))) {
+  display: none;
+}

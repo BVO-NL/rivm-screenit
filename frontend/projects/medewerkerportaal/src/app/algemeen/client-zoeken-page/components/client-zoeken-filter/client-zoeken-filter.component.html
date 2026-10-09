@@ -23,83 +23,83 @@
     <ds-datepicker
       #geboortedatum
       label="Geboortedatum"
-      placeholder="DD-MM-JJJJ"
+      [placeholder]="strings.algemeen.placeholders.geboortedatum"
       formControlName="geboortedatum"
       data-testid="geboortedatum_datepicker"
       [required]="!geavanceerdZoekenActief()"
-      [errorMessage]="{required: 'De geboortedatum is verplicht', invalidDate: 'De ingevoerde datum is niet valide', maximumDatum: 'De geboortedatum mag niet in de toekomst liggen'}"
+      [errorMessage]="{required: strings.algemeen.errors.geboortedatumVerplicht, invalidDate: strings.algemeen.errors.invalidDate, maximumDatum: strings.algemeen.errors.geboortedatumToekomst}"
     />
     <div class="adres-velden">
-      <ds-input label="Postcode + huisnummer"
-                placeholder="Postcode"
+      <ds-input [label]="strings.algemeen.labels.postcodeHuisnummer"
+                [placeholder]="strings.algemeen.placeholders.postcode"
                 formControlName="postcode"
                 autocomplete="off"
                 data-testid="postcode_input"
-                [errorMessage]="{ invalidPostcode: 'Voer een geldige postcode in (bijv. 1234AB)' }"/>
-      <ds-input label="&#160;" placeholder="Huisnr" formControlName="huisnummer" data-testid="huisnummer_input"
+                [errorMessage]="{ invalidPostcode: strings.algemeen.errors.invalidPostcode }"/>
+      <ds-input label="&#160;" [placeholder]="strings.algemeen.placeholders.huisnummer" formControlName="huisnummer" data-testid="huisnummer_input"
                 inputmode="numeric" appAlleenCijfers
                 autocomplete="off"
-                [errorMessage]="{ maxlength: 'Huisnummer mag maximaal 10 tekens zijn', pattern: 'Huisnummer mag alleen cijfers bevatten' }"/>
+                [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Huisnummer', 10), pattern: strings.algemeen.errors.huisnummerAlleenCijfers }"/>
     </div>
     <ds-input label="BSN"
               placeholder="BSN"
               formControlName="bsn"
               data-testid="bsn_input"
               autocomplete="off"
-              [errorMessage]="{ invalidBsn: 'Voer een geldig BSN in' }"/>
-    <ds-input label="Briefkenmerk"
-              placeholder="KXXXX"
+              [errorMessage]="{ invalidBsn: strings.algemeen.errors.invalidBsn }"/>
+    <ds-input [label]="strings.algemeen.labels.briefkenmerk"
+              [placeholder]="strings.algemeen.placeholders.briefkenmerk"
               formControlName="briefkenmerk"
               data-testid="briefkenmerk_input"
               autocomplete="off"
-              [errorMessage]="{ pattern: 'Briefkenmerk moet beginnen met een K' }"/>
+              [errorMessage]="{ pattern: strings.algemeen.errors.briefkenmerkPatroon }"/>
   </div>
 
   @if (geavanceerdZoekenActief()) {
     <div class="geavanceerde-velden-card" data-testid="geavanceerde_velden">
-      <span class="geavanceerde-velden-titel">Geavanceerd zoeken</span>
+      <span class="geavanceerde-velden-titel">{{ strings.algemeen.clientZoeken.geavanceerdZoeken }}</span>
       <div class="zoeken-velden geavanceerde-velden">
-        <ds-input label="A-nummer"
-                  placeholder="A-nummer"
+        <ds-input [label]="strings.algemeen.labels.aNummer"
+                  [placeholder]="strings.algemeen.labels.aNummer"
                   formControlName="anummer"
                   data-testid="anummer_input"
                   autocomplete="off"/>
-        <ds-input label="Mobiel nummer"
-                  placeholder="06-34567890"
+        <ds-input [label]="strings.algemeen.labels.mobielNummer"
+                  [placeholder]="strings.algemeen.labels.mobielNummer"
                   formControlName="mobielnummer"
                   data-testid="mobielnummer_input"
                   autocomplete="off"
-                  [errorMessage]="'Het telefoonnummer is incorrect.'"/>
-        <ds-input label="E-mailadres"
-                  placeholder="E-mailadres"
+                  [errorMessage]="strings.algemeen.errors.invalidPhone"/>
+        <ds-input [label]="strings.algemeen.labels.emailadres"
+                  [placeholder]="strings.algemeen.labels.emailadres"
                   formControlName="emailadres"
                   data-testid="emailadres_input"
                   autocomplete="off"
-                  [errorMessage]="'Het e-mailadres is incorrect.'"/>
-        <ds-input label="BK uitnodigingsnummer"
-                  placeholder="BK uitnodigingsnummer"
+                  [errorMessage]="strings.algemeen.errors.invalidEmail"/>
+        <ds-input [label]="strings.algemeen.clientZoeken.labels.bkUitnodigingsnummer"
+                  [placeholder]="strings.algemeen.clientZoeken.labels.bkUitnodigingsnummer"
                   formControlName="bkUitnodigingsnummer"
                   data-testid="bk_uitnodigingsnummer_input"
                   autocomplete="off"
                   type="number"/>
-        <ds-input label="BMHK monsterID"
-                  placeholder="BMHK monsterID"
+        <ds-input [label]="strings.algemeen.clientZoeken.labels.bmhkMonsterId"
+                  [placeholder]="strings.algemeen.clientZoeken.labels.bmhkMonsterId"
                   formControlName="bmhkMonsterId"
                   data-testid="bmhk_monster_id_input"
                   autocomplete="off"/>
-        <ds-input label="BMHK uitnodigingsID"
-                  placeholder="BMHK uitnodigingsID"
+        <ds-input [label]="strings.algemeen.clientZoeken.labels.bmhkMonsterId"
+                  [placeholder]="strings.algemeen.clientZoeken.labels.bmhkMonsterId"
                   formControlName="bmhkUitnodigingsId"
                   data-testid="bmhk_uitnodigings_id_input"
                   autocomplete="off"
                   type="number"/>
-        <ds-input label="DK barcode"
-                  placeholder="Barcode"
+        <ds-input [label]="strings.algemeen.clientZoeken.labels.dkBarcode"
+                  [placeholder]="strings.algemeen.clientZoeken.labels.dkBarcode"
                   formControlName="dkBarcode"
                   data-testid="dk_barcode_input"
                   autocomplete="off"/>
-        <ds-input label="DK uitnodigingsID"
-                  placeholder="DK uitnodigingsID"
+        <ds-input [label]="strings.algemeen.clientZoeken.labels.dkUitnodigingsId"
+                  [placeholder]="strings.algemeen.clientZoeken.labels.dkUitnodigingsId"
                   formControlName="dkUitnodigingsId"
                   data-testid="dk_uitnodigings_id_input"
                   type="number"
@@ -111,12 +111,12 @@
   <div class="zoeken-acties">
     <ds-toggle *appAutorisatie="geavanceerdZoekenConstraint"
                [formControl]="geavanceerdZoekenControl"
-               message="Geavanceerd zoeken"
+               [message]="strings.algemeen.clientZoeken.geavanceerdZoeken"
                data-testid="geavanceerd_zoeken_toggle">
     </ds-toggle>
     <button ds-button-primary ds-button-icon data-testid="client_zoeken_btn" (click)="zoekClienten()">
       <ds-icon [icon]="searchIcon" size="xs"/>
-      Zoeken
+      {{ strings.algemeen.buttons.zoeken }}
     </button>
   </div>
 </form>

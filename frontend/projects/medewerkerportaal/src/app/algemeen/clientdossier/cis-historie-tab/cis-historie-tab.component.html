@@ -20,7 +20,7 @@
   -->
 @if (heeftHistorie()) {
   <div class="toggle-panel">
-    <ds-toggle [formControl]="uitklappenCtrl" message="Alles uitklappen"/>
+    <ds-toggle [formControl]="uitklappenCtrl" [message]="strings.algemeen.buttons.allesUitklappen"/>
   </div>
   <div class="cis-historie">
     @for (ronde of rondes(); track ronde; ) {
@@ -46,5 +46,5 @@
     }
   </div>
 } @else {
-  <app-empty-state-panel data-testid="geen_cis_historie" titel="Geen historie" subtekst="De client heeft geen CIS historie"/>
+  <app-empty-state-panel data-testid="geen_cis_historie" [titel]="strings.cervix.cisHistorie.geenHistorie.titel" [subtekst]="strings.cervix.cisHistorie.geenHistorie.subtitel"/>
 }

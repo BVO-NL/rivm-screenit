@@ -23,8 +23,10 @@ import { BriefType } from '@shared/types/algemeen/enum/brief-type'
 
 export interface ColonAfspraakMakenRequestDto {
   afspraakslot: VrijSlotZonderKamerDto
-  briefType: BriefType | null | undefined
+  datumTijdBuitenRooster: string | null
+  briefType: BriefType | null
   notitie: string | null
+  verwezenMedischeRedenenDoorInfolijn: boolean | null
   clientId: number
-  afspraakId: number
+  afspraakId?: number
 }

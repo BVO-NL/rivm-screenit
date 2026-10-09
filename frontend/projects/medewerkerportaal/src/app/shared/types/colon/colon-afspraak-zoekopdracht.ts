@@ -1,8 +1,6 @@
-package nl.rivm.screenit.batch.jobs.cervix.verlatedeelnamecovid;
-
 /*-
  * ========================LICENSE_START=================================
- * screenit-batch-bmhk
+ * medewerkerportaal
  * %%
  * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -20,10 +18,9 @@ package nl.rivm.screenit.batch.jobs.cervix.verlatedeelnamecovid;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import { VrijSlotZonderKamerFilter } from '@shared/types/colon/dto/vrij-slot-zonder-kamer-filter'
 
-public abstract class CervixVerlateDeelnameCovidConstants
-{
-	public static final String PROJECT_GROEP_ID = "project.groep.id.key";
-
-	public static final String PROJECT_ID = "project.id.key";
+export interface ColonAfspraakZoekopdracht {
+  filter: VrijSlotZonderKamerFilter
+  datumTijdBuitenRooster: string | null
 }

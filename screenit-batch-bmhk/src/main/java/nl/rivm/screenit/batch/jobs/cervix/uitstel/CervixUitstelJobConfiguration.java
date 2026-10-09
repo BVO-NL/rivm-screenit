@@ -50,7 +50,8 @@ public class CervixUitstelJobConfiguration extends AbstractJobConfiguration
 	public Step uitstelStep(CervixUitstelReader reader, CervixUitstelWriter writer)
 	{
 		return new StepBuilder("uitstelStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

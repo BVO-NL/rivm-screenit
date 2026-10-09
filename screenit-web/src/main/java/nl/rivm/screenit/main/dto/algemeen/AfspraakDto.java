@@ -39,4 +39,6 @@ public class AfspraakDto extends EntityDto
 	private String locatieBeschrijving;
 
 	private boolean digitaal;
+
+	private boolean verlopenZonderConclusie;
 }

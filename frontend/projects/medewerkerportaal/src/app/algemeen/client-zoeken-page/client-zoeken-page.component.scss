@@ -18,9 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-.resultaat-container {
-  flex: 1;
-  padding: 1rem 0;
+.inhoud {
 
   app-client-zoeken-tabel {
     display: block;
@@ -39,7 +37,7 @@
     color: var(--ds-secondary-text-color);
 
     .zoek-placeholder-titel {
-      font-weight: bold;
+      font-weight: var(--font-weight-7);
       font-size: 1.125rem;
     }
 

@@ -57,7 +57,8 @@ public class CervixOudeNietIngestuurdeZasJobConfiguration extends AbstractJobCon
 	public Step oudeNietIngestuurdeZasStep(CervixOudeNietIngestuurdeZasReader reader, CervixOudeNietIngestuurdeZasWriter writer)
 	{
 		return new StepBuilder("oudeNietIngestuurdeZasStep", repository)
-			.<Long, Long> chunk(1, transactionManager)
+			.<Long, Long> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

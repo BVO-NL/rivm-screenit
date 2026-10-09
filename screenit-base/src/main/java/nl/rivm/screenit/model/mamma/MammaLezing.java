@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.CheckConstraint;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -53,18 +54,16 @@ import nl.rivm.screenit.model.mamma.enums.MammaNevenbevindingen;
 import nl.rivm.screenit.model.mamma.enums.MammaNevenbevindingenZijde;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Check;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Table(schema = "mamma", name = "lezing")
+@Table(schema = "mamma", name = "lezing",
+	check = @CheckConstraint(constraint = "(lezing.lezing_type = 'DISCREPANTIE_LEZING' AND lezing.birads_links = 'GEEN' AND lezing.birads_rechts = 'GEEN') "
+		+ "OR ((lezing.birads_links != 'GEEN' OR lezing.birads_rechts != 'GEEN') AND lezing.beoordelaar IS NOT NULL) "
+		+ "OR (lezing.birads_links = 'GEEN' AND lezing.birads_rechts = 'GEEN' AND lezing.beperkt_beoordeelbaar_reden = 'GEEN_BEOORDELING_MOGELIJK')"))
 @Audited
 @Getter
 @Setter
-@Check(
-	constraints = "(lezing.lezing_type = 'DISCREPANTIE_LEZING' AND lezing.birads_links = 'GEEN' AND lezing.birads_rechts = 'GEEN') "
-		+ "OR ((lezing.birads_links != 'GEEN' OR lezing.birads_rechts != 'GEEN') AND lezing.beoordelaar IS NOT NULL) " +
-		"OR (lezing.birads_links = 'GEEN' AND lezing.birads_rechts = 'GEEN' AND lezing.beperkt_beoordeelbaar_reden = 'GEEN_BEOORDELING_MOGELIJK')")
 public class MammaLezing extends AbstractHibernateObject
 {
 	@Column(nullable = false)

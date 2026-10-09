@@ -19,27 +19,35 @@
  * =========================LICENSE_END==================================
  */
 import { Component, inject, signal, WritableSignal } from '@angular/core'
-import { PageComponent } from '@shared/components/page/page.component'
 import { EnvironmentService } from '@shared/services/environment/environment.service'
 import { FotobesprekingService } from '@/mamma/mamma-fotobespreking-onderzoeken-page/services/fotobespreking.service'
 import { MammaFotobesprekingDto } from '@shared/types/mamma/dto/fotobespreking/mamma-fotobespreking.dto'
 import { take } from 'rxjs'
-import { MammaFotobesprekingFilterComponent } from '@/mamma/mamma-fotobespreking-onderzoeken-page/components/mamma-fotobespreking-filter/mamma-fotobespreking-filter.component'
-import { MammaFotobesprekingTabelComponent } from '@/mamma/mamma-fotobespreking-onderzoeken-page/components/mamma-fotobespreking-tabel/mamma-fotobespreking-tabel.component'
-import { MammaFotobesprekingOnderzoekFilterDto } from '@shared/types/mamma/dto/fotobespreking/mamma-fotobespreking-onderzoek-filter.dto'
-import { DsButtonComponent } from '@topicus-rgp-ds/web'
+import {
+  MammaFotobesprekingFilterComponent
+} from '@/mamma/mamma-fotobespreking-onderzoeken-page/components/mamma-fotobespreking-filter/mamma-fotobespreking-filter.component'
+import {
+  MammaFotobesprekingTabelComponent
+} from '@/mamma/mamma-fotobespreking-onderzoeken-page/components/mamma-fotobespreking-tabel/mamma-fotobespreking-tabel.component'
+import {
+  MammaFotobesprekingOnderzoekFilterDto
+} from '@shared/types/mamma/dto/fotobespreking/mamma-fotobespreking-onderzoek-filter.dto'
+import { DsButtonComponent, DsPageHeaderComponent } from '@topicus-rgp-ds/web'
 import { WicketUtils } from '@shared/utils/wicket/wicket-utils'
 import { PagedResponse } from '@shared/types/paged-response'
-import { MammaFotobesprekingOnderzoekDto } from '@shared/types/mamma/dto/fotobespreking/mamma-fotobespreking-onderzoek.dto'
+import {
+  MammaFotobesprekingOnderzoekDto
+} from '@shared/types/mamma/dto/fotobespreking/mamma-fotobespreking-onderzoek.dto'
 import { PagineringDto } from '@shared/types/paginering'
 import { SorteerParameterDto } from '@shared/types/sort-param'
 import { SorteerRichting } from '@shared/types/sorteer-richting'
 import { OnderzoekService } from '@/mamma/services/onderzoek/onderzoek.service'
 import { NotificationService } from '@shared/services/notification/notification.service'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-mamma-fotobespreking-onderzoeken-page',
-  imports: [PageComponent, MammaFotobesprekingFilterComponent, MammaFotobesprekingTabelComponent, DsButtonComponent],
+  imports: [MammaFotobesprekingFilterComponent, MammaFotobesprekingTabelComponent, DsButtonComponent, DsPageHeaderComponent],
   templateUrl: './mamma-fotobespreking-onderzoeken-page.component.html',
   styleUrl: './mamma-fotobespreking-onderzoeken-page.component.scss',
 })
@@ -49,9 +57,10 @@ export class MammaFotobesprekingOnderzoekenPageComponent {
   private readonly onderzoekService = inject(OnderzoekService)
   private readonly notificationService = inject(NotificationService)
 
+  protected readonly strings = inject(StringsService).getStrings()
   fotobespreking: WritableSignal<MammaFotobesprekingDto | null> = signal(null)
   filter = signal<MammaFotobesprekingOnderzoekFilterDto | null>(null)
-  paginaTitel = signal('Fotobespreking bewerken')
+  paginaTitel = signal(this.strings.mamma.fotobespreking.pageTitle)
   paginering = signal<PagineringDto>({ paginaNummer: 1, paginaGrootte: 20, totaal: 0 })
   onderzoeken = signal<MammaFotobesprekingOnderzoekDto[]>([])
   sortering = signal<SorteerParameterDto>({
@@ -78,7 +87,7 @@ export class MammaFotobesprekingOnderzoekenPageComponent {
       .pipe(take(1))
       .subscribe((response: MammaFotobesprekingDto) => {
         this.fotobespreking.set(response)
-        this.paginaTitel.update(() => `Fotobespreking bewerken - ${response.omschrijving}`)
+        this.paginaTitel.update(() => this.strings.mamma.fotobespreking.pageTitleMetOmschrijving(response.omschrijving))
       })
   }
 

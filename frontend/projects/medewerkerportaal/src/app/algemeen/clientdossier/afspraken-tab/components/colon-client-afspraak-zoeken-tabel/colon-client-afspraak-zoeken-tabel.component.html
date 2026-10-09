@@ -20,34 +20,39 @@
   -->
 <table ds-table [dataSource]="afspraakslots()" [fullWidth]="true" matSort>
   <ng-container dsColumnDef="datum">
-    <th *dsHeaderCellDef ds-header-cell mat-sort-header="vanaf">Datum</th>
+    <th *dsHeaderCellDef ds-header-cell mat-sort-header="vanaf">{{ strings.algemeen.labels.datum }}</th>
     <td *dsCellDef="let row" ds-cell>{{ row.startTijd | date: NL_DATE_FORMAT }}</td>
   </ng-container>
 
   <ng-container dsColumnDef="tijd">
-    <th *dsHeaderCellDef ds-header-cell>Tijd</th>
+    <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.tijd }}</th>
     <td *dsCellDef="let row" ds-cell>{{ row.startTijd | date: TIME_FORMAT }}</td>
   </ng-container>
 
   <ng-container dsColumnDef="naam">
-    <th *dsHeaderCellDef ds-header-cell mat-sort-header="naam">Naam</th>
-    <td *dsCellDef="let row" ds-cell>{{ row.naam }}</td>
+    <th *dsHeaderCellDef ds-header-cell mat-sort-header="naam">{{ strings.algemeen.labels.intakelocatie }}</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.intakelocatie.naam }}</td>
   </ng-container>
 
   <ng-container dsColumnDef="plaats">
-    <th *dsHeaderCellDef ds-header-cell mat-sort-header="plaats">Plaats</th>
+    <th *dsHeaderCellDef ds-header-cell mat-sort-header="plaats">{{ strings.algemeen.labels.plaats }}</th>
     <td *dsCellDef="let row" ds-cell>{{ row.plaats }}</td>
   </ng-container>
 
+  <ng-container dsColumnDef="afstand">
+    <th *dsHeaderCellDef ds-header-cell mat-sort-header="afstand">{{ strings.algemeen.labels.afstand }}</th>
+    <td *dsCellDef="let row" ds-cell>{{ row.afstand | number: '1.0-0' }}</td>
+  </ng-container>
+
   <ng-container dsColumnDef="actie">
-    <th *dsHeaderCellDef ds-header-cell>Actie</th>
+    <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.actie }}</th>
     <td *dsCellDef="let row" ds-cell>
-      <button ds-button-secondary (click)="selecteerSlot.emit(row)" data-testid="selecteer-slot-knop">Selecteren</button>
+      <button ds-button-secondary (click)="selecteerSlot.emit(row)" data-testid="selecteer-slot-knop">{{ strings.algemeen.buttons.selecteren }}</button>
     </td>
   </ng-container>
 
-  <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>
-  <tr ds-row *dsRowDef="let row; columns: displayedColumns"></tr>
+  <tr ds-header-row *dsHeaderRowDef="displayedColumns()"></tr>
+  <tr ds-row *dsRowDef="let _; columns: displayedColumns()"></tr>
 </table>
 
 <ds-paginator [totalNumberOfItems]="paginering().totaal"

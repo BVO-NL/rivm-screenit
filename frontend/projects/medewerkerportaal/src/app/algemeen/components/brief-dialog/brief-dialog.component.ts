@@ -33,6 +33,7 @@ import { NotificationService } from '@shared/services/notification/notification.
 import { BriefInzienDialogComponent } from '@algemeen/components/brief-inzien-dialog/brief-inzien-dialog.component'
 import { DatumTijdPipe } from '@shared/pipes/datum-tijd/datum-tijd.pipe'
 import { saveAs } from 'file-saver'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-brief-dialog',
@@ -46,9 +47,10 @@ export class BriefDialogComponent implements OnInit {
   private readonly dialogRef = inject(DialogRef)
   private readonly notificatieService = inject(NotificationService)
   private readonly dialogService = inject(Dialog)
+  protected readonly strings = inject(StringsService).getStrings()
 
   private readonly briefActies = signal<BriefActie[]>([])
-  protected briefOpnieuwAangemaakt = false
+  protected briefOpnieuwAangemaakt = signal(false)
   protected readonly magActiveren = computed(() => this.briefActies().includes(BriefActie.ACTIVEREN))
   protected readonly magTegenhouden = computed(() => this.briefActies().includes(BriefActie.TEGENHOUDEN))
   protected readonly magOpnieuwAanmaken = computed(() => this.briefActies().includes(BriefActie.OPNIEUW_AANMAKEN))
@@ -60,7 +62,7 @@ export class BriefDialogComponent implements OnInit {
   }
 
   annuleren() {
-    this.dialogRef.close(this.briefOpnieuwAangemaakt)
+    this.dialogRef.close(this.briefOpnieuwAangemaakt())
   }
 
   activeren() {
@@ -69,7 +71,7 @@ export class BriefDialogComponent implements OnInit {
       .pipe(take(1))
       .subscribe(() => {
         this.laadBriefActies()
-        this.notificatieService.success('Brief wordt niet meer tegengehouden')
+        this.notificatieService.success(this.strings.algemeen.brieven.activerenSuccessMessage)
       })
   }
 
@@ -79,7 +81,7 @@ export class BriefDialogComponent implements OnInit {
       .pipe(take(1))
       .subscribe(() => {
         this.laadBriefActies()
-        this.notificatieService.success('Brief wordt tegengehouden')
+        this.notificatieService.success(this.strings.algemeen.brieven.tegenhoudenSuccessMessage)
       })
   }
 
@@ -89,19 +91,19 @@ export class BriefDialogComponent implements OnInit {
       .pipe(take(1))
       .subscribe(() => {
         this.briefActies.update((briefActies) => briefActies.filter((briefActie) => briefActie !== BriefActie.OPNIEUW_AANMAKEN))
-        this.briefOpnieuwAangemaakt = true
-        this.notificatieService.success('Brief is opnieuw aangemaakt')
+        this.briefOpnieuwAangemaakt.set(true)
+        this.notificatieService.success(this.strings.algemeen.brieven.opnieuwAanmakenSuccessMessage)
       })
   }
 
   templateInzien() {
-    this.dialogRef.close(this.briefOpnieuwAangemaakt)
+    this.dialogRef.close(this.briefOpnieuwAangemaakt())
     this.briefService
       .getBriefTemplate(this.gebeurtenis.briefId, this.gebeurtenis.briefType)
       .pipe(take(1))
       .subscribe((briefContent: string) => {
         this.dialogService.open(BriefInzienDialogComponent, {
-          data: { brief: briefContent, titel: 'Template inzien' },
+          data: { brief: briefContent, titel: this.strings.algemeen.brieven.dialogTitle },
           panelClass: 'pdf-inzien-dialog',
         })
       })
@@ -114,7 +116,7 @@ export class BriefDialogComponent implements OnInit {
       .subscribe({
         next: (brief: Blob) => saveAs(brief, 'brief.pdf'),
         error: (fout: HttpErrorResponse) =>
-          this.notificatieService.error(fout.status === 401 ? 'De bewaartermijn van de verstuurde brief is verlopen.' : 'Er is een fout bij het ophalen van de brief.'),
+          this.notificatieService.error(fout.status === 401 ? this.strings.algemeen.brieven.bewaarTermijnVerlopenMessage : this.strings.algemeen.brieven.briefInzienFoutmessage),
       })
   }
 

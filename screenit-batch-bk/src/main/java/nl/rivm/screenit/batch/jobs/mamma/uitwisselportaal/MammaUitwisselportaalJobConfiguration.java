@@ -50,7 +50,8 @@ public class MammaUitwisselportaalJobConfiguration extends AbstractJobConfigurat
 	public Step cleanupStep(MammaDownloadedDataCleanUpReader reader, MammaDownloadedDataCleanUpWriter writer)
 	{
 		return new StepBuilder("cleanupStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

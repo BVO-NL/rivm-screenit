@@ -50,7 +50,8 @@ public class MammaBeoordelingenAccorderenJobConfiguration extends AbstractJobCon
 	public Step beoordelingenAccorderenStep(MammaBeoordelingenAccorderenReader reader, MammaBeoordelingenAccorderenWriter writer)
 	{
 		return new StepBuilder("beoordelingenAccorderenStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

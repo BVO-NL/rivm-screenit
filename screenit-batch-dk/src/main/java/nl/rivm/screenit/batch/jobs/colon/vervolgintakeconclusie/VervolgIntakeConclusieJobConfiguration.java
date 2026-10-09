@@ -60,7 +60,8 @@ public class VervolgIntakeConclusieJobConfiguration extends AbstractJobConfigura
 	public Step verstuurNoShowBerichten(HuisartsNoShowReader reader, HuisartsNoShowWriter writer)
 	{
 		return new StepBuilder("verstuurNoShowBerichten", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -70,7 +71,8 @@ public class VervolgIntakeConclusieJobConfiguration extends AbstractJobConfigura
 	public Step herinneringClientWilAndereIntakeLocatieStep(HerinneringClientWilAnderIntakeLocatieBriefReader reader, HerinneringClientWilAnderIntakeLocatieBriefWriter writer)
 	{
 		return new StepBuilder("herinneringClientWilAndereIntakeLocatieStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -80,7 +82,8 @@ public class VervolgIntakeConclusieJobConfiguration extends AbstractJobConfigura
 	public Step onbevestigdeIntakeVerwijzingenStep(OnbevestigdeIntakeVerwijzingenReader reader, OnbevestigdeIntakeVerwijzingenWriter writer)
 	{
 		return new StepBuilder("onbevestigdeIntakeVerwijzingenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

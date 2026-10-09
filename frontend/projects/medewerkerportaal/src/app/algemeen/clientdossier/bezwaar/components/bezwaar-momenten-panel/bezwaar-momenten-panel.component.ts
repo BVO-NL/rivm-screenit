@@ -50,9 +50,9 @@ import { BriefActie, briefActieLabels } from '@/shared/types/algemeen/enum/brief
 import { filter, fromEvent, take } from 'rxjs'
 import { BriefService } from '@/algemeen/services/brief/brief.service'
 import { gebeurtenisBronLabels } from '@/shared/types/algemeen/enum/gebeurtenis-bron'
-import { faEllipsisVertical, faEye } from '@fortawesome/pro-regular-svg-icons'
-import { faAngleRight } from '@fortawesome/pro-light-svg-icons'
+import { faAngleRight, faEllipsisVertical, faEye } from '@fortawesome/pro-light-svg-icons'
 import { BezwaarService } from '@algemeen/services/bezwaar/bezwaar.service'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-bezwaar-momenten-panel',
@@ -75,14 +75,6 @@ import { BezwaarService } from '@algemeen/services/bezwaar/bezwaar.service'
     DsCardComponent,
   ],
   templateUrl: './bezwaar-momenten-panel.component.html',
-  styles: `
-    .ds-column-acties {
-      display: flex;
-      height: 61px;
-      align-items: center;
-      gap: var(--spacer-1);
-    }
-  `,
 })
 export class BezwaarMomentenPanelComponent {
   private readonly buttonMenuDirective = viewChild(DsButtonMenuDirective)
@@ -95,6 +87,7 @@ export class BezwaarMomentenPanelComponent {
   private readonly documentService = inject(DocumentService)
   private readonly cdr = inject(ChangeDetectorRef)
 
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly faEye = faEye
   protected readonly faEllipsisVertical = faEllipsisVertical
   protected readonly navigeerIcoon = faAngleRight

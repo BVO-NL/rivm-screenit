@@ -33,6 +33,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.Brief_;
+import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Dossier_;
 import nl.rivm.screenit.model.Persoon_;
@@ -61,6 +62,7 @@ import nl.rivm.screenit.model.cervix.enums.CervixUitstrijkjeStatus;
 import nl.rivm.screenit.model.cervix.enums.CervixZasStatus;
 import nl.rivm.screenit.model.cervix.facturatie.CervixBoekRegel;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.model.project.ProjectType;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.algemeen.ClientSpecification;
 import nl.rivm.screenit.util.DateUtil;
@@ -84,7 +86,7 @@ public class CervixMonsterSpecification
 		return (r, q, cb) -> cb.isNotNull(r.get(CervixMonster_.brief));
 	}
 
-	public static Specification<CervixMonster> heeftGeenBrief()
+	public static ExtendedSpecification<CervixMonster> heeftGeenBrief()
 	{
 		return (r, q, cb) -> cb.isNull(r.get(CervixMonster_.brief));
 	}
@@ -352,6 +354,41 @@ public class CervixMonsterSpecification
 	public static ExtendedSpecification<CervixUitstrijkje> heeftLaboratoriumMetId(Long id)
 	{
 		return (r, q, cb) -> cb.equal(r.get(CervixMonster_.laboratorium).get(AbstractHibernateObject_.id), id);
+	}
+
+	public static ExtendedSpecification<CervixUitstrijkje> heeftLaboratoriumMetIdIn(List<Long> laboratoriumIds)
+	{
+		return (r, q, cb) -> r.get(CervixMonster_.laboratorium).get(AbstractHibernateObject_.id).in(laboratoriumIds);
+	}
+
+	public static ExtendedSpecification<CervixUitstrijkje> heeftHpvUitslag(CervixHpvBeoordelingWaarde uitslag)
+	{
+		return CervixHpvBeoordelingSpecification.heeftHpvUitslag(uitslag)
+			.with(r -> join(r, CervixMonster_.laatsteHpvBeoordeling));
+	}
+
+	public static ExtendedSpecification<CervixUitstrijkje> heeftNogGeenBrief()
+	{
+		return heeftGeenBrief().with(r -> r);
+	}
+
+	public static ExtendedSpecification<CervixUitstrijkje> isNietMonsterVanUitnodigingVervolgonderzoek()
+	{
+		return CervixScreeningRondeSpecification.heeftGeenUitnodigingVervolgonderzoek()
+			.with(r -> join(join(r, CervixMonster_.uitnodiging), CervixUitnodiging_.screeningRonde));
+	}
+
+	public static ExtendedSpecification<CervixUitstrijkje> zitNietInProjectVanType(ProjectType type)
+	{
+		return ClientSpecification.zitNietInProjectVanType(type)
+			.with(r -> clientJoin(r));
+	}
+
+	private static From<?, Client> clientJoin(From<?, ? extends CervixUitstrijkje> r)
+	{
+		var rondeJoin = join(r, CervixMonster_.ontvangstScreeningRonde, JoinType.LEFT);
+		var dossierJoin = join(rondeJoin, CervixScreeningRonde_.dossier);
+		return join(dossierJoin, CervixDossier_.client);
 	}
 
 	private static Specification<CervixMonster> heeftGeenMonsterMetUitslagBriefSubquery()

@@ -26,23 +26,29 @@ import { MammaDense2Configuratie } from '@shared/types/mamma/mamma-dense2-config
 import { Dense2ImportComponent } from '@/mamma/mamma-dense2-uitwisseling-page/components/dense2-import/dense2-import.component'
 import { Dense2ExportComponent } from '@/mamma/mamma-dense2-uitwisseling-page/components/dense2-export/dense2-export.component'
 import { Dense2ConfiguratieComponent } from '@/mamma/mamma-dense2-uitwisseling-page/components/dense2-configuratie/dense2-configuratie.component'
-import { PageComponent } from '@shared/components/page/page.component'
+import { StringsService } from '@shared/strings'
+import { DsPageHeaderComponent } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-mamma-dense2-uitwisseling-page',
-  imports: [ReactiveFormsModule, Dense2ImportComponent, Dense2ExportComponent, Dense2ConfiguratieComponent, PageComponent],
-  template: ` <app-page titel="DENSE-2 uitwisseling">
-    <app-dense2-export class="mb-3" [exportBestandsnaam]="exportBestandsnaam()" />
-    <app-dense2-import class="mb-3" />
-    <app-dense2-configuratie [configuratie]="configuratie()" />
-  </app-page>`,
+  imports: [ReactiveFormsModule, Dense2ImportComponent, Dense2ExportComponent, Dense2ConfiguratieComponent, DsPageHeaderComponent],
+  template: ` <ds-page-header [title]="strings.mamma.dense2.pageTitle" [showBackButton]="false" />
+    <div class="inhoud">
+      <app-dense2-export class="mb-3" [exportBestandsnaam]="exportBestandsnaam()" />
+      <app-dense2-import class="mb-3" />
+      <app-dense2-configuratie [configuratie]="configuratie()" />
+    </div>`,
   styles: `
-    .pagina {
+    :host {
+      overflow-y: auto;
+    }
+    .inhoud {
       max-width: var(--page-width-sm);
     }
   `,
 })
 export class MammaDense2UitwisselingPageComponent {
+  protected readonly strings = inject(StringsService).getStrings()
   private dense2Service: Dense2Service = inject(Dense2Service)
   configuratie: WritableSignal<MammaDense2Configuratie | undefined> = signal(undefined)
   exportBestandsnaam: WritableSignal<string> = signal('')

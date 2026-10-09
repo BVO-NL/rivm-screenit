@@ -56,7 +56,8 @@ public class IlmAlgemeneGegevensVerwijderenJobConfiguration extends AbstractJobC
 	public Step ilmApplicatieLoggingVerwijderenStep(IlmApplicatieLoggingVerwijderenReader reader, IlmApplicatieLoggingVerwijderenWriter writer)
 	{
 		return new StepBuilder("ilmApplicatieLoggingVerwijderenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -66,7 +67,8 @@ public class IlmAlgemeneGegevensVerwijderenJobConfiguration extends AbstractJobC
 	public Step ilmTechnischeBerichtenLoggingVerwijderenStep(IlmTechnischeBerichtenLoggingVerwijderenReader reader, IlmTechnischeBerichtenLoggingVerwijderenWriter writer)
 	{
 		return new StepBuilder("ilmTechnischeBerichtenLoggingVerwijderenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

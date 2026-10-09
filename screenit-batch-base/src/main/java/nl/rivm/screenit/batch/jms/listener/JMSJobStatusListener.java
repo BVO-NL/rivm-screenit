@@ -36,6 +36,7 @@ import nl.rivm.screenit.model.helper.ActiveMQHelper;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.JobRepository;
@@ -51,15 +52,18 @@ public class JMSJobStatusListener implements SessionAwareMessageListener<ActiveM
 
 	private final JobOperator jobOperator;
 
+	private final JobRegistry jobRegistry;
+
 	private final JobRepository jobRepository;
 
 	private final JmsTemplate jmsTemplate;
 
 	private final Scheduler scheduler;
 
-	public JMSJobStatusListener(JobOperator jobOperator, JobRepository jobRepository, JmsTemplate jmsTemplate, Scheduler scheduler)
+	public JMSJobStatusListener(JobOperator jobOperator, JobRegistry jobRegistry, JobRepository jobRepository, JmsTemplate jmsTemplate, Scheduler scheduler)
 	{
 		this.jobOperator = jobOperator;
+		this.jobRegistry = jobRegistry;
 		this.jobRepository = jobRepository;
 		this.jmsTemplate = jmsTemplate;
 		this.scheduler = scheduler;
@@ -76,7 +80,7 @@ public class JMSJobStatusListener implements SessionAwareMessageListener<ActiveM
 			{
 				jmsTemplate.send(message.getJMSReplyTo(), session1 ->
 				{
-					var jobs = jobOperator.getJobNames();
+					var jobs = jobRegistry.getJobNames();
 					var serverStatus = new BatchServerStatus();
 
 					try
@@ -108,7 +112,7 @@ public class JMSJobStatusListener implements SessionAwareMessageListener<ActiveM
 			{
 				jmsTemplate.send(message.getJMSReplyTo(), session12 ->
 				{
-					var jobs = jobOperator.getJobNames();
+					var jobs = jobRegistry.getJobNames();
 
 					for (var jobName : jobs)
 					{

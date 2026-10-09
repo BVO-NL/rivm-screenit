@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { ChangeDetectionStrategy, Component, input } from '@angular/core'
+import { Component, input } from '@angular/core'
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { DsIconComponent } from '@topicus-rgp-ds/web'
 import { faFile } from '@fortawesome/pro-solid-svg-icons'
@@ -28,7 +28,6 @@ import { faFile } from '@fortawesome/pro-solid-svg-icons'
   imports: [DsIconComponent],
   templateUrl: './empty-state-panel.component.html',
   styleUrl: './empty-state-panel.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmptyStatePanelComponent {
   defaultIcon = faFile

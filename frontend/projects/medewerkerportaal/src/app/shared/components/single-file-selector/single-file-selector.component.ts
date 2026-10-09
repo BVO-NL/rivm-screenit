@@ -18,7 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, computed, effect, ElementRef, forwardRef, input, Signal, viewChild } from '@angular/core'
+import { Component, computed, effect, ElementRef, forwardRef, inject, input, Signal, viewChild } from '@angular/core'
+import { StringsService } from '@shared/strings'
 import { DsButtonComponent, DsIconComponent } from '@topicus-rgp-ds/web'
 import { ControlValueAccessor, FormControl, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, ValidationErrors, Validator, Validators } from '@angular/forms'
 import { faClose, faFileUpload } from '@fortawesome/pro-light-svg-icons'
@@ -49,11 +50,12 @@ import { NgClass } from '@angular/common'
   ],
 })
 export class SingleFileSelectorComponent implements ControlValueAccessor, Validator {
+  protected readonly strings = inject(StringsService).getStrings()
   fileSelector: Signal<ElementRef> = viewChild.required('fileSelector')
   isDisabled = false
   acceptedExtensie = input<string>('')
   acceptedMimetype = computed(() => getMimetypeVanExtensie(this.acceptedExtensie()))
-  label = input<string | null>(null)
+  label = input<string | null>(this.strings.algemeen.labels.bestand)
   required = input<boolean>(false)
   fileUpload = faFileUpload
   deleteIcon = faClose

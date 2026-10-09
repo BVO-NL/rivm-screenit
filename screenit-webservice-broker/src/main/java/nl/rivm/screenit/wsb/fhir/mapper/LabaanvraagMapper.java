@@ -30,7 +30,7 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.cervix.CervixLabformulier;
 import nl.rivm.screenit.wsb.fhir.resource.dstu3.v1.LabaanvraagBundle;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

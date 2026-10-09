@@ -59,6 +59,7 @@ import {
   DsHeaderRowDef,
   DsIconComponent,
   DsPageEvent,
+  DsPageHeaderComponent,
   DsPaginatorComponent,
   DsRowComponent,
   DsRowDef,
@@ -72,7 +73,7 @@ import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.direct
 import { MammaVisitatielijstDialogData } from '@shared/types/mamma/dto/visitatie/mamma-visitatielijst-dialog-data'
 import { MammaVisitatielijstGenererenDialogComponent } from '@/mamma/mamma-visitatie-overzicht-page/components/mamma-visitatielijst-genereren-dialog/mamma-visitatielijst-genereren-dialog.component'
 import { MammaVisitatielijstRapportDialogComponent } from '@/mamma/mamma-visitatie-overzicht-page/components/mamma-visitatielijst-rapport-dialog/mamma-visitatielijst-rapport-dialog.component'
-import { PageComponent } from '@shared/components/page/page.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-mamma-visitatie-overzicht-page',
@@ -98,7 +99,7 @@ import { PageComponent } from '@shared/components/page/page.component'
     DsPaginatorComponent,
     MatSortHeader,
     AutorisatieDirective,
-    PageComponent,
+    DsPageHeaderComponent,
   ],
   templateUrl: './mamma-visitatie-overzicht-page.component.html',
   styleUrl: './mamma-visitatie-overzicht-page.component.scss',
@@ -110,6 +111,7 @@ export class MammaVisitatieOverzichtPageComponent implements AfterViewInit {
   private readonly documentenService = inject(DocumentService)
   private readonly notificationService = inject(NotificationService)
   private readonly destroyRef = inject(DestroyRef)
+  protected readonly strings = inject(StringsService).getStrings()
 
   private sort = viewChild(MatSort)
 
@@ -132,7 +134,9 @@ export class MammaVisitatieOverzichtPageComponent implements AfterViewInit {
     'inzien',
     'verwijderen',
   ]
-  toevoegenMenuItems: DsContextMenuItem[][] = [[new DsContextMenuItem({ label: 'BE' }), new DsContextMenuItem({ label: 'Insteltechniek' })]]
+  toevoegenMenuItems: DsContextMenuItem[][] = [
+    [new DsContextMenuItem({ label: this.strings.mamma.labels.be }), new DsContextMenuItem({ label: this.strings.mamma.labels.insteltechniek })],
+  ]
 
   protected inzienConstraint: SecurityConstraint = {
     recht: [Recht.MEDEWERKER_VISITATIE, Recht.MEDEWERKER_VISITATIE_INSTELTECHNIEK],
@@ -218,7 +222,7 @@ export class MammaVisitatieOverzichtPageComponent implements AfterViewInit {
             )
           })
       } else {
-        this.notificationService.warning('Visitatie is al uitgevoerd.')
+        this.notificationService.warning(this.strings.mamma.visitatie.notifications.alUitgevoerd)
       }
     }
   }

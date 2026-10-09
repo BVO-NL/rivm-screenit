@@ -64,7 +64,8 @@ public class BezwaarBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step bezwaarBrievenCleanupStep(BezwaarBrievenCleanUpReader reader, BezwaarBrievenCleanUpWriter writer)
 	{
 		return new StepBuilder("bezwaarBrievenCleanupStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -85,7 +86,8 @@ public class BezwaarBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step bezwaarBrievenControleStep(BezwaarBrievenControleReader reader, BezwaarBrievenControleWriter writer)
 	{
 		return new StepBuilder("bezwaarBrievenControleStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -95,7 +97,8 @@ public class BezwaarBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step bezwaarBrievenGenererenStep(BezwaarBrievenGenererenReader reader, BezwaarBrievenGenererenProcessor processor, BezwaarBrievenGenererenWriter writer)
 	{
 		return new StepBuilder("bezwaarBrievenGenererenStep", repository)
-			.<Long, BezwaarBrief> chunk(250, transactionManager)
+			.<Long, BezwaarBrief> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)

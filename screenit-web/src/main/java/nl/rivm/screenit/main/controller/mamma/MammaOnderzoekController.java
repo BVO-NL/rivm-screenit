@@ -65,8 +65,7 @@ public class MammaOnderzoekController
 	@PostMapping("/zoeken")
 	@Operation(summary = "Zoek onderzoeken", description = "Zoekt onderzoeken op basis van filtercriteria.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Onderzoeken succesvol gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Onderzoeken succesvol gevonden")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,

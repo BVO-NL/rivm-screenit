@@ -24,6 +24,7 @@ package nl.rivm.screenit.main.web;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -82,6 +83,7 @@ import org.apache.wicket.request.IExceptionMapper;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.http.handler.ErrorCodeRequestHandler;
 import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
@@ -102,6 +104,8 @@ import com.googlecode.wicket.jquery.ui.settings.JQueryUILibrarySettings;
 public class ScreenitApplication extends WebApplication
 {
 	private static final Logger LOG = LoggerFactory.getLogger(ScreenitApplication.class);
+
+	public static final String MEDEWERKERPORTAAL_ENTRY_SCRIPT = "main.js";
 
 	public static final String UITWISSELPORTAAL_MOUNT = "uitwisselportaal";
 
@@ -233,8 +237,6 @@ public class ScreenitApplication extends WebApplication
 			{
 				return new FileSystemResource()
 				{
-					private static final long serialVersionUID = 1L;
-
 					protected ResourceResponse newResourceResponse(Attributes attributes)
 					{
 						try
@@ -250,8 +252,13 @@ public class ScreenitApplication extends WebApplication
 							{
 								bestandspad = attributes.getParameters().get("name").toString();
 							}
-							var uri = new File(resourceLocation + bestandspad).toURI();
-							return createResourceResponse(attributes, FileSystemResourceReference.getPath(uri));
+							var bestand = new File(resourceLocation + bestandspad);
+							var resourceResponse = createResourceResponse(attributes, FileSystemResourceReference.getPath(bestand.toURI()));
+							if (isMedewerkerportaalEntryScript(bestandspad))
+							{
+								resourceResponse.setLastModified(Instant.ofEpochMilli(bestand.lastModified()));
+							}
+							return resourceResponse;
 						}
 						catch (IOException e)
 						{
@@ -262,9 +269,25 @@ public class ScreenitApplication extends WebApplication
 							throw new WicketRuntimeException("Fout bij het opbouwen van het URI.", e);
 						}
 					}
+
+					@Override
+					protected void configureCache(ResourceResponse data, Attributes attributes)
+					{
+						if (isMedewerkerportaalEntryScript(data.getFileName()) && attributes.getResponse() instanceof WebResponse webResponse)
+						{
+							webResponse.setHeader("Cache-Control", "no-cache");
+							return;
+						}
+						super.configureCache(data, attributes);
+					}
 				};
 			}
 		};
+	}
+
+	private static boolean isMedewerkerportaalEntryScript(String bestandspad)
+	{
+		return MEDEWERKERPORTAAL_ENTRY_SCRIPT.equals(bestandspad);
 	}
 
 	protected void initSpring()

@@ -41,7 +41,7 @@ import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.colon.ColonBaseFitService;
 import nl.rivm.screenit.specification.colon.ColonUitnodigingBaseSpecification;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.ScrollableResults;
 import org.springframework.batch.infrastructure.item.ExecutionContext;
 

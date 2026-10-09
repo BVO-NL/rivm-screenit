@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import { Component, inject, output } from '@angular/core'
-import { DsButtonComponent, DsCardComponent, DsDatepickerComponent, DsDropdownComponent, DsDurationDatepickerComponent, DsInputComponent } from '@topicus-rgp-ds/web'
+import { DsButtonComponent, DsCardComponent, DsDatepickerComponent, DsDropdownComponent, DsInputComponent, DsRangeDatepickerComponent } from '@topicus-rgp-ds/web'
 import { MedewerkerService } from '@/algemeen/services/medewerker/medewerker.service'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { MammaFotobesprekingOnderzoekFilterDto } from '@shared/types/mamma/dto/fotobespreking/mamma-fotobespreking-onderzoek-filter.dto'
@@ -34,14 +34,16 @@ import { NotificationService } from '@shared/services/notification/notification.
 import { OrganisatieDto } from '@shared/types/algemeen/dto/organisatie.dto'
 import { iif, Observable, startWith, switchMap } from 'rxjs'
 import { OrganisatieService } from '@/algemeen/services/organisatie/organisatie.service'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-mamma-fotobespreking-filter',
-  imports: [DsCardComponent, DsDurationDatepickerComponent, DsDropdownComponent, DsInputComponent, DsDatepickerComponent, ReactiveFormsModule, DsButtonComponent],
+  imports: [DsCardComponent, DsRangeDatepickerComponent, DsDropdownComponent, DsInputComponent, DsDatepickerComponent, ReactiveFormsModule, DsButtonComponent],
   templateUrl: './mamma-fotobespreking-filter.component.html',
   styleUrl: './mamma-fotobespreking-filter.component.scss',
 })
 export class MammaFotobesprekingFilterComponent {
+  protected readonly strings = inject(StringsService).getStrings()
   private readonly medewerkerService = inject(MedewerkerService)
   private readonly formBuilder = inject(FormBuilder)
   private readonly fotobesprekingService = inject(FotobesprekingService)
@@ -84,13 +86,12 @@ export class MammaFotobesprekingFilterComponent {
     this.beoordelingseenheidCtrl.valueChanges.pipe(
       startWith([]),
       takeUntilDestroyed(),
-      switchMap(
-        (beoordelingseenheidIds: number[]): Observable<OrganisatieDto[]> =>
-          iif(
-            (): boolean => beoordelingseenheidIds?.length > 0,
-            this.organisatieService.zoekScreeningseenheden(beoordelingseenheidIds),
-            this.organisatieService.zoekScreeningseenheden(this.beoordelingseenheden().map((b) => b.id)),
-          ),
+      switchMap((beoordelingseenheidIds: number[]): Observable<OrganisatieDto[]> =>
+        iif(
+          (): boolean => beoordelingseenheidIds?.length > 0,
+          this.organisatieService.zoekScreeningseenheden(beoordelingseenheidIds),
+          this.organisatieService.zoekScreeningseenheden(this.beoordelingseenheden().map((b) => b.id)),
+        ),
       ),
     ),
     { initialValue: [] },

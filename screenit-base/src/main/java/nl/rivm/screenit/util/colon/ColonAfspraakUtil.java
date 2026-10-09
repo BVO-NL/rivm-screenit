@@ -27,6 +27,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
+import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonIntakeafspraakType;
 
 import static nl.rivm.screenit.util.DateUtil.formatWeekRange;
@@ -43,5 +44,11 @@ public class ColonAfspraakUtil
 	public static boolean isDigitaal(ColonIntakeAfspraak afspraak)
 	{
 		return afspraak.getIntakeafspraakType() == ColonIntakeafspraakType.DIGITAAL;
+	}
+
+	public static Long getTeVerplaatsenAfspraakId(ColonIntakeAfspraak afspraak)
+	{
+
+		return afspraak != null && afspraak.getStatus() == ColonAfspraakStatus.GEPLAND ? afspraak.getId() : null;
 	}
 }

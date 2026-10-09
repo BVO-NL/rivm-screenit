@@ -69,8 +69,7 @@ public class DocumentController extends BaseController
 	@Operation(summary = "Download een document", description = "Levert een documentbestand terug op basis van het document-id.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Document succesvol gedownload"),
-		@ApiResponse(responseCode = "404", description = "Document niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Document niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {}, altijdToegestaan = true, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })

@@ -28,13 +28,20 @@ import { NotificationService } from '@shared/services/notification/notification.
 import { Dialog } from '@angular/cdk/dialog'
 import { Dense2Service } from '@/mamma/mamma-dense2-uitwisseling-page/services/dense2/dense2.service'
 import { DsButtonComponent, DsCardComponent, DsFooterActionsRightDirective, DsInputComponent, DsToggleComponent } from '@topicus-rgp-ds/web'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-dense2-configuratie',
   imports: [ProjectSelectorComponent, ReactiveFormsModule, DsInputComponent, DsToggleComponent, DsCardComponent, DsButtonComponent, DsFooterActionsRightDirective],
   templateUrl: './dense2-configuratie.component.html',
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
 })
 export class Dense2ConfiguratieComponent {
+  protected readonly strings = inject(StringsService).getStrings()
   private formBuilder: NonNullableFormBuilder = inject(NonNullableFormBuilder)
   private notificationService: NotificationService = inject(NotificationService)
   private dialog: Dialog = inject(Dialog)
@@ -71,9 +78,10 @@ export class Dense2ConfiguratieComponent {
     this.dialog
       .open(ConfirmationDialogComponent, {
         data: {
-          title: 'Bevestiging',
-          body: 'Weet u zeker dat u de configuratie wilt opslaan?',
+          title: this.strings.algemeen.dialogs.bevestiging.titel,
+          body: this.strings.mamma.dense2.configuratie.bevestiging,
         },
+        hasBackdrop: true,
       })
       .closed.pipe(
         take(1),
@@ -87,7 +95,7 @@ export class Dense2ConfiguratieComponent {
       .updateConfiguratie(this.configuratieForm.value)
       .pipe(take(1))
       .subscribe(() => {
-        this.notificationService.success('Configuratie is opgeslagen')
+        this.notificationService.success(this.strings.mamma.dense2.configuratie.notifications.saveSuccess)
       })
   }
 }

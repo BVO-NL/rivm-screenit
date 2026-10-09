@@ -48,7 +48,8 @@ public class CervixCISMigrantenJobConfiguration extends AbstractJobConfiguration
 	public Step migrantenUitnodigenStep(CervixCISMigrantenReader reader, CervixCISMigrantenWriter writer)
 	{
 		return new StepBuilder("migrantenUitnodigenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

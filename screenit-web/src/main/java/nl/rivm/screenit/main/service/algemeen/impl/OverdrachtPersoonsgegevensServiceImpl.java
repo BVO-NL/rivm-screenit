@@ -88,7 +88,7 @@ import nl.topicuszorg.hibernate.object.model.HibernateObject;
 import nl.topicuszorg.organisatie.model.Adres;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;

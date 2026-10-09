@@ -68,8 +68,7 @@ public class MammaDense2Controller
 	@GetMapping("/configuratie")
 	@Operation(summary = "Haal de DENSE2-configuratie op", description = "Geeft de huidige DENSE2-configuratie terug.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "DENSE2-configuratie succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "DENSE2-configuratie succesvol opgehaald")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MAMMA_DENSE_2, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.MAMMA })
@@ -81,8 +80,7 @@ public class MammaDense2Controller
 	@PutMapping("/configuratie")
 	@Operation(summary = "Werk de DENSE2-configuratie bij", description = "Slaat gewijzigde DENSE2-configuratie op.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "DENSE2-configuratie succesvol bijgewerkt"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "DENSE2-configuratie succesvol bijgewerkt")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MAMMA_DENSE_2, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.MAMMA })
@@ -96,8 +94,7 @@ public class MammaDense2Controller
 	@GetMapping("/export")
 	@Operation(summary = "Exporteer DENSE2-clienten", description = "Geeft een CSV-export van DENSE2-clientgegevens terug.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "DENSE2-export succesvol gegenereerd"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "DENSE2-export succesvol gegenereerd")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MAMMA_DENSE_2, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.MAMMA })
@@ -116,8 +113,7 @@ public class MammaDense2Controller
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "DENSE2-import succesvol uitgevoerd"),
 		@ApiResponse(responseCode = "406", description = "DENSE2-import kon niet worden verwerkt"),
-		@ApiResponse(responseCode = "413", description = "Bestand is te groot om te uploaden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "413", description = "Bestand is te groot om te uploaden")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MAMMA_DENSE_2, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.MAMMA })

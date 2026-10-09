@@ -65,7 +65,8 @@ public class ProjectBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step projectBrievenCleanupStep(ProjectBriefCleanUpReader reader, ProjectBriefCleanUpWriter writer)
 	{
 		return new StepBuilder("projectBrievenCleanupStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -75,7 +76,8 @@ public class ProjectBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step projectBrievenKlaarzettenStep(ProjectBrievenAanmaakReader reader, ProjectBrievenAanmaakWriter writer)
 	{
 		return new StepBuilder("projectBrievenKlaarzettenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -96,7 +98,8 @@ public class ProjectBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step projectBrievenControleStep(ProjectBrievenControleReader reader, ProjectBrievenControleWriter writer)
 	{
 		return new StepBuilder("projectBrievenControleStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -106,7 +109,8 @@ public class ProjectBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step projectBrievenGenererenStep(ProjectBrievenGenererenReader reader, ProjectBrievenGenererenProcessor processor, ProjectBrievenGenererenWriter writer)
 	{
 		return new StepBuilder("projectBrievenGenererenStep", repository)
-			.<Long, ProjectBrief> chunk(250, transactionManager)
+			.<Long, ProjectBrief> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)

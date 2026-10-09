@@ -36,6 +36,7 @@ import { Actie } from '@shared/types/autorisatie/actie'
 import { Required } from '@shared/types/autorisatie/required'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-brp-info-bewerken-modal',
@@ -48,6 +49,7 @@ export class BrpInfoBewerkenModalComponent implements OnInit {
   private readonly dialogRef = inject(DialogRef)
   private readonly clientService = inject(ClientService)
   private readonly dialog = inject(Dialog)
+  protected readonly strings = inject(StringsService).getStrings()
 
   protected readonly tijdelijkAdres = signal<TijdelijkAdresDto | undefined>(undefined)
   protected readonly brpInfo = inject(DIALOG_DATA) as ClientBrpGegevensDto | undefined
@@ -106,9 +108,10 @@ export class BrpInfoBewerkenModalComponent implements OnInit {
     this.dialog
       .open(ConfirmationDialogComponent, {
         data: {
-          title: 'Tijdelijk BRP-adres verwijderen',
-          body: 'Wilt u het tijdelijke BRP-adres echt verwijderen?',
+          title: this.strings.algemeen.dialogs.bevestiging.titel,
+          body: this.strings.algemeen.brpBewerken.deleteConfirm,
         },
+        hasBackdrop: true,
       })
       .closed.pipe(
         take(1),

@@ -18,22 +18,22 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<ds-card cardTitle="Projecten">
+<ds-card [cardTitle]="strings.algemeen.projecten.cardTitle">
   <table ds-table [dataSource]="projecten()" [fullWidth]="true">
     <ng-container dsColumnDef="bevolkingsonderzoeken">
-      <th *dsHeaderCellDef ds-header-cell>Bevolkingsonderzoek(en)</th>
+      <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.bevolkingsonderzoeken }}</th>
       <td *dsCellDef="let row" ds-cell>
         <app-bvo-indicator [bvos]="row.bevolkingsonderzoeken"/>
       </td>
     </ng-container>
 
     <ng-container dsColumnDef="naam">
-      <th *dsHeaderCellDef ds-header-cell>Projectnaam</th>
+      <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.projectnaam }}</th>
       <td *dsCellDef="let row" ds-cell>{{ row.projectNaam }}</td>
     </ng-container>
 
     <ng-container dsColumnDef="status">
-      <th *dsHeaderCellDef ds-header-cell>Status</th>
+      <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.status }}</th>
       <td *dsCellDef="let row" ds-cell>
         <app-actief-indicator [actief]="row.actief"/>
       </td>
@@ -41,7 +41,7 @@
 
     <ng-template dsNoDataRow>
       <tr class="ds-row">
-        <td class="ds-cell" colspan="3">Er zijn geen projecten gevonden</td>
+        <td class="ds-cell" colspan="3">{{ strings.algemeen.projecten.leeg }}</td>
       </tr>
     </ng-template>
 

@@ -21,7 +21,9 @@
 import { Component, inject } from '@angular/core'
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ColonRoosterBeperking } from '@shared/types/colon/colon-rooster-beperking'
-import { ColonRoosterBeperkingComponent } from '@/colon/components/colon-rooster-beperking/colon-rooster-beperking.component'
+import {
+  ColonRoosterBeperkingComponent
+} from '@/colon/components/colon-rooster-beperking/colon-rooster-beperking.component'
 import { RoosterService } from '@/colon/colon-rooster-page/services/rooster.service'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ColonRoosterBeperkingenDto } from '@shared/types/colon/colon-rooster-beperkingen-dto'
@@ -34,15 +36,15 @@ import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@/shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
-import { DsButtonComponent, DsCardComponent } from '@topicus-rgp-ds/web'
+import { DsButtonComponent, DsCardComponent, DsPageHeaderComponent } from '@topicus-rgp-ds/web'
 import { NotificationService } from '@shared/services/notification/notification.service'
-import { PageComponent } from '@shared/components/page/page.component'
 import { convertLocalTimeStringToTimeString } from '@shared/utils/date-utils'
 import { TimepickerComponent } from '@shared/components/timepicker/timepicker.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-colon-weekend-werkdag-beperkingen-page',
-  imports: [FormsModule, ReactiveFormsModule, ColonRoosterBeperkingComponent, AutorisatieDirective, DsButtonComponent, DsCardComponent, TimepickerComponent, PageComponent],
+  imports: [FormsModule, ReactiveFormsModule, ColonRoosterBeperkingComponent, AutorisatieDirective, DsButtonComponent, DsCardComponent, TimepickerComponent, DsPageHeaderComponent],
   templateUrl: './colon-weekend-werkdag-beperkingen-page.component.html',
   styles: [
     `
@@ -62,6 +64,7 @@ export class ColonWeekendWerkdagBeperkingenPageComponent {
   private readonly roosterService: RoosterService = inject(RoosterService)
   private readonly notificationService: NotificationService = inject(NotificationService)
   private readonly autorisatieService: AutorisatieService = inject(AutorisatieService)
+  protected readonly strings = inject(StringsService).getStrings()
 
   beperkingForm: FormGroup = this.formBuilder.group({
     nachtBeperkingBegin: ['', Validators.required],
@@ -117,7 +120,7 @@ export class ColonWeekendWerkdagBeperkingenPageComponent {
       .updateBeperkingen(beperking)
       .pipe(take(1))
       .subscribe(() => {
-        this.notificationService.success('De beperkingen zijn opgeslagen')
+        this.notificationService.success(this.strings.colon.weekendWerkdag.notifications.saveSuccess)
       })
   }
 }

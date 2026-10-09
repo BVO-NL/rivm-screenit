@@ -133,8 +133,7 @@ public class ClientController extends BaseController
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 	@Operation(summary = "Zoek clienten", description = "Zoek clienten op basis van filtercriteria.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Lijst van gevonden clienten (ClientDto)"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Lijst van gevonden clienten (ClientDto)")
 	})
 	@PostMapping("/zoeken")
 	public ResponseEntity<List<ClientDto>> zoekClienten(
@@ -149,8 +148,7 @@ public class ClientController extends BaseController
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 	@Operation(summary = "Haal de actieve BVO's op", description = "Haal de BVO's op die actief zijn voor de client")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Lijst met bevolkingsonderzoeken"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Lijst met bevolkingsonderzoeken")
 	})
 	@GetMapping("/{clientId}/actieve-bvos")
 	public ResponseEntity<List<Bevolkingsonderzoek>> getActieveBvos(@PathVariable Long clientId)
@@ -163,8 +161,7 @@ public class ClientController extends BaseController
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 	@Operation(summary = "Haal de status op", description = "Haal de status op van de client voor elke BVO op")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Lijst met status objecten"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Lijst met status objecten")
 	})
 	@GetMapping("/{clientId}/bvo-status")
 	public ResponseEntity<List<BvoStatusDto>> getBvoStatus(@PathVariable Long clientId)
@@ -370,8 +367,7 @@ public class ClientController extends BaseController
 	@Operation(summary = "Sla tijdelijk adres op", description = "Slaat het tijdelijk adres van een client op of werkt het bij.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Tijdelijk adres succesvol opgeslagen"),
-		@ApiResponse(responseCode = "404", description = "Client niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Client niet gevonden")
 	})
 	@PutMapping("/{clientId}/tijdelijk-adres")
 	public ResponseEntity<Void> slaTijdelijkAdresOp(@PathVariable Long clientId, @RequestBody TijdelijkAdresDto tijdelijkAdresDto)
@@ -395,8 +391,7 @@ public class ClientController extends BaseController
 
 	@Operation(summary = "Haal de projecten voor de client op", description = "Haal de projecten op waar de client actief in is")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Lijst met projecten"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Lijst met projecten")
 	})
 	@GetMapping("/{clientId}/projecten")
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_CLIENT_GEGEVENS }, bevolkingsonderzoekScopes = {
@@ -411,8 +406,7 @@ public class ClientController extends BaseController
 
 	@Operation(summary = "Haal de screeningronde gebeurtenissen van de client op", description = "Haal de gebeurtenissen voor de client op, gefilterd op gebeurtenis type")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Lijst met screeningronde gebeurtenissen"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Lijst met screeningronde gebeurtenissen")
 	})
 	@GetMapping("/{clientId}/screeningronde-gebeurtenissen/{type}")
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_CLIENT_GEGEVENS }, bevolkingsonderzoekScopes = {
@@ -434,8 +428,7 @@ public class ClientController extends BaseController
 
 	@Operation(summary = "Haal de dossier gebeurtenissen van de client op", description = "Haal de dossier gebeurtenissen voor de client op, gefilterd op type")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Lijst met dossier gebeurtenissen"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Lijst met dossier gebeurtenissen")
 	})
 	@GetMapping("/{clientId}/dossier-gebeurtenissen/{type}")
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_CLIENT_GEGEVENS }, bevolkingsonderzoekScopes = {

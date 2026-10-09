@@ -18,49 +18,63 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<ds-card [cardTitle]="titel()">
-  @if (afspraak(); as afspraak) {
+
+@if (afspraak(); as afspraak) {
+  <ds-card [cardTitle]="titel()">
     <div class="afspraak-gegevens" data-testid="geplande_afspraak">
       <div class="afspraak-gegevens-rij">
         <div class="afspraak-gegevens-kop">
-          <span class="afspraak-gegevens-label">Datum/tijd</span>
-          @if (isColonIntakeafspraak() && afspraak.digitaal) {
-            <ds-badge data-testid="digitale_afspraak_badge" type="category" categoryColor=var(--digitaal-badge-color) label="Digitaal"/>
+          <span class="afspraak-gegevens-label">{{ strings.algemeen.labels.datumTijd }}</span>
+          @if (colonIntakeafspraak()?.digitaal) {
+            <ds-badge data-testid="digitale_afspraak_badge" type="category" categoryColor=var(--digitaal-badge-color) [label]="strings.algemeen.afspraken.digitaal"/>
           }
         </div>
-        @if (isColonIntakeafspraak() && afspraak.digitaal) {
+        @if (colonIntakeafspraak()?.digitaal) {
           <span>{{ afspraak.vanaf | datumNaarWeek }}</span>
         } @else {
-          <span>{{ afspraak.vanaf | datumTijd: NL_LONG_DATE_FORMAT : TIME_FORMAT }} uur</span>
+          <span>{{ afspraak.vanaf | datumTijd: NL_LONG_DATE_FORMAT : TIME_FORMAT : strings.algemeen.labels.uur }}</span>
         }
       </div>
       <div class="afspraak-gegevens-rij">
-        <span class="afspraak-gegevens-label">Locatie</span>
+        <span class="afspraak-gegevens-label">{{ strings.algemeen.labels.locatie }}</span>
         <span>{{ afspraak.locatie.naam }}</span>
         <span>{{ afspraak.locatie.adres.straat }} {{ afspraak.locatie.adres.huisnummer }}</span>
         <span>{{ afspraak.locatie.adres.postcode }} {{ afspraak.locatie.adres.plaats }}</span>
       </div>
       <div class="afspraak-gegevens-rij">
-        <span class="afspraak-gegevens-label">Locatiebeschrijving</span>
-        <span>{{ afspraak.locatieBeschrijving || '-' }}</span>
+        <span class="afspraak-gegevens-label">{{ strings.algemeen.labels.locatiebeschrijving }}</span>
+        <span>{{ afspraak.locatieBeschrijving | legeWaarde }}</span>
       </div>
     </div>
-    @if (magAfspraakWijzigen()) {
-      <ng-template ds-footer-actions-right>
-        <button data-testid="tijdstip_wijzigen" ds-button-tertiary (click)="openTijdstipWijzigenPopup(afspraak)">Tijdstip wijzigen</button>
-        <button data-testid="locatie_wijzigen" ds-button-secondary>Locatie wijzigen</button>
-      </ng-template>
-    }
-  } @else {
+    <ng-template ds-footer-actions-right>
+      @if (magTijdstipWijzigen()) {
+        <button data-testid="tijdstip_wijzigen" ds-button-tertiary (click)="tijdstipWijzigen.emit(afspraak)">
+          {{ strings.algemeen.afspraken.buttons.tijdstipWijzigen }}
+        </button>
+      }
+      @if (magLocatieWijzigen()) {
+        <button data-testid="locatie_wijzigen" ds-button-secondary (click)="locatieWijzigen.emit(afspraak)">
+          {{ strings.algemeen.afspraken.buttons.locatieWijzigen }}
+        </button>
+      }
+    </ng-template>
+    <ng-template ds-footer-actions-left>
+      <button (click)="openAfspraakAfzeggenDialog(afspraak)" *appAutorisatie="afspraakAfzeggenConstraint" data-testid="afspraak_afzeggen" ds-button-delete type="button">
+        {{ strings.algemeen.afspraken.buttons.afspraakAfzeggen }}
+      </button>
+    </ng-template>
+  </ds-card>
+} @else {
+  <ds-card [cardTitle]="titel()">
     <div class="geen-afspraak" data-testid="geen_afspraak">
       <app-empty-state-panel
         [icon]="faCalendar"
-        titel="Geen afspraak gevonden"
-        [subtekst]="magNieuweAfspraakMaken() ? 'De cliënt kan een afspraak maken voor het onderzoek.' : ''"
+        [titel]="strings.algemeen.afspraken.geenAfspraken.titel"
+        [subtekst]="magNieuweAfspraakMaken() ? strings.algemeen.afspraken.geenAfspraken.subtitel : ''"
       />
       @if (magNieuweAfspraakMaken()) {
-        <button data-testid="maak_afspraak" ds-button-primary [disabled]="true" type="button">Maak afspraak</button>
+        <button data-testid="maak_afspraak_button" ds-button-primary (click)="afspraakMaken.emit()">{{ strings.algemeen.afspraken.buttons.afspraakMaken }}</button>
       }
     </div>
-  }
-</ds-card>
+  </ds-card>
+}

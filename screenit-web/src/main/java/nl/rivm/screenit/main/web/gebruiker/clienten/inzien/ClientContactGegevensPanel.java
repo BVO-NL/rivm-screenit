@@ -31,7 +31,7 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.service.ClientService;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;

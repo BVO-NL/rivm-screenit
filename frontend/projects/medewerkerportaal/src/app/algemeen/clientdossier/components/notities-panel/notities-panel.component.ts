@@ -60,6 +60,7 @@ import { NaamPipe, NaamTransform } from '@shared/pipes/naam/naam.pipe'
 import { AbbreviatePipe } from '@shared/pipes/abbreviate/abbreviate.pipe'
 import { ClientContactActieType } from '@shared/types/algemeen/enum/client-contact-actie-type'
 import { EmptyStatePanelComponent } from '@shared/components/empty-state-panel/empty-state-panel.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-notities-panel',
@@ -94,9 +95,10 @@ export class NotitiesPanelComponent {
   protected readonly NL_TIMEZONE = NL_TIMEZONE
   protected readonly NaamTransform = NaamTransform
   protected readonly faFile = faFile
+  protected readonly strings = inject(StringsService).getStrings()
+
   private readonly dialog = inject(Dialog)
   private readonly sort = viewChild(MatSort)
-
   private readonly autorisatieService = inject(AutorisatieService)
   private readonly contactActieService = inject(ClientContactService)
   private readonly clientService = inject(ClientService)

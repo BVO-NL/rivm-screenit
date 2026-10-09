@@ -18,3 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import { SecurityContext } from '@angular/core'
+import { DomSanitizer } from '@angular/platform-browser'
+
+const HTML_PATROON = /<\/?[a-z][a-z0-9]*(?:\s[^<>]*)?\/?>|&(?:[a-z][a-z0-9]+|#\d+|#x[0-9a-f]+);/i
+
+export const bevatHtml = (tekst: string | null | undefined): boolean => !!tekst && HTML_PATROON.test(tekst)
+
+export const saneerHtml = (sanitizer: DomSanitizer, tekst: string | null | undefined): string => (tekst ? (sanitizer.sanitize(SecurityContext.HTML, tekst) ?? '') : '')

@@ -36,7 +36,7 @@ import nl.rivm.screenit.service.AutorisatieService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.util.DateUtil;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;

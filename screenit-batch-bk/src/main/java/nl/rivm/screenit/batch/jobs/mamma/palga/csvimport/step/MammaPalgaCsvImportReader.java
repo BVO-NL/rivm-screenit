@@ -34,7 +34,7 @@ import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.service.mamma.MammaPalgaCsvImportMapping;
 import nl.rivm.screenit.service.mamma.MammaPalgaService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.batch.infrastructure.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;

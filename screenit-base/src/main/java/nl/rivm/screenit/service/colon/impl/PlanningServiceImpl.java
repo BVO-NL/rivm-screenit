@@ -148,8 +148,16 @@ public class PlanningServiceImpl<T extends VrijSlot> implements PlanningService<
 		}
 		else
 		{
-			return vrijeSlotenZonderKamer.subList((int) first, (int) (first + count));
+			return pagineer(vrijeSlotenZonderKamer, first, count);
 		}
+	}
+
+	private List<VrijSlotZonderKamer> pagineer(List<VrijSlotZonderKamer> vrijeSlotenZonderKamer, long first, long count)
+	{
+
+		var vanIndex = (int) Math.min(first, vrijeSlotenZonderKamer.size());
+		var totIndex = (int) Math.min(first + count, vrijeSlotenZonderKamer.size());
+		return vrijeSlotenZonderKamer.subList(vanIndex, totIndex);
 	}
 
 	@Override
@@ -233,7 +241,13 @@ public class PlanningServiceImpl<T extends VrijSlot> implements PlanningService<
 	@Override
 	public ColonIntakekamer getBeschikbareKamer(LocalDateTime startTijd, Long intakelocatieId)
 	{
-		var kamers = roosterDao.getKamers(startTijd, intakelocatieId);
+		return getBeschikbareKamer(startTijd, intakelocatieId, null);
+	}
+
+	@Override
+	public ColonIntakekamer getBeschikbareKamer(LocalDateTime startTijd, Long intakelocatieId, Long huidigeAfspraakId)
+	{
+		var kamers = roosterDao.getKamers(startTijd, intakelocatieId, huidigeAfspraakId);
 		if (!kamers.isEmpty())
 		{
 			return kamers.get(0);

@@ -20,6 +20,7 @@
  */
 import { HttpErrorResponse } from '@angular/common/http'
 import { ColonTijdslotType } from '@shared/types/colon/colon-tijdslot-type'
+import { COLON_STRINGS } from '@shared/strings'
 
 export function bepaalFoutmeldingBijOpslaanTijdslot(err: HttpErrorResponse, type: ColonTijdslotType): string {
   const specifiekeFoutmeldingen = ['overlap', 'maximum toegestane', 'niet toegestaan', 'capaciteitsberekening']
@@ -30,7 +31,10 @@ export function bepaalFoutmeldingBijOpslaanTijdslot(err: HttpErrorResponse, type
   } else if (isSpecifiekeFout) {
     return err.error.message
   } else {
-    const lidwoord = type === ColonTijdslotType.AFSPRAAKSLOT ? 'het' : 'de'
-    return `Er is een fout opgetreden bij het opslaan van ${lidwoord} ${type.toLowerCase()}. Probeer het opnieuw.`
+    const saveError =
+      type === ColonTijdslotType.AFSPRAAKSLOT
+        ? COLON_STRINGS.rooster.afspraakslot.notifications.saveError
+        : COLON_STRINGS.rooster.blokkade.notifications.saveError
+    return saveError
   }
 }

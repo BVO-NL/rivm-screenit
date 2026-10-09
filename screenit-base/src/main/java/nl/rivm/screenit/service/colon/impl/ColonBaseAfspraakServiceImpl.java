@@ -221,7 +221,8 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 		if (!ColonAfspraakStatus.GEANNULEERD_OPEN_UITNODIGING.equals(status))
 		{
 			var client = afspraak.getClient();
-			if (!client.getPersoon().getGbaAdres().getGbaGemeente().getCode().equals(Gemeente.RNI_CODE))
+			var gbaGemeente = client.getPersoon().getGbaAdres().getGbaGemeente();
+			if (gbaGemeente == null || !Gemeente.RNI_CODE.equals(gbaGemeente.getCode()))
 			{
 				var colonBrief = briefService.maakBvoBrief(screeningRonde, BriefType.COLON_INTAKE_AFMELDING, DateUtil.toUtilDate(nu.plus(150, ChronoUnit.MILLIS)));
 				hibernateService.saveOrUpdate(BriefUtil.setTegenhouden(colonBrief, communicatieTegenhouden));

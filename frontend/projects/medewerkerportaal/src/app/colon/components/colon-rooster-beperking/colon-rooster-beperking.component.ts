@@ -18,11 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, effect, forwardRef, input } from '@angular/core'
+import { Component, effect, forwardRef, inject, input } from '@angular/core'
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators } from '@angular/forms'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ColonRoosterBeperking } from '@shared/types/colon/colon-rooster-beperking'
 import { DsRadiobuttonComponent, DsRadiobuttonOption } from '@topicus-rgp-ds/web'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-colon-rooster-beperking',
@@ -39,15 +40,16 @@ import { DsRadiobuttonComponent, DsRadiobuttonOption } from '@topicus-rgp-ds/web
 export class ColonRoosterBeperkingComponent implements ControlValueAccessor {
   label = input.required<string>()
   required = input<boolean>(false)
+  protected readonly strings = inject(StringsService).getStrings()
 
   formControl: FormControl = new FormControl<string>('ZACHT')
   items: DsRadiobuttonOption<string>[] = [
     {
-      label: 'Zacht',
+      label: this.strings.colon.rooster.beperking.zacht,
       value: ColonRoosterBeperking.ZACHT,
     },
     {
-      label: 'Hard',
+      label: this.strings.colon.rooster.beperking.hard,
       value: ColonRoosterBeperking.HARD,
     },
   ]

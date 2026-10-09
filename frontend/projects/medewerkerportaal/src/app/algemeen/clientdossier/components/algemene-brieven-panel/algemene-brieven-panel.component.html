@@ -21,22 +21,22 @@
 <ds-card cardTitle="Algemene brieven">
   <table ds-table [dataSource]="brieven()" [fullWidth]="true">
     <ng-container dsColumnDef="actie">
-      <th *dsHeaderCellDef ds-header-cell>Status</th>
+      <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.status }}</th>
       <td *dsCellDef="let row" ds-cell>{{ row.bron | gebeurtenisBron }} {{ row.gebeurtenis | enumLabel: gebeurtenisLabels }}</td>
     </ng-container>
 
     <ng-container dsColumnDef="naam">
-      <th *dsHeaderCellDef ds-header-cell>Brieftype</th>
+      <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.briefType }}</th>
       <td *dsCellDef="let row" ds-cell>{{ row.documentNaam }}</td>
     </ng-container>
 
     <ng-container dsColumnDef="datum">
-      <th *dsHeaderCellDef ds-header-cell>Datum/tijd</th>
+      <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.datumTijd }}</th>
       <td *dsCellDef="let row" ds-cell>{{ row.datum | datumTijd }}</td>
     </ng-container>
 
     <ng-container dsColumnDef="bekijken">
-      <th *dsHeaderCellDef ds-header-cell>Actie</th>
+      <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.actie }}</th>
       <td *dsCellDef="let row" ds-cell>
         <button ds-button-tertiary (click)="openBrief(row)">
           Bekijken

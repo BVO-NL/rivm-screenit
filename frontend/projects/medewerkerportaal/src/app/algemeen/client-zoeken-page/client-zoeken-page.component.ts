@@ -20,24 +20,29 @@
  */
 import { Component, inject, signal, viewChild } from '@angular/core'
 import { take } from 'rxjs'
-import { DsIconComponent } from '@topicus-rgp-ds/web'
+import { DsIconComponent, DsPageHeaderComponent } from '@topicus-rgp-ds/web'
 import { faUser } from '@fortawesome/pro-light-svg-icons'
 import { Router } from '@angular/router'
-import { ClientZoekenFilterComponent } from '@algemeen/client-zoeken-page/components/client-zoeken-filter/client-zoeken-filter.component'
-import { PageComponent } from '@shared/components/page/page.component'
-import { ClientZoekenTabelComponent } from '@algemeen/client-zoeken-page/components/client-zoeken-tabel/client-zoeken-tabel.component'
+import {
+  ClientZoekenFilterComponent
+} from '@algemeen/client-zoeken-page/components/client-zoeken-filter/client-zoeken-filter.component'
+import {
+  ClientZoekenTabelComponent
+} from '@algemeen/client-zoeken-page/components/client-zoeken-tabel/client-zoeken-tabel.component'
 import { ClientService } from '@/algemeen/services/client/client.service'
 import { ClientDto } from '@shared/types/algemeen/dto/client.dto'
 import { ClientZoekenFilterDto } from '@shared/types/algemeen/dto/client-zoeken-filter.dto'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-client-zoeken-page',
-  imports: [PageComponent, ClientZoekenFilterComponent, ClientZoekenTabelComponent, DsIconComponent],
+  imports: [ClientZoekenFilterComponent, ClientZoekenTabelComponent, DsIconComponent, DsPageHeaderComponent],
   templateUrl: './client-zoeken-page.component.html',
   styleUrl: './client-zoeken-page.component.scss',
 })
 export class ClientZoekenPageComponent {
   private readonly clientService = inject(ClientService)
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly gebruikerIcoon = faUser
   protected readonly filterComponent = viewChild(ClientZoekenFilterComponent)
   protected clienten = signal<ClientDto[]>([])

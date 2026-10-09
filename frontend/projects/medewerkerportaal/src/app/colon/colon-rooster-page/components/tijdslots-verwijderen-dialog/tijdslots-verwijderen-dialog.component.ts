@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, inject, signal } from '@angular/core'
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core'
 import { DatePipe, LowerCasePipe } from '@angular/common'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { Dialog, DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
@@ -52,6 +52,7 @@ import {
 } from '@topicus-rgp-ds/web'
 import { MatSort } from '@angular/material/sort'
 import { NotificationService } from '@shared/services/notification/notification.service'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-tijdslots-verwijderen-dialog',
@@ -78,6 +79,7 @@ import { NotificationService } from '@shared/services/notification/notification.
     DsCheckboxComponent,
     LowerCasePipe,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './tijdslots-verwijderen-dialog.component.html',
 })
 export class TijdslotsVerwijderenDialogComponent extends DsAbstractSelectableTable<ColonTijdslot> {
@@ -94,6 +96,7 @@ export class TijdslotsVerwijderenDialogComponent extends DsAbstractSelectableTab
   private readonly roosterService: RoosterService = inject(RoosterService)
   private readonly dialogService: Dialog = inject(Dialog)
   private readonly notificationService = inject(NotificationService)
+  protected readonly strings = inject(StringsService).getStrings()
 
   filter(filter: ColonTijdslotFilter) {
     this.roosterService
@@ -156,7 +159,7 @@ export class TijdslotsVerwijderenDialogComponent extends DsAbstractSelectableTab
       )
       .subscribe({
         next: () => this.dialogRef.close(),
-        error: () => this.notificationService.error('Er is een fout opgetreden bij het verwijderen van de tijdslots. Probeer het opnieuw.'),
+        error: () => this.notificationService.error(this.strings.colon.rooster.tijdslots.notifications.deleteError),
       })
   }
 }

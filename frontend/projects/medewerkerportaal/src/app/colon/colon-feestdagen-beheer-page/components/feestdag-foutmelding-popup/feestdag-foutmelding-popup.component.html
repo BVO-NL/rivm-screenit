@@ -22,8 +22,8 @@
   <table class="ds-table w-100" body>
     <thead>
     <tr class="ds-header-row">
-      <th class="ds-header-cell">Intakelocatie</th>
-      <th class="ds-header-cell">Afspraakslots</th>
+      <th class="ds-header-cell">{{ strings.colon.feestdagen.foutmeldingPopup.columns.intakelocatie }}</th>
+      <th class="ds-header-cell">{{ strings.colon.feestdagen.foutmeldingPopup.columns.afspraakslots }}</th>
     </tr>
     </thead>
     <tbody>
@@ -40,6 +40,6 @@
     </tbody>
   </table>
   <div buttons>
-    <button ds-button-secondary data-testid="btn_sluiten" (click)="sluiten()">Sluiten</button>
+    <button ds-button-secondary data-testid="btn_sluiten" (click)="sluiten()">{{ strings.algemeen.buttons.sluiten }}</button>
   </div>
 </app-base-dialog>

@@ -18,100 +18,105 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog size="lg" titel="Adresgegevens aanpassen">
+<app-base-dialog size="lg" [titel]="strings.algemeen.adresgegevensBewerken.dialogTitle">
   <div body>
     <ds-summary-panel>
       <div class="row">
         <div class="col">
           <ds-description
-            label="Straatnaam"
+            [label]="strings.algemeen.labels.straatnaam"
             value="{{ huidigAdres.volledigeAdres }}"/>
           <ds-description
-            label="Woonplaats"
+            [label]="strings.algemeen.labels.plaats"
             value="{{ huidigAdres.plaats }}"/>
         </div>
         <div class="col">
           <ds-description
-            label="Postcode"
+            [label]="strings.algemeen.labels.postcode"
             value="{{ huidigAdres.postcode }}"/>
         </div>
       </div>
     </ds-summary-panel>
     <form [formGroup]="adresgegevensForm">
       <div class="adresgegevens-tijdelijk-adres">
-        <h2 class="adresgegevens-ondertitel">Tijdelijk adres</h2>
+        <h2 class="adresgegevens-ondertitel">{{ strings.algemeen.adresgegevensBewerken.tijdelijkAdresHeading }}</h2>
         <ds-input
-          label="Straatnaam"
+          [label]="strings.algemeen.labels.straatnaam"
           formControlName="straat"
           maxlength="56"
-          placeholder="Straatnaam"
-          [errorMessage]="{ required: 'Straatnaam is verplicht.', maxlength: 'De straatnaam mag maximaal 56 tekens bevatten' }"
+          [placeholder]="strings.algemeen.labels.straatnaam"
+          [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.straatnaam), maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.straatnaam, 56) }"
           data-testid="tijdelijk_adres_straat"
         />
         <div class="adresgegevens-huisnummer-rij">
           <ds-input
-            label="Huisnummer"
+            [label]="strings.algemeen.labels.huisnummer"
             formControlName="huisnummer"
             type="number"
             maxlength="10"
-            placeholder="Nummer"
-            [errorMessage]="{ required: 'Huisnummer is verplicht.', maxlength: 'Het huisnummer mag maximaal 10 tekens bevatten', min: 'Het huisnummer moet minimaal 1 zijn.' }"
+            [placeholder]="strings.algemeen.labels.huisnummer"
+            [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.huisnummer), maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.huisnummer, 10) }"
             data-testid="tijdelijk_adres_huisnummer"
           />
           <ds-input
-            label="Huisletter"
+            [label]="strings.algemeen.labels.huisletter"
             formControlName="huisletter"
             maxlength="1"
-            placeholder="A"
-            [errorMessage]="{ pattern: 'Huisletter moet een letter zijn (a-z).', maxlength: 'De huisletter mag maximaal 1 teken bevatten' }"
+            [placeholder]="strings.algemeen.labels.huisletter"
+            [errorMessage]="{ pattern: strings.algemeen.errors.huisletterPatroon, maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.huisletter, 1) }"
             data-testid="tijdelijk_adres_huisletter"
           />
           <ds-input
-            label="Toevoeging"
+            [label]="strings.algemeen.labels.toevoeging"
             formControlName="huisnummerToevoeging"
             maxlength="26"
-            placeholder="Toevoeging"
-            [errorMessage]="{ maxlength: 'Toevoeging mag maximaal 26 karakters bevatten.' }"
+            [placeholder]="strings.algemeen.labels.toevoeging"
+            [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.toevoeging, 26) }"
             data-testid="tijdelijk_adres_toevoeging"
           />
           <ds-input
-            label="Aanduiding"
+            [label]="strings.algemeen.labels.aanduiding"
             formControlName="huisnummerAanduiding"
             maxlength="2"
-            [errorMessage]="{ maxlength: 'Aanduiding mag maximaal 2 karakters bevatten.' }"
+            [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.aanduiding, 2) }"
             data-testid="tijdelijk_adres_aanduiding"
           />
         </div>
         <div class="adresgegevens-postcode-rij">
           <ds-input
-            label="Postcode"
+            [label]="strings.algemeen.labels.postcode"
             formControlName="postcode"
             maxlength="7"
-            placeholder="Postcode"
-            [errorMessage]="{ required: 'Postcode is verplicht.', invalidPostcode: 'De postcode is ongeldig (bijv. 1234 AB).' }"
+            [placeholder]="strings.algemeen.labels.postcode"
+            [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.postcode), invalidPostcode: strings.algemeen.errors.invalidPostcode }"
             data-testid="tijdelijk_adres_postcode"
           />
           <ds-input
-            label="Plaats"
+            [label]="strings.algemeen.labels.plaats"
             formControlName="plaats"
             maxlength="200"
-            placeholder="Plaats"
-            [errorMessage]="{ required: 'Plaats is verplicht.', maxlength: 'De plaats mag maximaal 200 tekens bevatten' }"
+            [placeholder]="strings.algemeen.labels.plaats"
+            [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.plaats), maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.plaats, 200) }"
             data-testid="tijdelijk_adres_plaats"
           />
         </div>
         <div class="adresgegevens-datum-rij">
           <ds-datepicker
-            label="Begindatum"
+            [label]="strings.algemeen.labels.begindatum"
             formControlName="begindatum"
-            [errorMessage]="{ required: 'Begindatum is verplicht.', invalidDate: 'De begindatum is ongeldig.' }"
+            [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.begindatum), invalidDate: strings.algemeen.errors.invalidDate }"
             data-testid="tijdelijk_adres_begindatum"
           />
           <ds-datepicker
-            label="Einddatum"
+            [label]="strings.algemeen.labels.einddatum"
             formControlName="einddatum"
-            [min]="minEinddatum"
-            [errorMessage]="{ required: 'Einddatum is verplicht.', invalidDate: 'De einddatum is ongeldig.', einddatumNaBegindatum: 'De einddatum moet na de begindatum liggen.', einddatumMaxJaren: 'De einddatum mag maximaal 1 jaar in de toekomst liggen.' }"
+            [minDate]="minEinddatum"
+            [errorMessage]="{
+              required: strings.algemeen.errors.verplicht(strings.algemeen.labels.einddatum),
+              invalidDate: strings.algemeen.errors.invalidDate,
+              einddatumNaBegindatum: strings.algemeen.errors.veldNaVeld(strings.algemeen.labels.einddatum, strings.algemeen.labels.begindatum),
+              einddatumMaxJaren: strings.algemeen.errors.maxToekomst(strings.algemeen.labels.einddatum, '1 jaar')
+            }"
             data-testid="tijdelijk_adres_einddatum"
           />
         </div>
@@ -119,12 +124,13 @@
     </form>
   </div>
   <ng-container buttons>
-    <button (click)="cancel()" data-testid="btn_annuleren" ds-button-tertiary>Annuleren</button>
+    <button (click)="cancel()" data-testid="btn_annuleren" ds-button-tertiary>{{ strings.algemeen.buttons.annuleren }}
+    </button>
     <button (click)="save()"
             data-testid="btn_opslaan"
             [disabled]="adresgegevensForm.invalid"
             ds-button-primary>
-      Opslaan
+      {{ strings.algemeen.buttons.opslaan }}
     </button>
   </ng-container>
 </app-base-dialog>

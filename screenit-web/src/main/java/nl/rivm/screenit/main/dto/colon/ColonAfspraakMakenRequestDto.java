@@ -21,17 +21,23 @@ package nl.rivm.screenit.main.dto.colon;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDateTime;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Getter;
 import lombok.Setter;
 
-import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamer;
 import nl.rivm.screenit.model.enums.BriefType;
 
 @Getter
 @Setter
 public class ColonAfspraakMakenRequestDto
 {
-	private VrijSlotZonderKamer afspraakslot;
+	private ColonVrijSlotZonderKamerDto afspraakslot;
+
+	@Schema(description = "Gevuld wanneer er buiten de geplande slots gepland wordt; het gekozen afspraakslot bevat dan alleen de intakelocatie.")
+	private LocalDateTime datumTijdBuitenRooster;
 
 	private BriefType briefType;
 

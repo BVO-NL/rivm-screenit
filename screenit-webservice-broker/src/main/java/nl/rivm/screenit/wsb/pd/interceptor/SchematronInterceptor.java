@@ -55,7 +55,7 @@ import nl.rivm.screenit.ws.providedocument.ProvideDocument.DocumentMetaData;
 import nl.rivm.screenit.wsb.pd.PdConstants;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.binding.xml.XMLFault;

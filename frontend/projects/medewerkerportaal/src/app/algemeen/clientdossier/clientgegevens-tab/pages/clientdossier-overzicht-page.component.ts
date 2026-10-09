@@ -31,6 +31,7 @@ import { BrpPanelComponent } from '@algemeen/clientdossier/components/brp-panel/
 import { ClientInfoPanelComponent } from '@algemeen/clientdossier/components/client-info-panel/client-info-panel.component'
 import { VerwijderdeOnderzoeksresultatenPanelComponent } from '@algemeen/clientdossier/components/verwijderde-onderzoeksresultaten-panel/verwijderde-onderzoeksresultaten-panel.component'
 import { BezwaarPanelComponent } from '@/algemeen/clientdossier/bezwaar/components/bezwaar-panel/bezwaar-panel.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-overzicht-page',
@@ -52,6 +53,7 @@ import { BezwaarPanelComponent } from '@/algemeen/clientdossier/bezwaar/componen
 export class ClientdossierOverzichtPageComponent implements OnInit {
   protected static readonly VERTROKKEN_UIT_NEDERLAND_CONTEXT = 'vertrokken-uit-nederland'
   protected toontVertrokkenUitNederlandMelding = false
+  protected readonly strings = inject(StringsService).getStrings()
 
   private readonly clientService = inject(ClientService)
   private readonly notificationService = inject(DsContextualNotificationService)

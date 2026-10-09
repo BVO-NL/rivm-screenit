@@ -32,6 +32,7 @@ import { take } from 'rxjs'
 import { haalBestandsnaamZonderExtensie, maakDSFileModel } from '@/algemeen/handleidingen-overzicht-page/utils/handleidingen-util'
 import { NotificationService } from '@shared/services/notification/notification.service'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-handleiding-bewerken-dialog',
@@ -44,6 +45,7 @@ export class HandleidingBewerkenDialogComponent {
   private readonly formBuilder: FormBuilder = inject(FormBuilder)
   private readonly handleidingenService: HandleidingenService = inject(HandleidingenService)
   private readonly notificationService = inject(NotificationService)
+  protected readonly strings = inject(StringsService).getStrings()
   private geselecteerdBestand: File | null = null
 
   geselecteerdBestandFileModel: DsFileModel | null = null
@@ -90,16 +92,9 @@ export class HandleidingBewerkenDialogComponent {
     this.handleidingenService
       .bewerkHandleiding(this.dialogData.id, this.geselecteerdBestand, bestandsnaam)
       .pipe(take(1))
-      .subscribe({
-        next: () => {
-          this.notificationService.success(`${bestandsnaam} is succesvol bijgewerkt.`)
-          this.dialogRef.close(true)
-        },
-        error: (error) => {
-          const foutmelding = error.error.foutmelding
-          this.notificationService.error(foutmelding)
-          this.dialogRef.close()
-        },
+      .subscribe(() => {
+        this.notificationService.success(this.strings.algemeen.handleidingen.bewerken.notifications.updateSuccess(bestandsnaam))
+        this.dialogRef.close(true)
       })
   }
 

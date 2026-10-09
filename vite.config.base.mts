@@ -16,7 +16,7 @@ interface ViteConfigOptions {
 export const createViteConfig = (options: ViteConfigOptions = {}): UserConfigExport => {
 	const {
 		port = 3000,
-		proxyTarget = "http:
+		proxyTarget = "http://localhost:8080",
 		additionalPlugins = [],
 		additionalResolveAlias = {},
 		cssModulesNameGenerator,
@@ -63,7 +63,9 @@ export const createViteConfig = (options: ViteConfigOptions = {}): UserConfigExp
 				generateScopedName:
 					cssModulesNameGenerator ||
 					((name, filename) => {
+						// Haal de basisnaam op (zonder .module.scss)
 						const basename = filename.split("/").pop()?.replace(".module.scss", "").replace(".scss", "") || "unknown"
+						// Genereer een eenvoudige hash
 						let hash = 0
 						for (let i = 0; i < filename.length; i++) {
 							const char = filename.charCodeAt(i)
@@ -82,3 +84,5 @@ export const createViteConfig = (options: ViteConfigOptions = {}): UserConfigExp
 }
 
 export default createViteConfig()
+
+

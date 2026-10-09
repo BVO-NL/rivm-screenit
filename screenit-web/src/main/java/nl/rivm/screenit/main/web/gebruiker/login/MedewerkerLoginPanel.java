@@ -30,7 +30,7 @@ import nl.rivm.screenit.model.enums.InlogMethode;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.topicuszorg.wicket.input.behavior.FocusBehavior;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;

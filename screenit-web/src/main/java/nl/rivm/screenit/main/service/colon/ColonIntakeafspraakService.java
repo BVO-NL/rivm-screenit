@@ -26,6 +26,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import nl.rivm.screenit.main.dto.algemeen.AfspraakActie;
+import nl.rivm.screenit.main.dto.algemeen.AfspraakDto;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
@@ -49,6 +51,16 @@ public interface ColonIntakeafspraakService
 	ColonIntakeAfspraak verplaatsAfspraak(Client client, VrijSlotZonderKamer gekozenVrijSlotZonderKamer, LocalDateTime datumTijdBuitenRooster, BriefType briefType,
 		boolean briefTegenhouden, boolean verwezenMedischeRedenenDoorInfolijn, String opmerking, OrganisatieMedewerker organisatieMedewerker);
 
+	boolean ligtInSpoedperiode(VrijSlotZonderKamer afspraakslot);
+
+	ColonIntakeAfspraak maakAfspraak(Client client, VrijSlotZonderKamer gekozenVrijSlotZonderKamer, LocalDateTime datumTijdBuitenRooster, BriefType briefType,
+		boolean briefTegenhouden, String opmerking, OrganisatieMedewerker organisatieMedewerker);
+
 	ColonIntakeAfspraak maakNieuweAfspraak(Client client, VrijSlotZonderKamer gekozenVrijSlotZonderKamer, LocalDateTime datumTijdBuitenRooster);
 
+	void annuleerAfspraak(Long afspraakId, boolean briefTegenhouden, String notitie, OrganisatieMedewerker organisatieMedewerker);
+
+	List<AfspraakDto> getAfspraken(Client client);
+
+	List<AfspraakActie> getAfspraakActies(Client client, Long afspraakId);
 }

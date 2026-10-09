@@ -29,6 +29,7 @@ import { MammaVisitatielijstResponseDto } from '@shared/types/mamma/dto/visitati
 import { NotificationService } from '@shared/services/notification/notification.service'
 import { DsButtonComponent, DsInputComponent } from '@topicus-rgp-ds/web'
 import { SingleFileSelectorComponent } from '@shared/components/single-file-selector/single-file-selector.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-mamma-visitatielijst-genereren-dialog',
@@ -36,6 +37,7 @@ import { SingleFileSelectorComponent } from '@shared/components/single-file-sele
   templateUrl: './mamma-visitatielijst-genereren-dialog.component.html',
 })
 export class MammaVisitatielijstGenererenDialogComponent {
+  protected readonly strings = inject(StringsService).getStrings()
   private readonly formBuilder = inject(FormBuilder)
   private readonly visitatieService = inject(MammaVisitatieService)
   private readonly dialogRef = inject(DialogRef)

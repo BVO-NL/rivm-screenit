@@ -18,7 +18,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<ds-page-header title="Cliëntdossier" [fullHeight]="true" (backButtonClicked)="naarClientZoeken()">
+<ds-page-header [title]="strings.algemeen.clientDossier.pageTitle" [fullHeight]="true" (backButtonClicked)="naarClientZoeken()">
   <ds-tab-group [selectedIndex]="actieveTabIndex" (selectedIndexChange)="refresh($event)">
     <ds-tab [titel]="tabLabels[0]">
       <ng-template dsLazyContentDirective>
@@ -48,6 +48,6 @@
 
   <button ds-button-secondary (click)="naarClientZoeken()" data-testid="client_zoeken_btn">
     <ds-icon [icon]="faSearch"/>
-    Cliënt zoeken
+    {{ strings.algemeen.clientDossier.clientZoekenButton }}
   </button>
 </ds-page-header>

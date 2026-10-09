@@ -57,7 +57,7 @@ import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.RangeUtil;
 import nl.topicuszorg.communicationhub.api.LetterServiceCommunicationHubClientApi;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;

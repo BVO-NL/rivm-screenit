@@ -50,7 +50,8 @@ public class ColonMislukteHuisartsberichtenVersturenJobConfiguration extends Abs
 	public Step huisartsenberichtenOpnieuwVersturenStep(ColonMislukteHuisartsberichtenVersturenReader reader, ColonMislukteHuisartsberichtenVersturenWriter writer)
 	{
 		return new StepBuilder("huisartsenberichtenOpnieuwVersturenStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

@@ -1,8 +1,6 @@
-package nl.rivm.screenit.batch.jobs.cervix.oudenietverstuurdezas;
-
 /*-
  * ========================LICENSE_START=================================
- * screenit-batch-bmhk
+ * medewerkerportaal
  * %%
  * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -20,10 +18,11 @@ package nl.rivm.screenit.batch.jobs.cervix.oudenietverstuurdezas;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-
-public abstract class CervixOudeNietIngestuurdeZasConstants
-{
-	public static final String PROJECT_GROEP_ID = "project.groep.id.key";
-
-	public static final String PROJECT_ID = "project.id.key";
+export const CERVIX_STRINGS = {
+  cisHistorie: {
+    geenHistorie: {
+      titel: 'Geen historie',
+      subtitel: 'De client heeft geen CIS historie',
+    },
+  },
 }

@@ -18,61 +18,62 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<div class="display-flex justify-content-between align-items-center mb-3 w-100">
-  <div class="display-flex align-items-center gap-2">
-    <div class="btn-group">
-      <button (click)="zoomOut()" ds-button-secondary data-testid="btn_zoom_out" [disabled]="isZoomOutDisabled">
-        <ds-icon [icon]="faMagnifyingGlassMinus" size="md"></ds-icon>
-      </button>
-      <button (click)="zoomIn()" ds-button-secondary data-testid="btn_zoom_in" [disabled]="isZoomInDisabled">
-        <ds-icon [icon]="faMagnifyingGlassPlus" size="md"></ds-icon>
-      </button>
-    </div>
-    <app-select-button [options]="viewRanges" [(ngModel)]="viewRange" (ngModelChange)="setViewRange($event)" data-testid="select_btn_view_range"/>
-    <ds-datepicker
-      [errorMessage]="{valideDatum: datumCtrl.getError('valideDatum')}"
-      placeholder="dd-mm-jjjj"
-      [formControl]="datumCtrl"
-      [min]="minDate"
-      [max]="maxDate"
-      data-testid="input_selected_date"
-    >
-    </ds-datepicker>
-    <div class="btn-group">
-      <button ds-button-secondary (click)="gotoPrevious.emit()" data-testid="btn_goto_previous">
-        <ds-icon [icon]="faAngleLeft"></ds-icon>
-        Vorige
-      </button>
-      <button ds-button-secondary (click)="gotoNext.emit()" data-testid="btn_goto_next">
-        Volgende
-        <ds-icon [icon]="faAngleRight"></ds-icon>
-      </button>
-    </div>
-    <app-rooster-legenda/>
-  </div>
-  <div class="display-flex align-items-center gap-2">
-    <button ds-button-delete dsButtonMenu [menu]="verwijderMenu"
-            *appAutorisatie="tijdslotVerwijderenConstraint"
-            (menuOpened)="setCloseOnClick()"
-            (menuItemClicked)="verwijderItemClicked($event)"
-            data-testid="btn_verwijderen_afspraakslot_of_blokkade">
-      <ds-icon [icon]="faTrashCan"></ds-icon>
-      Verwijderen
-      <ds-icon [icon]="faAngleDown"></ds-icon>
+<div class="control-group">
+  <div class="btn-group">
+    <button (click)="zoomOut()" ds-button-secondary data-testid="btn_zoom_out" [disabled]="isZoomOutDisabled">
+      <ds-icon [icon]="faMagnifyingGlassMinus" size="md"></ds-icon>
     </button>
-    <button ds-button-secondary
-            *appAutorisatie="tijdslotAanmakenConstraint"
-            (click)="toevoegItemClicked(ColonTijdslotType.BLOKKADE)"
-            data-testid="btn_toevoegen_blokkade">
-      <ds-icon [icon]="faAdd"></ds-icon>
-      Blokkade
-    </button>
-    <button ds-button-primary
-            *appAutorisatie="tijdslotAanmakenConstraint"
-            (click)="toevoegItemClicked(ColonTijdslotType.AFSPRAAKSLOT)"
-            data-testid="btn_toevoegen_afspraakslot">
-      <ds-icon [icon]="faAdd"></ds-icon>
-      Afspraakslot
+    <button (click)="zoomIn()" ds-button-secondary data-testid="btn_zoom_in" [disabled]="isZoomInDisabled">
+      <ds-icon [icon]="faMagnifyingGlassPlus" size="md"></ds-icon>
     </button>
   </div>
+  <app-select-button [options]="viewRanges" [(ngModel)]="viewRange" [ngModelOptions]="{standalone: true}"
+                     (ngModelChange)="setViewRange($event)"
+                     data-testid="select_btn_view_range"/>
+  <ds-datepicker
+    [errorMessage]="{valideDatum: datumCtrl.getError('valideDatum')}"
+    placeholder="dd-mm-jjjj"
+    [formControl]="datumCtrl"
+    [minDate]="minDate"
+    [maxDate]="maxDate"
+    data-testid="input_selected_date"
+  >
+  </ds-datepicker>
+  <div class="btn-group">
+    <button ds-button-secondary (click)="gotoPrevious.emit()" data-testid="btn_goto_previous">
+      <ds-icon [icon]="faAngleLeft"/>
+      {{ strings.algemeen.buttons.vorige }}
+    </button>
+    <button ds-button-secondary (click)="gotoNext.emit()" data-testid="btn_goto_next">
+      {{ strings.algemeen.buttons.volgende }}
+      <ds-icon [icon]="faAngleRight"/>
+    </button>
+  </div>
+  <app-rooster-legenda/>
+</div>
+
+<div class="control-group">
+  <button ds-button-delete dsButtonMenu [menu]="verwijderMenu"
+          *appAutorisatie="tijdslotVerwijderenConstraint"
+          (menuOpened)="setCloseOnClick()"
+          (menuItemClicked)="verwijderItemClicked($event)"
+          data-testid="btn_verwijderen_afspraakslot_of_blokkade">
+    <ds-icon [icon]="faTrashCan"></ds-icon>
+    {{ strings.algemeen.buttons.verwijderen }}
+    <ds-icon [icon]="faAngleDown"></ds-icon>
+  </button>
+  <button ds-button-secondary
+          *appAutorisatie="tijdslotAanmakenConstraint"
+          (click)="toevoegItemClicked(ColonTijdslotType.BLOKKADE)"
+          data-testid="btn_toevoegen_blokkade">
+    <ds-icon [icon]="faAdd"></ds-icon>
+    {{ strings.colon.rooster.buttons.blokkade }}
+  </button>
+  <button ds-button-primary
+          *appAutorisatie="tijdslotAanmakenConstraint"
+          (click)="toevoegItemClicked(ColonTijdslotType.AFSPRAAKSLOT)"
+          data-testid="btn_toevoegen_afspraakslot">
+    <ds-icon [icon]="faAdd"></ds-icon>
+    {{ strings.colon.rooster.buttons.afspraakslot }}
+  </button>
 </div>

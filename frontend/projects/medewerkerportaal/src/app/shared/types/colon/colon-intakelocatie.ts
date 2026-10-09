@@ -23,7 +23,7 @@ import { AdresDto } from '@shared/types/algemeen/dto/adres.dto'
 export interface ColonIntakelocatie {
   id: number
   naam: string
-  aantalGeprognosticeerdeAfspraakslots: number
-  huidigAantalAfspraakslots: number
+  aantalGeprognosticeerdeAfspraakslots?: number
+  huidigAantalAfspraakslots?: number
   adres: AdresDto
 }

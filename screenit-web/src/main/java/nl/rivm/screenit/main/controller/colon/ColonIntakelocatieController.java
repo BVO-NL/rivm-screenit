@@ -67,8 +67,7 @@ public class ColonIntakelocatieController
 	@GetMapping()
 	@Operation(summary = "Haal de intakelocatie op", description = "Geeft gegevens van de ingelogde intakelocatie terug.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Intakelocatie succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Intakelocatie succesvol opgehaald")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
@@ -89,8 +88,7 @@ public class ColonIntakelocatieController
 	@GetMapping("{id}")
 	@Operation(summary = "Haal de intakelocatie op met id", description = "Geeft gegevens van de intakelocatie met het opgegeven id terug.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Gegevens van de intakelocatie"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Gegevens van de intakelocatie")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_LOCATIE_ROOSTER,
 		Recht.MEDEWERKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT }, bevolkingsonderzoekScopes = {
@@ -109,8 +107,7 @@ public class ColonIntakelocatieController
 	@GetMapping("/signaleringstermijn")
 	@Operation(summary = "Haal de signaleringstermijn op", description = "Geeft gegevens van de signaleringstermijn terug.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Signaleringstermijn succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Signaleringstermijn succesvol opgehaald")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })

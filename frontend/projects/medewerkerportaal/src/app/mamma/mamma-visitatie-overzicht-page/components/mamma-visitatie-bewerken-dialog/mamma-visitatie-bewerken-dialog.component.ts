@@ -47,6 +47,7 @@ import { MammaFotorichting } from '@shared/types/mamma/mamma-fotorichting'
 import { MammaVisitatieDto } from '@shared/types/mamma/dto/visitatie/mamma-visitatie.dto'
 import { DsButtonComponent, DsDropdownComponent, DsInputComponent, DsRadiobuttonComponent, DsRadiobuttonOption } from '@topicus-rgp-ds/web'
 import { SingleFileSelectorComponent } from '@shared/components/single-file-selector/single-file-selector.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-mamma-visitatie-bewerken-dialog',
@@ -55,6 +56,7 @@ import { SingleFileSelectorComponent } from '@shared/components/single-file-sele
   styleUrl: './mamma-visitatie-bewerken-dialog.component.scss',
 })
 export class MammaVisitatieBewerkenDialogComponent implements OnDestroy {
+  protected readonly strings = inject(StringsService).getStrings()
   private readonly dialogRef = inject(DialogRef)
   private readonly formBuilder = inject(FormBuilder)
   private readonly organisatieService = inject(OrganisatieService)

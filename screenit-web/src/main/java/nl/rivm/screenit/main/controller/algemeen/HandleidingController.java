@@ -67,8 +67,7 @@ public class HandleidingController extends BaseController
 	@GetMapping
 	@Operation(summary = "Haal handleidingen op", description = "Geeft alle beschikbare handleidingen terug.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Handleidingen succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Handleidingen succesvol opgehaald")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.HANDLEIDINGEN, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -84,8 +83,7 @@ public class HandleidingController extends BaseController
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Handleidingen succesvol verwerkt"),
 		@ApiResponse(responseCode = "207", description = "Niet alle uploads zijn geslaagd"),
-		@ApiResponse(responseCode = "413", description = "Bestand is te groot om te uploaden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "413", description = "Bestand is te groot om te uploaden")
 	})
 	@SecurityConstraint(actie = Actie.TOEVOEGEN, constraint = ShiroConstraint.HasPermission, recht = Recht.HANDLEIDINGEN, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -108,8 +106,7 @@ public class HandleidingController extends BaseController
 		@ApiResponse(responseCode = "200", description = "Handleiding succesvol bijgewerkt"),
 		@ApiResponse(responseCode = "400", description = "Ongeldig bestandstype opgegeven"),
 		@ApiResponse(responseCode = "404", description = "Handleiding niet gevonden"),
-		@ApiResponse(responseCode = "409", description = "Bestandsnaam is al in gebruik"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "409", description = "Bestandsnaam is al in gebruik")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.HANDLEIDINGEN, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -126,8 +123,7 @@ public class HandleidingController extends BaseController
 	@Operation(summary = "Verwijder een handleiding", description = "Verwijdert een handleiding op basis van het opgegeven id.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Handleiding succesvol verwijderd"),
-		@ApiResponse(responseCode = "404", description = "Handleiding niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Handleiding niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.HANDLEIDINGEN, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })

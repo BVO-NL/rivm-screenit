@@ -38,7 +38,7 @@ import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.util.EnvironmentUtil;
 import nl.rivm.screenit.util.FoutmeldingsCodeUtil;
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +92,7 @@ abstract class AuthorizedController
 	final protected OrganisatieMedewerker getOrganisatieMedewerker(HttpServletRequest request)
 	{
 		var accountId = getAccountId(request);
-		if (NumberUtils.isNumber(accountId))
+		if (NumberUtils.isCreatable(accountId))
 		{
 			return hibernateService.get(OrganisatieMedewerker.class, Long.parseLong(accountId));
 		}
@@ -102,7 +102,7 @@ abstract class AuthorizedController
 	final protected boolean isAuthorized(HttpServletRequest request, Recht recht)
 	{
 		var accountId = getAccountId(request);
-		if (NumberUtils.isNumber(accountId))
+		if (NumberUtils.isCreatable(accountId))
 		{
 			return seAutorisatieService.isGeautoriseerd(Long.parseLong(accountId), recht);
 		}

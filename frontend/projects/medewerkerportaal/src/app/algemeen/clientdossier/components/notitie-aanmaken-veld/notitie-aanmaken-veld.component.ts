@@ -18,16 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, computed, forwardRef, input, signal, WritableSignal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, forwardRef, inject, input, signal, WritableSignal } from '@angular/core'
 import { DsButtonComponent, DsIconComponent, DsTextareaComponent } from '@topicus-rgp-ds/web'
 import { faPlus } from '@fortawesome/pro-light-svg-icons'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-notitie-aanmaken-veld',
   imports: [DsButtonComponent, DsIconComponent, DsTextareaComponent, FormsModule],
   templateUrl: './notitie-aanmaken-veld.component.html',
-  styleUrl: './notitie-aanmaken-veld.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -41,6 +42,7 @@ export class NotitieAanmakenVeldComponent implements ControlValueAccessor {
   protected veldZichtbaar: WritableSignal<boolean> = signal(false)
   protected isDisabled = false
   protected value = ''
+  protected readonly toevoegenLabel = inject(StringsService).getStrings().algemeen.notities.buttons.notitieToevoegen
   label = input<string>('Notitie')
   gebruikExterneLabel = input<boolean>(false)
   interneLabel = computed(() => (this.gebruikExterneLabel() ? '' : this.label()))

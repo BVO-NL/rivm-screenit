@@ -45,6 +45,7 @@ import { SecurityConstraint } from '@shared/types/autorisatie/security-constrain
 import { mobieleTelefoonValidator, normaalTelefoonnummerValidator } from '@shared/validators/telefoon-nummer/telefoon-nummer.validators'
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component'
 import { NL_DATE_FORMAT } from '@shared/constants'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-client-info-bewerken-modal',
@@ -70,6 +71,7 @@ export class ClientInfoBewerkenModalComponent {
   private readonly notificationService = inject(NotificationService)
   private readonly clientService = inject(ClientService)
 
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly clientData: ClientContactgegevensDto = inject(DIALOG_DATA)
   protected readonly Doelgroep = Doelgroep
   protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
@@ -157,11 +159,12 @@ export class ClientInfoBewerkenModalComponent {
       this.dialog
         .open(ConfirmationDialogComponent, {
           data: {
-            title: 'Doelgroep gewijzigd',
-            body: 'De doelgroep is gewijzigd. De client heeft echter nog een afspraak. U wordt geadviseerd om deze te verzetten of uit te stellen.',
-            neeBtnTekst: 'Annuleren',
-            jaBtnTekst: 'Begrepen',
+            title: this.strings.algemeen.clientInfoBewerken.doelgroepWijzigenMelding.titel,
+            body: this.strings.algemeen.clientInfoBewerken.doelgroepWijzigenMelding.body,
+            neeButtonTekst: this.strings.algemeen.buttons.annuleren,
+            jaButtonTekst: this.strings.algemeen.buttons.begrepen,
           },
+          hasBackdrop: true,
         })
         .closed.pipe(
           take(1),
@@ -179,11 +182,11 @@ export class ClientInfoBewerkenModalComponent {
       .pipe(take(1))
       .subscribe({
         next: () => {
-          this.notificationService.success('Contactgegevens succesvol gewijzigd.')
+          this.notificationService.success(this.strings.algemeen.clientInfoBewerken.notifications.saveSuccess)
           this.dialogRef.close(true)
         },
         error: () => {
-          this.notificationService.error('Er is een fout opgetreden bij het opslaan van de contactgegevens. Probeer het later opnieuw.')
+          this.notificationService.error(this.strings.algemeen.clientInfoBewerken.notifications.saveError)
         },
       })
   }

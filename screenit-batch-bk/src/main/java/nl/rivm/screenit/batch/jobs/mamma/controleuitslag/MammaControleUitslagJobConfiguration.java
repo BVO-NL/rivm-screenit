@@ -50,7 +50,8 @@ public class MammaControleUitslagJobConfiguration extends AbstractJobConfigurati
 	public Step controleMissendeUitslagenStep(MammaControleMissendeUitslagenReader reader, MammaControleMissendeUitslagenWriter writer)
 	{
 		return new StepBuilder("controleMissendeUitslagenStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

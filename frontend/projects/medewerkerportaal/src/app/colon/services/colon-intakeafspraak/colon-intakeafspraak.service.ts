@@ -49,6 +49,13 @@ export class ColonIntakeafspraakService {
     return this.apiService.get<AfspraakActie[]>(`${this.baseUrl}/acties?clientId=${clientId}${afspraakIdParameter}`)
   }
 
+  zegAfspraakAf(afspraakId: number, clientId: number, briefTegenhouden: boolean, notitie: string) {
+    return this.clientContactService.ververstAantalContactenMetMeldingNa(
+      this.apiService.post<void>(`${this.baseUrl}/${afspraakId}/afzeggen`, { briefTegenhouden, notitie }),
+      () => clientId,
+    )
+  }
+
   zoekAfspraakslots(query: VrijSlotZonderKamerFilter, paginering: PagineringDto, sortering: SorteerParameterDto) {
     return this.apiService.post<PagedResponse<VrijSlotZonderKamerDto[]>>(`${this.baseUrl}/zoeken?clientId=${query.clientId}`, {
       sortering,
@@ -61,5 +68,15 @@ export class ColonIntakeafspraakService {
     return this.apiService
       .put<ClientAfspraakDto>(`${this.baseUrl}/${request.afspraakId}/verplaatsen`, request)
       .pipe(switchMap((response: ClientAfspraakDto) => this.clientContactService.getAantalContactenMetMelding(request.clientId).pipe(map(() => response))))
+  }
+
+  maakAfspraak(request: ColonAfspraakMakenRequestDto): Observable<ClientAfspraakDto> {
+    return this.apiService
+      .post<ClientAfspraakDto>(this.baseUrl, request)
+      .pipe(switchMap((response: ClientAfspraakDto) => this.clientContactService.getAantalContactenMetMelding(request.clientId).pipe(map(() => response))))
+  }
+
+  isDigitaleAfspraak(afspraak: ClientAfspraakDto): boolean {
+    return 'digitaal' in afspraak && afspraak.digitaal === true
   }
 }

@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { differenceInYears, format, isBefore, isValid, parse, parseISO, startOfDay } from 'date-fns'
+import { differenceInYears, endOfISOWeek, format, getISOWeek, isBefore, isValid, parse, parseISO, startOfDay, startOfISOWeek } from 'date-fns'
 import { COMPACT_DATE_FORMAT, DATE_FORMAT, ISO_DATE_FORMAT, LONG_TIME_FORMAT, NL_DATE_FORMAT, TIME_FORMAT } from '@shared/constants'
+import { nl } from 'date-fns/locale'
 
 export function getDateFormat(date: string): string {
   if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(date)) {
@@ -186,4 +187,19 @@ export function berekenLeeftijd(geboortedatum: Date | string | null | undefined)
     return undefined
   }
   return differenceInYears(new Date(), new Date(geboortedatum))
+}
+
+export function formatDatumVoorDigitaleAfspraak(value: Date | string | null): string {
+  if (!value) {
+    return ''
+  }
+
+  const datum = new Date(value)
+  if (!isValid(datum)) {
+    return ''
+  }
+
+  const beginWeek = startOfISOWeek(datum)
+  const eindeWeek = endOfISOWeek(datum)
+  return `Week ${getISOWeek(datum)} - ${format(beginWeek, 'd MMMM', { locale: nl })} t/m ${format(eindeWeek, 'd MMMM yyyy', { locale: nl })}`
 }

@@ -67,13 +67,13 @@ public class WsbApplicationConfig
 	@Bean
 	public String configDir()
 	{
-		return org.apache.commons.lang.StringUtils.defaultIfBlank(smartCardConfigDir, "");
+		return StringUtils.defaultIfBlank(smartCardConfigDir, "");
 	}
 
 	@Bean
 	public String uziRootCertificateFile()
 	{
-		return org.apache.commons.lang.StringUtils.defaultIfBlank(smartCardUziRootCer, "");
+		return StringUtils.defaultIfBlank(smartCardUziRootCer, "");
 	}
 
 	@Setter

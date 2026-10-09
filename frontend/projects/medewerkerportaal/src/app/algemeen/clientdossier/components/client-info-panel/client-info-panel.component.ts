@@ -44,6 +44,7 @@ import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.direct
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
 import { EnumNaturalPipe } from '@shared/pipes/enum-natural/enum-natural'
+import { StringsService } from '@shared/strings'
 import { DoelgroepBadgesComponent } from '@shared/components/doelgroep-badges/doelgroep-badges.component'
 
 @Component({
@@ -65,6 +66,7 @@ import { DoelgroepBadgesComponent } from '@shared/components/doelgroep-badges/do
 })
 export class ClientInfoPanelComponent implements OnInit {
   protected readonly faPencil = faPencil
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
   protected readonly geslachtLabel = geslachtLabel
   protected readonly aanspreekvormLabel = aanspreekvormLabel

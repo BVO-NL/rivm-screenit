@@ -23,13 +23,13 @@
     <div class="col">
       <app-kamer-selector [required]="true" formControlName="kamer" [inclusiefAlleKamers]="false"/>
       <ds-datepicker
-        [errorMessage]="{required: 'De datum is verplicht', invalidDate: 'De ingevoerde datum is niet valide'}"
-        [min]="minDatum"
+        [errorMessage]="{required: strings.algemeen.errors.verplicht('De datum'), invalidDate: strings.algemeen.errors.invalidDate}"
+        [minDate]="minDatum"
         formControlName="datum"
-        label="Datum"/>
+        [label]="strings.algemeen.labels.datum"/>
       @if (isNieuw) {
         <ds-input
-          [errorMessage]="{required: 'Het aantal afspraakslots is verplicht'}"
+          [errorMessage]="{required: strings.algemeen.errors.verplicht('Het aantal afspraakslots')}"
           [label]="'Aantal afspraakslots (van ' + instellingen().duurAfspraakInMinuten + ' minuten)'"
           formControlName="aantalBlokken"
           minValue="1"
@@ -41,11 +41,11 @@
         <app-timepicker
           [required]="true"
           formControlName="vanaf"
-          label="Starttijd"
+          [label]="strings.algemeen.labels.starttijd"
         />
         <app-timepicker
           formControlName="tot"
-          label="Eindtijd"
+          [label]="strings.algemeen.labels.eindtijd"
         />
       </div>
     </div>
@@ -58,21 +58,22 @@
       <button (click)="confirmDeleteSlot()"
               data-testid="btn-verwijderen"
               ds-button-delete>
-        Verwijderen
+        {{ strings.algemeen.buttons.verwijderen }}
       </button>
     }
   </ng-container>
   <ng-container buttons>
-    <div class="btn-group">
-      <button (click)="cancel()" data-testid="btn_annuleren" ds-button-secondary type="button">{{ bewerkenToegestaan ? 'Annuleren' : 'Sluiten' }}</button>
-      @if (bewerkenToegestaan) {
-        <button (click)="save()"
-                [disabled]="afspraakslotForm.invalid"
-                data-testid="btn_opslaan"
-                ds-button-primary>
-          Opslaan
-        </button>
-      }
-    </div>
+
+    <button (click)="cancel()" data-testid="btn_annuleren" ds-button-tertiary
+            type="button">{{ bewerkenToegestaan ? strings.algemeen.buttons.annuleren : strings.algemeen.buttons.sluiten }}
+    </button>
+    @if (bewerkenToegestaan) {
+      <button (click)="save()"
+              [disabled]="afspraakslotForm.invalid"
+              data-testid="btn_opslaan"
+              ds-button-primary>
+        {{ strings.algemeen.buttons.opslaan }}
+      </button>
+    }
   </ng-container>
 </app-base-dialog>

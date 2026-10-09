@@ -21,6 +21,7 @@
 import { Component, computed, inject } from '@angular/core'
 import { DsTooltipDirective } from '@topicus-rgp-ds/web'
 import { ParameterService } from '@/algemeen/services/parameter/parameter.service'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-rooster-legenda',
@@ -30,5 +31,6 @@ import { ParameterService } from '@/algemeen/services/parameter/parameter.servic
 })
 export class RoosterLegendaComponent {
   private readonly parameterService = inject(ParameterService)
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly isDigitaleIntakeBeschikbaar = computed(() => this.parameterService.isDigitaleIntakeBeschikbaar())
 }

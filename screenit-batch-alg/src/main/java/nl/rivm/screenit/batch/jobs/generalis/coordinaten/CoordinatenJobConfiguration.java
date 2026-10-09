@@ -67,7 +67,8 @@ public class CoordinatenJobConfiguration extends AbstractJobConfiguration
 	{
 		return new StepBuilder("postcodeCoordinatenStep", repository)
 			.listener(listener)
-			.<String, String> chunk(250, transactionManager)
+			.<String, String> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -78,7 +79,8 @@ public class CoordinatenJobConfiguration extends AbstractJobConfiguration
 	{
 		return new StepBuilder("gemeenteCoordinatenStep", repository)
 			.listener(listener)
-			.<String, String> chunk(250, transactionManager)
+			.<String, String> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -89,7 +91,8 @@ public class CoordinatenJobConfiguration extends AbstractJobConfiguration
 	{
 		return new StepBuilder("postcodeCoordinatenClientKoppelStep", repository)
 			.listener(listener)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -101,7 +104,8 @@ public class CoordinatenJobConfiguration extends AbstractJobConfiguration
 	{
 		return new StepBuilder("postcodeCoordinatenIntakeLocatieKoppelStep", repository)
 			.listener(listener)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -113,7 +117,8 @@ public class CoordinatenJobConfiguration extends AbstractJobConfiguration
 	{
 		return new StepBuilder("postcodeCoordinatenStandplaatsKoppelStep", repository)
 			.listener(listener)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

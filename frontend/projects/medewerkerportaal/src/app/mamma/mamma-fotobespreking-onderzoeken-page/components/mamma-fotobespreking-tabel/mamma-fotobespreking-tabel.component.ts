@@ -51,6 +51,7 @@ import { mammaFollowUpConclusieStatusLabel } from '@shared/types/mamma/enum/mamm
 import { mammaLaesieTypeLabels } from '@shared/types/mamma/enum/mamma-laesie-type'
 import { mammaLezingRedenenFotobesprekingMbberLabels } from '@shared/types/mamma/enum/mamma-lezing-redenen-fotobespreking-mbber'
 import { mammaLezingRedenenFotobesprekingRadioloogLabels } from '@shared/types/mamma/enum/mamma-lezing-redenen-fotobespreking-radioloog'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-mamma-fotobespreking-tabel',
@@ -77,6 +78,7 @@ import { mammaLezingRedenenFotobesprekingRadioloogLabels } from '@shared/types/m
   templateUrl: './mamma-fotobespreking-tabel.component.html',
 })
 export class MammaFotobesprekingTabelComponent extends DsAbstractSelectableTable<MammaFotobesprekingOnderzoekDto> implements AfterViewInit {
+  protected readonly strings = inject(StringsService).getStrings()
   paginering = model.required<PagineringDto>()
   sortering = model.required<SorteerParameterDto>()
   onderzoeken = input<MammaFotobesprekingOnderzoekDto[]>([])

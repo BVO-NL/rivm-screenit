@@ -56,7 +56,8 @@ public class IntakeAfsprakenMakenJobConfiguration extends AbstractJobConfigurati
 	public Step intakeAfsprakenMakenStep(IntakeAfsprakenMakenReader reader, IntakeAfsprakenMakenWriter writer)
 	{
 		return new StepBuilder("intakeAfsprakenMakenStep", repository)
-			.<ClientAfspraak, ClientAfspraak> chunk(20, transactionManager)
+			.<ClientAfspraak, ClientAfspraak> chunk(20)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

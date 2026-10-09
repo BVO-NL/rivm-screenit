@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { ChangeDetectorRef, Component, effect, inject, input, model, output, viewChild } from '@angular/core'
+import { ChangeDetectorRef, Component, DestroyRef, effect, inject, input, model, output, viewChild } from '@angular/core'
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { CalendarView } from '@/shared/types/calendar-view'
 import { SelectButtonComponent } from '@shared/components/select-button/select-button.component'
@@ -46,6 +46,7 @@ import { ColonTijdslotType } from '@shared/types/colon/colon-tijdslot-type'
 import { isValid } from 'date-fns'
 import { parseDate } from '@shared/utils/date-utils'
 import { filter, fromEvent, take } from 'rxjs'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-rooster-controls',
@@ -61,8 +62,11 @@ import { filter, fromEvent, take } from 'rxjs'
     DsButtonMenuDirective,
     ReactiveFormsModule,
   ],
+  styleUrl: './rooster-controls.component.scss',
 })
 export class RoosterControlsComponent {
+  protected readonly strings = inject(StringsService).getStrings()
+  private readonly destroyRef = inject(DestroyRef)
   viewRange = model<CalendarView>('werkweek')
   selectedDate = input<Date | undefined>()
   currentDate = input<Date | undefined>()
@@ -76,7 +80,13 @@ export class RoosterControlsComponent {
   datumCtrl: FormControl = new FormControl<Date | null>(null)
   zoomLevel = 30
   isNavLinkDayClick = false
-  viewRanges: DsContextMenuItem[][] = [[new DsContextMenuItem({ label: 'Week' }), new DsContextMenuItem({ label: 'Werkweek' }), new DsContextMenuItem({ label: 'Dag' })]]
+  viewRanges: DsContextMenuItem[][] = [
+    [
+      new DsContextMenuItem({ label: this.strings.colon.rooster.buttons.viewWeek }),
+      new DsContextMenuItem({ label: this.strings.colon.rooster.buttons.viewWerkweek }),
+      new DsContextMenuItem({ label: this.strings.colon.rooster.buttons.viewDag }),
+    ],
+  ]
   tijdslotAanmakenConstraint: SecurityConstraint = {
     recht: [Recht.MEDEWERKER_LOCATIE_ROOSTER],
     actie: Actie.TOEVOEGEN,
@@ -110,11 +120,11 @@ export class RoosterControlsComponent {
   protected verwijderMenu: DsContextMenuItem[][] = [
     [
       new DsContextMenuItem({
-        label: ColonTijdslotType.AFSPRAAKSLOT + 's',
+        label: this.strings.colon.rooster.buttons.deleteAfspraakslots,
         isDeleteItem: true,
       }),
       new DsContextMenuItem({
-        label: ColonTijdslotType.BLOKKADE + 's',
+        label: this.strings.colon.rooster.buttons.deleteBlokkades,
         isDeleteItem: true,
       }),
     ],
@@ -212,6 +222,7 @@ export class RoosterControlsComponent {
           return !clickTarget.closest('.ds-context-menu') && !clickTarget.closest(`#${this.buttonMenuDirective()!.elementClass}`)
         }),
         take(1),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => this.cdr.markForCheck())
   }

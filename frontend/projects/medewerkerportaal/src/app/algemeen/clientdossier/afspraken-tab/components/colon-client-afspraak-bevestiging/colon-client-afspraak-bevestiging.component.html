@@ -19,13 +19,20 @@
   =========================LICENSE_END==================================
   -->
 <div class="p-4">
-  <h2 class="mb-3">Afspraakbevestiging</h2>
+  <h2 class="mb-3 text-bold">{{ strings.algemeen.afspraken.verplaatsenDialog.bevestigingStep.titel }}</h2>
   <form [formGroup]="form">
-    <ng-container *appAutorisatie="briefConstraint">
-      <h3>Brief</h3>
-      <ds-radiobutton [columnCount]="1" [items]="brieven" formControlName="briefType" data-testid="briefType-radiobutton"/>
-    </ng-container>
-    <app-notitie-aanmaken-veld formControlName="notitie"/>
-  </form>
+    <h4 class="pagina-sectie-header">{{ strings.algemeen.labels.brief }}</h4>
+    <ds-radiobutton [columnCount]="1" [items]="brieven()" formControlName="briefType" [label]="strings.algemeen.afspraken.verplaatsenDialog.bevestigingStep.briefKeuze"
+                    data-testid="briefType-radiobutton"/>
 
+    @if (toonMedischeVerwijzing()) {
+      <h3>{{ strings.algemeen.afspraken.verplaatsenDialog.bevestigingStep.medischeVerwijzing.titel }}</h3>
+      <ds-buttongroup [items]="jaNeeOpties" formControlName="verwezenMedischeRedenen" [required]="true"
+                      [label]="strings.algemeen.afspraken.verplaatsenDialog.bevestigingStep.medischeVerwijzing.vraag"
+                      [errorMessage]="{required: strings.algemeen.errors.verplicht(strings.algemeen.afspraken.verplaatsenDialog.bevestigingStep.medischeVerwijzing.veldnaam)}"
+                      data-testid="medische-verwijzing-buttongroup"/>
+    }
+
+    <app-notitie-aanmaken-veld [gebruikExterneLabel]="true" formControlName="notitie"/>
+  </form>
 </div>

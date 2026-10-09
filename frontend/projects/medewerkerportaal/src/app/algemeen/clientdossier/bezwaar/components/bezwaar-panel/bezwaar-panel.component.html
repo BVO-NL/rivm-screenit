@@ -23,7 +23,7 @@
     @if (!opOverzichtPagina()) {
       <ng-template ds-card-header-content>
         <button ds-button-secondary data-testid="overzicht_btn" routerLink="/client/dossier/bezwaar">
-          Overzicht
+          {{ strings.algemeen.buttons.overzicht }}
           <ds-icon [icon]="faArrowRight"/>
         </button>
       </ng-template>

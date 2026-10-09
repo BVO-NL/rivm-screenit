@@ -21,21 +21,21 @@
 <ds-card cardTitle="Verwijderde onderzoeksresultaten">
   <table ds-table [dataSource]="onderzoeksresultaten()" [fullWidth]="true">
     <ng-container dsColumnDef="bevolkingsonderzoek">
-      <th *dsHeaderCellDef ds-header-cell>Bevolkingsonderzoek</th>
+      <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.bevolkingsonderzoek }}</th>
       <td *dsCellDef="let row" ds-cell>{{ row.bevolkingsonderzoek | bvoLabel }}</td>
     </ng-container>
 
     <ng-container dsColumnDef="datum">
-      <th *dsHeaderCellDef ds-header-cell>Datum/tijd</th>
+      <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.datumTijd }}</th>
       <td *dsCellDef="let row" ds-cell>{{ row.moment | datumTijd }}</td>
     </ng-container>
 
     <ng-container dsColumnDef="bekijken">
-      <th *dsHeaderCellDef ds-header-cell>Actie</th>
+      <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.actie }}</th>
       <td *dsCellDef="let row" ds-cell>
         <button ds-button-tertiary (click)="bekijkOnderzoeksresultaten(row)"
                 data-testid="bekijk_onderzoeksresultaten_btn">
-          Bekijken
+          {{ strings.algemeen.buttons.bekijken }}
         </button>
       </td>
     </ng-container>

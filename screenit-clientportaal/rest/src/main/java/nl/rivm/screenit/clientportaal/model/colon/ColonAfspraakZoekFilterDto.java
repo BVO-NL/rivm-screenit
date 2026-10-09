@@ -52,4 +52,6 @@ public class ColonAfspraakZoekFilterDto extends ClientportaalBaseDto
 	private boolean asaScoreBovenDrie;
 
 	private boolean digitaleAfspraak;
+
+	private Long huidigAfspraakId;
 }

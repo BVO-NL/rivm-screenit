@@ -25,16 +25,16 @@
         <div class="row">
           <ds-description
             class="col"
-            label="Datum/tijd"
-            value="{{ bestaandeContact.datumTijd | date: NL_DATE_TIME_FORMAT : NL_TIMEZONE }}"/>
+            [label]="strings.algemeen.labels.datumTijd" value="{{ bestaandeContact.datumTijd | date: NL_DATE_TIME_FORMAT : NL_TIMEZONE }}"/>
           @if (dialogData.toonHistorieGegevens) {
             <ds-description
-              class="col" label="Uitgevoerde actie" [value]="actiesLabel"/>
+              class="col" [label]="strings.algemeen.labels.uitgevoerdeActie" [value]="actiesLabel"/>
           }
-          <ds-description class="col" label="Medewerker"
-                          value="{{ bestaandeContact.medewerker | naam: NaamTransform.Medewerker }}"/>@if (dialogData.toonHistorieGegevens) {
-          <ds-description class="col" label="Bevolkingsonderzoek" value="{{ bestaandeContact.bevolkingsonderzoeken | enumLabel: bevolkingsonderzoekLabels }}"/>
-        }
+          <ds-description class="col" [label]="strings.algemeen.labels.medewerker" value="{{ bestaandeContact.medewerker | naam: NaamTransform.Medewerker }}"/>
+          @if (dialogData.toonHistorieGegevens) {
+            <ds-description class="col" [label]="strings.algemeen.labels.bevolkingsonderzoek"
+                            value="{{ bestaandeContact.bevolkingsonderzoeken | enumLabel: bevolkingsonderzoekLabels }}"/>
+          }
         </div>
       </ds-summary-panel>
     }
@@ -44,24 +44,28 @@
     } @else {
       <ds-textarea
         data-testid="textarea_notitie"
-        label="Notitie"
+        label="{{strings.algemeen.labels.notitie}}"
         [formControl]="notitieCtrl"
-        [errorMessage]="{ maxlength: 'De notitie mag maximaal 2048 tekens zijn' }"
-        placeholder="Voeg hier je notitie toe"
+        [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('De notitie', 2048) }"
+        [placeholder]="strings.algemeen.notities.placeholder"
       />
     }
   </form>
   @if (magVerwijderen()) {
     <div verwijder-button>
-      <button ds-button-delete data-testid="btn_verwijderen" (click)="verwijderNotitie()">Notitie verwijderen</button>
+      <button ds-button-delete data-testid="btn_verwijderen" (click)="verwijderNotitie()">{{ strings.algemeen.notities.buttons.verwijderNotitie }}</button>
     </div>
   }
   <ng-container buttons>
-    <button ds-button-tertiary data-testid="btn_annuleren" (click)="sluitDialog()">{{ dialogData.readonly ? 'Sluiten' : 'Annuleren' }}</button>
+    <button ds-button-tertiary data-testid="btn_annuleren"
+            (click)="sluitDialog()">{{ dialogData.readonly ? strings.algemeen.buttons.sluiten : strings.algemeen.buttons.annuleren }}
+    </button>
     @if (isNieuweNotitie()) {
-      <button ds-button-primary data-testid="btn_toevoegen" (click)="notitieToevoegen()" [disabled]="notitieCtrl.invalid">Notitie toevoegen</button>
+      <button ds-button-primary data-testid="btn_toevoegen" (click)="notitieToevoegen()"
+              [disabled]="notitieCtrl.invalid">{{ strings.algemeen.notities.buttons.notitieToevoegen }}
+      </button>
     } @else if (!dialogData.readonly) {
-      <button ds-button-primary data-testid="btn_opslaan" (click)="wijzigingenOpslaan()" [disabled]="notitieCtrl.invalid">Wijzigingen opslaan</button>
+      <button ds-button-primary data-testid="btn_opslaan" (click)="wijzigingenOpslaan()" [disabled]="notitieCtrl.invalid">{{ strings.algemeen.buttons.wijzigingenOpslaan }}</button>
     }
   </ng-container>
 </app-base-dialog>

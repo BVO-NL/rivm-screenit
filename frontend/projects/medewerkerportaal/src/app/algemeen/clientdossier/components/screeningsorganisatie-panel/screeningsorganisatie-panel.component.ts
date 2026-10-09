@@ -22,17 +22,19 @@ import { Component, computed, inject, Signal } from '@angular/core'
 import { DsCardComponent } from '@topicus-rgp-ds/web'
 import { ClientService } from '@/algemeen/services/client/client.service'
 import { ClientDto } from '@shared/types/algemeen/dto/client.dto'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-screeningsorganisatie-panel',
   imports: [DsCardComponent],
-  template: ` <ds-card cardTitle="Verantwoordelijke screeningsorganisatie">{{ screeningsorganisatie() }} </ds-card> `,
+  template: ` <ds-card [cardTitle]="strings.algemeen.screeningsorganisatie.cardTitle">{{ screeningsorganisatie() }} </ds-card> `,
   host: {
     '[class.display-none]': '!isZichtbaar()',
   },
 })
 export class ScreeningsorganisatiePanelComponent {
   private readonly clientService = inject(ClientService)
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly client: Signal<ClientDto> = this.clientService.select('client')
   protected readonly screeningsorganisatie = computed(() => this.client().screeningsorganisatie)
   protected readonly isZichtbaar = computed(() => this.client().overlijdensdatum == null && this.screeningsorganisatie() != null && this.client().actief)

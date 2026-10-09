@@ -43,10 +43,12 @@ public interface MammaAfspraakMapper
 		@Mapping(target = "vanaf", source = "afspraak.vanaf"),
 		@Mapping(target = "locatie", ignore = true),
 		@Mapping(target = "locatieBeschrijving", source = "locatie.locatieBeschrijving"),
-		@Mapping(target = "digitaal", constant = "false")
+		@Mapping(target = "digitaal", constant = "false"),
+		@Mapping(target = "verlopenZonderConclusie", constant = "false")
 	})
 	AfspraakDto afspraakNaarDto(MammaAfspraak afspraak, MammaStandplaatsLocatie locatie);
 
+	@Mapping(target = "id", source = "standplaats.id")
 	@Mapping(target = "naam", source = "standplaats.naam")
 	@Mapping(target = "adres", source = "locatie")
 	AfspraakLocatieDto afspraakLocatieNaarDto(MammaStandplaats standplaats, MammaStandplaatsLocatie locatie);

@@ -18,37 +18,39 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog titel="Handleiding aanmaken" size="md">
-  <form [formGroup]="handleidingForm" body class="row form-in-modal">
-    <div class="col">
-      <ds-file-uploader
-        class="file-uploader"
-        formControlName="handleidingenUpload"
-        [options]="fileUploaderOptions"
-        label="Handleiding uploaden"
-        data-testid="handleidingen_uploaden"
-      />
-      <div>
-        @for (handleiding of handleidingen; track handleiding.name; let i = $index) {
-          <ds-file-uploader-file
-            [file]="handleiding"
-            (deleteClicked)="verwijderHandleidingVanLijst(handleiding)"
-          />
-          <ds-input
-            label="Bestandsnaam"
-            [errorMessage]="{'maxlength': 'De bestandsnaam mag maximaal 50 tekens bevatten', 'minlength': 'De bestandsnaam moet minimaal 3 tekens bevatten'}"
-            [formControl]="bestandsnamen.at(i)"
-            data-testid="bestandsnaam_input"
-            required
-            minlength="3"
-            maxlength="50"
-          />
-        }
-      </div>
+<app-base-dialog [titel]="strings.algemeen.handleidingen.aanmaken.dialogTitle" size="md">
+  <form [formGroup]="handleidingForm" body>
+    <ds-file-uploader
+      class="file-uploader"
+      formControlName="handleidingenUpload"
+      [options]="fileUploaderOptions"
+      [label]="strings.algemeen.handleidingen.aanmaken.uploaderLabel"
+      data-testid="handleidingen_uploaden"
+    />
+    <div>
+      @for (handleiding of handleidingen; track handleiding.name; let i = $index) {
+        <ds-file-uploader-file
+          [file]="handleiding"
+          (deleteClicked)="verwijderHandleidingVanLijst(handleiding)"
+        />
+        <ds-input
+          label="Bestandsnaam"
+          [errorMessage]="{'maxlength': strings.algemeen.errors.maxKarakters('De bestandsnaam', 50), 'minlength': strings.algemeen.errors.minKarakters('De bestandsnaam', 3)}"
+          [formControl]="bestandsnamen.at(i)"
+          data-testid="bestandsnaam_input"
+          required
+          minlength="3"
+          maxlength="50"
+        />
+      }
     </div>
   </form>
-  <div buttons class="btn-group">
-    <button (click)="annuleren()" data-testid="annuleren_btn" ds-button-secondary>Annuleren</button>
-    <button (click)="opslaan()" data-testid="opslaan_btn" [disabled]="!isFormGeldig" ds-button-primary>Opslaan</button>
-  </div>
+  <ng-container buttons>
+    <button (click)="annuleren()" data-testid="annuleren_btn"
+            ds-button-tertiary>{{ strings.algemeen.buttons.annuleren }}
+    </button>
+    <button (click)="opslaan()" data-testid="opslaan_btn" [disabled]="!isFormGeldig"
+            ds-button-primary>{{ strings.algemeen.buttons.opslaan }}
+    </button>
+  </ng-container>
 </app-base-dialog>

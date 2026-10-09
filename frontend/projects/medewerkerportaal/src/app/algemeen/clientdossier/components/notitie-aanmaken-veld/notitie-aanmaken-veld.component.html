@@ -20,21 +20,23 @@
   -->
 @if (veldZichtbaar()) {
   @if (gebruikExterneLabel()) {
-    <div class="notitie-aanmaken-veld-label" data-testid="notitie-aanmaken-veld-label">
+    <h4 class="pagina-sectie-header" data-testid="notitie-aanmaken-veld-label">
       {{ externeLabel() }}
-    </div>
+    </h4>
   }
   <ds-textarea
     [label]="interneLabel()"
     [ngModel]="value"
+    [ngModelOptions]="{standalone: true}"
     (ngModelChange)="onUpdate($event)"
     [disabled]="isDisabled"
+    placeholder="Voeg hier een notitie toe"
     data-testid="notitie-aanmaken-veld-textarea"
   />
 } @else {
   <button ds-button-tertiary [disabled]="isDisabled" (click)="toonVeld()" data-testid="notitie-aanmaken-veld-knop">
     <ds-icon [icon]="faPlus"/>
-    Notitie toevoegen
+    {{ toevoegenLabel }}
   </button>
 
 }

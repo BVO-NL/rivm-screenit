@@ -128,6 +128,11 @@ public enum JobType
 		new Bevolkingsonderzoek[] { CERVIX },
 		new OrganisatieParameterKey[] { OrganisatieParameterKey.CERVIX_MAX_AANTAL_CLIENTEN_OUDE_ZAS, OrganisatieParameterKey.CERVIX_PROJECT_OUDE_ZAS }),
 
+	CERVIX_CAMBIOS_INCLUSIE(
+		BatchApplicationType.CERVIX,
+		new Bevolkingsonderzoek[] { CERVIX },
+		new OrganisatieParameterKey[] { OrganisatieParameterKey.CERVIX_CAMBIOS_LABORATORIUM, OrganisatieParameterKey.CERVIX_PROJECT_CAMBIOS }),
+
 	CERVIX_CONTROLE_MISSENDE_UITSLAGEN(BatchApplicationType.CERVIX, new Bevolkingsonderzoek[] { CERVIX },
 		new OrganisatieParameterKey[] { OrganisatieParameterKey.CERVIX_SIGNALERINGSTERMIJN_MISSENDE_UITSLAGEN }),
 

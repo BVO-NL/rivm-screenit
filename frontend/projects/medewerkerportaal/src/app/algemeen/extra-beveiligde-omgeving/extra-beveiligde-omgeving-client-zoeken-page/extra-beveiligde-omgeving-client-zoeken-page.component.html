@@ -18,51 +18,55 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-page titel="Cli&euml;nt zoeken">
+<ds-page-header [title]="strings.algemeen.ebo.clientZoekenPageTitle" [showBackButton]="false"/>
+<form [formGroup]="formGroup" (ngSubmit)="clientZoeken()" class="inhoud">
   <div class="filter mb-3">
-    <form [formGroup]="formGroup" (ngSubmit)="clientZoeken()" class="col-12 col-md-6">
-      <ds-datepicker required label="Geboortedatum" formControlName="geboortedatum" [max]="maxGeboorteDatum" class="col-12 mb-3" data-testid="geboortedatum_input"
-                     [errorMessage]="{required: 'De geboortedatum is verplicht', valideDatum: geboortedatumCtrl.getError('valideDatum'), max: 'De geboortedatum mag niet in de toekomst liggen' }"/>
-      <ds-input data-testid="bsn_input" label="Burgerservicenummer" formControlName="bsn" required
-                [errorMessage]="{ required: 'Het burgerservicenummer is verplicht', bsn: bsnCtrl.getError('bsn') }" class="col-12 mb-3"/>
-
-      <div class="form-actions">
-        <button ds-button-primary type="submit">Zoeken</button>
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <ds-datepicker required label="Geboortedatum" formControlName="geboortedatum" [maxDate]="maxGeboorteDatum"
+                       class="col-12 mb-3" data-testid="geboortedatum_input"
+                       [errorMessage]="{required: strings.algemeen.errors.geboortedatumVerplicht, valideDatum: geboortedatumCtrl.getError('valideDatum'), max: strings.algemeen.errors.geboortedatumToekomst }"/>
+        <ds-input data-testid="bsn_input" label="Burgerservicenummer" formControlName="bsn" required
+                  [errorMessage]="{ required: strings.algemeen.errors.verplicht('Het burgerservicenummer'), bsn: bsnCtrl.getError('bsn') }"
+                  class="col-12 mb-3"/>
       </div>
-    </form>
+    </div>
+    <div class="form-actions">
+      <button ds-button-primary type="submit">{{ strings.algemeen.buttons.zoeken }}</button>
+    </div>
   </div>
+</form>
 
-  <table ds-table [dataSource]="clienten()">
-    <ng-container dsColumnDef="bsn">
-      <th ds-header-cell *dsHeaderCellDef>Burgerservicenummer</th>
-      <td ds-cell *dsCellDef="let row">{{ row.bsn }}</td>
-    </ng-container>
+<table ds-table [dataSource]="clienten()" class="w-100 inhoud">
+  <ng-container dsColumnDef="bsn">
+    <th ds-header-cell *dsHeaderCellDef>{{ strings.algemeen.labels.bsn }}</th>
+    <td ds-cell *dsCellDef="let row">{{ row.bsn }}</td>
+  </ng-container>
 
-    <ng-container dsColumnDef="geboortedatum">
-      <th ds-header-cell *dsHeaderCellDef>Geboortedatum</th>
-      <td ds-cell *dsCellDef="let row">{{ row.geboortedatum  | date: NL_DATE_FORMAT }}</td>
-    </ng-container>
+  <ng-container dsColumnDef="geboortedatum">
+    <th ds-header-cell *dsHeaderCellDef>{{ strings.algemeen.labels.geboortedatum }}</th>
+    <td ds-cell *dsCellDef="let row">{{ row.geboortedatum  | date: NL_DATE_FORMAT }}</td>
+  </ng-container>
 
-    <ng-container dsColumnDef="inzien">
-      <th ds-header-cell *dsHeaderCellDef>Inzien</th>
-      <td ds-cell *dsCellDef="let row">
-        <button ds-button-secondary (click)="briefOpenen(row)">
-          <ds-icon [icon]="eyeIcon"/>
-        </button>
-      </td>
-    </ng-container>
+  <ng-container dsColumnDef="inzien">
+    <th ds-header-cell *dsHeaderCellDef>{{ strings.algemeen.labels.actie }}</th>
+    <td ds-cell *dsCellDef="let row">
+      <button ds-button-secondary (click)="briefOpenen(row)">
+        <ds-icon [icon]="eyeIcon"/>
+      </button>
+    </td>
+  </ng-container>
 
-    <tr ds-row *dsRowDef="let row; columns: displayedColumns"></tr>
-    <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>
+  <tr ds-row *dsRowDef="let row; columns: displayedColumns"></tr>
+  <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>
 
-    <ng-template dsNoDataRow>
-      <tr class="ds-row">
-        <td class="ds-cell" colspan="6">Er zijn geen cli&euml;nten gevonden</td>
-      </tr>
-    </ng-template>
-  </table>
+  <ng-template dsNoDataRow>
+    <tr class="ds-row">
+      <td class="ds-cell" colspan="6">{{ strings.algemeen.ebo.leeg }}</td>
+    </tr>
+  </ng-template>
+</table>
 
-  @if (document) {
-    <app-pdf-viewer [url]="document"/>
-  }
-</app-page>
+@if (document) {
+  <app-pdf-viewer [url]="document"/>
+}

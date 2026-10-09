@@ -99,7 +99,8 @@ public class CervixSelectieJobConfiguration extends AbstractJobConfiguration
 	public Step vooraankondigingStep(CervixVooraankondigingSelectieReader reader, CervixVooraankondigingSelectieWriter writer)
 	{
 		return new StepBuilder("vooraankondigingStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -129,7 +130,8 @@ public class CervixSelectieJobConfiguration extends AbstractJobConfiguration
 	public Step clientSelectieStep(CervixSelectieReader reader, CervixSelectieWriter writer)
 	{
 		return new StepBuilder("clientSelectieStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -139,7 +141,8 @@ public class CervixSelectieJobConfiguration extends AbstractJobConfiguration
 	public Step laatsteRondeSluitenStep(CervixLaatsteRondeSluitenReader reader, CervixLaatsteRondeSluitenWriter writer)
 	{
 		return new StepBuilder("laatsteRondeSluitenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

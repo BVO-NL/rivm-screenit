@@ -23,7 +23,7 @@ package nl.rivm.screenit.wsb.interceptors;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.binding.soap.interceptor.EndpointSelectionInterceptor;
 import org.apache.cxf.common.util.UrlUtils;
 import org.apache.cxf.frontend.WSDLGetInterceptor;

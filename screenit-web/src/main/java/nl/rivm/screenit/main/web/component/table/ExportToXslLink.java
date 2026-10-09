@@ -35,7 +35,7 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.csv2xls.services.Csv2xlsService;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -241,7 +241,7 @@ public class ExportToXslLink<T extends Serializable, S> extends GenericPanel<T>
 
 					if (value.contains(","))
 					{
-						csv.append("\"" + StringEscapeUtils.unescapeHtml(value) + "\"");
+						csv.append("\"" + StringEscapeUtils.unescapeHtml4(value) + "\"");
 					}
 					else
 					{

@@ -21,22 +21,23 @@
 <app-base-dialog [titel]="modalTitle" size="md">
   <form [formGroup]="feestdagForm" body class="row form-in-modal" novalidate>
     <div class="col">
-      <ds-input [errorMessage]="{'required': 'De naam is verplicht'}" data-testid="input_feestdag_naam"
+      <ds-input [errorMessage]="{'required': strings.colon.feestdagen.bewerken.errors.naamVerplicht}"
+                data-testid="input_feestdag_naam"
                 formControlName="naam"
                 label="Naam"
                 maxlength="255"/>
       <ds-datepicker
-        [errorMessage]="{required: 'De datum is verplicht', invalidDate: 'De ingevoerde datum is niet valide'}"
-        [min]="minDatum"
+        [errorMessage]="{required: strings.colon.feestdagen.bewerken.errors.datumVerplicht, invalidDate: strings.colon.feestdagen.bewerken.errors.invalidDate}"
+        [minDate]="minDatum"
         formControlName="datum"
         label="Datum"/>
       <app-colon-rooster-beperking formControlName="beperking" label="Beperking"/>
     </div>
   </form>
-  <div buttons class="btn-group">
-    <button (click)="cancel()" ds-button-secondary>Annuleren</button>
+  <ng-container buttons>
+    <button (click)="cancel()" ds-button-tertiary>{{ strings.algemeen.buttons.annuleren }}</button>
     <button (click)="save()" [disabled]="feestdagForm.invalid" ds-button-primary>
-      Opslaan
+      {{ strings.algemeen.buttons.opslaan }}
     </button>
-  </div>
+  </ng-container>
 </app-base-dialog>

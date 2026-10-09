@@ -18,25 +18,28 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-page titel="Keuze gebruik gegevens herstellen">
-  <form [formGroup]="formGroup" (ngSubmit)="keuzeHerstellen()">
-    <div class="filter mb-3">
-      <div class="row">
-        <div class="col-12 col-md-6">
-          <ds-datepicker required label="Geboortedatum" formControlName="geboortedatum" [max]="maxGeboorteDatum" class="col-12 mb-3" data-testid="geboortedatum_input"
-                         [errorMessage]="{required: 'De geboortedatum is verplicht', max: 'De geboortedatum mag niet in de toekomst liggen' }"/>
+<ds-page-header [title]="strings.algemeen.ebo.keuzeHerstellenPageTitle" [showBackButton]="false"/>
+<form [formGroup]="formGroup" (ngSubmit)="keuzeHerstellen()" class="inhoud">
+  <div class="filter mb-3">
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <ds-datepicker required label="Geboortedatum" formControlName="geboortedatum" [maxDate]="maxGeboorteDatum"
+                       class="col-12 mb-3" data-testid="geboortedatum_input"
+                       [errorMessage]="{required: strings.algemeen.errors.verplicht(strings.algemeen.labels.geboortedatum), max: strings.algemeen.errors.geboortedatumToekomst }"/>
 
-          <ds-input data-testid="bsn_input" label="Burgerservicenummer" formControlName="bsn" required
-                    [errorMessage]="{ required: 'Het burgerservicenummer is verplicht', bsn: bsnCtrl.getError('bsn') }" class="col-12 mb-3"/>
+        <ds-input data-testid="bsn_input" label="Burgerservicenummer" formControlName="bsn" required
+                  [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.bsn), bsn: bsnCtrl.getError('bsn') }"
+                  class="col-12 mb-3"/>
 
-        </div>
-        <div class="col-12 col-md-6">
-          <app-single-file-selector [required]="true" formControlName="bestand" acceptedExtensie="pdf" data-testid="bestand_input"/>
-        </div>
       </div>
-      <div class="form-actions">
-        <button ds-button-primary type="submit">Bevestigen</button>
+      <div class="col-12 col-md-6">
+        <app-single-file-selector [required]="true"
+                                  formControlName="bestand" acceptedExtensie="pdf"
+                                  data-testid="bestand_input"/>
       </div>
     </div>
-  </form>
-</app-page>
+    <div class="form-actions">
+      <button ds-button-primary type="submit">{{ strings.algemeen.buttons.bevestigen }}</button>
+    </div>
+  </div>
+</form>

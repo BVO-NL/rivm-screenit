@@ -25,8 +25,8 @@ export const maakVrijSlotZonderKamer = (overrides: Partial<VrijSlotZonderKamerDt
   startTijd: new Date('2026-09-08T10:30:00'),
   eindTijd: new Date('2026-09-08T11:00:00'),
   intakelocatie: maakColonIntakelocatie({ id: 3, naam: 'ColonIntakelocatie Amersfoort' }),
-  naam: 'ColonIntakelocatie Amersfoort',
   plaats: 'Amersfoort',
   afstand: 5,
+  locatieBeschrijving: null,
   ...overrides,
 })

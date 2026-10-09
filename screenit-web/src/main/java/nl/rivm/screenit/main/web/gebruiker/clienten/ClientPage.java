@@ -45,7 +45,7 @@ import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.topicuszorg.wicket.hibernate.SimpleHibernateModel;
 
-import org.apache.commons.lang.reflect.ConstructorUtils;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AttributeAppender;

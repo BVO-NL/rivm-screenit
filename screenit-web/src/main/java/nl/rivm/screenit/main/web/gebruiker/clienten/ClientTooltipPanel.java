@@ -26,7 +26,7 @@ import nl.rivm.screenit.model.ClientTooltip;
 import nl.rivm.screenit.model.ClientTooltipType;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;

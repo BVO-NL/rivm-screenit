@@ -42,6 +42,7 @@ import { Dialog } from '@angular/cdk/dialog'
 import { BriefDialogComponent } from '@algemeen/components/brief-dialog/brief-dialog.component'
 import { DatumTijdPipe } from '@shared/pipes/datum-tijd/datum-tijd.pipe'
 import { take } from 'rxjs'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-algemene-brieven-panel',
@@ -70,6 +71,7 @@ import { take } from 'rxjs'
 export class AlgemeneBrievenPanelComponent {
   private readonly clientService = inject(ClientService)
   private readonly dialog = inject(Dialog)
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly displayedColumns = ['actie', 'naam', 'datum', 'bekijken']
   protected readonly gebeurtenisLabels = typeGebeurtenisLabels
 

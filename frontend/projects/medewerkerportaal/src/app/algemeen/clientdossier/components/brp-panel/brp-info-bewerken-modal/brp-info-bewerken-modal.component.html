@@ -18,68 +18,68 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog size="lg" titel="BRP Status">
+<app-base-dialog size="lg" [titel]="strings.algemeen.brpBewerken.dialogTitle">
   <div body>
-    <h2 class="brp-ondertitel">Tijdelijk BRP-adres</h2>
+    <h2 class="brp-ondertitel">{{ strings.algemeen.brpBewerken.tijdelijkAdresHeading }}</h2>
 
     <form [formGroup]="brpGegevensForm" class="form-in-modal" novalidate>
       <ds-input
-        label="Straatnaam"
+        [label]="strings.algemeen.labels.straatnaam"
         formControlName="straat"
-        placeholder="Straatnaam"
-        [errorMessage]="{maxlength: 'Straatnaam mag maximaal 56 tekens zijn'}"
+        [placeholder]="strings.algemeen.labels.straatnaam"
+        [errorMessage]="{maxlength: strings.algemeen.errors.maxKarakters('Straatnaam', 56)}"
       />
       <div class="huisnummer-groep">
         <ds-input
-          label="Huisnummer"
+          [label]="strings.algemeen.labels.huisnummer"
           formControlName="huisnummer"
           type="number"
-          placeholder="Nummer"
+          [placeholder]="strings.algemeen.labels.huisnummer"
           id="huisnummer"
           maxlength="10"
-          [errorMessage]="{ maxlength: 'Huisnummer mag maximaal 10 tekens zijn', pattern: 'Huisnummer mag alleen cijfers bevatten' }"
+          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Huisnummer', 10), pattern: strings.algemeen.errors.huisnummerAlleenCijfers }"
           [required]="true"
         />
         <ds-input
-          label="Huisletter"
+          [label]="strings.algemeen.labels.huisletter"
           formControlName="huisletter"
           placeholder="A"
           id="huisletter"
-          [errorMessage]="{ maxlength: 'Huisletter mag maximaal 1 teken zijn'}"
+          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Huisletter', 1) }"
           maxlength="1"
         />
         <ds-input
-          label="Toevoeging"
+          [label]="strings.algemeen.labels.toevoeging"
           formControlName="huisnummerToevoeging"
-          placeholder="Toevoeging"
+          [placeholder]="strings.algemeen.labels.toevoeging"
           id="huisnummerToevoeging"
-          [errorMessage]="{ maxlength: 'Toevoeging mag maximaal 26 tekens zijn'}"
+          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Toevoeging', 26) }"
           maxlength="26"
         />
         <ds-input
-          label="Aanduiding"
+          [label]="strings.algemeen.labels.aanduiding"
           formControlName="huisnummerAanduiding"
           id="aanduidingBijHuisnummer"
-          [errorMessage]="{ maxlength: 'Aanduiding mag maximaal 2 tekens zijn'}"
+          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Aanduiding', 2) }"
           maxlength="2"
         />
       </div>
       <div class="postcode-plaats-groep">
         <ds-input
-          label="Postcode"
+          [label]="strings.algemeen.labels.postcode"
           formControlName="postcode"
           id="postcode"
-          placeholder="Postcode"
-          [errorMessage]="'Postcode is niet correct'"
+          [placeholder]="strings.algemeen.labels.postcode"
+          [errorMessage]="strings.algemeen.errors.invalidPostcode"
           [required]="true"
         />
         <ds-input
-          label="Plaats"
+          [label]="strings.algemeen.labels.plaats"
           formControlName="plaats"
-          placeholder="Plaats"
+          [placeholder]="strings.algemeen.labels.plaats"
           id="plaats"
           maxlength="200"
-          [errorMessage]="{ maxlength: 'Plaats mag maximaal 200 tekens zijn'}"
+          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Plaats', 200) }"
           [required]="true"
         />
       </div>
@@ -93,17 +93,17 @@
         data-testid="btn-verwijderen"
         type="button"
         ds-button-delete>
-        Adres verwijderen
+        {{ strings.algemeen.brpBewerken.adresVerwijderenButton }}
       </button>
     </ng-container>
   }
   <ng-container buttons>
-    <button (click)="cancel()" data-testid="btn_annuleren" ds-button-tertiary type="button">Annuleren</button>
+    <button (click)="cancel()" data-testid="btn_annuleren" ds-button-tertiary type="button">{{ strings.algemeen.buttons.annuleren }}</button>
     <button (click)="save()"
             data-testid="btn_opslaan"
             [disabled]="brpGegevensForm.invalid"
             ds-button-primary>
-      Opslaan
+      {{ strings.algemeen.buttons.opslaan }}
     </button>
   </ng-container>
 </app-base-dialog>

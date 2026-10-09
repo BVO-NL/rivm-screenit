@@ -58,8 +58,7 @@ public class CervixCisHistorieController
 	@Operation(summary = "Haal CIS historie op", description = "Zoek de CIS historie voor een gegeven clientId op")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "CIS historie succesvol opgehaald"),
-		@ApiResponse(responseCode = "404", description = "Client niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Client niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_CIS_HISTORIE, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.CERVIX })

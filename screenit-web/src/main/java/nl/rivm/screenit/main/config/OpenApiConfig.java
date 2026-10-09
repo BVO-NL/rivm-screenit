@@ -1,6 +1,8 @@
+package nl.rivm.screenit.main.config;
+
 /*-
  * ========================LICENSE_START=================================
- * medewerkerportaal
+ * screenit-web
  * %%
  * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -18,3 +20,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+
+import org.springdoc.core.customizers.OperationCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.HandlerMethod;
+
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+
+@Configuration
+public class OpenApiConfig
+{
+	@Bean
+	public OperationCustomizer globaleApiResponseCustomizer()
+	{
+		return (Operation operation, HandlerMethod handlerMethod) ->
+		{
+			operation.getResponses().addApiResponse("500", new ApiResponse().description("Onverwachte fout opgetreden"));
+			return operation;
+		};
+	}
+}

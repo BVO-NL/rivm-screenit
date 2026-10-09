@@ -38,6 +38,7 @@ import { Required } from '@shared/types/autorisatie/required'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
 import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
+import { StringsService } from '@shared/strings'
 import { mobieleTelefoonValidator } from '@shared/validators/telefoon-nummer/telefoon-nummer.validators'
 
 @Component({
@@ -59,6 +60,7 @@ import { mobieleTelefoonValidator } from '@shared/validators/telefoon-nummer/tel
 })
 export class ClientZoekenFilterComponent {
   protected readonly searchIcon = faSearch
+  protected readonly strings = inject(StringsService).getStrings()
   private readonly formBuilder = inject(FormBuilder)
   private readonly notificationService = inject(NotificationService)
   private readonly renderer = inject(Renderer2)
@@ -100,7 +102,6 @@ export class ClientZoekenFilterComponent {
         geboortedatumInput.focus()
         this.renderer.setAttribute(geboortedatumInput, 'autocomplete', 'off')
       }
-
     })
 
     this.zoekenForm
@@ -150,8 +151,8 @@ export class ClientZoekenFilterComponent {
     const FOUTMELDING_POSTCODE_HUISNUMMER = 'Vul zowel postcode als huisnummer in'
     const FOUTMELDING_ONGELDIGE_INPUT =
       this.geavanceerdZoekenActief() && this.heeftGeenBasisVeldenGevuld()
-        ? 'Vul minstens 1 veld in om een cliënt te zoeken'
-        : 'Vul geboortedatum en minstens 1 extra veld in om een cliënt te zoeken'
+        ? this.strings.algemeen.clientZoeken.instructieGeavanceerd
+        : this.strings.algemeen.clientZoeken.instructieStandaard
 
     if (!this.heeftGeldigePostcodeHuisnummerCombinatie()) {
       this.notificationService.error(FOUTMELDING_POSTCODE_HUISNUMMER)

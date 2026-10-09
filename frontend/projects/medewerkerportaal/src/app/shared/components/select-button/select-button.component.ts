@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { ChangeDetectorRef, Component, forwardRef, inject, input, viewChild } from '@angular/core'
+import { ChangeDetectorRef, Component, forwardRef, inject, input, viewChild, ChangeDetectionStrategy } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { DsButtonComponent, DsButtonMenuDirective, DsContextMenuItem, DsIconComponent, DsMenuItem } from '@topicus-rgp-ds/web'
 import { faAngleDown } from '@fortawesome/pro-light-svg-icons'
@@ -46,6 +46,7 @@ import { filter, fromEvent, take } from 'rxjs'
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectButtonComponent), multi: true }],
 })
 export class SelectButtonComponent<CalendarView> implements ControlValueAccessor {

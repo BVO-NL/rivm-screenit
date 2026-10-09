@@ -18,15 +18,15 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog titel="Visitatielijsten insteltechniek rapport" size="lg">
+<app-base-dialog [titel]="strings.mamma.visitatielijstRapport.dialogTitle" size="lg">
   <div body>
     <table class="ds-table">
       <thead>
       <tr class="ds-header-row">
-        <th class="ds-header-cell">Aantal medewerkers</th>
-        <th class="ds-header-cell">Voldoende beelden in 2 maanden</th>
-        <th class="ds-header-cell">Voldoende beelden in 4 maanden</th>
-        <th class="ds-header-cell">Onvoldoende beelden</th>
+        <th class="ds-header-cell">{{ strings.mamma.visitatielijstRapport.columns.aantalMedewerkers }}</th>
+        <th class="ds-header-cell">{{ strings.mamma.visitatielijstRapport.columns.voldoendeIn2Maanden }}</th>
+        <th class="ds-header-cell">{{ strings.mamma.visitatielijstRapport.columns.voldoendeIn4Maanden }}</th>
+        <th class="ds-header-cell">{{ strings.mamma.visitatielijstRapport.columns.onvoldoendeBeelden }}</th>
       </tr>
       </thead>
       <tbody>
@@ -40,12 +40,14 @@
     </table>
 
     <div class="mt-3">
-      <div class="section-header">Overzicht van medewerkers met te weinig beelden:</div>
+      <div class="section-header">{{ strings.mamma.visitatielijstRapport.medewerkersTeWeinig.heading }}</div>
       <table class="ds-table">
         <thead>
         <tr class="ds-header-row">
-          <th class="ds-header-cell">Medewerkercode</th>
-          <th class="ds-header-cell">Aantal beelden</th>
+          <th class="ds-header-cell">{{ strings.algemeen.labels.medewerkercode }}</th>
+          <th
+            class="ds-header-cell">{{ strings.mamma.visitatielijstRapport.medewerkersTeWeinig.columns.aantalBeelden }}
+          </th>
         </tr>
         </thead>
         <tbody>
@@ -60,13 +62,17 @@
     </div>
 
     <div class="mt-3">
-      <div class="section-header">Overzicht resultaten per medewerker:</div>
+      <div class="section-header">{{ strings.mamma.visitatielijstRapport.resultatenPerMedewerker.heading }}</div>
       <table class="ds-table">
         <thead>
         <tr class="ds-header-row">
-          <th class="ds-header-cell">Medewerker</th>
-          <th class="ds-header-cell">Aantal beelden in 2 maanden</th>
-          <th class="ds-header-cell">Aantal beelden in 4 maanden</th>
+          <th class="ds-header-cell">{{ strings.algemeen.labels.medewerker }}</th>
+          <th
+            class="ds-header-cell">{{ strings.mamma.visitatielijstRapport.resultatenPerMedewerker.columns.aantalIn2Maanden }}
+          </th>
+          <th
+            class="ds-header-cell">{{ strings.mamma.visitatielijstRapport.resultatenPerMedewerker.columns.aantalIn4Maanden }}
+          </th>
         </tr>
         </thead>
         <tbody>
@@ -82,9 +88,15 @@
     </div>
   </div>
 
-  <div class="btn-group" buttons>
-    <button ds-button-secondary (click)="sluitDialog()" data-testid="annuleren_btn">Annuleren</button>
-    <button ds-button-secondary (click)="exporteren()" data-testid="exporteren_btn">Exporteren</button>
-    <button ds-button-primary (click)="genereren()" data-testid="genereren_btn">Genereren</button>
-  </div>
+  <ng-container buttons>
+    <button ds-button-tertiary (click)="sluitDialog()"
+            data-testid="annuleren_btn">{{ strings.algemeen.buttons.annuleren }}
+    </button>
+    <button ds-button-secondary (click)="exporteren()"
+            data-testid="exporteren_btn">{{ strings.algemeen.buttons.exporteren }}
+    </button>
+    <button ds-button-primary (click)="genereren()"
+            data-testid="genereren_btn">{{ strings.algemeen.buttons.genereren }}
+    </button>
+  </ng-container>
 </app-base-dialog>

@@ -18,12 +18,12 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog titel="Uw sessie verloopt">
+<app-base-dialog [titel]="strings.algemeen.session.title">
   <div body>
-    <p>Uw sessie verloopt over: {{ timer() }}</p>
-    <p>Klik op "Ok" om ingelogd te blijven.</p>
+    <p>{{ strings.algemeen.session.body(timer()) }}</p>
+    <p>{{ strings.algemeen.session.instruction }}</p>
   </div>
   <div buttons>
-    <button ds-button-primary (click)="keepAlive()" data-testid="okButton">Ok</button>
+    <button ds-button-primary (click)="keepAlive()" data-testid="okButton">{{ strings.algemeen.buttons.ok }}</button>
   </div>
 </app-base-dialog>

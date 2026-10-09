@@ -55,7 +55,8 @@ public class CervixHuisartsberichtenJobConfiguration extends AbstractJobConfigur
 	public Step huisartsBepalenStep(CervixHuisartsBepalenReader reader, CervixHuisartsBepalenWriter writer)
 	{
 		return new StepBuilder("huisartsBepalenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -65,7 +66,8 @@ public class CervixHuisartsberichtenJobConfiguration extends AbstractJobConfigur
 	public Step huisartsBerichtVersturenStep(CervixHuisartsberichtVersturenReader reader, CervixHuisartsberichtVersturenWriter writer)
 	{
 		return new StepBuilder("huisartsBerichtVersturenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

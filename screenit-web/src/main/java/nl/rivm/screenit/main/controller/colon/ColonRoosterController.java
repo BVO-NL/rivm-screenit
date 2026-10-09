@@ -76,8 +76,7 @@ public class ColonRoosterController
 	@Operation(summary = "Haal kamers op", description = "Geeft de kamers van de ingelogde intakelocatie terug.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Kamers succesvol opgehaald"),
-		@ApiResponse(responseCode = "400", description = "Geen intakelocatie beschikbaar in de sessie"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "400", description = "Geen intakelocatie beschikbaar in de sessie")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
@@ -96,8 +95,7 @@ public class ColonRoosterController
 	@GetMapping("/beperkingen")
 	@Operation(summary = "Haal roosterbeperkingen op", description = "Geeft de huidige roosterbeperkingen terug.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Roosterbeperkingen succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Roosterbeperkingen succesvol opgehaald")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.COLON_WEEKEND_WERK_DAG_BEPERKINGEN_BEHEER,
 		Recht.MEDEWERKER_LOCATIE_ROOSTER }, bevolkingsonderzoekScopes = {
@@ -112,8 +110,7 @@ public class ColonRoosterController
 	@Operation(summary = "Werk roosterbeperkingen bij", description = "Past de roosterbeperkingen aan.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Roosterbeperkingen succesvol bijgewerkt"),
-		@ApiResponse(responseCode = "422", description = "Validatiefout bij het bijwerken van de roosterbeperkingen"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "422", description = "Validatiefout bij het bijwerken van de roosterbeperkingen")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.COLON_WEEKEND_WERK_DAG_BEPERKINGEN_BEHEER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
@@ -127,8 +124,7 @@ public class ColonRoosterController
 	@GetMapping("/instellingen")
 	@Operation(summary = "Haal roosterinstellingen op", description = "Geeft de roosterinstellingen voor de huidige intakelocatie terug.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Roosterinstellingen succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Roosterinstellingen succesvol opgehaald")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_LOCATIE_ROOSTER,
 		Recht.MEDEWERKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT }, required = Required.ANY, bevolkingsonderzoekScopes = {

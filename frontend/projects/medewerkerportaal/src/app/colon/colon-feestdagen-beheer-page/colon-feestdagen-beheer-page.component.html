@@ -18,46 +18,51 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-page titel="Roosterbeperkingen voor feestdagen">
-  <ng-container header-actions>
-    <button ds-button-primary (click)="openFeestdagDialog()" *appAutorisatie="toevoegenConstraint">
-      <ds-icon [icon]="faAddIcon"></ds-icon>
-      Feestdag
-    </button>
-  </ng-container>
-  <table [dataSource]="dataSource()" [fullWidth]="true" ds-table matSort
+<ds-page-header [title]="strings.colon.feestdagen.pageTitle" [showBackButton]="false">
+  <button ds-button-primary (click)="openFeestdagDialog()" *appAutorisatie="toevoegenConstraint">
+    <ds-icon [icon]="faAddIcon"></ds-icon>
+    {{ strings.colon.feestdagen.addButton }}
+  </button>
+</ds-page-header>
+
+<div class="inhoud">
+  <table [dataSource]="dataSource()" [fullWidth]="true" ds-table matSort class="w-100"
          matSortActive="datum"
          matSortDirection="asc">
     <ng-container dsColumnDef="naam">
-      <th *dsHeaderCellDef ds-header-cell mat-sort-header="naam">Naam</th>
+      <th *dsHeaderCellDef ds-header-cell mat-sort-header="naam">{{ strings.algemeen.labels.naam }}</th>
       <td *dsCellDef="let row" ds-cell>{{ row.naam }}</td>
     </ng-container>
 
     <ng-container dsColumnDef="datum">
-      <th ds-header-cell *dsHeaderCellDef mat-sort-header="datum"> Datum</th>
+      <th ds-header-cell *dsHeaderCellDef mat-sort-header="datum"> {{ strings.algemeen.labels.datum }}</th>
       <td ds-cell *dsCellDef="let element"> {{ element.datum | date: NL_DATE_FORMAT }}</td>
     </ng-container>
 
     <ng-container dsColumnDef="beperking">
-      <th ds-header-cell *dsHeaderCellDef mat-sort-header="beperking"> Beperking</th>
+      <th ds-header-cell *dsHeaderCellDef
+          mat-sort-header="beperking"> {{ strings.colon.feestdagen.columns.beperking }}
+      </th>
       <td ds-cell *dsCellDef="let element"> {{ element.beperking | titlecase }}</td>
     </ng-container>
 
     <ng-container dsColumnDef="acties">
       <th ds-header-cell *dsHeaderCellDef></th>
       <td ds-cell *dsCellDef="let feestdag">
-        <button (click)="openFeestdagDialog(feestdag)" *appAutorisatie="bewerkenConstraint" ds-button-icon
-                ds-button-tertiary>
-          <ds-icon [icon]="faEditIcon"/>
-        </button>
-        <button (click)="confirmDeleteFeestdag(feestdag)" *appAutorisatie="verwijderenConstraint" ds-button-icon
-                ds-button-tertiary>
-          <ds-icon [icon]="faDeleteIcon"/>
-        </button>
+        <div class="display-flex gap-2">
+          <button (click)="openFeestdagDialog(feestdag)" *appAutorisatie="bewerkenConstraint" ds-button-icon
+                  ds-button-secondary>
+            <ds-icon [icon]="faEditIcon"/>
+          </button>
+          <button (click)="confirmDeleteFeestdag(feestdag)" *appAutorisatie="verwijderenConstraint" ds-button-icon
+                  ds-button-secondary>
+            <ds-icon [icon]="faDeleteIcon"/>
+          </button>
+        </div>
       </td>
     </ng-container>
 
     <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>
     <tr ds-row *dsRowDef="let row; columns: displayedColumns"></tr>
   </table>
-</app-page>
+</div>

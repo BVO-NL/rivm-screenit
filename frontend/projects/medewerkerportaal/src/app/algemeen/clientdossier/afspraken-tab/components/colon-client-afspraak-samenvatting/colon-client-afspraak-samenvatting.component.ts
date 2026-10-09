@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, input } from '@angular/core'
+import { Component, inject, input } from '@angular/core'
 import { ColonAfspraakMakenRequestDto } from '@shared/types/colon/dto/colon-afspraak-maken-request.dto'
 import { DsDescriptionCustomTemplateDirective, DsDescriptionsComponent, DsSummaryPanelComponent } from '@topicus-rgp-ds/web'
 import { DatumTijdPipe } from '@shared/pipes/datum-tijd/datum-tijd.pipe'
@@ -26,16 +26,18 @@ import { NL_DAY_DATE_FORMAT, TIME_FORMAT } from '@shared/constants'
 import { EnumLabelPipe } from '@shared/pipes/enum-label/enum-label.pipe'
 import { briefTypeLabels } from '@shared/types/algemeen/enum/brief-type'
 import { LegeWaardePipe } from '@shared/pipes/lege-waarde/lege-waarde.pipe'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-colon-client-afspraak-samenvatting',
-  imports: [DsSummaryPanelComponent, DsDescriptionsComponent, DatumTijdPipe, DsDescriptionCustomTemplateDirective, EnumLabelPipe, LegeWaardePipe],
+  imports: [DsSummaryPanelComponent, DsDescriptionsComponent, DatumTijdPipe, EnumLabelPipe, LegeWaardePipe, DsDescriptionCustomTemplateDirective],
   templateUrl: './colon-client-afspraak-samenvatting.component.html',
   styleUrl: './colon-client-afspraak-samenvatting.component.scss',
 })
 export class ColonClientAfspraakSamenvattingComponent {
   request = input<ColonAfspraakMakenRequestDto | null>()
 
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly NL_DAY_DATE_FORMAT = NL_DAY_DATE_FORMAT
   protected readonly TIME_FORMAT = TIME_FORMAT
   protected readonly briefTypeLabels = briefTypeLabels

@@ -65,8 +65,7 @@ public class ParameterController extends BaseController
 	@GetMapping
 	@Operation(summary = "Haal parameters op", description = "Geeft de toegestane technische parameters terug die de frontend mag gebruiken.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Parameters succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Parameters succesvol opgehaald")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {}, altijdToegestaan = true, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })

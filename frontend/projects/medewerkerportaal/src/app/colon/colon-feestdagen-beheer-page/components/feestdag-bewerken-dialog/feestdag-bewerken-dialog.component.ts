@@ -27,6 +27,7 @@ import { ColonRoosterBeperkingComponent } from '@/colon/components/colon-rooster
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { DsButtonComponent, DsDatepickerComponent, DsInputComponent } from '@topicus-rgp-ds/web'
 import { formatDate } from '@shared/utils/date-utils'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-feestdag-bewerken-dialog',
@@ -38,6 +39,7 @@ export class FeestdagBewerkenDialogComponent {
   private readonly feestdag: ColonFeestdag = this.getFeestdag()
   private readonly dialogRef: DialogRef = inject(DialogRef)
   private readonly formBuilder: FormBuilder = inject(FormBuilder)
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly minDatum = formatDate(new Date())
 
   feestdagForm: FormGroup = this.formBuilder.group({
@@ -47,7 +49,7 @@ export class FeestdagBewerkenDialogComponent {
   })
 
   get modalTitle(): string {
-    return this.feestdag?.id ? 'Feestdag bewerken' : 'Feestdag toevoegen'
+    return this.feestdag?.id ? this.strings.colon.feestdagen.bewerken.titleBestaand : this.strings.colon.feestdagen.bewerken.titleNieuw
   }
 
   constructor() {

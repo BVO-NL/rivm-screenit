@@ -18,104 +18,117 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-page titel="Visitatie overzicht">
-  <ng-container header-actions>
-    <div>
-      @if (magToevoegen) {
-        <button ds-button-primary dsButtonMenu [menu]="toevoegenMenuItems" (menuItemClicked)="openVisitatieToevoegenDialog($event.label.toLowerCase())"
-                data-testid="toevoegen_visitatie_btn" class="mr-2">
-          <ds-icon [icon]="faAddIcon"/>
-          Visitatie
+<ds-page-header [title]="strings.mamma.visitatie.pageTitle" [showBackButton]="false">
+  @if (magToevoegen) {
+    <button ds-button-primary dsButtonMenu [menu]="toevoegenMenuItems"
+            (menuItemClicked)="openVisitatieToevoegenDialog($event.label.toLowerCase())"
+            data-testid="toevoegen_visitatie_btn" class="mr-2">
+      <ds-icon [icon]="faAddIcon"/>
+      {{ strings.mamma.visitatie.buttons.visitatie }}
+    </button>
+  }
+  <button ds-button-primary data-testid="visitatielijst_genereren_btn" (click)="openVisitatielijstGenererenDialog()"
+          *appAutorisatie="insteltechniekAanpassenConstraint">
+    <ds-icon [icon]="faListIcon"/>
+    {{ strings.mamma.visitatie.buttons.generate }}
+  </button>
+</ds-page-header>
+
+<app-mamma-visitatie-filter (filter)="filterValidaties($event)" class="filter mb-4"/>
+
+<table [dataSource]="alleVisitaties()" [fullWidth]="true" ds-table matSort
+       matSortActive="omschrijving"
+       [hoverable]="magDetailsInzien"
+       matSortDirection="asc">
+  <ng-container dsColumnDef="omschrijving">
+    <th *dsHeaderCellDef [mat-sort-header]="'omschrijving'" ds-header-cell>{{ strings.algemeen.labels.omschrijving }}
+    </th>
+    <td *dsCellDef="let row" data-testid="visitatie_omschrijving" ds-cell
+        (click)="openVisitatieEditDialog(row)">{{ row.omschrijving }}
+    </td>
+  </ng-container>
+  <ng-container dsColumnDef="gestartOp">
+    <th *dsHeaderCellDef [mat-sort-header]="'gestartOp'" ds-header-cell>{{ strings.algemeen.labels.gestart }}</th>
+    <td *dsCellDef="let row" ds-cell
+        (click)="openVisitatieEditDialog(row)">{{ row.gestartOp | date: NL_DATE_TIME_FORMAT }}
+    </td>
+  </ng-container>
+  <ng-container dsColumnDef="afgerondOp">
+    <th *dsHeaderCellDef [mat-sort-header]="'afgerondOp'" ds-header-cell>{{ strings.algemeen.labels.afgerond }}</th>
+    <td *dsCellDef="let row" ds-cell
+        (click)="openVisitatieEditDialog(row)">{{ row.afgerondOp | date: NL_DATE_TIME_FORMAT }}
+    </td>
+  </ng-container>
+  <ng-container dsColumnDef="aangemaaktOp">
+    <th *dsHeaderCellDef [mat-sort-header]="'aangemaaktOp'" ds-header-cell>{{ strings.algemeen.labels.aangemaakt }}</th>
+    <td *dsCellDef="let row" ds-cell
+        (click)="openVisitatieEditDialog(row)">{{ row.aangemaaktOp | date: NL_DATE_TIME_FORMAT }}
+    </td>
+  </ng-container>
+  <ng-container dsColumnDef="aangemaaktDoor">
+    <th *dsHeaderCellDef [mat-sort-header]="'aangemaaktDoor'" ds-header-cell>{{ strings.algemeen.labels.door }}</th>
+    <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.aangemaaktDoor }}</td>
+  </ng-container>
+  <ng-container dsColumnDef="status">
+    <th *dsHeaderCellDef [mat-sort-header]="'status'" ds-header-cell>{{ strings.algemeen.labels.status }}</th>
+    <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.status | titlecase }}</td>
+  </ng-container>
+  <ng-container dsColumnDef="beoordelingsEenheid.naam">
+    <th *dsHeaderCellDef [mat-sort-header]="'beoordelingsEenheid.naam'" ds-header-cell>{{ strings.mamma.labels.be }}
+    </th>
+    <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.beoordelingseenheid?.naam }}</td>
+  </ng-container>
+  <ng-container dsColumnDef="rapportage">
+    <th *dsHeaderCellDef ds-header-cell class="visitatie-kolom-smal">{{ strings.mamma.labels.rapportage }}</th>
+    <td *dsCellDef="let visitatie" ds-cell class="visitatie-acties-cel">
+      @if (visitatie.rapportageDocumentId) {
+        <button ds-button-icon ds-button-secondary
+                (click)="downloadDocument(visitatie.rapportageDocumentId!, 'rapportage.xlsx')"
+                data-testid="download_rapportage_btn">
+          <ds-icon [icon]="faDownloadIcon" [title]="strings.mamma.visitatie.tooltips.rapportageDownloaden"></ds-icon>
         </button>
       }
-      <button ds-button-primary data-testid="visitatielijst_genereren_btn" (click)="openVisitatielijstGenererenDialog()"
-              *appAutorisatie="insteltechniekAanpassenConstraint">
-        <ds-icon [icon]="faListIcon"/>
-        Visitatielijst genereren
-      </button>
-    </div>
+    </td>
   </ng-container>
-
-  <app-mamma-visitatie-filter (filter)="filterValidaties($event)" class="visitatie-filter"/>
-
-  <table [dataSource]="alleVisitaties()" [fullWidth]="true" ds-table matSort
-         matSortActive="omschrijving"
-         [hoverable]="magDetailsInzien"
-         matSortDirection="asc">
-    <ng-container dsColumnDef="omschrijving">
-      <th *dsHeaderCellDef [mat-sort-header]="'omschrijving'" ds-header-cell>Omschrijving</th>
-      <td *dsCellDef="let row" data-testid="visitatie_omschrijving" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.omschrijving }}</td>
-    </ng-container>
-    <ng-container dsColumnDef="gestartOp">
-      <th *dsHeaderCellDef [mat-sort-header]="'gestartOp'" ds-header-cell>Gestart</th>
-      <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.gestartOp | date: NL_DATE_TIME_FORMAT }}</td>
-    </ng-container>
-    <ng-container dsColumnDef="afgerondOp">
-      <th *dsHeaderCellDef [mat-sort-header]="'afgerondOp'" ds-header-cell>Afgerond</th>
-      <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.afgerondOp | date: NL_DATE_TIME_FORMAT }}</td>
-    </ng-container>
-    <ng-container dsColumnDef="aangemaaktOp">
-      <th *dsHeaderCellDef [mat-sort-header]="'aangemaaktOp'" ds-header-cell>Aangemaakt</th>
-      <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.aangemaaktOp | date: NL_DATE_TIME_FORMAT }}</td>
-    </ng-container>
-    <ng-container dsColumnDef="aangemaaktDoor">
-      <th *dsHeaderCellDef [mat-sort-header]="'aangemaaktDoor'" ds-header-cell>Door</th>
-      <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.aangemaaktDoor }}</td>
-    </ng-container>
-    <ng-container dsColumnDef="status">
-      <th *dsHeaderCellDef [mat-sort-header]="'status'" ds-header-cell>Status</th>
-      <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.status | titlecase }}</td>
-    </ng-container>
-    <ng-container dsColumnDef="beoordelingsEenheid.naam">
-      <th *dsHeaderCellDef [mat-sort-header]="'beoordelingsEenheid.naam'" ds-header-cell>BE</th>
-      <td *dsCellDef="let row" ds-cell (click)="openVisitatieEditDialog(row)">{{ row.beoordelingseenheid?.naam }}</td>
-    </ng-container>
-    <ng-container dsColumnDef="rapportage">
-      <th *dsHeaderCellDef ds-header-cell class="visitatie-kolom-smal">Rapportage</th>
-      <td *dsCellDef="let visitatie" ds-cell class="visitatie-acties-cel">
-        @if (visitatie.rapportageDocumentId) {
-          <button ds-button-icon ds-button-secondary (click)="downloadDocument(visitatie.rapportageDocumentId!, 'rapportage.xlsx')" data-testid="download_rapportage_btn">
-            <ds-icon [icon]="faDownloadIcon" title="Rapportage downloaden"></ds-icon>
-          </button>
-        }
-      </td>
-    </ng-container>
-    <ng-container dsColumnDef="vragenlijst">
-      <th *dsHeaderCellDef ds-header-cell class="visitatie-kolom-smal">Vragenlijst</th>
-      <td *dsCellDef="let visitatie" ds-cell class="visitatie-acties-cel">
-        @if (visitatie.vragenlijstDocumentId) {
-          <button ds-button-icon ds-button-secondary (click)="downloadDocument(visitatie.vragenlijstDocumentId!, 'vragenlijst.xlsx')" data-testid="download_vragenlijst_btn">
-            <ds-icon [icon]="faDownloadIcon" title="Vragenlijst downloaden"></ds-icon>
-          </button>
-        }
-      </td>
-    </ng-container>
-    <ng-container dsColumnDef="inzien">
-      <th *dsHeaderCellDef ds-header-cell class="visitatie-kolom-smal"></th>
-      <td *dsCellDef="let visitatie" ds-cell class="visitatie-acties-cel">
-        @if (magInzien) {
-          <button ds-button-icon ds-button-secondary (click)="navigeerNaarVisitatie(visitatie.id)" data-testid="inzien_visitatie_btn">
-            <ds-icon [icon]="faPopoutIcon" title="Naar visitatie gaan"></ds-icon>
-          </button>
-        }
-      </td>
-    </ng-container>
-    <ng-container dsColumnDef="verwijderen">
-      <th *dsHeaderCellDef ds-header-cell class="visitatie-kolom-smal"></th>
-      <td *dsCellDef="let visitatie" ds-cell class="visitatie-acties-cel">
-        @if (magVerwijderen) {
-          <button ds-button-icon ds-button-delete-primary (click)="openVerwijderenDialog(visitatie)" data-testid="verwijderen_visitatie_btn">
-            <ds-icon [icon]="faDeleteIcon" title="Visitatie verwijderen"></ds-icon>
-          </button>
-        }
-      </td>
-    </ng-container>
-    <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>
-    <tr ds-row data-testid="visitatie_rij" *dsRowDef="let _; columns: displayedColumns"></tr>
-  </table>
-  <ds-paginator [totalNumberOfItems]="paginering().totaal"
-                [pageSize]="paginering().paginaGrootte"
-                [pageSizeOptions]="[10, 20, 50]"
-                (pageChanged)="handlePageChange($event)"
-  ></ds-paginator>
-</app-page>
+  <ng-container dsColumnDef="vragenlijst">
+    <th *dsHeaderCellDef ds-header-cell class="visitatie-kolom-smal">{{ strings.mamma.labels.vragenlijst }}</th>
+    <td *dsCellDef="let visitatie" ds-cell class="visitatie-acties-cel">
+      @if (visitatie.vragenlijstDocumentId) {
+        <button ds-button-icon ds-button-secondary
+                (click)="downloadDocument(visitatie.vragenlijstDocumentId!, 'vragenlijst.xlsx')"
+                data-testid="download_vragenlijst_btn">
+          <ds-icon [icon]="faDownloadIcon" [title]="strings.mamma.visitatie.tooltips.vragenlijstDownloaden"></ds-icon>
+        </button>
+      }
+    </td>
+  </ng-container>
+  <ng-container dsColumnDef="inzien">
+    <th *dsHeaderCellDef ds-header-cell class="visitatie-kolom-smal"></th>
+    <td *dsCellDef="let visitatie" ds-cell class="visitatie-acties-cel">
+      @if (magInzien) {
+        <button ds-button-icon ds-button-secondary (click)="navigeerNaarVisitatie(visitatie.id)"
+                data-testid="inzien_visitatie_btn">
+          <ds-icon [icon]="faPopoutIcon" [title]="strings.mamma.visitatie.tooltips.naarVisitatie"></ds-icon>
+        </button>
+      }
+    </td>
+  </ng-container>
+  <ng-container dsColumnDef="verwijderen">
+    <th *dsHeaderCellDef ds-header-cell class="visitatie-kolom-smal"></th>
+    <td *dsCellDef="let visitatie" ds-cell class="visitatie-acties-cel">
+      @if (magVerwijderen) {
+        <button ds-button-icon ds-button-delete-primary (click)="openVerwijderenDialog(visitatie)"
+                data-testid="verwijderen_visitatie_btn">
+          <ds-icon [icon]="faDeleteIcon" [title]="strings.mamma.visitatie.tooltips.visitatieVerwijderen"></ds-icon>
+        </button>
+      }
+    </td>
+  </ng-container>
+  <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>
+  <tr ds-row data-testid="visitatie_rij" *dsRowDef="let _; columns: displayedColumns"></tr>
+</table>
+<ds-paginator [totalNumberOfItems]="paginering().totaal"
+              [pageSize]="paginering().paginaGrootte"
+              [pageSizeOptions]="[10, 20, 50]"
+              (pageChanged)="handlePageChange($event)"
+></ds-paginator>

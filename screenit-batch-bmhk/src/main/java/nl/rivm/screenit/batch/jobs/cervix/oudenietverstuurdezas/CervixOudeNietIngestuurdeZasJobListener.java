@@ -30,6 +30,7 @@ import jakarta.persistence.PersistenceContext;
 
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.batch.jobs.cervix.AbstractCervixProjectGroepWriter;
 import nl.rivm.screenit.batch.jobs.helpers.BaseLogListener;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.SortState;
@@ -98,7 +99,7 @@ public class CervixOudeNietIngestuurdeZasJobListener extends BaseLogListener
 			}
 			if (project != null)
 			{
-				jobExecution.getExecutionContext().put(CervixOudeNietIngestuurdeZasConstants.PROJECT_ID, project.getId());
+				jobExecution.getExecutionContext().put(AbstractCervixProjectGroepWriter.PROJECT_ID, project.getId());
 			}
 		}
 	}
@@ -135,19 +136,19 @@ public class CervixOudeNietIngestuurdeZasJobListener extends BaseLogListener
 		{
 			String melding;
 			var executionContext = jobExecution.getExecutionContext();
-			if (executionContext.containsKey(CervixOudeNietIngestuurdeZasConstants.PROJECT_ID) && StringUtils.isNotBlank(projectNaam))
+			if (executionContext.containsKey(AbstractCervixProjectGroepWriter.PROJECT_ID) && StringUtils.isNotBlank(projectNaam))
 			{
 				melding = "Geen clienten gevonden. Geen groep aangemaakt voor project '" + projectNaam + "'";
 				event.setLevel(Level.WARNING);
-				if (executionContext.containsKey(CervixOudeNietIngestuurdeZasConstants.PROJECT_GROEP_ID))
+				if (executionContext.containsKey(AbstractCervixProjectGroepWriter.PROJECT_GROEP_ID))
 				{
-					var groepId = executionContext.getLong(CervixOudeNietIngestuurdeZasConstants.PROJECT_GROEP_ID);
+					var groepId = executionContext.getLong(AbstractCervixProjectGroepWriter.PROJECT_GROEP_ID);
 					var groep = projectGroepRepository.findById(groepId).orElse(null);
 					if (groep != null)
 					{
 						if (groep.getPopulatie() > 0)
 						{
-							var projectId = executionContext.getLong(CervixOudeNietIngestuurdeZasConstants.PROJECT_ID);
+							var projectId = executionContext.getLong(AbstractCervixProjectGroepWriter.PROJECT_ID);
 							var aantalNogTeGaan = getAantalNogTeGaan(projectId);
 							melding = groep.getPopulatie() + " client(en) toegevoegd aan project '" + projectNaam + "' in groep '" + groep.getNaam() + "'.";
 							melding += " # nog te gaan: " + aantalNogTeGaan;

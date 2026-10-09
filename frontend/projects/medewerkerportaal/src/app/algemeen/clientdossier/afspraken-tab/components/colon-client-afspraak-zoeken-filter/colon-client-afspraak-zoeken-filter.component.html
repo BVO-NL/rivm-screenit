@@ -20,17 +20,72 @@
   -->
 <form [formGroup]="zoekenForm" class="filter-container">
   <div class="filter-controls">
-    <ds-dropdown class="type-dropdown" [clearable]="false" bindValue="value" bindLabel="label" label="Type afspraak" [items]="afspraakTypeItems" formControlName="type">
-      <ng-template ds-option-template let-item>
-        {{ item.label }}
-      </ng-template>
-    </ds-dropdown>
-    <ds-datepicker label="Datum van" formControlName="vanaf"/>
-    <ds-datepicker label="Datum tot en met" formControlName="totEnMet" [min]="vanafCtrl.value?.toISOString()"
-                   [errorMessage]="{lessThanMinDate: 'De Vanaf datum moet voor de Tot en met datum liggen'}"/>
+    @if (magAfwijkendTypePlannen) {
+      <ds-dropdown
+        [class.veld-half]="toonDatumTijdBuitenRooster()" [clearable]="false"
+        bindValue="value"
+        bindLabel="label"
+        [label]="strings.algemeen.labels.typeAfspraak"
+        [items]="afspraakTypeItems"
+        formControlName="type"
+        data-testid="type-afspraak-dropdown"
+      >
+        <ng-template ds-option-template let-item>
+          {{ item.label }}
+        </ng-template>
+      </ds-dropdown>
+    }
+    @if (toonDatumTijdBuitenRooster()) {
+      <app-datum-tijd-picker class="veld-half" [control]="zoekenForm.controls.datumTijdBuitenRooster" [label]="strings.algemeen.labels.datumTijd"
+                             [datePlaceholder]="strings.algemeen.placeholders.datum"
+                             [errorMessage]="{required: strings.algemeen.errors.verplicht(strings.algemeen.labels.datumTijd),
+                                              invalidDateTime: strings.algemeen.errors.invalidDateTime}"
+                             data-testid="datum_buiten_rooster_datepicker"/>
+    } @else if (!isBuitenGeplandeSlots()) {
+      <ds-datepicker
+        [label]="strings.algemeen.labels.datumVan"
+        formControlName="vanaf"
+        [placeholder]="strings.algemeen.placeholders.datum"
+        [minDate]="minimumDatum()"
+        [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.datumVan) }"
+        data-testid="datum-van-veld"
+      />
+      <ds-datepicker
+        [label]="strings.algemeen.labels.datumTotEnMet"
+        formControlName="totEnMet"
+        [placeholder]="strings.algemeen.placeholders.datum"
+        [minDate]="vanafCtrl.value?.toISOString() ?? ''"
+        [errorMessage]="{
+        required: strings.algemeen.errors.verplicht(strings.algemeen.labels.datumTotEnMet),
+        lessThanMinDate: strings.algemeen.errors.veldNaVeld(strings.algemeen.labels.datumVan, strings.algemeen.labels.datumTotEnMet),
+      }"
+        data-testid="datum-tot-en-met-veld"
+      />
+    }
+    @if (toonGeavanceerd()) {
+      <ds-input [label]="strings.algemeen.labels.intakelocatie" formControlName="naam"
+                [placeholder]="strings.algemeen.placeholders.intakelocatieNaam" data-testid="naam-veld"/>
+      <ds-input [label]="strings.algemeen.labels.plaats" formControlName="plaats"
+                [placeholder]="strings.algemeen.placeholders.plaats" data-testid="plaats-veld"/>
+      <ds-dropdown
+        bindValue="value"
+        bindLabel="label"
+        [label]="strings.algemeen.labels.afstandInKm"
+        [items]="afstandItems"
+        formControlName="afstand"
+        [placeholder]="strings.algemeen.placeholders.afstand"
+        data-testid="afstand-dropdown"
+      >
+        <ng-template ds-option-template let-item>
+          {{ item.label }}
+        </ng-template>
+      </ds-dropdown>
+    }
   </div>
-  <button ds-button-secondary (click)="verstuurQuery()" [disabled]="zoekenForm.invalid" data-testid="zoeken-knop">
-    <ds-icon [icon]="searchIcon" size="12px"/>
-    Zoeken
-  </button>
+  @if (!isTijdstipWijzigenBuitenGeplandeSlots()) {
+    <button ds-button-secondary (click)="verstuurQuery()" data-testid="zoeken-knop">
+      <ds-icon [icon]="searchIcon" size="12px"/>
+      {{ strings.algemeen.buttons.zoeken }}
+    </button>
+  }
 </form>

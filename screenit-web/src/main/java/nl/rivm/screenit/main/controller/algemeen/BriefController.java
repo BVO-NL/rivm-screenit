@@ -74,8 +74,7 @@ public class BriefController extends BaseController
 	@Operation(summary = "Haal brief acties op", description = "Zoek alle toegestane acties voor een gegeven brief op")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Acties die op de brief uitgevoerd mogen worden"),
-		@ApiResponse(responseCode = "404", description = "Brief niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Brief niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {}, altijdToegestaan = true, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -98,8 +97,7 @@ public class BriefController extends BaseController
 	@Operation(summary = "Activeer de brief", description = "Hou de brief niet meer tegen")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200"),
-		@ApiResponse(responseCode = "404", description = "Brief niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Brief niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht =
 		Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_OPNIEUW_KLAARZETTEN, bevolkingsonderzoekScopes = {
@@ -116,8 +114,7 @@ public class BriefController extends BaseController
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200"),
 		@ApiResponse(responseCode = "400", description = "Brief kan niet opnieuw aangemaakt worden"),
-		@ApiResponse(responseCode = "404", description = "Brief niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Brief niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht =
 		Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_OPNIEUW_KLAARZETTEN, bevolkingsonderzoekScopes = {
@@ -137,8 +134,7 @@ public class BriefController extends BaseController
 	@Operation(summary = "Houd een brief tegen", description = "Zet een brief op tegenhouden zodat deze niet aangemaakt wordt")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Brief wordt tegengehouden"),
-		@ApiResponse(responseCode = "404", description = "Brief niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Brief niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = {
 		Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN }, bevolkingsonderzoekScopes = {
@@ -154,8 +150,7 @@ public class BriefController extends BaseController
 	@Operation(summary = "Bekijk de template van de brief", description = "Haalt het document van de template waarop de brief is gebaseerd")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Document van de template"),
-		@ApiResponse(responseCode = "404", description = "Brief niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Brief niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {}, altijdToegestaan = true, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -193,8 +188,7 @@ public class BriefController extends BaseController
 	@Operation(summary = "Bekijk de verstuurde brief", description = "Haalt de verstuurde brief uit Communication Hub op")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Verstuurde brief"),
-		@ApiResponse(responseCode = "404", description = "Brief niet gevonden of niet meer beschikbaar"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Brief niet gevonden of niet meer beschikbaar")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = {}, altijdToegestaan = true, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })

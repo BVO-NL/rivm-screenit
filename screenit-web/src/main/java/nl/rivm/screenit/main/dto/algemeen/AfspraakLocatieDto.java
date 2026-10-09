@@ -22,6 +22,7 @@ package nl.rivm.screenit.main.dto.algemeen;
  */
 
 public record AfspraakLocatieDto(
+	Long id,
 	String naam,
 	AdresDto adres)
 {

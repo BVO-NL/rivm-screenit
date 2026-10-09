@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, effect, forwardRef, inject, Injector, input, model, runInInjectionContext, signal, WritableSignal } from '@angular/core'
+import { Component, effect, forwardRef, inject, Injector, input, model, runInInjectionContext, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core'
 import { WoonplaatsDto } from '../../models/WoonplaatsDto'
 import { WoonplaatsenService } from '../../services/woonplaatsen/woonplaatsen.service'
 import { DropdownValueModel, DsDropdownComponent } from '@topicus-rgp-ds/web'
@@ -33,12 +33,14 @@ import { take } from 'rxjs'
       [disabled]="isDisabled"
       [items]="woonplaatsen()"
       [(ngModel)]="selectedWoonplaats"
+      [ngModelOptions]="{standalone: true}"
       [label]="label()"
       (search)="onSearchChange($event)"
       [required]="required()"
       appendTo=".ds-modal"
     />
   </div>`,
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

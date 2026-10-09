@@ -26,6 +26,7 @@
     <th *dsHeaderCellDef ds-header-cell>
       <ds-checkbox
         [ngModel]="allCheckboxesSelected()"
+        [ngModelOptions]="{standalone: true}"
         [indeterminate]="anyCheckboxSelected()"
         (checkboxChanged)="toggleAll()"
       />
@@ -35,57 +36,58 @@
         (click)="$event.stopPropagation()"
         (checkboxChanged)="selecteerOnderzoek(row)"
         [ngModel]="rowIsSelected(row)"
+        [ngModelOptions]="{standalone: true}"
         [disabled]="isAlInFotobespreking(row)"
       />
     </td>
   </ng-container>
   <ng-container dsColumnDef="naam">
-    <th *dsHeaderCellDef mat-sort-header="afspraak.uitnodiging.screeningRonde.dossier.client.persoon.achternaam" ds-header-cell>Naam</th>
+    <th *dsHeaderCellDef mat-sort-header="afspraak.uitnodiging.screeningRonde.dossier.client.persoon.achternaam" ds-header-cell>{{ strings.algemeen.labels.naam }}</th>
     <td *dsCellDef="let row" data-testid="fotobespreking_naam" ds-cell>{{ row.naam }}
     </td>
   </ng-container>
   <ng-container dsColumnDef="bsn">
-    <th *dsHeaderCellDef mat-sort-header="afspraak.uitnodiging.screeningRonde.dossier.client.persoon.bsn" ds-header-cell>BSN</th>
+    <th *dsHeaderCellDef mat-sort-header="afspraak.uitnodiging.screeningRonde.dossier.client.persoon.bsn" ds-header-cell>{{ strings.algemeen.labels.bsn }}</th>
     <td *dsCellDef="let row" ds-cell>{{ row.bsn }}
     </td>
   </ng-container>
   <ng-container dsColumnDef="geboortedatum">
-    <th *dsHeaderCellDef mat-sort-header="afspraak.uitnodiging.screeningRonde.dossier.client.persoon.geboortedatum" ds-header-cell>Geboortedatum</th>
+    <th *dsHeaderCellDef mat-sort-header="afspraak.uitnodiging.screeningRonde.dossier.client.persoon.geboortedatum" ds-header-cell>{{ strings.algemeen.labels.geboortedatum }}</th>
     <td *dsCellDef="let row" ds-cell
     >{{ row.geboortedatum | date: NL_DATE_FORMAT }}
     </td>
   </ng-container>
   <ng-container dsColumnDef="medewerker">
-    <th *dsHeaderCellDef mat-sort-header="mammografie.afgerondDoor.medewerker.achternaam" ds-header-cell>Medewerker</th>
+    <th *dsHeaderCellDef mat-sort-header="mammografie.afgerondDoor.medewerker.achternaam" ds-header-cell>{{ strings.algemeen.labels.medewerker }}</th>
     <td *dsCellDef="let row" ds-cell>{{ row.medewerker }}
     </td>
   </ng-container>
   <ng-container dsColumnDef="onderzoeksdatum">
-    <th *dsHeaderCellDef mat-sort-header="creatieDatum" ds-header-cell>Onderzoeksdatum</th>
+    <th *dsHeaderCellDef mat-sort-header="creatieDatum" ds-header-cell>{{ strings.mamma.labels.onderzoeksdatum }}</th>
     <td *dsCellDef="let row" ds-cell>{{ row.onderzoeksdatum | date: NL_DATE_TIME_FORMAT }}</td>
   </ng-container>
   <ng-container dsColumnDef="redenFotobesprekingDoorMbber">
-    <th *dsHeaderCellDef ds-header-cell>Reden fotobespreking door MBB'er</th>
+    <th *dsHeaderCellDef ds-header-cell>{{ strings.mamma.fotobespreking.labels.redenMbber }}</th>
     <td *dsCellDef="let row" ds-cell>{{ row.redenFotobesprekingDoorMbber | enumLabel: mammaOnderzoekRedenFotobesprekingLabels }}</td>
   </ng-container>
   <ng-container dsColumnDef="redenFotobesprekingDoorRadioloog">
-    <th *dsHeaderCellDef ds-header-cell>Reden fotobespreking door radioloog</th>
+    <th *dsHeaderCellDef ds-header-cell>{{ strings.mamma.fotobespreking.labels.redenRadioloog }}</th>
     <td *dsCellDef="let row" ds-cell>{{ row.redenFotobesprekingDoorRadioloog | enumLabel: mammaLezingRedenenFotobesprekingRadioloogLabels }}</td>
   </ng-container>
   <ng-container dsColumnDef="redenFotobesprekingMetMbber">
-    <th *dsHeaderCellDef ds-header-cell>Reden fotobespreking met MBB'er</th>
+    <th *dsHeaderCellDef ds-header-cell>{{ strings.mamma.fotobespreking.labels.redenMetMbber }}</th>
     <td *dsCellDef="let row" ds-cell>{{ row.redenFotobesprekingMetMbber | enumLabel: mammaLezingRedenenFotobesprekingMbberLabels }}</td>
   </ng-container>
   <ng-container dsColumnDef="redenDoorverwijzing">
-    <th *dsHeaderCellDef ds-header-cell>Reden doorverwijzing</th>
+    <th *dsHeaderCellDef ds-header-cell>{{ strings.mamma.fotobespreking.labels.redenDoorverwijzing }}</th>
     <td *dsCellDef="let row" ds-cell>{{ row.redenDoorverwijzing | enumLabel: mammaLaesieTypeLabels }}</td>
   </ng-container>
   <ng-container dsColumnDef="discrepantie">
-    <th *dsHeaderCellDef ds-header-cell>Discrepantie</th>
+    <th *dsHeaderCellDef ds-header-cell>{{ strings.mamma.labels.discrepantie }}</th>
     <td *dsCellDef="let row" ds-cell>{{ row.discrepantie | boolean }}</td>
   </ng-container>
   <ng-container dsColumnDef="followUp">
-    <th *dsHeaderCellDef ds-header-cell>Follow-up</th>
+    <th *dsHeaderCellDef ds-header-cell>{{ strings.mamma.labels.followUp }}</th>
     <td *dsCellDef="let row" ds-cell>{{ row.followUp | enumLabel: mammaFollowUpConclusieStatusLabel }}</td>
   </ng-container>
   <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>

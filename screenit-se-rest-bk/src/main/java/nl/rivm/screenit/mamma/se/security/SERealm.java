@@ -47,8 +47,8 @@ import nl.rivm.screenit.yubikey.shiro.YubikeyAuthenticationInfo;
 import nl.rivm.screenit.yubikey.shiro.YubikeyToken;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;

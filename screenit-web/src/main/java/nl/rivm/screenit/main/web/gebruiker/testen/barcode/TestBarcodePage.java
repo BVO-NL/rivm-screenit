@@ -47,7 +47,7 @@ import nl.rivm.screenit.util.TestBsnGenerator;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;

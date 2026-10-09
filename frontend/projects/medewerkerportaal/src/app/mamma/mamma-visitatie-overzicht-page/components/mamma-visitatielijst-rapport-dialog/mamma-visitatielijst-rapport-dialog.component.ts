@@ -29,6 +29,7 @@ import { MammaVisitatielijstDialogData } from '@shared/types/mamma/dto/visitatie
 import { MammaVisitatielijstRapport } from '@shared/types/mamma/mamma-visitatielijst-rapport'
 import { DsButtonComponent } from '@topicus-rgp-ds/web'
 import { NotificationService } from '@shared/services/notification/notification.service'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-mamma-visitatielijst-rapport-dialog',
@@ -42,6 +43,7 @@ import { NotificationService } from '@shared/services/notification/notification.
   `,
 })
 export class MammaVisitatielijstRapportDialogComponent {
+  protected readonly strings = inject(StringsService).getStrings()
   private readonly dialogRef = inject(DialogRef)
   private readonly dialogData: MammaVisitatielijstDialogData = inject(DIALOG_DATA)
   private readonly visitatieService = inject(MammaVisitatieService)

@@ -18,7 +18,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog class="tijdslots-verwijderen-modal" size="xl" titel="{{ typeTijdslot.label }} verwijderen">
+<app-base-dialog class="tijdslots-verwijderen-modal" size="xl"
+                 [titel]="strings.colon.rooster.tijdslots.verwijderen.dialogTitle(typeTijdslot.label)">
   <div body class="display-flex flex-column">
     <app-tijdslots-verwijderen-filter (filter)="filter($event)"/>
 
@@ -31,6 +32,7 @@
           <th *dsHeaderCellDef ds-header-cell>
             <ds-checkbox
               [ngModel]="allCheckboxesSelected()"
+              [ngModelOptions]="{standalone: true}"
               [indeterminate]="anyCheckboxSelected()"
               (checkboxChanged)="toggleAll()"
             />
@@ -40,34 +42,38 @@
               (click)="$event.stopPropagation()"
               (change)="$event ? selectRow(row) : null"
               [ngModel]="rowIsSelected(row)"
+              [ngModelOptions]="{standalone: true}"
             />
           </td>
         </ng-container>
         <ng-container dsColumnDef="kamer">
-          <th *dsHeaderCellDef ds-header-cell>Kamer</th>
+          <th *dsHeaderCellDef ds-header-cell>{{ strings.colon.rooster.labels.kamer }}</th>
           <td *dsCellDef="let element" ds-cell>{{ element.kamer }}</td>
         </ng-container>
 
         <ng-container dsColumnDef="datum">
-          <th ds-header-cell *dsHeaderCellDef> Datum</th>
+          <th ds-header-cell *dsHeaderCellDef> {{ strings.algemeen.labels.datum }}</th>
           <td ds-cell *dsCellDef="let element"> {{ element.vanaf | date: NL_DATE_FORMAT }}</td>
         </ng-container>
 
         <ng-container dsColumnDef="starttijd">
-          <th ds-header-cell *dsHeaderCellDef> Starttijd</th>
+          <th ds-header-cell *dsHeaderCellDef> {{ strings.algemeen.labels.starttijd }}</th>
           <td ds-cell *dsCellDef="let element"> {{ element.vanaf | date: TIME_FORMAT }}</td>
         </ng-container>
 
         <ng-container dsColumnDef="eindtijd">
-          <th ds-header-cell *dsHeaderCellDef> Eindtijd</th>
+          <th ds-header-cell *dsHeaderCellDef> {{ strings.algemeen.labels.eindtijd }}</th>
           <td ds-cell *dsCellDef="let element"> {{ element.tot | date: TIME_FORMAT }}</td>
         </ng-container>
 
         <tr ds-header-row *dsHeaderRowDef="displayedColumns"></tr>
-        <tr *dsRowDef="let row; columns: displayedColumns" [ds-selectable-row]="rowIsSelected(row)" (click)="selectRow(row)"></tr>
+        <tr *dsRowDef="let row; columns: displayedColumns" [ds-selectable-row]="rowIsSelected(row)"
+            (click)="selectRow(row)"></tr>
         <ng-template dsNoDataRow>
           <tr class="ds-row">
-            <td colspan="4" class="ds-cell">Er zijn geen {{ typeTijdslot.label | lowercase }} gevonden</td>
+            <td colspan="4"
+                class="ds-cell">{{ strings.colon.rooster.tijdslots.verwijderen.leeg(typeTijdslot.label | lowercase) }}
+            </td>
           </tr>
         </ng-template>
       </table>
@@ -79,8 +85,10 @@
       />
     </div>
   </div>
-  <div buttons class="btn-group">
-    <button ds-button-secondary (click)="cancel()">Annuleren</button>
-    <button (click)="verwijderen()" [disabled]="selection.selected.length === 0" ds-button-delete-primary>Verwijderen</button>
-  </div>
+  <ng-container buttons>
+    <button ds-button-tertiary (click)="cancel()">{{ strings.algemeen.buttons.annuleren }}</button>
+    <button (click)="verwijderen()" [disabled]="selection.selected.length === 0"
+            ds-button-delete-primary>{{ strings.algemeen.buttons.verwijderen }}
+    </button>
+  </ng-container>
 </app-base-dialog>

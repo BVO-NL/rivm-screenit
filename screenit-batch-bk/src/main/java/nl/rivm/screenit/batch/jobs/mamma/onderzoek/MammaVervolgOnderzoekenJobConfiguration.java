@@ -61,7 +61,8 @@ public class MammaVervolgOnderzoekenJobConfiguration extends AbstractJobConfigur
 	public Step onderbrokenOnderzoekenStep(MammaVervolgTeOudeOnderbrokenOnderzoekenReader reader, MammaVervolgTeOudeOnderbrokenOnderzoekenWriter writer)
 	{
 		return new StepBuilder("onderbrokenOnderzoekenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -71,7 +72,8 @@ public class MammaVervolgOnderzoekenJobConfiguration extends AbstractJobConfigur
 	public Step geenBeeldenStep(MammaOnderzoekenZonderBeeldenReader reader, MammaOnderzoekenZonderBeeldenWriter writer)
 	{
 		return new StepBuilder("geenBeeldenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -81,7 +83,8 @@ public class MammaVervolgOnderzoekenJobConfiguration extends AbstractJobConfigur
 	public Step nietAfgeslotenStep(MammaOnderzoekenNietAfgeslotenReader reader, MammaOnderzoekenNietAfgeslotenWriter writer)
 	{
 		return new StepBuilder("nietAfgeslotenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

@@ -29,7 +29,7 @@ import nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.dto.LaesieDtoMappe
 import nl.rivm.screenit.model.mamma.enums.MammaLaesieType;
 import nl.rivm.screenit.service.mamma.MammaLaesieLocatieService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;

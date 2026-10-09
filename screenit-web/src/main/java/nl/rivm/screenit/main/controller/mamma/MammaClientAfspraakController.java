@@ -66,6 +66,8 @@ public class MammaClientAfspraakController
 		return ResponseEntity.ok(mammaClientAfspraakService.getAfspraken(clientId));
 	}
 
+	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAKEN,
+		bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
 	@Operation(summary = "Haal afspraakacties op", description = "Haalt de toegestane acties voor mamma-afspraken op.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Afspraakacties opgehaald"),

@@ -18,22 +18,26 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog titel="Visitatie verwijderen">
+<app-base-dialog [titel]="strings.mamma.visitatie.verwijderen.dialogTitle">
   <div body class="body">
-    <div class="mb-2">Onderstaande visitatie definitief verwijderen?</div>
+    <div class="mb-2">{{ strings.mamma.visitatie.verwijderen.body }}</div>
     <table>
       <tr>
-        <td>Omschrijving</td>
+        <td>{{ strings.algemeen.labels.omschrijving }}</td>
         <td>{{ visitatie.omschrijving }}</td>
       </tr>
       <tr>
-        <td>Aangemaakt door</td>
+        <td>{{ strings.algemeen.labels.aangemaaktDoor }}</td>
         <td>{{ visitatie.aangemaaktDoor }}</td>
       </tr>
     </table>
   </div>
-  <div buttons class="btn-group">
-    <button ds-button-secondary type="button" (click)="sluitDialog()" data-testid="annuleren_button">Annuleren</button>
-    <button ds-button-delete-primary type="button" (click)="bevestigVerwijderen()" data-testid="verwijderen_button">Verwijderen</button>
-  </div>
+  <ng-container buttons>
+    <button ds-button-tertiary type="button" (click)="sluitDialog()"
+            data-testid="annuleren_button">{{ strings.algemeen.buttons.annuleren }}
+    </button>
+    <button ds-button-delete-primary type="button" (click)="bevestigVerwijderen()"
+            data-testid="verwijderen_button">{{ strings.algemeen.buttons.verwijderen }}
+    </button>
+  </ng-container>
 </app-base-dialog>

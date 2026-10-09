@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CheckConstraint;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -44,14 +45,12 @@ import nl.rivm.screenit.model.mamma.enums.MammaLaesieType;
 import nl.rivm.screenit.model.mamma.enums.MammaZijde;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Check;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Table(schema = "mamma", name = "laesie")
+@Table(schema = "mamma", name = "laesie", check = @CheckConstraint(constraint = "laesie.laesie_grootte_in_cm >= 0"))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Audited
-@Check(constraints = "laesie.laesie_grootte_in_cm >= 0")
 @Getter
 @Setter
 public abstract class MammaLaesie extends AbstractHibernateObject

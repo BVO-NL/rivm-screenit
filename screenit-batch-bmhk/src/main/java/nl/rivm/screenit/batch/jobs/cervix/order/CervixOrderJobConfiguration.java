@@ -53,7 +53,8 @@ public class CervixOrderJobConfiguration extends AbstractJobConfiguration
 	public Step orderAanmaakStep(CervixOrderAanmaakReader reader, CervixOrderAanmaakWriter writer)
 	{
 		return new StepBuilder("orderAanmaakStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -63,7 +64,8 @@ public class CervixOrderJobConfiguration extends AbstractJobConfiguration
 	public Step orderVersturenStep(CervixOrderVersturenReader reader, CervixOrderVersturenWriter writer)
 	{
 		return new StepBuilder("orderVersturenStep", repository)
-			.<Long, Long> chunk(1, transactionManager) 
+			.<Long, Long> chunk(1) 
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

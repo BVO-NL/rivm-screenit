@@ -39,6 +39,7 @@ import { NL_DATE_FORMAT } from '@shared/constants'
 import { DatePipe } from '@angular/common'
 import { BvoLabelPipe } from '@shared/pipes/bvo-label/bvo-label.pipe'
 import { BvoStatusDto } from '@shared/types/algemeen/dto/bvo-status.dto'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-bvo-status-panel',
@@ -62,6 +63,7 @@ import { BvoStatusDto } from '@shared/types/algemeen/dto/bvo-status.dto'
 })
 export class BvoStatusPanelComponent {
   private readonly clientService = inject(ClientService)
+  protected readonly strings = inject(StringsService).getStrings()
   protected bvoStatussen: Signal<BvoStatusDto[]> = toSignal(this.clientService.getBvoStatus(this.clientService.clientId()), { initialValue: [] })
   protected readonly displayedColumns = ['bevolkingsonderzoek', 'status', 'vervolg-indicatie']
   protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT

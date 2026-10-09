@@ -42,6 +42,7 @@ import { NaamPipe, NaamTransform } from '@shared/pipes/naam/naam.pipe'
 import { EnumLabelPipe } from '@shared/pipes/enum-label/enum-label.pipe'
 import { isStringNullOfLeeg } from '@shared/utils/string-utils'
 import { clientContactActieLabels } from '@shared/utils/client-contact-actie-utils'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-notitie-dialog',
@@ -85,6 +86,7 @@ export class NotitieDialogComponent {
       value: bvo.toString(),
     })),
   ]
+  protected readonly strings = inject(StringsService).getStrings()
 
   protected readonly magVerwijderen = computed(
     () =>
@@ -120,6 +122,7 @@ export class NotitieDialogComponent {
           body: 'Weet u zeker dat u deze notitie wilt verwijderen?',
           jaTekst: 'Ja, verwijderen',
         },
+        hasBackdrop: true,
       })
       .closed.pipe(
         take(1),

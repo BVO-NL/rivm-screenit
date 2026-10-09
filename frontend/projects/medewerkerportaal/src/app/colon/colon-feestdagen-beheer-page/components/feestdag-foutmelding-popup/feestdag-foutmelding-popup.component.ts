@@ -23,6 +23,7 @@ import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.
 import { DsButtonComponent } from '@topicus-rgp-ds/web'
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { KeyValuePipe } from '@angular/common'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-feestdag-foutmelding-popup',
@@ -38,6 +39,7 @@ import { KeyValuePipe } from '@angular/common'
 export class FeestdagFoutmeldingPopupComponent {
   private readonly dialogRef = inject(DialogRef)
   protected readonly error: { message: string; afspraakslots: { [intakelocatie: string]: string[] } } = inject(DIALOG_DATA)
+  protected readonly strings = inject(StringsService).getStrings()
 
   sluiten() {
     this.dialogRef.close()

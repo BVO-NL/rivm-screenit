@@ -18,7 +18,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-.notitie-aanmaken-veld-label {
-  font-weight: 700;
-  margin-bottom: var(--spacer-3)
+ds-summary-panel {
+  display: block;
+}
+
+.afspraak-gegevens-kolom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ruimte-middel);
+}
+
+.geen-bevestigingsbrief {
+  display: block;
+  margin-top: var(--spacer-3);
+}
+
+.notitie {
+  display: block;
+  margin-top: var(--spacer-3);
 }

@@ -56,6 +56,7 @@ import { AbbreviatePipe } from '@shared/pipes/abbreviate/abbreviate.pipe'
 import { EnumLabelPipe } from '@shared/pipes/enum-label/enum-label.pipe'
 import { clientContactActieLabel } from '@shared/utils/client-contact-actie-utils'
 import { naarMatPaginator } from '@shared/utils/ds-paginator-utils'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-historie-contacten-panel',
@@ -97,15 +98,17 @@ export class HistorieContactenPanelComponent {
   protected readonly NaamTransform = NaamTransform
   protected readonly bevolkingsonderzoekLabels = bevolkingsonderzoekAfkortingLabels
   protected readonly clientContactActieLabel = clientContactActieLabel
+  protected readonly strings = inject(StringsService).getStrings()
+  protected displayedColumns = ['datumTijd', 'uitgevoerdeActies', 'notitie', 'medewerker', 'bevolkingsonderzoeken']
+  protected bewerkenToegestaan = false
+  protected inzienToegestaan = false
+
   private readonly matSort = viewChild(MatSort)
   private readonly paginator = viewChild(DsPaginatorComponent)
   private readonly dialog = inject(Dialog)
   private readonly autorisatieService = inject(AutorisatieService)
   private readonly clientContactService = inject(ClientContactService)
   private readonly clientService = inject(ClientService)
-  protected displayedColumns = ['datumTijd', 'acties', 'notitie', 'medewerker', 'bevolkingsonderzoeken']
-  protected bewerkenToegestaan = false
-  protected inzienToegestaan = false
 
   constructor() {
     this.laadContacten()

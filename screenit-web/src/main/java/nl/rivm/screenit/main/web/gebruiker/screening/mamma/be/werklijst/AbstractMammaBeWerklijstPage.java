@@ -72,7 +72,7 @@ import nl.topicuszorg.wicket.input.validator.BSNValidator;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.formula.functions.T;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;

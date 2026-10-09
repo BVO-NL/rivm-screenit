@@ -50,7 +50,8 @@ public class CervixGevolgenLabprocesVerwerkenJobConfiguration extends AbstractJo
 	public Step gevolgenLabprocesVerwerkenStep(CervixGevolgenLabprocesVerwerkenReader reader, CervixGevolgenLabprocesVerwerkenWriter writer)
 	{
 		return new StepBuilder("gevolgenLabprocesVerwerkenStep", repository)
-			.<Long, Long> chunk(1000, transactionManager)
+			.<Long, Long> chunk(1000)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

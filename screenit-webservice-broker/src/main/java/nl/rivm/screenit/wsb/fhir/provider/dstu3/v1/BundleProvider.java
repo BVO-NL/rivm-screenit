@@ -44,7 +44,7 @@ import nl.rivm.screenit.wsb.fhir.validator.LabaanvraagValidator;
 import nl.rivm.screenit.wsb.fhir.validator.ValidationMessage;
 import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.GenericJDBCException;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.OperationOutcome;

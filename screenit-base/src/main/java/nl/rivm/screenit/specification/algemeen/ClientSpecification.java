@@ -24,6 +24,8 @@ package nl.rivm.screenit.specification.algemeen;
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.persistence.criteria.JoinType;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -55,6 +57,7 @@ import nl.rivm.screenit.model.mamma.MammaScreeningRonde_;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
 import nl.rivm.screenit.model.project.ProjectClient;
 import nl.rivm.screenit.model.project.ProjectClient_;
+import nl.rivm.screenit.model.project.ProjectType;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.SpecificationUtil;
 import nl.rivm.screenit.util.DateUtil;
@@ -217,6 +220,19 @@ public class ClientSpecification
 				));
 
 			return cb.not(cb.exists(subquery));
+		};
+	}
+
+	public static ExtendedSpecification<Client> zitNietInProjectVanType(ProjectType type)
+	{
+		return (r, q, cb) ->
+		{
+			var projectClientJoin = join(r, Client_.projecten, JoinType.LEFT);
+			var projectJoin = join(projectClientJoin, ProjectClient_.project, JoinType.LEFT);
+			projectClientJoin.on(cb.and(
+				cb.isTrue(projectClientJoin.get(ProjectClient_.actief)),
+				ProjectSpecification.heeftType(type).toPredicate(projectJoin, q, cb)));
+			return cb.isNull(projectClientJoin.get(AbstractHibernateObject_.id));
 		};
 	}
 

@@ -22,7 +22,7 @@ export interface ClientBrpGegevensDto {
   id: number
   indicatieStatus: string
   datumLaatsteBrpMutatie: string
-  laatstAangevraagdOp: string
+  laatstAangevraagdOp: Date
   tijdelijkBrpAdres: boolean
   datumVertrokkenUitNederland?: Date
 }

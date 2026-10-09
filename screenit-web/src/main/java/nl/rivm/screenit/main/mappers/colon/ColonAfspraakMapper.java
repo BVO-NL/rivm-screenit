@@ -26,6 +26,8 @@ import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.colon.ColonIntakeAfspraak;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
+import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
+import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
 
@@ -42,9 +44,11 @@ public interface ColonAfspraakMapper
 		@Mapping(source = "vanaf", target = "vanaf"),
 		@Mapping(source = "afspraak.kamer.intakelocatie", target = "locatie"),
 		@Mapping(source = "afspraak.kamer.intakelocatie", target = "locatieBeschrijving", qualifiedByName = "getLocatieBeschrijving"),
-		@Mapping(source = "afspraak", target = "digitaal", qualifiedByName = "isDigitaleAfspraak")
+		@Mapping(source = "afspraak", target = "digitaal", qualifiedByName = "isDigitaleAfspraak"),
+		@Mapping(source = "afspraak", target = "verlopenZonderConclusie", qualifiedByName = "isVerlopenZonderConclusie")
 	})
-	AfspraakDto colonAfspraakToAfspraakDto(ColonIntakeAfspraak afspraak, @Context OrganisatieParameterService organisatieParameterService);
+	AfspraakDto colonAfspraakToAfspraakDto(ColonIntakeAfspraak afspraak, @Context OrganisatieParameterService organisatieParameterService,
+		@Context ICurrentDateSupplier currentDateSupplier);
 
 	@Named("isDigitaleAfspraak")
 	default boolean isDigitaleAfspraak(ColonIntakeAfspraak afspraak)
@@ -56,5 +60,14 @@ public interface ColonAfspraakMapper
 	default String getLocatieBeschrijving(ColonIntakelocatie intakelocatie, @Context OrganisatieParameterService organisatieParameterService)
 	{
 		return organisatieParameterService.getOrganisatieParameter(intakelocatie, OrganisatieParameterKey.COLON_INTAKELOCATIE_BESCHRIJVING);
+	}
+
+	@Named("isVerlopenZonderConclusie")
+	default boolean isVerlopenZonderConclusie(ColonIntakeAfspraak afspraak, @Context ICurrentDateSupplier currentDateSupplier)
+	{
+		return afspraak.getConclusie() == null
+			&& afspraak.getVanaf() != null
+			&& currentDateSupplier.getLocalDateTime().isAfter(afspraak.getVanaf())
+			&& !ColonAfspraakStatus.isGeannuleerd(afspraak.getStatus());
 	}
 }

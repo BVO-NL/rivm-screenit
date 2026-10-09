@@ -20,12 +20,13 @@
  */
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms'
 import { getExtensieVanBestand } from '@shared/utils/file-utils'
+import { ALGEMEEN_STRINGS as strings } from '@shared/strings'
 
 export const aantalBestandenValidator = (maxAantal: number): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {
     const files: FileList = control.value
     if (files && files.length > maxAantal) {
-      return { aantalBestanden: `Er mogen maximaal ${maxAantal} bestanden worden geüpload.` }
+      return { aantalBestanden: strings.errors.aantalBestanden(maxAantal) }
     }
     return null
   }
@@ -39,7 +40,7 @@ export const extensieValidator = (toegestaneExtensies: string[]): ValidatorFn =>
         const file = files[i]
         const extensie = getExtensieVanBestand(file.name)
         if (extensie && !toegestaneExtensies.map((ext) => ext.toLowerCase()).includes(extensie)) {
-          return { extensie: `'${file.name}' heeft niet de juiste extensie. U moet een bestand met extensie '${toegestaneExtensies}' uploaden.` }
+          return { extensie: strings.errors.extensie(file.name, toegestaneExtensies) }
         }
       }
     }

@@ -66,8 +66,7 @@ public class ColonFeestdagController
 	@GetMapping
 	@Operation(summary = "Haal feestdagen op", description = "Geeft feestdagen terug, optioneel gefilterd op start- en einddatum.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Feestdagen succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Feestdagen succesvol opgehaald")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.COLON_FEESTDAGEN_BEHEER,
 		Recht.MEDEWERKER_LOCATIE_ROOSTER }, bevolkingsonderzoekScopes = {
@@ -84,8 +83,7 @@ public class ColonFeestdagController
 	@Operation(summary = "Maak een feestdag aan", description = "Maakt een nieuwe feestdag aan voor het colon-programma.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Feestdag succesvol aangemaakt"),
-		@ApiResponse(responseCode = "422", description = "Validatiefout opgetreden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "422", description = "Validatiefout opgetreden")
 	})
 	@SecurityConstraint(actie = Actie.TOEVOEGEN, constraint = ShiroConstraint.HasPermission, recht = Recht.COLON_FEESTDAGEN_BEHEER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
@@ -100,8 +98,7 @@ public class ColonFeestdagController
 	@Operation(summary = "Werk een feestdag bij", description = "Werkt een bestaande feestdag bij op basis van id.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Feestdag succesvol bijgewerkt"),
-		@ApiResponse(responseCode = "422", description = "Validatiefout opgetreden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "422", description = "Validatiefout opgetreden")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.COLON_FEESTDAGEN_BEHEER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
@@ -116,8 +113,7 @@ public class ColonFeestdagController
 	@Operation(summary = "Verwijder een feestdag", description = "Verwijdert een feestdag op basis van het opgegeven id.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Feestdag succesvol verwijderd"),
-		@ApiResponse(responseCode = "422", description = "Validatiefout opgetreden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "422", description = "Validatiefout opgetreden")
 	})
 	@SecurityConstraint(actie = Actie.VERWIJDEREN, constraint = ShiroConstraint.HasPermission, recht = Recht.COLON_FEESTDAGEN_BEHEER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })

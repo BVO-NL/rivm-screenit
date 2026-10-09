@@ -33,7 +33,7 @@ import jakarta.mail.internet.MimeMessage;
 import nl.rivm.screenit.batch.config.MailServerConfig;
 import nl.rivm.screenit.service.TechnischeBerichtenLoggingSaverService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;

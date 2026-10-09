@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rivm.screenit.service.impl.BaseBestandVerwerkingContext;
 import nl.topicuszorg.util.collections.CollectionUtils;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class ClientenBestandVerwerkingContext extends BaseBestandVerwerkingContext

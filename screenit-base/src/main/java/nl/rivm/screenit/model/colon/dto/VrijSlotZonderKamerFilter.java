@@ -50,4 +50,6 @@ public class VrijSlotZonderKamerFilter implements Serializable
 	private boolean asaScoreBovenDrie;
 
 	private boolean digitaleAfspraak;
+
+	private Long huidigAfspraakId;
 }

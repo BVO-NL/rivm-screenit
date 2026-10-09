@@ -19,25 +19,13 @@
  * =========================LICENSE_END==================================
  */
 import { Pipe, PipeTransform } from '@angular/core'
-import { endOfISOWeek, format, getISOWeek, startOfISOWeek } from 'date-fns'
-import { nl } from 'date-fns/locale'
+import { formatDatumVoorDigitaleAfspraak } from '@shared/utils/date-utils'
 
 @Pipe({
   name: 'datumNaarWeek',
 })
 export class DatumNaarWeekPipe implements PipeTransform {
   transform(value: Date | string | null): string {
-    if (!value) {
-      return ''
-    }
-
-    const datum = new Date(value)
-    if (Number.isNaN(datum.getTime())) {
-      return ''
-    }
-
-    const beginWeek = startOfISOWeek(datum)
-    const eindeWeek = endOfISOWeek(datum)
-    return `Week ${getISOWeek(datum)} - ${format(beginWeek, 'd MMMM', { locale: nl })} t/m ${format(eindeWeek, 'd MMMM yyyy', { locale: nl })}`
+    return formatDatumVoorDigitaleAfspraak(value)
   }
 }

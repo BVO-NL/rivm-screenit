@@ -23,7 +23,7 @@ package nl.rivm.screenit.huisartsenportaal.validator;
 
 import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 

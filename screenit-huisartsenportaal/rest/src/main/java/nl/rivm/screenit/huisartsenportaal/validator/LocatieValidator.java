@@ -32,7 +32,7 @@ import nl.rivm.screenit.huisartsenportaal.repository.LocatieRepository;
 import nl.rivm.screenit.huisartsenportaal.service.LocatieService;
 import nl.rivm.screenit.huisartsenportaal.util.CervixLocatieUtil;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.IBANValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

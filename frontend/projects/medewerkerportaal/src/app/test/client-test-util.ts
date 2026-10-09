@@ -118,7 +118,7 @@ export const maakBrpGegevens = (overrides: Partial<ClientBrpGegevensDto> = {}): 
   id: 1,
   indicatieStatus: 'ACTIEF',
   datumLaatsteBrpMutatie: '2025-01-01',
-  laatstAangevraagdOp: '2025-01-01T10:00:00',
+  laatstAangevraagdOp: new Date('2025-01-01T10:00:00'),
   tijdelijkBrpAdres: true,
   ...overrides,
 })

@@ -39,6 +39,7 @@ import { ClientService } from '@algemeen/services/client/client.service'
 import { BvoLabelPipe } from '@shared/pipes/bvo-label/bvo-label.pipe'
 import { Dialog } from '@angular/cdk/dialog'
 import { VerwijderdeOnderzoeksresultatenDialogComponent } from './onderzoeksresultaten-dialog/verwijderde-onderzoeksresultaten-dialog.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-verwijderde-onderzoeksresultaten-panel',
@@ -66,6 +67,7 @@ import { VerwijderdeOnderzoeksresultatenDialogComponent } from './onderzoeksresu
 export class VerwijderdeOnderzoeksresultatenPanelComponent {
   private readonly clientService = inject(ClientService)
   private readonly dialog = inject(Dialog)
+  protected readonly strings = inject(StringsService).getStrings()
   protected onderzoeksresultaten = computed(() => this.clientService.select('client')().onderzoeksresultatenActies)
   protected readonly displayedColumns = ['bevolkingsonderzoek', 'datum', 'bekijken']
 

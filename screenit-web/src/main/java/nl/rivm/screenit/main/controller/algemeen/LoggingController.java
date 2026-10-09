@@ -58,8 +58,7 @@ public class LoggingController extends BaseController
 	@Operation(summary = "Log een gebeurtenis", description = "Registreert een logregel voor de opgegeven gebeurtenis voor de ingelogde medewerker.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Gebeurtenis succesvol gelogd"),
-		@ApiResponse(responseCode = "404", description = "Client niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden tijdens het loggen")
+		@ApiResponse(responseCode = "404", description = "Client niet gevonden")
 	})
 	@PostMapping
 	public ResponseEntity<Void> logGebeurtenis(@RequestBody LoggingDto loggingDto)

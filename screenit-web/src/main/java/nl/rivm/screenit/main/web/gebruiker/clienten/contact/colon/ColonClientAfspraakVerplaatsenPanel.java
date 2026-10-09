@@ -70,7 +70,7 @@ import nl.topicuszorg.wicket.input.validator.DependantDateValidator;
 import nl.topicuszorg.wicket.input.validator.DependantDateValidator.Operator;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -102,7 +102,6 @@ import org.wicketstuff.wiquery.ui.datepicker.DatePicker;
 
 public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntakeAfspraak>
 {
-
 	@SpringBean
 	private ICurrentDateSupplier currentDateSupplier;
 

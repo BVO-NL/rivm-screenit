@@ -48,7 +48,7 @@ import {useWindowDimensions} from "../../utils/Hooks"
 import SearchResultDigitaleIntakeAfspraken from "../search_results/SearchResultDigitaleIntakeAfspraken"
 import SearchResultAfspraken from "../search_results/SearchResultAfspraken"
 import {useSelector} from "react-redux"
-import {selectHeeftAsaScoreBovenDrie, selectIntakeafspraakType} from "../../selectors/ColonSelectors"
+import {selectHeeftAsaScoreBovenDrie, selectIntakeAfspraak, selectIntakeafspraakType} from "../../selectors/ColonSelectors"
 import {ColonIntakeafspraakType} from "../../datatypes/colon/ColonIntakeafspraakType"
 import datadogService from "../../services/DatadogService"
 import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
@@ -72,6 +72,7 @@ const ColonAfspraakZoekenComponent: FC<ColonAfspraakZoekenComponentProps> = ({on
 	const dispatch = useThunkDispatch()
 	const {width} = useWindowDimensions()
 	const geselecteerdeAfspraakType = useSelector(selectIntakeafspraakType)
+	const huidigeIntakeAfspraak = useSelector(selectIntakeAfspraak)
 	const asaScoreBovenDrie = useSelector(selectHeeftAsaScoreBovenDrie)
 
 	const [zoekFilter, setZoekFilter] = useState<VrijSlotZonderKamerFilter>({
@@ -138,10 +139,17 @@ const ColonAfspraakZoekenComponent: FC<ColonAfspraakZoekenComponentProps> = ({on
 
 	const zoekAfspraken = useCallback((filter: VrijSlotZonderKamerFilter) => {
 		setZoekFilter(filter)
+		const huidigAfspraakId = huidigeIntakeAfspraak
+		&& !huidigeIntakeAfspraak.afspraakAfgezegd
+		&& !huidigeIntakeAfspraak.andereIntakelocatieOpVerzoekClient
+		&& huidigeIntakeAfspraak.type !== geselecteerdeAfspraakType
+			? huidigeIntakeAfspraak.id
+			: undefined
 		return ScreenitBackend.post<VrijSlotZonderKamer[]>("colon/afspraak/zoeken", {
 			json: {
 				...filter,
 				digitaleAfspraak: geselecteerdeAfspraakType === ColonIntakeafspraakType.DIGITAAL,
+				huidigAfspraakId,
 				asaScoreBovenDrie: asaScoreBovenDrie !== ColonHeeftAsaScoreBovenDrie.NEE,
 			},
 		}).json()
@@ -157,7 +165,7 @@ const ColonAfspraakZoekenComponent: FC<ColonAfspraakZoekenComponentProps> = ({on
 			.finally(() => {
 				setGezocht(true)
 			})
-	}, [dispatch])
+	}, [asaScoreBovenDrie, dispatch, geselecteerdeAfspraakType, huidigeIntakeAfspraak])
 
 	const handleSubmit = async (values: VrijSlotZonderKamerFilter): Promise<void> => {
 		datadogService.stuurEvent("zoekAfspraken", AnalyticsCategorie.COLON_AFSPRAAK, {

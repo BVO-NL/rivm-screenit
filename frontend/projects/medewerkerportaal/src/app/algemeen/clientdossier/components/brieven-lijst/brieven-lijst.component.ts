@@ -21,7 +21,7 @@
 import { NL_DATE_FORMAT } from '@/shared/constants'
 import { BriefDto } from '@/shared/types/algemeen/dto/brief.dto'
 import { DatePipe } from '@angular/common'
-import { Component, input } from '@angular/core'
+import { Component, inject, input } from '@angular/core'
 import {
   DsCell,
   DsCellDef,
@@ -36,6 +36,7 @@ import {
 } from '@topicus-rgp-ds/web'
 import { DatumTijdPipe } from '@shared/pipes/datum-tijd/datum-tijd.pipe'
 import { BriefStatusPipe } from '@shared/pipes/brief-status/brief-status.pipe'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-brieven-lijst',
@@ -65,6 +66,7 @@ export class BrievenLijstComponent {
   brieven = input<BriefDto[]>([])
   protected readonly displayedColumns = ['status', 'brieftype', 'datum']
   protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
+  protected readonly strings = inject(StringsService).getStrings()
 
   protected readonly trackByBriefId = (_: number, brief: BriefDto): number => brief.id
 }

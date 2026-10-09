@@ -50,7 +50,8 @@ public class ColonHuisartsOntkoppelenJobConfiguration extends AbstractJobConfigu
 	public Step huisartsOntkoppelenStep(ColonHuisartsOntkoppelenReader reader, ColonHuisartsOntkoppelenWriter writer)
 	{
 		return new StepBuilder("huisartsOntkoppelenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

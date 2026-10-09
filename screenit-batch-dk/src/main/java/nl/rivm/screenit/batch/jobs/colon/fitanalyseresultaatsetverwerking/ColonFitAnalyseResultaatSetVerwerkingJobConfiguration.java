@@ -61,7 +61,8 @@ public class ColonFitAnalyseResultaatSetVerwerkingJobConfiguration extends Abstr
 		ColonFitAnalyseResultaatSetVerwerkingWriter writer)
 	{
 		return new StepBuilder("fitAnalyseResultaatSetVerwerkingStep", repository)
-			.<Long, ColonFitAnalyseResultaat> chunk(10, transactionManager)
+			.<Long, ColonFitAnalyseResultaat> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)
@@ -72,7 +73,8 @@ public class ColonFitAnalyseResultaatSetVerwerkingJobConfiguration extends Abstr
 	public Step fitAnalyseResultaatOpruimenStep(ColonFitAnalyseResultaatOpruimenReader reader, ColonFitAnalyseResultaatOpruimenWriter writer)
 	{
 		return new StepBuilder("fitAnalyseResultaatOpruimenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -82,7 +84,8 @@ public class ColonFitAnalyseResultaatSetVerwerkingJobConfiguration extends Abstr
 	public Step fitAnalyseResultaatSetOpruimenStep(ColonFitAnalyseResultaatSetOpruimenReader reader, ColonFitAnalyseResultaatSetOpruimenWriter writer)
 	{
 		return new StepBuilder("fitAnalyseResultaatSetOpruimenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

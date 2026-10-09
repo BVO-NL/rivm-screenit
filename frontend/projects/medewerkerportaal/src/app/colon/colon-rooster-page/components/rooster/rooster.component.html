@@ -32,6 +32,9 @@
 />
 
 <full-calendar class="aantal-kamers-{{ kamers.length }}" #calendar id="roosterCalendar" [options]="calendarOptions" [resources]="kamers" [events]="tijdsloten()">
+  <ng-template #resourceLabelContent let-arg>
+    <span dsTooltip [content]="arg.resource.title" placement="bottom">{{ arg.resource.extendedProps.order }}</span>
+  </ng-template>
   <ng-template #eventContent let-arg>
     <div
       class="fc-event-main-frames"

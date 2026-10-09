@@ -23,6 +23,7 @@ package nl.rivm.screenit.model.cervix;
 
 import java.util.Date;
 
+import jakarta.persistence.CheckConstraint;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -43,7 +44,6 @@ import nl.rivm.screenit.model.InpakbareUitnodiging;
 import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
 import nl.rivm.screenit.model.cervix.enums.CervixRedenUitnodiging;
 
-import org.hibernate.annotations.Check;
 import org.hibernate.envers.Audited;
 
 @Getter
@@ -57,9 +57,8 @@ import org.hibernate.envers.Audited;
 		@Index(name = "idx_cervix_uitnodiging_geannuleerd_datum", columnList = "geannuleerdDatum"), @Index(name = "idx_cervix_uitnodiging_herinneren", columnList = "herinneren"),
 		@Index(name = "idx_cervix_uitnodiging_monster_type", columnList = "monsterType"), @Index(name = "idx_cervix_uitnodiging_verstuurd", columnList = "verstuurd"),
 		@Index(name = "idx_cervix_uitnodiging_herinneren_geannuleerd_datum", columnList = "herinnerenGeannuleerdDatum"),
-		@Index(name = "idx_cervix_uitnodiging_trackid", columnList = "trackTraceId") })
-@Check(
-	constraints = "uitnodiging.monster_type != 'ZAS' OR uitnodiging.gecombineerde_zas is null")
+		@Index(name = "idx_cervix_uitnodiging_trackid", columnList = "trackTraceId") },
+	check = @CheckConstraint(constraint = "uitnodiging.monster_type != 'ZAS' OR uitnodiging.gecombineerde_zas is null"))
 @Audited
 public class CervixUitnodiging extends InpakbareUitnodiging<CervixScreeningRonde>
 {

@@ -38,18 +38,34 @@ import { Required } from '@shared/types/autorisatie/required'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 import { LegeWaardePipe } from '@shared/pipes/lege-waarde/lege-waarde.pipe'
+import { StringsService } from '@shared/strings'
+import { NL_DATE_FORMAT } from '@shared/constants'
+import { DatumTijdPipe } from '@shared/pipes/datum-tijd/datum-tijd.pipe'
 
 @Component({
   selector: 'app-brp-panel',
-  imports: [DsCardComponent, DsButtonComponent, DsCardHeaderContentDirective, DsIconComponent, DatePipe, EnumNaturalPipe, BooleanPipe, AutorisatieDirective, LegeWaardePipe],
+  imports: [
+    DsCardComponent,
+    DsButtonComponent,
+    DsCardHeaderContentDirective,
+    DsIconComponent,
+    DatePipe,
+    EnumNaturalPipe,
+    BooleanPipe,
+    AutorisatieDirective,
+    LegeWaardePipe,
+    DatumTijdPipe,
+  ],
   templateUrl: './brp-panel.component.html',
 })
 export class BrpPanelComponent implements OnInit {
   private readonly clientService = inject(ClientService)
   private readonly dialog = inject(Dialog)
   private readonly notificationService = inject(NotificationService)
+  protected readonly strings = inject(StringsService).getStrings()
   protected clientBrpGegevens = signal<ClientBrpGegevensDto | undefined>(undefined)
-
+  protected readonly faPencil = faPencil
+  protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
   protected readonly inzienConstraint: SecurityConstraint = {
     recht: [Recht.MEDEWERKER_GBA_AANVRAGEN],
     actie: Actie.INZIEN,
@@ -92,6 +108,4 @@ export class BrpPanelComponent implements OnInit {
       this.haalBrpGegevensOp()
     })
   }
-
-  protected readonly faPencil = faPencil
 }

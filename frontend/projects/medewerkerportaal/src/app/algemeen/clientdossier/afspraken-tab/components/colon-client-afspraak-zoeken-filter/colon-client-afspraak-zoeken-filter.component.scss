@@ -22,17 +22,26 @@
   display: block;
 }
 
+$veld-gap: 1rem;
+
 .filter-container {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
 
   .filter-controls {
-    gap: 1rem;
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: $veld-gap;
+    flex: 1;
+    max-width: calc(3 * 275px + 2 * #{$veld-gap});
 
-    .type-dropdown {
-      min-width: 275px;
+    > * {
+      grid-column: span 2;
+    }
+
+    .veld-half {
+      grid-column: span 3;
     }
   }
 }

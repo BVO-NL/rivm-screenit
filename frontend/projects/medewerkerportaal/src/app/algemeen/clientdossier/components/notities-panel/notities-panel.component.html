@@ -18,36 +18,36 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<ds-card cardTitle="Notities" class="no-padding">
+<ds-card [cardTitle]="strings.algemeen.notities.cardTitle" class="no-padding">
   <ng-template ds-card-header-content>
     <button ds-button-tertiary data-testid="notitie_toevoegen_btn" (click)="openNotitie()" *appAutorisatie="toevoegenConstraint">
       <ds-icon [icon]="addIcon"/>
-      Notitie toevoegen
+      {{ strings.algemeen.notities.buttons.notitieToevoegen }}
     </button>
   </ng-template>
 
   @if (dataSource().data.length) {
     <table ds-table [dataSource]="dataSource()" matSortActive="datumTijd" matSortDirection="desc" matSort [fullWidth]="true">
       <ng-container dsColumnDef="datumTijd">
-        <th *dsHeaderCellDef ds-header-cell mat-sort-header="datumTijd">Datum/tijd</th>
+        <th *dsHeaderCellDef ds-header-cell mat-sort-header="datumTijd">{{ strings.algemeen.labels.datumTijd }}</th>
         <td *dsCellDef="let row" ds-cell>{{ row.datumTijd | date: NL_DATE_TIME_FORMAT : NL_TIMEZONE }}</td>
       </ng-container>
 
       <ng-container dsColumnDef="notitie">
-        <th *dsHeaderCellDef ds-header-cell>Notitie</th>
+        <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.notitie }}</th>
         <td *dsCellDef="let row" ds-cell>{{ row.notitie | abbreviate:100 : true }}</td>
       </ng-container>
 
       <ng-container dsColumnDef="medewerker">
-        <th *dsHeaderCellDef ds-header-cell mat-sort-header="medewerker.achternaam">Medewerker</th>
+        <th *dsHeaderCellDef ds-header-cell mat-sort-header="medewerker.achternaam">{{ strings.algemeen.labels.medewerker }}</th>
         <td *dsCellDef="let row" ds-cell>{{ row.medewerker | naam: NaamTransform.Medewerker }}</td>
       </ng-container>
 
       <ng-container dsColumnDef="actie">
-        <th *dsHeaderCellDef ds-header-cell>Actie</th>
+        <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.actie }}</th>
         <td *dsCellDef="let row" ds-cell>
           <button ds-button-secondary data-testid="notitie_actie_btn" (click)="openNotitie(row)">
-            {{ bewerkenToegestaan ? 'Bewerk notitie' : 'Bekijk notitie' }}
+            {{ bewerkenToegestaan ? strings.algemeen.notities.buttons.bewerkNotitie : strings.algemeen.notities.buttons.bekijkNotitie }}
           </button>
         </td>
       </ng-container>
@@ -56,6 +56,9 @@
       <tr ds-row *dsRowDef="let row; columns: displayedColumns"></tr>
     </table>
   } @else {
-    <app-empty-state-panel data-testid="geen_notities" [icon]="faFile" titel="Geen notities" subtekst="Voeg een notitie toe"/>
+    <app-empty-state-panel data-testid="geen_notities"
+                           [icon]="faFile"
+                           [titel]="strings.algemeen.notities.geenNotitie.titel"
+                           [subtekst]="strings.algemeen.notities.geenNotitie.subtitel"/>
   }
 </ds-card>

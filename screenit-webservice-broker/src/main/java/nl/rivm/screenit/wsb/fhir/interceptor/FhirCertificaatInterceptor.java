@@ -29,7 +29,7 @@ import javax.naming.InvalidNameException;
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.wsb.tools.CertTools;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

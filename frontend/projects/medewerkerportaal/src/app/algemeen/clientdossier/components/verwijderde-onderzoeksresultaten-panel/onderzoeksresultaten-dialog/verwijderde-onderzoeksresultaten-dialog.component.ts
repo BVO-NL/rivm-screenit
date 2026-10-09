@@ -40,6 +40,7 @@ import { SingleFileSelectorComponent } from '@shared/components/single-file-sele
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NotificationService } from '@shared/services/notification/notification.service'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-verwijderde-onderzoeksresultaten-dialog',
@@ -54,6 +55,7 @@ export class VerwijderdeOnderzoeksresultatenDialogComponent {
   private readonly bezwaarService = inject(BezwaarService)
   private readonly notificatieService = inject(NotificationService)
 
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly heeftBrief = this.onderzoeksresultaat.getekendeBriefId != null
   protected readonly documentVervangenConstraint: SecurityConstraint = {
     recht: [Recht.VERVANGEN_DOCUMENTEN],
@@ -108,7 +110,7 @@ export class VerwijderdeOnderzoeksresultatenDialogComponent {
 
   protected documentVervangen(file: File) {
     this.dialogService
-      .open(ConfirmationDialogComponent, { data: { title: 'Bevestiging', body: 'Weet u zeker dat u het document wilt vervangen?' } })
+      .open(ConfirmationDialogComponent, { data: { title: 'Bevestiging', body: 'Weet u zeker dat u het document wilt vervangen?' }, hasBackdrop: true })
       .closed.pipe(
         take(1),
         filter((bevestiging: unknown) => bevestiging === true),

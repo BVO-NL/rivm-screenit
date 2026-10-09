@@ -18,24 +18,24 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog (sluiten)="handleNo()" size="lg" titel="Bevestiging">
+<app-base-dialog (sluiten)="handleNo()" size="lg" [titel]="strings.algemeen.dialogs.bevestiging.titel">
   <div body class="body">
     @if (heeftHardeBeperkingen) {
       <div>
-        <div>Onderstaande {{ dialogData.typeTijdslot }} kunnen niet worden aangemaakt:</div>
+        <div>{{ strings.colon.rooster.bulkAanmaken.confirm.kunnenNietWorden(dialogData.typeTijdslot) }}</div>
         <app-bulk-aanmaken-resultaten-tabel [exceptions]="exceptions.hard"/>
       </div>
     }
     @if (heeftZachteBeperkingen) {
       <div>
-        <div>Onderstaande {{ dialogData.typeTijdslot }} worden aangemaakt op een afwijkende dag/tijd:</div>
+        <div>{{ strings.colon.rooster.bulkAanmaken.confirm.afwijkendeDagTijd(dialogData.typeTijdslot) }}</div>
         <app-bulk-aanmaken-resultaten-tabel [exceptions]="exceptions.zacht"/>
       </div>
     }
-    <p>Wilt u doorgaan?</p>
+    <p>{{ strings.algemeen.dialogs.bevestiging.wiltUDoorgaan }}</p>
   </div>
   <div buttons class="btn-group">
-    <button (click)="handleNo()" ds-button-secondary>Nee</button>
-    <button (click)="handleYes()" ds-button-primary>Ja</button>
+    <button (click)="handleNo()" ds-button-secondary>{{ strings.algemeen.labels.nee }}</button>
+    <button (click)="handleYes()" ds-button-primary>{{ strings.algemeen.labels.ja }}</button>
   </div>
 </app-base-dialog>

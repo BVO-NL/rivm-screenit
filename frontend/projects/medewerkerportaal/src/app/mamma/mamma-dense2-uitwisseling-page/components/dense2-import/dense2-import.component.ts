@@ -25,20 +25,27 @@ import { Dense2Service } from '@/mamma/mamma-dense2-uitwisseling-page/services/d
 import { take } from 'rxjs'
 import { DsButtonComponent, DsCardComponent, DsFooterActionsRightDirective } from '@topicus-rgp-ds/web'
 import { SingleFileSelectorComponent } from '@shared/components/single-file-selector/single-file-selector.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-dense2-import',
   imports: [FormsModule, DsCardComponent, DsButtonComponent, DsFooterActionsRightDirective, SingleFileSelectorComponent],
   template: `
-    <ds-card cardTitle="Import">
-      <app-single-file-selector class="display-block" acceptedExtensie="csv" [(ngModel)]="file" />
+    <ds-card [cardTitle]="strings.mamma.dense2.import.cardTitle">
+      <app-single-file-selector class="display-block" acceptedExtensie="csv" [(ngModel)]="file" [ngModelOptions]="{ standalone: true }" />
       <ng-template ds-footer-actions-right>
-        <button ds-button-primary data-testid="button_import" [disabled]="!file" (click)="import()">Verwerken</button>
+        <button ds-button-primary data-testid="button_import" [disabled]="!file" (click)="import()">{{ strings.algemeen.buttons.verwerken }}</button>
       </ng-template>
     </ds-card>
   `,
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
 })
 export class Dense2ImportComponent {
+  protected readonly strings = inject(StringsService).getStrings()
   file: File | undefined
   private notificationService: NotificationService = inject(NotificationService)
   private dense2Service: Dense2Service = inject(Dense2Service)
@@ -55,7 +62,7 @@ export class Dense2ImportComponent {
         next: (melding) => this.notificationService.success(melding),
         error: (err) => {
           if (err.status === 403) {
-            this.notificationService.error('Type bestand kan niet verwerkt worden.')
+            this.notificationService.error(this.strings.mamma.dense2.import.notifications.typeError)
           }
         },
       })

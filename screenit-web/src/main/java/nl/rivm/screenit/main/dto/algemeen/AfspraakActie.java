@@ -25,5 +25,6 @@ public enum AfspraakActie
 {
 	MAKEN,
 	VERPLAATSEN,
+	LOCATIE_WIJZIGEN,
 	AFZEGGEN
 }

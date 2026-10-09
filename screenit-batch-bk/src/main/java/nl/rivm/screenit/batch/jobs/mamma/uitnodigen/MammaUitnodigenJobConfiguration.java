@@ -67,7 +67,8 @@ public class MammaUitnodigenJobConfiguration extends AbstractJobConfiguration
 	public Step eersteOnderzoekBijwerkenStep(MammaEersteOnderzoekBijwerkenReader reader, MammaEersteOnderzoekBijwerkenWriter writer)
 	{
 		return new StepBuilder("eersteOnderzoekBijwerkenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -77,7 +78,8 @@ public class MammaUitnodigenJobConfiguration extends AbstractJobConfiguration
 	public Step intervalUitnodigenStep(MammaIntervalUitnodigenReader reader, MammaIntervalUitnodigenWriter writer)
 	{
 		return new StepBuilder("intervalUitnodigenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -87,7 +89,8 @@ public class MammaUitnodigenJobConfiguration extends AbstractJobConfiguration
 	public Step uitstelUitnodigenStep(MammaUitstelUitnodigenReader reader, MammaUitstelUitnodigenWriter writer)
 	{
 		return new StepBuilder("uitstelUitnodigenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -105,7 +108,8 @@ public class MammaUitnodigenJobConfiguration extends AbstractJobConfiguration
 	public Step verlopenRondesStep(MammaVerlopenRondesReader reader, MammaVerlopenRondesWriter writer)
 	{
 		return new StepBuilder("verlopenRondesStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

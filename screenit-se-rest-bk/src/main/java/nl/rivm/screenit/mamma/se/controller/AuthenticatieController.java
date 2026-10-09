@@ -38,7 +38,7 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.util.NaamUtil;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.lang.codec.Base64;
 import org.springframework.format.annotation.DateTimeFormat;

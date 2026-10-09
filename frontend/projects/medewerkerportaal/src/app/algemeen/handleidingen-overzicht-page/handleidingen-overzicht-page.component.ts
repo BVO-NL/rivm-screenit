@@ -28,6 +28,7 @@ import {
   DsHeaderCellDef,
   DsHeaderRowComponent,
   DsIconComponent,
+  DsPageHeaderComponent,
   DsRowComponent,
   DsTableComponent,
   DsTableDataSource,
@@ -55,7 +56,7 @@ import { Actie } from '@shared/types/autorisatie/actie'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { Required } from '@shared/types/autorisatie/required'
 import { HttpErrorResponse } from '@angular/common/http'
-import { PageComponent } from '@shared/components/page/page.component'
+import { StringsService } from '@shared/strings'
 import { Recht } from '@shared/types/autorisatie/recht'
 
 @Component({
@@ -77,7 +78,7 @@ import { Recht } from '@shared/types/autorisatie/recht'
     DsIconComponent,
     MatSortHeader,
     DatePipe,
-    PageComponent,
+    DsPageHeaderComponent,
   ],
   templateUrl: './handleidingen-overzicht-page.component.html',
 })
@@ -86,6 +87,7 @@ export class HandleidingenOverzichtPageComponent {
   private readonly dialogService: Dialog = inject(Dialog)
   private readonly notificationService: NotificationService = inject(NotificationService)
   private readonly autorisatieService: AutorisatieService = inject(AutorisatieService)
+  protected readonly strings = inject(StringsService).getStrings()
 
   sort = viewChild(MatSort)
 
@@ -159,34 +161,37 @@ export class HandleidingenOverzichtPageComponent {
   }
 
   openHandleidingDialog() {
-    const dialogRef = this.dialogService.open(HandleidingAanmakenDialogComponent, {})
-    dialogRef.closed.pipe(take(1)).subscribe((resultaat) => {
-      if (resultaat) {
-        this.getHandleidingen()
-      }
-    })
+    this.dialogService
+      .open(HandleidingAanmakenDialogComponent)
+      .closed.pipe(
+        take(1),
+        filter((resultaat: unknown) => resultaat === true),
+      )
+      .subscribe(() => this.getHandleidingen())
   }
 
   openHandleidingBewerkenDialog(id: number, bestandsnaam: string) {
-    const dialogRef = this.dialogService.open(HandleidingBewerkenDialogComponent, { data: { id, bestandsnaam } })
-    dialogRef.closed.pipe(take(1)).subscribe((resultaat) => {
-      if (resultaat) {
-        this.getHandleidingen()
-      }
-    })
+    this.dialogService
+      .open(HandleidingBewerkenDialogComponent, { data: { id, bestandsnaam } })
+      .closed.pipe(
+        take(1),
+        filter((resultaat: unknown) => resultaat === true),
+      )
+      .subscribe(() => this.getHandleidingen())
   }
 
   downloadHandleiding(id: number, bestandsnaam: string) {
     this.handleidingenService
       .downloadHandleiding(id, bestandsnaam)
       .pipe(take(1))
-      .subscribe(() => this.notificationService.success(`${bestandsnaam} is gedownload`))
+      .subscribe(() => this.notificationService.success(this.strings.algemeen.handleidingen.notifications.downloadSuccess(bestandsnaam)))
   }
 
   openHandleidingVerwijderenDialog(id: number, bestandsnaam: string) {
     this.dialogService
       .open(ConfirmationDialogComponent, {
-        data: { title: 'Handleiding verwijderen', body: `Weet u zeker dat u '${bestandsnaam}' wilt verwijderen?` },
+        data: { title: this.strings.algemeen.dialogs.bevestiging.titel, body: this.strings.algemeen.handleidingen.confirm.deleteBody(bestandsnaam) },
+        hasBackdrop: true,
       })
       .closed.pipe(
         take(1),
@@ -195,11 +200,11 @@ export class HandleidingenOverzichtPageComponent {
       )
       .subscribe({
         next: () => {
-          this.notificationService.success(`'${bestandsnaam}' is succesvol verwijderd.`)
+          this.notificationService.success(this.strings.algemeen.handleidingen.notifications.deleteSuccess(bestandsnaam))
           this.getHandleidingen()
         },
         error: (error: HttpErrorResponse) => {
-          const foutmelding = error?.error?.foutmelding ?? 'Er is een fout opgetreden bij het verwijderen van de handleiding'
+          const foutmelding = error?.error?.foutmelding ?? this.strings.algemeen.handleidingen.notifications.deleteError
           this.notificationService.error(foutmelding)
           this.getHandleidingen()
         },

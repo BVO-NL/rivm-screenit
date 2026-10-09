@@ -56,7 +56,7 @@ export class ClientContactService extends BaseService<ClientContactState> {
     return this.ververstAantalContactenMetMeldingNa(this.http.post<ClientContactDto>(this.baseUrl, contact), () => contact.clientId)
   }
 
-  private ververstAantalContactenMetMeldingNa<T>(response$: Observable<T>, clientId: (response: T) => number): Observable<T> {
+  ververstAantalContactenMetMeldingNa<T>(response$: Observable<T>, clientId: (response: T) => number): Observable<T> {
     return response$.pipe(switchMap((response) => this.getAantalContactenMetMelding(clientId(response)).pipe(map(() => response))))
   }
 

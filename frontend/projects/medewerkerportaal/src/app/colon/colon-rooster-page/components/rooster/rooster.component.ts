@@ -41,17 +41,16 @@ import { ColonTijdslot } from '@shared/types/colon/colon-tijdslot'
 import { isColonAfspraakslot, isColonBlokkade } from '@shared/type-guards'
 import { BlokkadeBewerkenDialogComponent } from '@/colon/colon-rooster-page/components/blokkade-bewerken-dialog/blokkade-bewerken-dialog.component'
 import { NotPersisted } from '@shared/types/not-presisted'
-import tippy from 'tippy.js'
-import { ResourceApi } from '@fullcalendar/resource'
 import { TIME_FORMAT } from '@shared/constants'
 import { environment } from '../../../../../environments/environment'
 import { formatDate } from '@shared/utils/date-utils'
 import { DatePipe } from '@angular/common'
+import { DsTooltipDirective } from '@topicus-rgp-ds/web'
 
 @Component({
   selector: 'app-rooster',
   templateUrl: './rooster.component.html',
-  imports: [FullCalendarModule, RoosterControlsComponent, DatePipe],
+  imports: [FullCalendarModule, RoosterControlsComponent, DatePipe, DsTooltipDirective],
 })
 export class RoosterComponent implements AfterViewInit {
   selectedDate: Date | undefined
@@ -104,8 +103,6 @@ export class RoosterComponent implements AfterViewInit {
     windowResize: () => this.updateCalendarHeight(),
     eventClick: ({ event }) => this.editTijdslot(event.extendedProps as ColonAfspraakslot),
     select: (event: DateSelectArg) => this.handleSelect(event.startStr, event.endStr, event.resource?.extendedProps?.['kamerId']),
-    resourceLabelDidMount: ({ resource, el }) => this.handleResourceDidMount(resource, el),
-    resourceLabelContent: ({ resource }) => resource.extendedProps['order'],
     navLinks: true,
     navLinkDayClick: (date) => this.handleNavLinkDayClick(date),
   }
@@ -167,7 +164,7 @@ export class RoosterComponent implements AfterViewInit {
     const yPosition = fixedDiv?.getBoundingClientRect().top ?? 0
     const windowHeight = this.window.innerHeight
 
-    const newHeight = windowHeight - yPosition - 80
+    const newHeight = windowHeight - yPosition - 50
     this.calendarApi?.setOption('height', newHeight + 'px')
   }
 
@@ -215,10 +212,6 @@ export class RoosterComponent implements AfterViewInit {
       kamerId,
     }
     this.dialog.open(AfspraakslotBewerkenDialogComponent, { data: nieuwTijdslot })
-  }
-
-  handleResourceDidMount(resource: ResourceApi, element: HTMLElement) {
-    tippy(element, { content: resource.title, arrow: true, placement: 'bottom' })
   }
 
   gotoNext() {

@@ -31,4 +31,15 @@ import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamer;
 public class ColonVrijSlotZonderKamerDto extends VrijSlotZonderKamer
 {
 	private ColonIntakelocatieDto intakelocatie;
+
+	private String locatieBeschrijving;
+
+	public void setIntakelocatie(ColonIntakelocatieDto intakelocatie)
+	{
+		this.intakelocatie = intakelocatie;
+		if (intakelocatie != null && intakelocatie.getId() != null)
+		{
+			setIntakelocatieId(intakelocatie.getId());
+		}
+	}
 }

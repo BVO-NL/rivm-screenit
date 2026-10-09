@@ -1128,7 +1128,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		{
 			try
 			{
-				if (org.apache.commons.lang.StringUtils.isBlank(bsn) || bsn.trim().length() != 9)
+				if (StringUtils.isBlank(bsn) || bsn.trim().length() != 9)
 				{
 					continue;
 				}

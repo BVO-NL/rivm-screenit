@@ -21,7 +21,7 @@
 <form [formGroup]="filterForm" class="display-block">
   <div class="filter-column">
     <ds-dropdown
-      label="Centrale eenheden"
+      [label]="strings.mamma.labels.centraleEenheden"
       formControlName="centraleEenheidIds"
       [items]="centraleEenheden()"
       [multiple]="true"
@@ -32,7 +32,7 @@
     />
 
     <ds-dropdown
-      label="Beoordelingseenheden"
+      [label]="strings.mamma.labels.beoordelingseenheden"
       formControlName="beoordelingseenheidIds"
       [items]="beoordelingseenheden()"
       [multiple]="true"
@@ -45,7 +45,7 @@
 
   <div class="filter-column">
     <ds-dropdown
-      label="Screeningseenheden"
+      [label]="strings.mamma.labels.screeningseenheden"
       formControlName="screeningseenheidIds"
       [items]="screeningseenheden()"
       [multiple]="true"
@@ -56,7 +56,7 @@
     />
 
     <ds-dropdown
-      label="Status"
+      [label]="strings.algemeen.labels.status"
       formControlName="statussen"
       [items]="visitatieStatusLijst"
       [multiple]="true"
@@ -67,6 +67,6 @@
     />
   </div>
   <div class="actions-right">
-    <button type="submit" ds-button-primary (click)="filteren()" data-testid="filteren_btn">Filteren</button>
+    <button type="submit" ds-button-primary (click)="filteren()" data-testid="filteren_btn">{{ strings.algemeen.buttons.filteren }}</button>
   </div>
 </form>

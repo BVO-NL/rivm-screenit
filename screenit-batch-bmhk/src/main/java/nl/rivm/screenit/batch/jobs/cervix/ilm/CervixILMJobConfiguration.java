@@ -57,7 +57,8 @@ public class CervixILMJobConfiguration extends AbstractJobConfiguration
 	public Step rondesVerwijderenStep(CervixILMRondesVerwijderenReader reader, CervixILMRondesVerwijderenWriter writer)
 	{
 		return new StepBuilder("rondesVerwijderenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -67,7 +68,8 @@ public class CervixILMJobConfiguration extends AbstractJobConfiguration
 	public Step applicatieLoggingVerwijderenStep(IlmApplicatieLoggingVerwijderenReader reader, IlmApplicatieLoggingVerwijderenWriter writer)
 	{
 		return new StepBuilder("applicatieLoggingVerwijderenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

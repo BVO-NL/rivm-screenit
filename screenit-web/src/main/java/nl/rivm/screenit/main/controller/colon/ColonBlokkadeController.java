@@ -83,8 +83,7 @@ public class ColonBlokkadeController
 	@Operation(summary = "Haal blokkades op", description = "Geeft roosterblokkades terug voor de opgegeven periode.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Blokkades succesvol opgehaald"),
-		@ApiResponse(responseCode = "400", description = "Ongeldig verzoek"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "400", description = "Ongeldig verzoek")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
@@ -145,8 +144,7 @@ public class ColonBlokkadeController
 	@Operation(summary = "Zoek blokkades", description = "Zoekt blokkades op basis van datum, tijd, kamer en weekdagen.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Blokkades succesvol gevonden"),
-		@ApiResponse(responseCode = "400", description = "Ongeldig verzoek"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "400", description = "Ongeldig verzoek")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })

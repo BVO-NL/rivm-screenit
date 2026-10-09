@@ -39,6 +39,7 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.PlanningService;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.colon.ColonAfspraakUtil;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -116,8 +117,9 @@ public class ColonAfspraakServiceImpl implements ColonAfspraakService
 			return null;
 		}
 
+		var huidigeAfspraakId = afspraakService.isDigitaleAfspraakBeschikbaar() ? ColonAfspraakUtil.getTeVerplaatsenAfspraakId(oudeAfspraak) : null;
 		var beschikbareKamer = planningService.getBeschikbareKamer(DateUtil.toLocalDateTime(gekozenVrijSlotZonderKamer.getStartTijd()),
-			gekozenVrijSlotZonderKamer.getIntakelocatieId());
+			gekozenVrijSlotZonderKamer.getIntakelocatieId(), huidigeAfspraakId);
 
 		if (beschikbareKamer == null)
 		{

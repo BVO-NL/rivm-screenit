@@ -19,10 +19,21 @@
   =========================LICENSE_END==================================
   -->
 <div class="p-4">
-  <h2 class="mb-3">Kies een afspraak</h2>
-  <app-colon-client-afspraak-zoeken-filter (zoeken)="zoeken($event)" class="mb-3"/>
+  <h2 class="mb-3">{{ strings.algemeen.afspraken.verplaatsenDialog.afspraakZoekenStep.titel }}</h2>
+  <app-colon-client-afspraak-zoeken-filter (zoeken)="zoeken($event)" (afspraakTypeChange)="wijzigAfspraakType($event)"
+                                           (datumTijdBuitenRoosterChange)="datumTijdBuitenRoosterChange.emit($event)"
+                                           [clientAfspraakDialogMode]="afspraakDialogMode()" [huidigeIntakelocatieId]="huidigeIntakelocatieId()" class="mb-3"/>
   <ds-contextual-notifications context="ColonIntakeAfspraak" class="mt-3"/>
-  @if (gezocht()) {
-    <app-colon-client-afspraak-zoeken-tabel [query]="query()" (selecteerSlot)="geselecteerdSlot.set($event)"/>
+  @if (isTijdstipWijzigenBuitenGeplandeSlots()) {
+    <div class="mt-3" data-testid="datum-tijd-buiten-rooster">
+      <h4 class="pagina-sectie-header">{{ strings.algemeen.afspraken.verplaatsenDialog.afspraakZoekenStep.subtitel }}</h4>
+      <ds-datetimepicker class="datetimepicker" [label]="strings.algemeen.labels.datumTijd" [required]="true" [fullWidth]="true" [inForm]="true"
+                         [errorMessage]="{required: strings.algemeen.errors.verplicht(strings.algemeen.labels.datumTijd), invalidDateTime: strings.algemeen.errors.invalidDateTime}"
+                         [formControl]="datumTijdBuitenRoosterCtrl" data-testid="datum-tijd-buiten-rooster-veld"/>
+    </div>
+  }
+  @if (gezocht() && !isTijdstipWijzigenBuitenGeplandeSlots()) {
+    <app-colon-client-afspraak-zoeken-tabel [query]="query()" [toonAfstand]="toonAfstand()" [toonDatumTijd]="toonDatumTijd()"
+                                            (selecteerSlot)="selecteer($event)"/>
   }
 </div>

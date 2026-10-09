@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, computed, effect, input, output, viewChild } from '@angular/core'
+import { Component, computed, effect, inject, input, output, viewChild } from '@angular/core'
 import { DatePipe } from '@angular/common'
 import {
   DsBadgeComponent,
@@ -43,6 +43,7 @@ import { faAngleRight } from '@fortawesome/pro-light-svg-icons'
 import { berekenLeeftijd as berekenLeeftijdUtil } from '@shared/utils/date-utils'
 import { NaamPipe, NaamTransform } from '@shared/pipes/naam/naam.pipe'
 import { GeslachtAfkortingPipe } from '@shared/pipes/geslacht-afkorting/geslacht-afkorting.pipe'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-client-zoeken-tabel',
@@ -71,6 +72,7 @@ import { GeslachtAfkortingPipe } from '@shared/pipes/geslacht-afkorting/geslacht
   styleUrl: './client-zoeken-tabel.component.scss',
 })
 export class ClientZoekenTabelComponent {
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
   protected readonly navigeerIcoon = faAngleRight
   protected readonly NaamTransform = NaamTransform

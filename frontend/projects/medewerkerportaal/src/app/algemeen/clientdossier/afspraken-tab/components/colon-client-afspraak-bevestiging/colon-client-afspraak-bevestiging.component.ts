@@ -18,84 +18,144 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, inject, input, model } from '@angular/core'
+import { Component, computed, effect, inject, input, model, untracked } from '@angular/core'
 import { VrijSlotZonderKamerDto } from '@shared/types/colon/dto/vrij-slot-zonder-kamer.dto'
 import { NotitieAanmakenVeldComponent } from '@algemeen/clientdossier/components/notitie-aanmaken-veld/notitie-aanmaken-veld.component'
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms'
-import { DsRadiobuttonComponent, DsRadiobuttonOption } from '@topicus-rgp-ds/web'
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
+import { DsButtongroupComponent, DsRadiobuttonComponent, DsRadiobuttonOption } from '@topicus-rgp-ds/web'
 import { BriefType, briefTypeLabels } from '@shared/types/algemeen/enum/brief-type'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
 import { Required } from '@shared/types/autorisatie/required'
 import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
-import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.directive'
-import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
 import { ColonAfspraakMakenRequestDto } from '@shared/types/colon/dto/colon-afspraak-maken-request.dto'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { ClientService } from '@algemeen/services/client/client.service'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ClientAfspraakDto } from '@shared/types/algemeen/dto/client-afspraak.dto'
+import { ColonIntakeafspraakAanmakenType } from '@shared/types/colon/enum/colon-intakeafspraak-aanmaken-type'
+import { StringsService } from '@shared/strings'
+import { ColonClientAfspraakDialogMode } from '@algemeen/clientdossier/afspraken-tab/components/colon-client-afspraak-dialog/colon-client-afspraak-dialog.component'
+import { ClientService } from '@algemeen/services/client/client.service'
 
 @Component({
   selector: 'app-colon-client-afspraak-bevestiging',
-  imports: [NotitieAanmakenVeldComponent, ReactiveFormsModule, DsRadiobuttonComponent, AutorisatieDirective],
+  imports: [NotitieAanmakenVeldComponent, ReactiveFormsModule, DsRadiobuttonComponent, DsButtongroupComponent],
   templateUrl: './colon-client-afspraak-bevestiging.component.html',
-  styleUrl: './colon-client-afspraak-bevestiging.component.scss',
 })
 export class ColonClientAfspraakBevestigingComponent {
   afspraakslot = input<VrijSlotZonderKamerDto | null>()
+  afspraakType = input<ColonIntakeafspraakAanmakenType | null>()
   huidigeAfspraak = input<ClientAfspraakDto | null>()
   request = model<ColonAfspraakMakenRequestDto | null>(null)
+  afspraakDialogMode = input<ColonClientAfspraakDialogMode | null>(null)
 
   private readonly autorisatieService = inject(AutorisatieService)
   private readonly formBuilder = inject(FormBuilder)
   private readonly clientService = inject(ClientService)
+  protected readonly strings = inject(StringsService).getStrings()
 
-  protected form = this.formBuilder.group({
-    briefType: this.formBuilder.control<BriefType | null | undefined>({ value: undefined, disabled: false }),
-    notitie: '',
-  })
+  readonly isSpoed = computed(() => this.afspraakType() === ColonIntakeafspraakAanmakenType.SPOED)
 
-  brieven: DsRadiobuttonOption<BriefType | null>[] = [
-    {
-      label: briefTypeLabels[BriefType.COLON_INTAKE_GEWIJZIGD],
-      value: BriefType.COLON_INTAKE_GEWIJZIGD,
-    },
-    {
-      label: briefTypeLabels[BriefType.COLON_UITNODIGING_INTAKE],
-      value: BriefType.COLON_UITNODIGING_INTAKE,
-    },
-  ]
-  briefConstraint: SecurityConstraint = {
-    recht: [Recht.MEDEWERKER_CLIENT_SR_INTAKE_WIJZIGEN_ANDER_BRIEF],
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON],
-    required: Required.ANY,
-    actie: Actie.AANPASSEN,
-  }
+  readonly isBuitenGeplandeSlots = computed(() => this.afspraakType() === ColonIntakeafspraakAanmakenType.BUITEN)
 
-  constructor() {
-    if (
-      this.autorisatieService.isToegestaan({
-        recht: [Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN],
-        actie: Actie.AANPASSEN,
-        required: Required.ALL,
-        bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON],
+  private readonly geenBevestigingsbriefStandaard = computed(() => this.isSpoed() || this.isBuitenGeplandeSlots())
+
+  readonly brieven = computed<DsRadiobuttonOption<BriefType | null>[]>(() => {
+    const brieven: DsRadiobuttonOption<BriefType | null>[] = [
+      {
+        label: briefTypeLabels[BriefType.COLON_INTAKE_GEWIJZIGD],
+        value: BriefType.COLON_INTAKE_GEWIJZIGD,
+      },
+    ]
+
+    if (this.magRecht(Recht.MEDEWERKER_CLIENT_SR_INTAKE_WIJZIGEN_ANDER_BRIEF)) {
+      brieven.push({
+        label: briefTypeLabels[BriefType.COLON_UITNODIGING_INTAKE],
+        value: BriefType.COLON_UITNODIGING_INTAKE,
       })
-    ) {
-      this.brieven.push({
-        label: 'Geen bevestigingsbrief versturen',
+    }
+
+    if (this.geenBevestigingsbriefStandaard() || this.magRecht(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN)) {
+      brieven.push({
+        label: this.strings.algemeen.afspraken.verplaatsenDialog.bevestigingStep.geenBevestigingsbrief,
         value: null,
       })
     }
 
-    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe((formValue) => {
+    return brieven
+  })
+
+  protected readonly defaultBriefType = computed<BriefType | null>(() => {
+    return this.geenBevestigingsbriefStandaard() ? null : this.brieven()[0].value
+  })
+
+  form = this.formBuilder.group({
+    briefType: this.formBuilder.control<BriefType | null>(this.defaultBriefType()),
+    verwezenMedischeRedenen: this.formBuilder.control<boolean | null>(null),
+    notitie: '',
+  })
+
+  private readonly formWaarde = toSignal(this.form.valueChanges, { initialValue: this.form.value })
+
+  protected readonly jaNeeOpties: DsRadiobuttonOption<boolean>[] = [
+    { label: this.strings.algemeen.labels.ja, value: true },
+    { label: this.strings.algemeen.labels.nee, value: false },
+  ]
+
+  protected readonly toonMedischeVerwijzing = computed(() => {
+    const huidigeAfspraak = this.huidigeAfspraak()
+    const afspraakslot = this.afspraakslot()
+    return huidigeAfspraak != null && afspraakslot != null && huidigeAfspraak.verlopenZonderConclusie && huidigeAfspraak.locatie.id !== afspraakslot.intakelocatie.id
+  })
+
+  toonValidatiefouten() {
+    this.form.markAllAsTouched()
+  }
+
+  herstelStandaardwaarden() {
+    this.form.reset({ briefType: this.defaultBriefType(), verwezenMedischeRedenen: null, notitie: '' })
+  }
+
+  constructor() {
+    effect(() => {
+      const verwezenMedischeRedenenControl = this.form.get('verwezenMedischeRedenen') as FormControl<boolean | null>
+      verwezenMedischeRedenenControl.setValidators(this.toonMedischeVerwijzing() ? Validators.required : [])
+      verwezenMedischeRedenenControl.updateValueAndValidity({ emitEvent: false })
+    })
+
+    effect(() => {
+      this.form.controls.briefType.setValue(this.defaultBriefType())
+    })
+
+    effect(() => {
+      const formWaarde = this.formWaarde()
+      const afspraakslot = this.afspraakslot()!
+      const huidigeAfspraak = this.huidigeAfspraak()
+      const toonMedischeVerwijzing = this.toonMedischeVerwijzing()
+
+      const request = untracked(() => this.request())
+      if (!request) {
+        return
+      }
+
       this.request.set({
-        notitie: formValue.notitie ?? null,
-        briefType: formValue.briefType,
-        afspraakslot: this.afspraakslot()!,
+        ...request,
+        notitie: formWaarde.notitie || null,
+        briefType: formWaarde.briefType ?? null,
+        verwezenMedischeRedenenDoorInfolijn: toonMedischeVerwijzing ? (formWaarde.verwezenMedischeRedenen ?? null) : null,
+        afspraakslot,
         clientId: this.clientService.clientId(),
-        afspraakId: this.huidigeAfspraak()!.id,
+        afspraakId: huidigeAfspraak?.id,
       })
+    })
+  }
+
+  private magRecht(recht: Recht): boolean {
+    return this.autorisatieService.isToegestaan({
+      recht: [recht],
+      actie: Actie.AANPASSEN,
+      required: Required.ALL,
+      bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON],
     })
   }
 }

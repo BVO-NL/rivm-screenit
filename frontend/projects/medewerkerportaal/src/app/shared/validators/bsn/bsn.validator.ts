@@ -19,6 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms'
+import { ALGEMEEN_STRINGS as algemeen } from '@shared/strings'
 
 export const bsnValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const invoer = control.value
@@ -27,7 +28,7 @@ export const bsnValidator: ValidatorFn = (control: AbstractControl): ValidationE
   }
 
   const isValid = invoer.length === 9 && /^\d+$/.test(invoer) ? isElfProefVariatie(invoer) : false
-  return isValid ? null : { bsn: 'Ingevoerde BSN is niet valide.' }
+  return isValid ? null : { bsn: algemeen.errors.invalidBsn }
 }
 
 function isElfProefVariatie(bsn: string): boolean {

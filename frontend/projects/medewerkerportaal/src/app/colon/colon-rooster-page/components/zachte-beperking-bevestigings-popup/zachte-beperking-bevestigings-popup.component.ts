@@ -23,27 +23,29 @@ import { Component, inject } from '@angular/core'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { DsButtonComponent } from '@topicus-rgp-ds/web'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-zachte-beperking-bevestigings-popup',
   imports: [BaseDialogComponent, DsButtonComponent],
   template: `
-    <app-base-dialog titel="Bevestiging">
+    <app-base-dialog [titel]="strings.algemeen.dialogs.bevestiging.titel">
       <div body class="body">
         @for (message of dialogData.messages; track message) {
           <div>{{ message }}</div>
         }
-        <p>Wilt u doorgaan?</p>
+        <p>{{ strings.algemeen.dialogs.bevestiging.wiltUDoorgaan }}</p>
       </div>
       <div buttons class="btn-group">
-        <button ds-button-secondary data-testid="button_zachte_beperking_nee" (click)="handleNo()">Nee</button>
-        <button ds-button-primary data-testid="button_zachte_beperking_ja" (click)="handleYes()">Ja</button>
+        <button ds-button-secondary data-testid="button_zachte_beperking_nee" (click)="handleNo()">{{ strings.algemeen.labels.nee }}</button>
+        <button ds-button-primary data-testid="button_zachte_beperking_ja" (click)="handleYes()">{{ strings.algemeen.labels.ja }}</button>
       </div>
     </app-base-dialog>
   `,
 })
 export class ZachteBeperkingBevestigingsPopupComponent {
   dialogData: { messages: string[] } = inject(DIALOG_DATA)
+  protected readonly strings = inject(StringsService).getStrings()
   private dialogRef: DialogRef<boolean> = inject(DialogRef)
 
   handleYes() {

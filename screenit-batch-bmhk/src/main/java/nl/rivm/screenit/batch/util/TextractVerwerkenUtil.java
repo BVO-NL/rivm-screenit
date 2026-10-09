@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 import software.amazon.awssdk.services.textract.model.Block;
 import software.amazon.awssdk.services.textract.model.BlockType;
 
-import static org.apache.commons.lang.StringUtils.replaceChars;
+import static org.apache.commons.lang3.StringUtils.replaceChars;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TextractVerwerkenUtil

@@ -30,6 +30,7 @@ import { DsButtonComponent, DsCheckboxComponent, DsDatepickerComponent, DsWeekda
 import { WeekdagOptie } from '@shared/types/weekdag-optie'
 import { TimepickerComponent } from '@shared/components/timepicker/timepicker.component'
 import { filter } from 'rxjs'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-tijdslots-verwijderen-filter',
@@ -40,6 +41,7 @@ import { filter } from 'rxjs'
 export class TijdslotsVerwijderenFilterComponent {
   private readonly formBuilder: NonNullableFormBuilder = inject(NonNullableFormBuilder)
   private readonly notificationService: NotificationService = inject(NotificationService)
+  protected readonly strings = inject(StringsService).getStrings()
   filter = output<ColonTijdslotFilter>()
 
   minDatum = new Date().toISOString()

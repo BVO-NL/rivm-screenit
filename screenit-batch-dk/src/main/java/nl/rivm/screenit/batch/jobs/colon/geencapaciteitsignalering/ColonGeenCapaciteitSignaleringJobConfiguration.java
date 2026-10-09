@@ -49,7 +49,8 @@ public class ColonGeenCapaciteitSignaleringJobConfiguration extends AbstractJobC
 	public Step geenCapaciteitStep(ColonGeenCapaciteitSignaleringReader reader, ColonGeenCapaciteitSignaleringWriter writer)
 	{
 		return new StepBuilder("geenCapaciteitStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

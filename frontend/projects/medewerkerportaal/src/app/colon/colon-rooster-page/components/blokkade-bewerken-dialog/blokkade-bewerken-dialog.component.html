@@ -30,42 +30,44 @@
               class="grid-alle-kamers"
               data-testid="checkbox_alle_kamers"
               formControlName="alleKamers">
-              Alle kamers
+              {{ strings.colon.rooster.labels.alleKamers }}
             </ds-checkbox>
           }
 
           <ds-datepicker
-            [min]="minDatum"
+            [minDate]="minDatum"
             class="grid-datum"
             data-testid="input_datum"
             formControlName="datum"
-            label="Datum"
+            [label]="strings.algemeen.labels.datum"
           />
 
-          <ds-checkbox class="grid-hele-dag" data-testid="checkbox_hele_dag" formControlName="heleDag">Hele dag</ds-checkbox>
+          <ds-checkbox class="grid-hele-dag" data-testid="checkbox_hele_dag"
+                       formControlName="heleDag">{{ strings.colon.rooster.labels.heleDag }}
+          </ds-checkbox>
 
           <div class="grid-starteindtijd">
             <app-timepicker
               data-testid="input_start_tijd"
               formControlName="vanaf"
-              label="Starttijd"
+              [label]="strings.algemeen.labels.starttijd"
               [required]="!heleDagCtrl.value"
             />
 
             <app-timepicker
               data-testid="input_eind_tijd"
               formControlName="tot"
-              label="Eindtijd"
+              [label]="strings.algemeen.labels.eindtijd"
               [required]="!heleDagCtrl.value"
             />
           </div>
 
           <ds-input
-            [errorMessage]="{required: 'Omschrijving is verplicht'}"
+            [errorMessage]="{required: strings.algemeen.errors.verplicht('Omschrijving')}"
             class="grid-omschrijving"
             data-testid="input_omschrijving"
             formControlName="omschrijving"
-            label="Omschrijving"
+            [label]="strings.algemeen.labels.omschrijving"
             required
             type="text"
           />
@@ -80,12 +82,18 @@
     </div>
   </form>
   @if (verwijderenToegestaan) {
-    <button verwijder-button (click)="confirmDelete()" data-testid="btn-verwijderen" ds-button-delete type="button">Verwijderen</button>
+    <button verwijder-button (click)="confirmDelete()" data-testid="btn-verwijderen" ds-button-delete
+            type="button">{{ strings.algemeen.buttons.verwijderen }}
+    </button>
   }
-  <div buttons class="btn-group">
-    <button (click)="cancel()" data-testid="btn_annuleren" ds-button-secondary type="button">{{ bewerkenToegestaan ? 'Annuleren' : 'Sluiten' }}</button>
+  <ng-container buttons>
+    <button (click)="cancel()" data-testid="btn_annuleren" ds-button-tertiary
+            type="button">{{ bewerkenToegestaan ? strings.algemeen.buttons.annuleren : strings.algemeen.buttons.sluiten }}
+    </button>
     @if (bewerkenToegestaan) {
-      <button (click)="save()" [disabled]="blokkadeForm.invalid" data-testid="btn_opslaan" ds-button-primary type="button">Opslaan</button>
+      <button (click)="save()" [disabled]="blokkadeForm.invalid" data-testid="btn_opslaan" ds-button-primary
+              type="button">{{ strings.algemeen.buttons.opslaan }}
+      </button>
     }
-  </div>
+  </ng-container>
 </app-base-dialog>

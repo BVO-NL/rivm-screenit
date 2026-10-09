@@ -18,17 +18,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Pipe, PipeTransform } from '@angular/core'
+import { inject, Pipe, PipeTransform } from '@angular/core'
+import { StringsService } from '@shared/strings'
 
 @Pipe({
   name: 'boolean',
   pure: true,
 })
 export class BooleanPipe implements PipeTransform {
+  private readonly strings = inject(StringsService).getStrings()
+
   transform(value: boolean | undefined | null): string {
     if (value === undefined || value === null) {
-      return 'Onbekend'
+      return this.strings.algemeen.labels.onbekend
     }
-    return value ? 'Ja' : 'Nee'
+    return value ? this.strings.algemeen.labels.ja : this.strings.algemeen.labels.nee
   }
 }

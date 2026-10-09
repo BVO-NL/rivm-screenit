@@ -75,8 +75,7 @@ public class OrganisatieController extends BaseController
 	@GetMapping("/centrale-eenheid")
 	@Operation(summary = "Haal centrale eenheden op", description = "Geeft de centrale eenheden terug die beschikbaar zijn voor het ingelogde organisatie type.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Centrale eenheden succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Centrale eenheden succesvol opgehaald")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,
@@ -92,8 +91,7 @@ public class OrganisatieController extends BaseController
 	@GetMapping("/beoordelingseenheid")
 	@Operation(summary = "Haal beoordelingseenheden op", description = "Geeft de beoordelingseenheden terug die beschikbaar zijn voor het ingelogde organisatie type.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Beoordelingseenheden succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Beoordelingseenheden succesvol opgehaald")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,
@@ -110,8 +108,7 @@ public class OrganisatieController extends BaseController
 	@PostMapping("/beoordelingseenheid/zoeken")
 	@Operation(summary = "Zoek beoordelingseenheden", description = "Zoekt beoordelingseenheden op basis van de opgegeven centrale eenheid-id's.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Beoordelingseenheden succesvol gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Beoordelingseenheden succesvol gevonden")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,
@@ -130,8 +127,7 @@ public class OrganisatieController extends BaseController
 	@PostMapping("/screeningseenheid/zoeken")
 	@Operation(summary = "Zoek screeningseenheden", description = "Zoekt actieve screeningseenheden op basis van beoordelingseenheid-id's.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Screeningseenheden succesvol gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Screeningseenheden succesvol gevonden")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,

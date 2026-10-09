@@ -19,30 +19,30 @@
   =========================LICENSE_END==================================
   -->
 <div class="legenda tooltip">
-  <div class="legenda-item tooltip" dsTooltip content="Vrij te verplaatsen">
+  <div class="legenda-item tooltip" dsTooltip [content]="strings.colon.rooster.legenda.vrijTooltip">
     <div class="legenda-item-square legenda-item-square-vrij"></div>
-    <span>Vrij</span>
+    <span>{{ strings.colon.rooster.legenda.vrij }}</span>
   </div>
-  <div class="legenda-item tooltip" dsTooltip content="Gebruikt voor capaciteitsberekening">
+  <div class="legenda-item tooltip" dsTooltip [content]="strings.colon.rooster.legenda.capaciteitTooltip">
     <div class=" legenda-item-square legenda-item-square-capaciteit"></div>
-    <span>Capaciteit</span>
+    <span>{{ strings.colon.rooster.legenda.capaciteit }}</span>
   </div>
-  <div class="legenda-item tooltip" dsTooltip content="Intake ingepland">
+  <div class="legenda-item tooltip" dsTooltip [content]="strings.colon.rooster.legenda.intakeTooltip">
     <div class=" legenda-item-square legenda-item-square-intake"></div>
-    <span>Intake</span>
+    <span>{{ strings.colon.rooster.legenda.intake }}</span>
   </div>
   @if (isDigitaleIntakeBeschikbaar()) {
-    <div class="legenda-item tooltip" dsTooltip content="Digitale intake">
+    <div class="legenda-item tooltip" dsTooltip [content]="strings.colon.rooster.legenda.digitaleIntakeTooltip">
       <div class=" legenda-item-square legenda-item-square-digitale-intake"></div>
-      <span>Digitale intake</span>
+      <span>{{ strings.colon.rooster.legenda.digitaleIntake }}</span>
     </div>
   }
-  <div class="legenda-item tooltip" dsTooltip content="Geblokkeerd door een blokkade">
+  <div class="legenda-item tooltip" dsTooltip [content]="strings.colon.rooster.legenda.geblokkerdTooltip">
     <div class=" legenda-item-square legenda-item-square-blokkade"></div>
-    <span>Geblokkeerd</span>
+    <span>{{ strings.colon.rooster.legenda.geblokkerd }}</span>
   </div>
-  <div class="legenda-item tooltip" dsTooltip content="Weekend, tijd en feestdag beperkt planbaar">
+  <div class="legenda-item tooltip" dsTooltip [content]="strings.colon.rooster.legenda.beperktTooltip">
     <div class=" legenda-item-square legenda-item-square-beperking"></div>
-    <span>Beperkt planbaar</span>
+    <span>{{ strings.colon.rooster.legenda.beperkt }}</span>
   </div>
 </div>

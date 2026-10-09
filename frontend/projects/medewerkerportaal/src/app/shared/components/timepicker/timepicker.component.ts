@@ -22,15 +22,11 @@ import { Component, DestroyRef, ElementRef, forwardRef, inject, Injector, input,
 import { CallToActionDirective, DsButtonComponent, DsIconComponent, DsInputComponent } from '@topicus-rgp-ds/web'
 import { AbstractControl, ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule, ValidationErrors, Validator } from '@angular/forms'
 import { faClock } from '@fortawesome/pro-light-svg-icons'
+import { StringsService } from '@shared/strings'
 import { formatCompleteTijdString, formatTijdString, isValideTijd, normaliseerTijdInvoer } from '@shared/utils/date-utils'
 import { merge, of } from 'rxjs'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { CdkConnectedOverlay, CdkOverlayOrigin, ConnectedPosition } from '@angular/cdk/overlay'
-
-const STANDAARD_FOUTMELDINGEN: Record<string, string> = {
-  required: 'De tijd is verplicht',
-  noValidTime: 'De ingevoerde tijd is niet valide',
-}
 
 @Component({
   selector: 'app-timepicker',
@@ -58,7 +54,7 @@ export class TimepickerComponent implements ControlValueAccessor, Validator, OnI
   inForm = input<boolean>(true)
   required = input<boolean>(false)
 
-  foutmeldingen = signal<Record<string, string>>({ ...STANDAARD_FOUTMELDINGEN })
+  foutmeldingen = signal<Record<string, string>>({})
 
   tijdCtrl = new FormControl('', { nonNullable: true })
   toonKeuzelijst = signal(false)
@@ -79,12 +75,20 @@ export class TimepickerComponent implements ControlValueAccessor, Validator, OnI
   private readonly elementRef = inject(ElementRef<HTMLElement>)
   private readonly injector = inject(Injector)
   private readonly destroyRef = inject(DestroyRef)
+  protected readonly strings = inject(StringsService).getStrings()
+
+  private readonly standaardFoutmeldingen: Record<string, string> = {
+    required: this.strings.algemeen.errors.verplicht('De tijd'),
+    noValidTime: this.strings.algemeen.errors.invalidTime,
+  }
+
   private ngControl: NgControl | null = null
   private interneSynchronisatie = false
   private onChange?: (value: string) => void
   private onTouched?: () => void
 
   constructor() {
+    this.foutmeldingen.set({ ...this.standaardFoutmeldingen })
     this.tijdCtrl.valueChanges.pipe(takeUntilDestroyed()).subscribe((waarde) => {
       if (this.interneSynchronisatie) {
         return
@@ -317,17 +321,17 @@ export class TimepickerComponent implements ControlValueAccessor, Validator, OnI
 
   private bepaalFoutmeldingen(buitensteControl: AbstractControl): Record<string, string> {
     if (!buitensteControl.errors) {
-      return STANDAARD_FOUTMELDINGEN
+      return this.standaardFoutmeldingen
     }
 
     const extraFoutmeldingen: Record<string, string> = {}
     for (const [sleutel, waarde] of Object.entries(buitensteControl.errors)) {
-      if (typeof waarde === 'string' && !(sleutel in STANDAARD_FOUTMELDINGEN)) {
+      if (typeof waarde === 'string' && !(sleutel in this.standaardFoutmeldingen)) {
         extraFoutmeldingen[sleutel] = waarde
       }
     }
 
-    return { ...STANDAARD_FOUTMELDINGEN, ...extraFoutmeldingen }
+    return { ...this.standaardFoutmeldingen, ...extraFoutmeldingen }
   }
 
   private syncMetBuitensteControl(): void {

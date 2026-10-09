@@ -26,6 +26,7 @@ import { ColonBulkVerwijderenException } from '@shared/types/colon/colon-bulk-ve
 import { SelectOption } from '@shared/types/select-option'
 import { LowerCasePipe } from '@angular/common'
 import { DsButtonComponent } from '@topicus-rgp-ds/web'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-tijdslots-verwijderen-bevestigings-popup',
@@ -50,6 +51,7 @@ import { DsButtonComponent } from '@topicus-rgp-ds/web'
 export class TijdslotsVerwijderenBevestigingsPopupComponent {
   private dialogRef: DialogRef<boolean> = inject(DialogRef)
   dialogData: { bulkVerwijderenResultaat: ColonBulkVerwijderenException; typeTijdslot: SelectOption<string> } = inject(DIALOG_DATA)
+  protected readonly strings = inject(StringsService).getStrings()
 
   handleYes() {
     this.dialogRef.close(true)

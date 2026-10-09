@@ -21,6 +21,8 @@
 import { DsNavigationSidebarCategoryItem, DsNavigationSidebarItem } from '@topicus-rgp-ds/web'
 import { faUserCircle } from '@fortawesome/pro-light-svg-icons'
 import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { ALGEMEEN_STRINGS } from '@shared/strings'
+import { bevolkingsonderzoekLijst } from '@shared/types/bevolkingsonderzoek'
 
 interface BvoNavigationItem {
   bvo: Bevolkingsonderzoek
@@ -31,7 +33,7 @@ const bvoNavigationItems: BvoNavigationItem[] = [
   {
     bvo: Bevolkingsonderzoek.CERVIX,
     item: ({
-      label: 'Baarmoederhalskanker',
+      label: bevolkingsonderzoekLijst.find(b => b.waarde === Bevolkingsonderzoek.CERVIX)!.naam,
       icon: 'femalereproductive-system-outline',
       routerLink: '/client/dossier/baarmoederhalskanker',
     } as unknown) as DsNavigationSidebarItem,
@@ -39,7 +41,7 @@ const bvoNavigationItems: BvoNavigationItem[] = [
   {
     bvo: Bevolkingsonderzoek.MAMMA,
     item: ({
-      label: 'Borstkanker',
+      label: bevolkingsonderzoekLijst.find(b => b.waarde === Bevolkingsonderzoek.MAMMA)!.naam,
       icon: 'breasts-outline',
       routerLink: '/client/dossier/borstkanker',
     } as unknown) as DsNavigationSidebarItem,
@@ -47,7 +49,7 @@ const bvoNavigationItems: BvoNavigationItem[] = [
   {
     bvo: Bevolkingsonderzoek.COLON,
     item: ({
-      label: 'Darmkanker',
+      label: bevolkingsonderzoekLijst.find(b => b.waarde === Bevolkingsonderzoek.COLON)!.naam,
       icon: 'intestine-outline',
       routerLink: '/client/dossier/darmkanker',
     } as unknown) as DsNavigationSidebarItem,
@@ -57,10 +59,10 @@ const bvoNavigationItems: BvoNavigationItem[] = [
 export const getClientDossierNavigationItems = (actieveBvos: Bevolkingsonderzoek[]): (DsNavigationSidebarItem | DsNavigationSidebarCategoryItem)[] => {
   const items: (DsNavigationSidebarItem | DsNavigationSidebarCategoryItem)[] = [
     ({
-      label: 'Algemeen',
+      label: ALGEMEEN_STRINGS.navigation.algemeen,
       menuItems: [
         ({
-          label: 'Overzicht',
+          label: ALGEMEEN_STRINGS.navigation.overzicht,
           icon: faUserCircle,
           routerLink: '/client/dossier/overzicht',
         } as DsNavigationSidebarItem),
@@ -72,7 +74,7 @@ export const getClientDossierNavigationItems = (actieveBvos: Bevolkingsonderzoek
 
   if (bvoMenuItems.length > 0) {
     items.push(({
-      label: 'Bevolkingsonderzoek',
+      label: ALGEMEEN_STRINGS.navigation.bevolkingsonderzoek,
       menuItems: bvoMenuItems,
     } as DsNavigationSidebarCategoryItem))
   }

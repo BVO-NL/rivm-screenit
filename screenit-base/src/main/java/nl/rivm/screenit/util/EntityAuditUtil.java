@@ -46,7 +46,7 @@ import nl.topicuszorg.hibernate.object.model.HibernateObject;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.ObjectNotFoundException;
@@ -246,7 +246,7 @@ public final class EntityAuditUtil
 				}
 				else if (Comparable.class.isAssignableFrom(field.getType()))
 				{
-					if (ObjectUtils.compare((Comparable<T>) oldValue, (Comparable<T>) newValue) != 0)
+					if (ObjectUtils.compare((Comparable) oldValue, (Comparable) newValue) != 0)
 					{
 						diff = getDiffFromReference(diff, diffSpec, displayName, oldValue, newValue);
 					}

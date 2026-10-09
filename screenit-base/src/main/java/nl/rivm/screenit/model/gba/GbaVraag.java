@@ -23,6 +23,7 @@ package nl.rivm.screenit.model.gba;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.CheckConstraint;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -40,19 +41,16 @@ import nl.rivm.screenit.model.RedenGbaVraag;
 import nl.rivm.screenit.model.enums.GbaVraagType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import org.hibernate.annotations.Check;
-
 @Entity
-@Table(schema = "algemeen", indexes = @Index(name = "idx_gba_vraag_bsn", columnList = "bsn"))
+@Table(schema = "algemeen", indexes = @Index(name = "idx_gba_vraag_bsn", columnList = "bsn"),
+	check = @CheckConstraint(constraint = "(bsn is not null or client is not null) AND"
+		+ "("
+		+ "  reden IN ('ONJUIST_ADRES', 'ONJUISTE_PERSOONSGEGEVENS', 'MUTATIEBERICHT_ONBEKENDE_CLIENT')"
+		+ "  OR (vraag_type = 'VERWIJDER_INDICATIE' AND reden in ('BEZWAAR', 'AFGEMELD', 'BOVENGRENS_LEEFTIJD', 'SELECTIEBLOKKADE'))"
+		+ "  OR (vraag_type = 'PLAATS_INDICATIE' AND reden in ('BEZWAAR_INGETROKKEN', 'AANGEMELD', 'BRIEF_VERSTUREN', 'ONVERWACHT_INDICATIE_VERWIJDERD'))"
+		+ ")"))
 @Getter
 @Setter
-@Check(constraints = "(bsn is not null or client is not null) AND"
-	+ "("
-	+ "  reden IN ('ONJUIST_ADRES', 'ONJUISTE_PERSOONSGEGEVENS', 'MUTATIEBERICHT_ONBEKENDE_CLIENT')"
-	+ "  OR (vraag_type = 'VERWIJDER_INDICATIE' AND reden in ('BEZWAAR', 'AFGEMELD', 'BOVENGRENS_LEEFTIJD', 'SELECTIEBLOKKADE'))"
-	+ "  OR (vraag_type = 'PLAATS_INDICATIE' AND reden in ('BEZWAAR_INGETROKKEN', 'AANGEMELD', 'BRIEF_VERSTUREN', 'ONVERWACHT_INDICATIE_VERWIJDERD'))"
-	+ ")"
-)
 public class GbaVraag extends AbstractHibernateObject
 {
 

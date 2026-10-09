@@ -51,11 +51,11 @@ public class MammaPalgaCsvImportJobConfiguration extends AbstractJobConfiguratio
 	public Step importerenStep(MammaPalgaCsvImportReader reader, MammaPalgaCsvImportWriter writer)
 	{
 		return new StepBuilder("importerenStep", repository)
-			.<MammaPalgaCsvImportDto, MammaPalgaCsvImportDto> chunk(1, transactionManager)
+			.<MammaPalgaCsvImportDto, MammaPalgaCsvImportDto> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.faultTolerant()
-			.noRollback(Exception.class)
 			.build();
 	}
 

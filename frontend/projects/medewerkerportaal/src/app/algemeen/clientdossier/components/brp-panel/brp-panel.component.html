@@ -22,29 +22,31 @@
   <ng-template ds-card-header-content>
     <button *appAutorisatie="wijzigenConstraint" ds-button-tertiary (click)="openEditModal()">
       <ds-icon [icon]="faPencil"/>
-      Bewerken
+      {{ strings.algemeen.buttons.bewerken }}
     </button>
   </ng-template>
-  <div class="client-gegevens-lijst">
-    <div class="client-gegevens-rij">
-      <span class="client-gegevens-label">Indicatie status</span>
-      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.indicatieStatus | enumNatural | legeWaarde }}</span>
+  @if (clientBrpGegevens(); as clientBrpGegevens) {
+    <div class="client-gegevens-lijst">
+      <div class="client-gegevens-rij">
+        <span class="client-gegevens-label">{{ strings.algemeen.brp.labels.indicatieStatus }}</span>
+        <span class="client-gegevens-waarde">{{ clientBrpGegevens.indicatieStatus | enumNatural | legeWaarde }}</span>
+      </div>
+      <div class="client-gegevens-rij">
+        <span class="client-gegevens-label">{{ strings.algemeen.brp.labels.datumLaatsteBrpMutatie }}</span>
+        <span class="client-gegevens-waarde">{{ clientBrpGegevens.datumLaatsteBrpMutatie | date: NL_DATE_FORMAT | legeWaarde }}</span>
+      </div>
+      <div class="client-gegevens-rij">
+        <span class="client-gegevens-label">{{ strings.algemeen.brp.labels.laatstAangevraagdOp }}</span>
+        <span class="client-gegevens-waarde">{{ clientBrpGegevens.laatstAangevraagdOp | datumTijd }}</span>
+      </div>
+      <div class="client-gegevens-rij">
+        <span class="client-gegevens-label">{{ strings.algemeen.brp.labels.tijdelijkBrpAdres }}</span>
+        <span class="client-gegevens-waarde">{{ clientBrpGegevens.tijdelijkBrpAdres | boolean | legeWaarde }}</span>
+      </div>
+      <div class="client-gegevens-rij">
+        <span class="client-gegevens-label">{{ strings.algemeen.brp.labels.vertrokkenUitNl }}</span>
+        <span class="client-gegevens-waarde">{{ clientBrpGegevens.datumVertrokkenUitNederland | date: NL_DATE_FORMAT | legeWaarde }}</span>
+      </div>
     </div>
-    <div class="client-gegevens-rij">
-      <span class="client-gegevens-label">Datum laatste BRP-mutatie</span>
-      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.datumLaatsteBrpMutatie | date: 'dd-MM-yyyy' | legeWaarde }}</span>
-    </div>
-    <div class="client-gegevens-rij">
-      <span class="client-gegevens-label">Laatst aangevraagd op</span>
-      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.laatstAangevraagdOp | date: 'dd-MM-yyyy HH:mm:ss' | legeWaarde }}</span>
-    </div>
-    <div class="client-gegevens-rij">
-      <span class="client-gegevens-label">Tijdelijk BRP-adres</span>
-      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.tijdelijkBrpAdres | boolean | legeWaarde }}</span>
-    </div>
-    <div class="client-gegevens-rij">
-      <span class="client-gegevens-label">Vertrokken uit Nederland</span>
-      <span class="client-gegevens-waarde">{{ clientBrpGegevens()?.datumVertrokkenUitNederland | date: 'dd-MM-yyyy' | legeWaarde }}</span>
-    </div>
-  </div>
+  }
 </ds-card>

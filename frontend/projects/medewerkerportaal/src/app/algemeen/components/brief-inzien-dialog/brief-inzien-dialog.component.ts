@@ -24,6 +24,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { PdfViewerComponent } from '@shared/components/pdf-viewer/pdf-viewer.component'
 import { saveAs } from 'file-saver'
 import { DsButtonComponent } from '@topicus-rgp-ds/web'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-brief-inzien-dialog',
@@ -33,6 +34,7 @@ import { DsButtonComponent } from '@topicus-rgp-ds/web'
 export class BriefInzienDialogComponent {
   private readonly dialogRef = inject(DialogRef)
   protected readonly dialogData: { brief: string; titel: string } = inject(DIALOG_DATA)
+  protected readonly strings = inject(StringsService).getStrings()
 
   sluiten() {
     this.dialogRef.close()

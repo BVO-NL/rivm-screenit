@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 import nl.rivm.screenit.huisartsenportaal.ICervixHuisartsLocatie;
 import nl.rivm.screenit.huisartsenportaal.dto.LocatieDto;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CervixLocatieUtil

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { afterNextRender, Component, DestroyRef, forwardRef, inject, Injector, OnInit } from '@angular/core'
+import { afterNextRender, Component, DestroyRef, forwardRef, inject, Injector, OnInit, ChangeDetectionStrategy } from '@angular/core'
 import {
   ControlContainer,
   ControlValueAccessor,
@@ -43,11 +43,13 @@ import { DsCheckboxComponent, DsDatepickerComponent, DsDropdownComponent, DsWeek
 import { WeekdagOptie } from '@shared/types/weekdag-optie'
 import { addDays, addMonths, addWeeks, isValid } from 'date-fns'
 import { formatDate } from '@shared/utils/date-utils'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-bulk-aanmaken',
   imports: [ReactiveFormsModule, DsCheckboxComponent, DsDatepickerComponent, DsDropdownComponent, DsWeekdaySelectorComponent],
   templateUrl: './bulk-aanmaken-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -63,25 +65,26 @@ import { formatDate } from '@shared/utils/date-utils'
 })
 export class BulkAanmakenFormComponent implements ControlValueAccessor, Validator, OnInit {
   parentForm = inject(ControlContainer, { optional: true, host: true, skipSelf: true })
+  protected readonly strings = inject(StringsService).getStrings()
   herhalingsfrequentie = ColonHerhalingsfrequentie
   dagen = TDS_DAGEN
   maxDatum: string = addMonths(new Date(), COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN).toISOString()
   minDatum: string = addDays(new Date(), 1).toISOString()
   herhalingOpties = [
     {
-      label: 'Niet herhalen',
+      label: this.strings.colon.rooster.labels.nietHerhalen,
       value: ColonHerhalingsfrequentie.GEEN_HERHALING,
     },
     {
-      label: 'Dagelijks',
+      label: this.strings.colon.rooster.labels.dagelijks,
       value: ColonHerhalingsfrequentie.DAGELIJKS,
     },
     {
-      label: 'Wekelijks',
+      label: this.strings.colon.rooster.labels.wekelijks,
       value: ColonHerhalingsfrequentie.WEKELIJKS,
     },
     {
-      label: '2-wekelijks',
+      label: this.strings.colon.rooster.labels.tweewekelijks,
       value: ColonHerhalingsfrequentie.TWEE_WEKELIJKS,
     },
   ]

@@ -25,6 +25,7 @@ import { ColonKamer } from '@shared/types/colon/colon-kamer'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { filter } from 'rxjs'
 import { DsDropdownComponent } from '@topicus-rgp-ds/web'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-kamer-selector',
@@ -37,7 +38,7 @@ import { DsDropdownComponent } from '@topicus-rgp-ds/web'
     `,
   ],
   template: ` <ds-dropdown
-    label="Kamer"
+    [label]="strings.colon.rooster.labels.kamer"
     [items]="kamerOpties()"
     [formControl]="kamerCtrl"
     data-testid="cb_kamer_selector"
@@ -45,7 +46,7 @@ import { DsDropdownComponent } from '@topicus-rgp-ds/web'
     bindLabel="naam"
     [clearable]="!required()"
     [required]="required()"
-    [errorMessage]="{ required: 'De kamer is verplicht' }"
+    [errorMessage]="{ required: strings.algemeen.errors.verplicht('De kamer') }"
   />`,
   providers: [
     {
@@ -62,7 +63,8 @@ import { DsDropdownComponent } from '@topicus-rgp-ds/web'
 })
 export class KamerSelectorComponent implements ControlValueAccessor, Validator {
   private readonly roosterService: RoosterService = inject(RoosterService)
-  alleKamers: ColonKamer = { id: 0, naam: 'Alle kamers' }
+  protected readonly strings = inject(StringsService).getStrings()
+  alleKamers: ColonKamer = { id: 0, naam: this.strings.colon.rooster.labels.alleKamers }
   kamerCtrl = new FormControl<number | null>(null)
 
   required = input<boolean>(false)

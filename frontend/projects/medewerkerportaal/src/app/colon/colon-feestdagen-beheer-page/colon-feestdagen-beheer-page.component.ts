@@ -43,6 +43,7 @@ import {
   DsHeaderRowComponent,
   DsHeaderRowDef,
   DsIconComponent,
+  DsPageHeaderComponent,
   DsRowComponent,
   DsRowDef,
   DsTableComponent,
@@ -53,10 +54,10 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { MatSort, MatSortHeader } from '@angular/material/sort'
 import { NL_DATE_FORMAT } from '@shared/constants'
 import { DatePipe, TitleCasePipe } from '@angular/common'
-import { PageComponent } from '@shared/components/page/page.component'
 import { FeestdagFoutmeldingPopupComponent } from '@/colon/colon-feestdagen-beheer-page/components/feestdag-foutmelding-popup/feestdag-foutmelding-popup.component'
 import { HttpErrorResponse } from '@angular/common/http'
 import { GlobalErrorHandler } from '@shared/services/global-error-handler/global-error-handler'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-colon-feestdagen-beheer-page',
@@ -79,16 +80,9 @@ import { GlobalErrorHandler } from '@shared/services/global-error-handler/global
     MatSortHeader,
     DatePipe,
     TitleCasePipe,
-    PageComponent,
+    DsPageHeaderComponent,
   ],
   templateUrl: './colon-feestdagen-beheer-page.component.html',
-  styles: [
-    `
-      .header-btn {
-        margin-top: 1.2rem;
-      }
-    `,
-  ],
 })
 export class ColonFeestdagenBeheerPageComponent {
   feestdagen = signal<ColonFeestdag[]>([])
@@ -100,6 +94,7 @@ export class ColonFeestdagenBeheerPageComponent {
   private feestdagenService: FeestdagenService = inject(FeestdagenService)
   private dialogService: Dialog = inject(Dialog)
   private readonly errorHandler = inject(GlobalErrorHandler)
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
   sort = viewChild(MatSort)
 
@@ -170,9 +165,10 @@ export class ColonFeestdagenBeheerPageComponent {
     this.dialogService
       .open(ConfirmationDialogComponent, {
         data: {
-          title: 'Waarschuwing',
-          body: 'Weet u zeker dat u deze feestdag wilt verwijderen?',
+          title: this.strings.algemeen.dialogs.bevestiging.titel,
+          body: this.strings.colon.feestdagen.deleteConfirm,
         },
+        hasBackdrop: true,
         minWidth: '300px',
       })
       .closed.pipe(take(1))

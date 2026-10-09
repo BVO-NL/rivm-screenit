@@ -51,6 +51,7 @@ import { KamerSelectorComponent } from '@/colon/colon-rooster-page/components/ka
 import { bepaalFoutmeldingBijOpslaanTijdslot } from '@/colon/utils/colon-utils'
 import { ColonTijdslotType } from '@shared/types/colon/colon-tijdslot-type'
 import { TimepickerComponent } from '@shared/components/timepicker/timepicker.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-blokkade-bewerken-dialog',
@@ -81,6 +82,7 @@ export class BlokkadeBewerkenDialogComponent {
   private readonly autorisatieService: AutorisatieService = inject(AutorisatieService)
   private readonly notificationService: NotificationService = inject(NotificationService)
   private readonly dialogService = inject(Dialog)
+  protected readonly strings = inject(StringsService).getStrings()
 
   blokkadeForm: FormGroup = this.formBuilder.group(
     {
@@ -108,9 +110,9 @@ export class BlokkadeBewerkenDialogComponent {
 
   get title(): string {
     if (this.bewerkenToegestaan) {
-      return this.isNieuw ? 'Aanmaken blokkade(s)' : 'Bewerken blokkade'
+      return this.isNieuw ? this.strings.colon.rooster.blokkade.titleNieuw : this.strings.colon.rooster.blokkade.titleBestaand
     }
-    return 'Blokkade'
+    return this.strings.colon.rooster.blokkade.titleReadOnly
   }
 
   get startTijdCtrl(): FormControl {
@@ -230,9 +232,10 @@ export class BlokkadeBewerkenDialogComponent {
     this.dialog
       .open(ConfirmationDialogComponent, {
         data: {
-          title: 'Weet u zeker dat u deze blokkade wilt verwijderen?',
+          title: this.strings.colon.rooster.blokkade.confirm.deleteBody,
           body: `${intakelocatie()?.naam} - ${kamer?.naam}: ${formatNLDate(formValue.datum)} van ${formValue.vanaf} tot ${formValue.tot}`,
         },
+        hasBackdrop: true,
       })
       .closed.pipe(take(1))
       .subscribe((remove: unknown) => {

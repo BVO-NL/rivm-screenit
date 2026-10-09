@@ -39,6 +39,7 @@ import { ClientService } from '@algemeen/services/client/client.service'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { faCalendar } from '@fortawesome/pro-solid-svg-icons'
 import { format } from 'date-fns'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-cis-historie-tab',
@@ -61,7 +62,7 @@ import { format } from 'date-fns'
 export class CisHistorieTabComponent {
   private readonly cisHistorieService = inject(CervixCisHistorieService)
   private readonly clientService = inject(ClientService)
-
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly cisHistorie: Signal<CervixCisHistorieDto> = toSignal(this.cisHistorieService.getCisHistorie(this.clientService.clientId()), { initialValue: { rondes: {} } })
   protected readonly rondes: Signal<string[]> = computed(() => this.cisHistorieService.getRondes(this.cisHistorie()))
   protected readonly heeftHistorie = computed(() => this.rondes().length > 0)

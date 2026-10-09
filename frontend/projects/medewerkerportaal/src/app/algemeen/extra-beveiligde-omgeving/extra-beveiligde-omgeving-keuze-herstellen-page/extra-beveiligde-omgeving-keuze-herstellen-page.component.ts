@@ -23,16 +23,18 @@ import { FormControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } 
 import { formatDate, formatNLDate } from '@shared/utils/date-utils'
 import { bsnValidator } from '@shared/validators/bsn/bsn.validator'
 import { NotificationService } from '@shared/services/notification/notification.service'
-import { ExtraBeveiligdeOmgevingService } from '@/algemeen/extra-beveiligde-omgeving/services/extra-beveiligde-omgeving/extra-beveiligde-omgeving.service'
+import {
+  ExtraBeveiligdeOmgevingService
+} from '@/algemeen/extra-beveiligde-omgeving/services/extra-beveiligde-omgeving/extra-beveiligde-omgeving.service'
 import { take } from 'rxjs'
-import { DsButtonComponent, DsDatepickerComponent, DsInputComponent } from '@topicus-rgp-ds/web'
+import { DsButtonComponent, DsDatepickerComponent, DsInputComponent, DsPageHeaderComponent } from '@topicus-rgp-ds/web'
 import { extensieValidator } from '@shared/validators/file/file.validator'
 import { SingleFileSelectorComponent } from '@shared/components/single-file-selector/single-file-selector.component'
-import { PageComponent } from '@shared/components/page/page.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-extra-beveiligde-omgeving-keuze-herstellen-page',
-  imports: [ReactiveFormsModule, DsDatepickerComponent, DsInputComponent, DsButtonComponent, SingleFileSelectorComponent, PageComponent],
+  imports: [ReactiveFormsModule, DsDatepickerComponent, DsInputComponent, DsButtonComponent, SingleFileSelectorComponent, DsPageHeaderComponent],
   templateUrl: './extra-beveiligde-omgeving-keuze-herstellen-page.component.html',
   styles: `
     .form-actions {
@@ -49,6 +51,7 @@ export class ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder)
   private readonly notificationService = inject(NotificationService)
   private readonly extraBeveiligdeOmgevingService = inject(ExtraBeveiligdeOmgevingService)
+  protected readonly strings = inject(StringsService).getStrings()
 
   formGroup = this.formBuilder.group({
     geboortedatum: this.formBuilder.control<Date | null>(null, [Validators.required]),
@@ -74,7 +77,7 @@ export class ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent {
       .bezwaarHerstellen(formValue.bsn, formatNLDate(formValue.geboortedatum!), formValue.bestand!)
       .pipe(take(1))
       .subscribe(() => {
-        this.notificationService.success('Keuze gebruik gegevens BRP hersteld')
+        this.notificationService.success(this.strings.algemeen.ebo.notifications.keuzeHersteld)
       })
   }
 }

@@ -104,7 +104,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	public Step uitnodigingU1PushStep(UitnodigingU1PushProjectReader reader, ClientSelectieItemWriter writer)
 	{
 		return new StepBuilder("uitnodigingU1PushStep", repository)
-			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1, transactionManager)
+			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -114,7 +115,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	public Step uitnodigingU2PushStep(UitnodigingU2PushProjectReader reader, ClientSelectieItemWriter writer)
 	{
 		return new StepBuilder("uitnodigingU2PushStep", repository)
-			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1, transactionManager)
+			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -124,7 +126,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	public Step vooraankondigingNaVervolgonderzoekStep(ColonVooraankondigingNaVervolgonderzoekReader reader, ColonVooraankondigingNaVervolgonderzoekWriter writer)
 	{
 		return new StepBuilder("vooraankondigingNaVervolgonderzoekStep", repository)
-			.<Long, Long> chunk(1, transactionManager)
+			.<Long, Long> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -134,7 +137,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	public Step afrondenStep(ColonVerlopenRondesReader reader, ColonVerlopenRondesWriter writer)
 	{
 		return new StepBuilder("afrondenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -144,7 +148,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	public Step projectIntervalToepassenStep(ColonProjectIntervalToepassenReader reader, ColonProjectIntervalToepassenWriter writer)
 	{
 		return new StepBuilder("projectIntervalToepassenStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -171,7 +176,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	{
 		return new StepBuilder("selectieGebiedStep", repository)
 			.listener(selectiePromotionListener)
-			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1, transactionManager)
+			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -182,7 +188,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	{
 		return new StepBuilder("selectieStep", repository)
 			.listener(selectiePromotionListener)
-			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1, transactionManager)
+			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -211,7 +218,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	public Step uitnodigingU1PushMaxLeeftijdStep(UitnodigingU1PushMaxLeeftijdReader reader, ClientSelectieItemWriter writer)
 	{
 		return new StepBuilder("uitnodigingU1PushMaxLeeftijdStep", repository)
-			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1, transactionManager)
+			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -232,7 +240,8 @@ public class SelectieJobConfiguration extends AbstractJobConfiguration
 	public Step uitnodigingU2PushMaxLeeftijdStep(UitnodigingU2PushMaxLeeftijdReader reader, ClientSelectieItemWriter writer)
 	{
 		return new StepBuilder("uitnodigingU2PushMaxLeeftijdStep", repository)
-			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1, transactionManager)
+			.<ClientCategorieEntry, ClientCategorieEntry> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

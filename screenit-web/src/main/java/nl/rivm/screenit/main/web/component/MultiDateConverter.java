@@ -35,7 +35,7 @@ import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.ThreadLocalDateFormat;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
 

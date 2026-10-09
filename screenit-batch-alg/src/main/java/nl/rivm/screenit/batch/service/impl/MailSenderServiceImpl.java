@@ -44,7 +44,7 @@ import nl.rivm.screenit.repository.algemeen.MailRepository;
 import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.util.mail.LoggingJavaMailSender;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.MimeMessageHelper;

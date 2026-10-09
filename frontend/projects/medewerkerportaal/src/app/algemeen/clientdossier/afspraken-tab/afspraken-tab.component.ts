@@ -19,22 +19,28 @@
  * =========================LICENSE_END==================================
  */
 import { Component, inject, signal, WritableSignal } from '@angular/core'
-import { forkJoin, map, of, switchMap, take } from 'rxjs'
+import { forkJoin, map, switchMap, take } from 'rxjs'
 import { ClientPaspoortComponent } from '@algemeen/components/client-paspoort/client-paspoort.component'
 import { ColonIntakeafspraakService } from '@colon/services/colon-intakeafspraak/colon-intakeafspraak.service'
 import { MammaClientafspraakService } from '@mamma/services/mamma-clientafspraak.service'
 import { AfspraakPanel } from '@algemeen/clientdossier/components/afspraak-panel/afspraak-panel.component'
-import { ColonClientAfspraakVerplaatsenDialogComponent } from '@algemeen/clientdossier/afspraken-tab/components/colon-client-afspraak-verplaatsen/colon-client-afspraak-verplaatsen-dialog.component'
+import {
+  ColonClientAfspraakDialogComponent,
+  ColonClientAfspraakDialogMode,
+} from '@algemeen/clientdossier/afspraken-tab/components/colon-client-afspraak-dialog/colon-client-afspraak-dialog.component'
 import { ClientService } from '@/algemeen/services/client/client.service'
 import { ClientAfspraakDto } from '@shared/types/algemeen/dto/client-afspraak.dto'
 import { ClientAfspraakEnActies } from '@shared/types/algemeen/client-afspraak-en-acties'
 import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
-import { ColonIntakeafspraakDto } from '@shared/types/colon/dto/colon-intakeafspraak.dto'
 import { MammaAfspraakDto } from '@shared/types/mamma/dto/mamma-afspraak.dto'
+import { Dialog } from '@angular/cdk/dialog'
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component'
+import { StringsService } from '@shared/strings'
+import { ColonIntakeafspraakDto } from '@shared/types/colon/dto/colon-intakeafspraak.dto'
 
 @Component({
   selector: 'app-afspraken-tab',
-  imports: [AfspraakPanel, ClientPaspoortComponent, ColonClientAfspraakVerplaatsenDialogComponent],
+  imports: [AfspraakPanel, ClientPaspoortComponent, ColonClientAfspraakDialogComponent],
   templateUrl: './afspraken-tab.component.html',
   styleUrl: './afspraken-tab.component.scss',
 })
@@ -42,15 +48,45 @@ export class AfsprakenTabComponent {
   private readonly clientService = inject(ClientService)
   private readonly colonIntakeafspraakService = inject(ColonIntakeafspraakService)
   private readonly mammaClientafspraakService = inject(MammaClientafspraakService)
+  private readonly dialog = inject(Dialog)
+  private readonly strings = inject(StringsService).getStrings()
   protected readonly Bevolkingsonderzoek = Bevolkingsonderzoek
   protected readonly clientId = this.clientService.clientId()
-  protected mammaAfspraakEnActies = signal<ClientAfspraakEnActies | null>(null)
-  protected colonAfspraakEnActies = signal<ClientAfspraakEnActies | null>(null)
-  protected readonly tijdstipWijzigenAfspraak: WritableSignal<ClientAfspraakDto | null> = signal(null)
+  protected readonly mammaAfspraakEnActies = signal<ClientAfspraakEnActies<MammaAfspraakDto> | null>(null)
+  protected readonly colonAfspraakEnActies = signal<ClientAfspraakEnActies<ColonIntakeafspraakDto> | null>(null)
+  protected readonly teVerplaatsenAfspraak: WritableSignal<ClientAfspraakDto | null> = signal(null)
+  protected readonly afspraakDialogMode: WritableSignal<ColonClientAfspraakDialogMode> = signal(null)
 
-  protected afspraakTijdstipSluiten() {
-    this.tijdstipWijzigenAfspraak.set(null)
-    this.getColonAfspraak()
+  protected openAfspraakDialog(dialogMode: ColonClientAfspraakDialogMode, afspraak: ClientAfspraakDto | null) {
+    if (afspraak && 'digitaal' in afspraak && afspraak.digitaal) {
+      this.dialog
+        .open(ConfirmationDialogComponent, {
+          data: {
+            body: this.strings.algemeen.afspraken.digitaalNaarFysiekDialog.body,
+            jaButtonTekst: this.strings.algemeen.afspraken.digitaalNaarFysiekDialog.jaButtonTekst,
+            neeButtonTekst: this.strings.algemeen.dialogs.bevestiging.neeButtonTekst,
+          },
+          hasBackdrop: true,
+        })
+        .closed.pipe(take(1))
+        .subscribe((result) => {
+          if (result) {
+            this.afspraakDialogMode.set(dialogMode)
+            this.teVerplaatsenAfspraak.set(afspraak)
+          }
+        })
+    } else {
+      this.afspraakDialogMode.set(dialogMode)
+      this.teVerplaatsenAfspraak.set(afspraak)
+    }
+  }
+
+  protected afspraakDialogSluiten(refreshAfspraak: boolean) {
+    this.afspraakDialogMode.set(null)
+
+    if (refreshAfspraak) {
+      this.getColonAfspraak()
+    }
   }
 
   constructor() {
@@ -58,7 +94,7 @@ export class AfsprakenTabComponent {
     this.getColonAfspraak()
   }
 
-  private getMammaAfspraak() {
+  protected getMammaAfspraak() {
     forkJoin({
       afspraken: this.mammaClientafspraakService.getAfspraken(this.clientId),
       acties: this.mammaClientafspraakService.getAfspraakActies(this.clientId),
@@ -76,21 +112,19 @@ export class AfsprakenTabComponent {
       })
   }
 
-  private getColonAfspraak() {
+  protected getColonAfspraak() {
     this.colonIntakeafspraakService
       .getAfspraken(this.clientId)
       .pipe(
         switchMap((afspraken) =>
-          forkJoin({
-            afspraken: of(afspraken),
-            acties: this.colonIntakeafspraakService.getAfspraakActies(this.clientId, afspraken.at(0)?.id),
-          }),
+          this.colonIntakeafspraakService.getAfspraakActies(this.clientId, afspraken.at(0)?.id).pipe(
+            map((acties) => ({
+              type: Bevolkingsonderzoek.COLON,
+              afspraak: afspraken.at(0) ?? null,
+              acties,
+            })),
+          ),
         ),
-        map(({ afspraken, acties }): ClientAfspraakEnActies<ColonIntakeafspraakDto> => ({
-          type: Bevolkingsonderzoek.COLON,
-          afspraak: afspraken.at(0) ?? null,
-          acties,
-        })),
         take(1),
       )
       .subscribe((afspraakEnActies) => {

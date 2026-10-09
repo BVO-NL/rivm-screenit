@@ -18,30 +18,30 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog titel="Handleiding bewerken" size="md">
-  <form [formGroup]="handleidingForm" body class="row form-in-modal" novalidate>
-    <div class="col">
-      <app-single-file-selector
-        label="Handleiding"
-        formControlName="bestand"
-        acceptedExtensie="pdf"
-        data-testid="handleiding_uploaden"
-      />
-      <ds-input
-        label="Bestandsnaam"
-        formControlName="bestandsnaam"
-        [errorMessage]="{minlength: 'De bestandsnaam moet minimaal 3 tekens bevatten', maxlength: 'De bestandsnaam mag maximaal 50 tekens bevatten'}"
-        data-testid="bestandsnaam_input"
-        required
-        minlength="3"
-        maxlength="50"
-      />
-    </div>
+<app-base-dialog [titel]="strings.algemeen.handleidingen.bewerken.dialogTitle" size="md">
+  <form [formGroup]="handleidingForm" body novalidate>
+    <app-single-file-selector
+      [label]="strings.algemeen.handleidingen.bewerken.fileSelectorLabel"
+      formControlName="bestand"
+      acceptedExtensie="pdf"
+      data-testid="handleiding_uploaden"
+    />
+    <ds-input
+      label="Bestandsnaam"
+      formControlName="bestandsnaam"
+      [errorMessage]="{minlength: strings.algemeen.errors.minKarakters('De bestandsnaam', 3), maxlength: strings.algemeen.errors.maxKarakters('De bestandsnaam', 50)}"
+      data-testid="bestandsnaam_input"
+      required
+      minlength="3"
+      maxlength="50"
+    />
   </form>
-  <div buttons class="btn-group">
-    <button (click)="annuleren()" data-testid="annuleren_btn" ds-button-secondary>Annuleren</button>
-    <button (click)="opslaan()" [disabled]="!isFormGeldig" ds-button-primary data-testid="opslaan_btn">
-      Opslaan
+  <ng-container buttons>
+    <button (click)="annuleren()" data-testid="annuleren_btn"
+            ds-button-tertiary>{{ strings.algemeen.buttons.annuleren }}
     </button>
-  </div>
+    <button (click)="opslaan()" [disabled]="!isFormGeldig" ds-button-primary data-testid="opslaan_btn">
+      {{ strings.algemeen.buttons.opslaan }}
+    </button>
+  </ng-container>
 </app-base-dialog>

@@ -52,7 +52,8 @@ public class ZasUitnodigingenVersturenJobConfiguration extends AbstractJobConfig
 	public Step zasUitnodigingenBrievenCleanupStep(ZasUitnodigingenBrievenCleanUpReader reader, ZasUitnodigingenBrievenCleanUpWriter writer)
 	{
 		return new StepBuilder("zasUitnodigingenBrievenCleanupStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

@@ -18,14 +18,16 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<ds-fullscreen-wizard header="Tijdstip wijzigen" (wizardClosed)="sluitWizard()" [stepsAreSkippable]="false" [detailedStepper]="true">
+<ds-fullscreen-wizard [header]="titel()" (wizardClosed)="sluitWizard()" [stepsAreSkippable]="false" [detailedStepper]="true">
   <ds-wizard-step [title]="steps().AFSPRAAK_KIEZEN.titel"
                   [subtitle]="steps().AFSPRAAK_KIEZEN.subtitel"
                   [nextAction]="steps().AFSPRAAK_KIEZEN.nextAction"
                   [cancelAction]="steps().AFSPRAAK_KIEZEN.cancelAction"
                   [stepControl]="steps().AFSPRAAK_KIEZEN.stepControl"
   >
-    <app-colon-client-afspraak-zoeken [geselecteerdSlot]="geselecteerdSlot()" (geselecteerdSlotChange)="selecteerSlot($event)"/>
+    <app-colon-client-afspraak-zoeken [afspraakDialogMode]="afspraakDialogMode()" [huidigeIntakelocatieId]="afspraak()?.locatie?.id ?? null"
+                                      (slotGekozen)="selecteerSlot($event)" (datumTijdBuitenRoosterChange)="wijzigDatumTijdBuitenRooster($event)"
+                                      [(afspraakType)]="gekozenAfspraakType"/>
   </ds-wizard-step>
   <ds-wizard-step [title]="steps().AFSPRAAK_BEVESTIGEN.titel"
                   [subtitle]="steps().AFSPRAAK_BEVESTIGEN.subtitel"
@@ -33,7 +35,9 @@
                   [cancelAction]="steps().AFSPRAAK_BEVESTIGEN.cancelAction"
                   [previousAction]="steps().AFSPRAAK_BEVESTIGEN.previousAction"
                   [stepControl]="steps().AFSPRAAK_BEVESTIGEN.stepControl">
-    <app-colon-client-afspraak-bevestiging [afspraakslot]="geselecteerdSlot()" [huidigeAfspraak]="afspraak()" [(request)]="aanmakenRequest"/>
+    <app-colon-client-afspraak-bevestiging [afspraakDialogMode]="afspraakDialogMode()" [afspraakslot]="geselecteerdSlot()" [huidigeAfspraak]="afspraak()"
+                                           [afspraakType]="gekozenAfspraakType()"
+                                           [(request)]="aanmakenRequest"/>
   </ds-wizard-step>
   <ds-wizard-step [title]="steps().SAMENVATTING.titel"
                   [subtitle]="steps().SAMENVATTING.subtitel"

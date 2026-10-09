@@ -33,7 +33,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import nl.rivm.screenit.mamma.se.SERequestHeader;
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.MDC;
 
 public class SELogFilter implements Filter
@@ -49,7 +49,7 @@ public class SELogFilter implements Filter
 			MDC.put("PROXY-DT", httpRequest.getHeader(SERequestHeader.SE_PROXY_DATUMTIJD));
 
 			var accountId = httpRequest.getHeader(SERequestHeader.ACCOUNT_ID);
-			if (NumberUtils.isNumber(accountId))
+			if (NumberUtils.isCreatable(accountId))
 			{
 				MDC.put("A", "M" + accountId);
 			}

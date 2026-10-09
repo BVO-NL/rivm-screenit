@@ -83,9 +83,6 @@ export class AppComponent implements AfterViewInit {
         route = '/client/zoeken'
         break
     }
-    this.router.events.subscribe((event) => {
-      console.log(event)
-    })
 
     this.router.navigateByUrl(route)
   }

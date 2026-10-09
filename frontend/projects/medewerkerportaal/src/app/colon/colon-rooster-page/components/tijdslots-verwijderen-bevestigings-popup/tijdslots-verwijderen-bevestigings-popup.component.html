@@ -18,9 +18,9 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog titel="Bevestiging">
+<app-base-dialog [titel]="strings.algemeen.dialogs.bevestiging.titel">
   <div body class="body">
-    <h3 class="text-bold">Wordt verwijderd</h3>
+    <h3 class="text-bold">{{ strings.colon.rooster.tijdslots.bevestiging.wordtVerwijderd }}</h3>
     <table aria-label="bulk verwijderen resultaten" class="table table-compact table-noborder">
       <tbody>
       <tr>
@@ -31,27 +31,29 @@
     </table>
 
     @if (dialogData.typeTijdslot.value === 'afspraakslots') {
-      <h3 class="text-bold mt-3">Wordt niet verwijderd</h3>
+      <h3 class="text-bold mt-3">{{ strings.colon.rooster.tijdslots.bevestiging.wordtNietVerwijderd }}</h3>
       <table aria-label="bulk verwijderen resultaten" class="table table-compact table-noborder">
         <tbody>
         <tr>
-          <td>Gereserveerd</td>
+          <td>{{ strings.colon.rooster.tijdslots.bevestiging.gereserveerd }}</td>
           <td>{{ dialogData.bulkVerwijderenResultaat.aantalGebruiktVoorCapaciteit }}</td>
         </tr>
         <tr>
-          <td>Met afspraak</td>
+          <td>{{ strings.colon.rooster.tijdslots.bevestiging.metAfspraak }}</td>
           <td>{{ dialogData.bulkVerwijderenResultaat.aantalMetAfspraak }}</td>
         </tr>
         </tbody>
       </table>
     }
 
-    <p><strong>Let op: </strong>Er worden maximaal 500 {{ dialogData.typeTijdslot.label | lowercase }} tegelijk verwijderd</p>
+    <p>
+      <strong>{{ strings.colon.rooster.tijdslots.bevestiging.letOp }} </strong>{{ strings.colon.rooster.tijdslots.bevestiging.maxVerwijderd(500, dialogData.typeTijdslot.label | lowercase) }}
+    </p>
 
-    <p class="mt-4">Wilt u doorgaan?</p>
+    <p class="mt-4">{{ strings.algemeen.dialogs.bevestiging.wiltUDoorgaan }}</p>
   </div>
   <div buttons class="btn-group">
-    <button ds-button-secondary (click)="handleNo()">Nee</button>
-    <button ds-button-primary (click)="handleYes()">Ja</button>
+    <button ds-button-secondary (click)="handleNo()">{{ strings.algemeen.labels.nee }}</button>
+    <button ds-button-primary (click)="handleYes()">{{ strings.algemeen.labels.ja }}</button>
   </div>
 </app-base-dialog>

@@ -39,7 +39,7 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.util.EmailUtil;
 import nl.rivm.screenit.util.TelefoonnummerUtil;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;

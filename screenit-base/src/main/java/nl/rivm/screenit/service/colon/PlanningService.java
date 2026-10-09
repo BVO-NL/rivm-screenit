@@ -42,4 +42,6 @@ public interface PlanningService<T extends VrijSlot>
 	long getVrijeSlotenZonderKamerCount(VrijSlotZonderKamerFilter filter, Client client);
 
 	ColonIntakekamer getBeschikbareKamer(LocalDateTime startTijd, Long intakelocatieId);
+
+	ColonIntakekamer getBeschikbareKamer(LocalDateTime startTijd, Long intakelocatieId, Long huidigeAfspraakId);
 }

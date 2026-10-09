@@ -58,7 +58,8 @@ public class CervixBepalenVerrichtingenJobConfiguration extends AbstractJobConfi
 	public Step bepalenVerrichtingenStep(CervixBepalenVerrichtingenReader reader, CervixBepalenVerrichtingenWriter writer)
 	{
 		return new StepBuilder("bepalenVerrichtingenStep", repository)
-			.<Long, Long> chunk(100, transactionManager)
+			.<Long, Long> chunk(100)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -68,7 +69,8 @@ public class CervixBepalenVerrichtingenJobConfiguration extends AbstractJobConfi
 	public Step dubbeleCytologieVerrichtingenStep(CervixDubbeleCytologieVerrichtingenReader reader, CervixDubbeleCytologieVerrichtingenWriter writer)
 	{
 		return new StepBuilder("dubbeleCytologieVerrichtingenStep", repository)
-			.<Long, Long> chunk(100, transactionManager)
+			.<Long, Long> chunk(100)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -78,7 +80,8 @@ public class CervixBepalenVerrichtingenJobConfiguration extends AbstractJobConfi
 	public Step betalingCleanUpStep(BetalingBestandenCleanUpReader reader, BetalingBestandenCleanUpWriter writer)
 	{
 		return new StepBuilder("betalingCleanUpStep", repository)
-			.<Long, Long> chunk(1, transactionManager)
+			.<Long, Long> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

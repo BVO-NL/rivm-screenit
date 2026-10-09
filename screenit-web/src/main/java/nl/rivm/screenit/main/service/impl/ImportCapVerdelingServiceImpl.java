@@ -51,7 +51,7 @@ import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.colon.ColonUitnodigingsgebiedService;
 import nl.rivm.screenit.util.BigDecimalUtil;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -161,7 +161,7 @@ public class ImportCapVerdelingServiceImpl implements ImportCapVerdelingService
 		catch (Exception e)
 		{
 			LOG.error("Fout bij importeren ", e);
-			melding = ExceptionUtils.getFullStackTrace(e);
+			melding = ExceptionUtils.getStackTrace(e);
 			level = Level.ERROR;
 		}
 		finally

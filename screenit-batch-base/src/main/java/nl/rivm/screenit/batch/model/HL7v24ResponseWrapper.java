@@ -28,7 +28,7 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.berichten.ScreenITResponseV24MessageWrapper;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter

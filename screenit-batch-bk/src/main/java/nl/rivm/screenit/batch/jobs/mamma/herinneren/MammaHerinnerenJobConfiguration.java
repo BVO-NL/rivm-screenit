@@ -50,7 +50,8 @@ public class MammaHerinnerenJobConfiguration extends AbstractJobConfiguration
 	public Step herinnerenStep(MammaHerinnerenReader reader, MammaHerinnerenWriter writer)
 	{
 		return new StepBuilder("herinnerenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

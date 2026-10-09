@@ -24,37 +24,26 @@ package nl.rivm.screenit.batch.jobs.cervix.verlatedeelnamecovid.step;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.batch.jobs.cervix.verlatedeelnamecovid.CervixVerlateDeelnameCovidConstants;
-import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
+import nl.rivm.screenit.batch.jobs.cervix.AbstractCervixProjectGroepWriter;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
-import nl.rivm.screenit.model.project.GroepInvoer;
-import nl.rivm.screenit.model.project.Project;
-import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.service.BaseProjectService;
 import nl.rivm.screenit.service.BriefHerdrukkenService;
-import nl.rivm.screenit.service.HibernateService;
-import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
-import nl.rivm.screenit.util.DateUtil;
 
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
 @AllArgsConstructor
-public class CervixVerlateDeelnameCovidWriter extends BaseWriter<CervixBrief>
+public class CervixVerlateDeelnameCovidWriter extends AbstractCervixProjectGroepWriter<CervixBrief>
 {
 	private final BriefHerdrukkenService briefHerdrukkenService;
 
 	private final BaseProjectService projectService;
 
-	private final HibernateService hibernateService;
-
 	private final LogService logService;
-
-	private final ICurrentDateSupplier currentDateSupplier;
 
 	@Override
 	protected void write(CervixBrief brief) throws Exception
@@ -62,13 +51,12 @@ public class CervixVerlateDeelnameCovidWriter extends BaseWriter<CervixBrief>
 		var projectGroep = prepareProjectGroep();
 		try
 		{
-			LOG.info("Voeg client (clientId: " + brief.getClient().getId() + ") toe aan project groep '" + projectGroep.getNaam() + "'");
+			LOG.info("Voeg client (clientId: " + brief.getClient().getId() + ") toe aan projectgroep '" + projectGroep.getNaam() + "'");
 			var projectClient = projectService.addClientToProjectGroep(projectGroep, brief.getClient());
 			brief.setAangevraagdeHerdruk(true);
 			briefHerdrukkenService.opnieuwAanmaken(brief, null);
 			projectClient.setActief(false);
 			projectClient.setProjectInactiefDatum(currentDateSupplier.getDate());
-			hibernateService.saveOrUpdate(projectClient);
 		}
 		catch (IllegalStateException e)
 		{
@@ -76,33 +64,5 @@ public class CervixVerlateDeelnameCovidWriter extends BaseWriter<CervixBrief>
 			LOG.warn(melding);
 			logService.logGebeurtenis(LogGebeurtenis.CERVIX_CLIENT_GEEN_VERLATE_DEELNAME_UITNODIGING, brief.getClient(), melding, Bevolkingsonderzoek.CERVIX);
 		}
-	}
-
-	private ProjectGroep prepareProjectGroep()
-	{
-		ProjectGroep projectGroep;
-		var context = getExecutionContext();
-		if (!context.containsKey(CervixVerlateDeelnameCovidConstants.PROJECT_GROEP_ID))
-		{
-			var groepsNaam = "Populatie van run " + DateUtil.formatShortDate(currentDateSupplier.getDate());
-			Long projectId = context.getLong(CervixVerlateDeelnameCovidConstants.PROJECT_ID);
-			var project = hibernateService.load(Project.class, projectId);
-			LOG.info("Maak project groep " + groepsNaam + " voor project '" + project.getNaam() + "'");
-			projectGroep = new ProjectGroep();
-			projectGroep.setProject(project);
-			project.getGroepen().add(projectGroep);
-			projectGroep.setActief(true);
-			projectGroep.setGroepInvoer(GroepInvoer.CRITERIA);
-			projectGroep.setActiefDatum(currentDateSupplier.getDate());
-			projectGroep.setNaam(groepsNaam);
-			projectGroep.setPopulatie(0);
-			hibernateService.saveOrUpdate(projectGroep);
-			context.put(CervixVerlateDeelnameCovidConstants.PROJECT_GROEP_ID, projectGroep.getId());
-		}
-		else
-		{
-			projectGroep = hibernateService.load(ProjectGroep.class, context.getLong(CervixVerlateDeelnameCovidConstants.PROJECT_GROEP_ID));
-		}
-		return projectGroep;
 	}
 }

@@ -21,7 +21,7 @@ package nl.rivm.screenit.huisartsenportaal.validator;
  * =========================LICENSE_END==================================
  */
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 
 public abstract class BaseWachtwoordValidator<T> extends BaseValidator<T>

@@ -35,3 +35,7 @@
 @function get-spacer($key) {
   @return map.get(variables.$spacers, $key);
 }
+
+@function get-font-weight($key) {
+  @return map.get(variables.$font-weights, $key);
+}

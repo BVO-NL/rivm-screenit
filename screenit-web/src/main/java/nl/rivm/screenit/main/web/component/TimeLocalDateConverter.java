@@ -28,7 +28,7 @@ import java.util.Locale;
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.util.DateUtil;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.util.convert.IConverter;
 
 public class TimeLocalDateConverter implements IConverter<LocalDate>

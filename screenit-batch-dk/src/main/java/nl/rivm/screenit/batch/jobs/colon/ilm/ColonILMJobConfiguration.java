@@ -51,7 +51,8 @@ public class ColonILMJobConfiguration extends AbstractJobConfiguration
 	public Step ilmApplicatieLoggingVerwijderenStep(IlmApplicatieLoggingVerwijderenReader reader, IlmApplicatieLoggingVerwijderenWriter writer)
 	{
 		return new StepBuilder("ilmApplicatieLoggingVerwijderenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

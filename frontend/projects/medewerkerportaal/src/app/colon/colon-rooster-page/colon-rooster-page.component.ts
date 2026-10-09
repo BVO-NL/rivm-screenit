@@ -18,43 +18,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, effect, inject, Signal } from '@angular/core'
+import { Component, computed, effect, inject, Signal } from '@angular/core'
 import { RoosterComponent } from '@/colon/colon-rooster-page/components/rooster/rooster.component'
 import { ColonIntakelocatieService } from '@colon/services/colon-intakelocatie/colon-intakelocatie.service'
 import { ColonIntakelocatie } from '@shared/types/colon/colon-intakelocatie'
-import { DsContextualNotificationsComponent, DsContextualNotificationService } from '@topicus-rgp-ds/web'
+import { DsContextualNotificationsComponent, DsContextualNotificationService, DsPageHeaderComponent, DsPageSummaryTagComponent } from '@topicus-rgp-ds/web'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RoosterService } from '@/colon/colon-rooster-page/services/rooster.service'
-import { PageComponent } from '@shared/components/page/page.component'
 import { take } from 'rxjs'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-colon-rooster-page',
   template: `
-    <app-page [titel]="intakelocatie()?.naam ?? ''" class="pagina">
-      <div>
-        Geprognosticeerde aantal afspraakslots: {{ intakelocatie()?.aantalGeprognosticeerdeAfspraakslots }} / Huidige aantal gemaakte afspraakslots dit jaar:
-        {{ intakelocatie()?.huidigAantalAfspraakslots }}
-      </div>
-      <ds-contextual-notifications context="signaleringstermijn" class="mb-3 mt-3" />
-      <app-rooster class="rooster" />
-    </app-page>
+    <ds-page-header [title]="intakelocatie()?.naam ?? ''" [showBackButton]="false">
+      <ds-page-summary-tag [label]="subtitel()" />
+    </ds-page-header>
+    <ds-contextual-notifications context="signaleringstermijn" class="mb-3 mt-3" />
+    <app-rooster class="rooster" />
   `,
   styles: `
-    .pagina {
-      height: calc(100vh - 168px);
-      & > .rooster {
-        flex: 1 1 auto;
-        min-height: 0;
-      }
+    .rooster {
+      flex: 1 1 auto;
+      min-height: 0;
     }
   `,
-  imports: [RoosterComponent, DsContextualNotificationsComponent, PageComponent],
+  imports: [RoosterComponent, DsContextualNotificationsComponent, DsPageHeaderComponent, DsPageSummaryTagComponent],
 })
 export class ColonRoosterPageComponent {
   private readonly colonService: ColonIntakelocatieService = inject(ColonIntakelocatieService)
   private readonly roosterService: RoosterService = inject(RoosterService)
   private readonly notificationService = inject(DsContextualNotificationService)
+  protected readonly strings = inject(StringsService).getStrings()
+  protected readonly subtitel = computed(
+    () =>
+      `${this.strings.colon.rooster.geprognosticeerd} ${this.intakelocatie()?.aantalGeprognosticeerdeAfspraakslots ?? 0} ${this.strings.colon.rooster.huidig} ${this.intakelocatie()?.huidigAantalAfspraakslots ?? 0}`,
+  )
   intakelocatie: Signal<ColonIntakelocatie | undefined> = toSignal(this.colonService.fetchIntakelocatie())
 
   constructor() {
@@ -67,7 +66,7 @@ export class ColonRoosterPageComponent {
         this.notificationService.warning(
           'signaleringstermijn',
           {
-            message: `De afspraakslots voor de periode ${signaleringstermijn.tekst} zijn nog niet ingevoerd. Om cliënten uit te kunnen nodigen is het noodzakelijk dat deze slots voor ${signaleringstermijn.signaleringsTermijnDeadline} in ScreenIT worden ingevoerd.`,
+            message: this.strings.colon.rooster.warnings.slotsNietIngevoerd(signaleringstermijn.tekst, signaleringstermijn.signaleringsTermijnDeadline),
             closeable: true,
           },
           'page',

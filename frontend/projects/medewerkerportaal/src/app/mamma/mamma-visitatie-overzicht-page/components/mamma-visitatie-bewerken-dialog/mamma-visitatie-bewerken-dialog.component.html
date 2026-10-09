@@ -18,21 +18,21 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog titel="Visitatie" size="lg">
+<app-base-dialog [titel]="strings.mamma.visitatie.bewerken.dialogTitle" size="lg">
   <form [formGroup]="editForm" body class="ds-visitatie-form-grid">
     <div class="visitatie-bestanden-upload">
       <div class="helft-width visitatie-form-links">
         <ds-input
-          label="Omschrijving"
+          [label]="strings.algemeen.labels.omschrijving"
           formControlName="omschrijving"
-          placeholder="Omschrijving"
+          [placeholder]="strings.algemeen.labels.omschrijving"
           data-testid="input_omschrijving"
           required
           type="text"
         ></ds-input>
 
         <ds-dropdown
-          label="Status"
+          [label]="strings.algemeen.labels.status"
           formControlName="status"
           [items]="mammaVisitatieStatusLijst"
           bindValue="waarde"
@@ -44,7 +44,7 @@
 
         @if (visitatieTypeBe) {
           <ds-dropdown
-            label="Beoordelingseenheid"
+            [label]="strings.mamma.labels.beoordelingseenheid"
             formControlName="beoordelingseenheid"
             [clearable]="beoordelingseenheidCtrl.hasValidator(Validators.required)"
             [items]="beoordelingseenheden()"
@@ -59,7 +59,7 @@
           formControlName="rapportage"
           acceptedExtensie="xlsx"
           data-testid="rapportage_input"
-          label="Rapportage"
+          [label]="strings.mamma.labels.rapportage"
         />
 
         <app-single-file-selector
@@ -67,7 +67,7 @@
           formControlName="vragenlijst"
           acceptedExtensie="xlsx"
           data-testid="vragenlijst_input"
-          label="Vragenlijst"
+          [label]="strings.mamma.labels.vragenlijst"
         />
       </div>
 
@@ -78,11 +78,11 @@
             formControlName="insteltechniek"
             acceptedExtensie="csv"
             data-testid="insteltechniek_input"
-            label="Insteltechniek"
+            [label]="strings.mamma.labels.insteltechniek"
             class="insteltechniek_input"
           ></app-single-file-selector>
           <ds-radiobutton
-            label="Fotorichting"
+            [label]="strings.mamma.labels.fotorichting"
             formControlName="fotorichting"
             [items]="getFotorichtingRadioItems()"
             name="fotorichting"
@@ -96,7 +96,7 @@
             formControlName="intervalcarcinomen"
             acceptedExtensie="csv"
             data-testid="intervalcarcinomen_input"
-            label="Intervalcarcinomen"
+            [label]="strings.mamma.labels.intervalcarcinomen"
           ></app-single-file-selector>
 
           <app-single-file-selector
@@ -104,7 +104,7 @@
             formControlName="verwijzingen"
             acceptedExtensie="csv"
             data-testid="verwijzingen_input"
-            label="Verwijzingen"
+            [label]="strings.mamma.labels.verwijzingen"
           ></app-single-file-selector>
 
           <app-single-file-selector
@@ -112,7 +112,7 @@
             formControlName="screenDetected"
             acceptedExtensie="csv"
             data-testid="screen_detected_input"
-            label="T2+ screen detected"
+            [label]="strings.mamma.labels.t2ScreenDetected"
           ></app-single-file-selector>
 
           <app-single-file-selector
@@ -120,15 +120,18 @@
             formControlName="protheses"
             acceptedExtensie="csv"
             data-testid="protheses_input"
-            label="Protheses"
+            [label]="strings.mamma.labels.protheses"
           ></app-single-file-selector>
         }
       </div>
     </div>
   </form>
 
-  <div class="btn-group" buttons>
-    <button ds-button-secondary (click)="sluitDialog()" data-testid="annuleren_btn">Annuleren</button>
-    <button ds-button-primary (click)="opslaan()" data-testid="opslaan_btn">Opslaan</button>
-  </div>
+  <ng-container buttons>
+    <button ds-button-tertiary (click)="sluitDialog()"
+            data-testid="annuleren_btn">{{ strings.algemeen.buttons.annuleren }}
+    </button>
+    <button ds-button-primary (click)="opslaan()" data-testid="opslaan_btn">{{ strings.algemeen.buttons.opslaan }}
+    </button>
+  </ng-container>
 </app-base-dialog>

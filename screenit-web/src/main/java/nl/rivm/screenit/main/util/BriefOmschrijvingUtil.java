@@ -39,7 +39,7 @@ import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.util.BriefUtil;
 import nl.rivm.screenit.util.functionalinterfaces.TriFunction;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.model.IModel;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

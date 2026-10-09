@@ -31,6 +31,7 @@ import { Actie } from '@shared/types/autorisatie/actie'
 import { Required } from '@shared/types/autorisatie/required'
 import { RouterLink } from '@angular/router'
 import { BezwaarLijstComponent } from '../bezwaar-lijst/bezwaar-lijst.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-bezwaar-panel',
@@ -58,7 +59,9 @@ export class BezwaarPanelComponent {
         required: Required.ALL,
       }),
   )
+  protected readonly strings = inject(StringsService).getStrings()
+
   opOverzichtPagina = input<boolean>(false)
-  titel = input<string>('Actueel')
+  titel = input<string>(this.strings.algemeen.bezwaar.bezwaarPanel.titelKort)
   subtekst = input<string>('')
 }

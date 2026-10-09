@@ -21,10 +21,11 @@
 export interface VrijSlotZonderKamerFilter {
   vanaf: Date
   totEnMet: Date
-  naam?: string
-  plaats?: string
-  afstand?: number
-  nietIntakelocatieId?: number
+  naam?: string | null
+  plaats?: string | null
+  afstand?: number | null
+  intakelocatieId?: number | null
+  nietIntakelocatieId?: number | null
   alleenIntakelocaties?: boolean
   asaScoreBovenDrie?: boolean
   digitaleAfspraak?: boolean

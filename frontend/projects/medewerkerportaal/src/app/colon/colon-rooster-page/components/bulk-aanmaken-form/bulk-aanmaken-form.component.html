@@ -19,31 +19,31 @@
   =========================LICENSE_END==================================
   -->
 <form [formGroup]="herhalingForm">
-  <ds-dropdown [errorMessage]="{required: '\'Herhalen\' is verplicht.'}" [items]="herhalingOpties" bindLabel="label"
+  <ds-dropdown [errorMessage]="{required: strings.algemeen.errors.verplicht('Herhalen')}" [items]="herhalingOpties"
+               bindLabel="label"
                bindValue="value"
                data-testid="cb_herhaling_selector"
                formControlName="frequentie"
                [clearable]="false"
-               label="Herhalen"/>
+               [label]="strings.colon.rooster.labels.herhalen"/>
 
   @if (geselecteerdeFrequentie === herhalingsfrequentie.DAGELIJKS) {
-    <ds-checkbox data-testid="checkbox_alleen_werkdagen" formControlName="alleenWerkdagen">Alleen op werkdagen
+    <ds-checkbox data-testid="checkbox_alleen_werkdagen"
+                 formControlName="alleenWerkdagen">{{ strings.colon.rooster.labels.alleenOpWerkdagen }}
     </ds-checkbox>
   }
-
   @if (geselecteerdeFrequentie === herhalingsfrequentie.WEKELIJKS || geselecteerdeFrequentie === herhalingsfrequentie.TWEE_WEKELIJKS) {
-    <ds-weekday-selector formControlName="dagen" label="Dagen" [required]="true"/>
+    <ds-weekday-selector formControlName="dagen" [label]="strings.algemeen.labels.dagen" [required]="true"/>
   }
-
   @if (geselecteerdeFrequentie !== undefined && geselecteerdeFrequentie !== herhalingsfrequentie.GEEN_HERHALING) {
     <ds-datepicker [errorMessage]="{
-                     required: 'De einddatum is verplicht',
-                     invalidDate: 'De ingevoerde datum is niet valide'
+                     required: strings.algemeen.errors.verplicht('De einddatum'),
+                     invalidDate: strings.algemeen.errors.invalidDate
                    }"
                    class="col-12 col-md-8"
                    formControlName="eindDatum"
-                   [max]="maxDatum"
-                   [min]="minDatum"
-                   label="Einddatum"/>
+                   [maxDate]="maxDatum"
+                   [minDate]="minDatum"
+                   [label]="strings.algemeen.labels.einddatum"/>
   }
 </form>

@@ -31,6 +31,7 @@ import { NotificationService } from '@shared/services/notification/notification.
 import { ClientService } from '@/algemeen/services/client/client.service'
 import { huisletterValidator, trimmedValidator } from '@shared/validators/common-validators'
 import { createEinddatumNaBegindatumValidator } from '@shared/validators/datum/datum.validator'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-adresgegevens-bewerken-modal',
@@ -50,6 +51,7 @@ export class AdresgegevensBewerkenModalComponent {
   protected readonly huidigAdres = this.dialogData.huidigAdres
   private readonly notificationService = inject(NotificationService)
   private readonly clientService = inject(ClientService)
+  protected readonly strings = inject(StringsService).getStrings()
 
   adresgegevensForm: FormGroup = this.formBuilder.group(
     {
@@ -94,16 +96,15 @@ export class AdresgegevensBewerkenModalComponent {
           this.dialogRef.close(true)
         },
         error: () => {
-          this.notificationService.error('Er is een fout opgetreden bij het opslaan van de adresgegevens. Probeer het later opnieuw.')
+          this.notificationService.error(this.strings.algemeen.adresgegevensBewerken.notifications.saveError)
         },
       })
   }
 
   private bepaalSuccesmelding(tijdelijkAdresDto: TijdelijkAdresDto): string {
-    return (
-      'Adresgegevens succesvol opgeslagen.' +
-      (isEinddatumVerlopen(tijdelijkAdresDto.einddatum) ? ' Dit tijdelijke adres heeft een einddatum in het verleden en is daarom niet zichtbaar in het overzicht.' : '')
-    )
+    return isEinddatumVerlopen(tijdelijkAdresDto.einddatum)
+      ? this.strings.algemeen.adresgegevensBewerken.notifications.saveSuccessMetVerlopen
+      : this.strings.algemeen.adresgegevensBewerken.notifications.saveSuccess
   }
 
   naarTijdelijkAdresDto(): TijdelijkAdresDto {

@@ -28,7 +28,7 @@ import jakarta.persistence.Query;
 
 import lombok.RequiredArgsConstructor;
 
-import nl.rivm.screenit.batch.jobs.cervix.oudenietverstuurdezas.CervixOudeNietIngestuurdeZasConstants;
+import nl.rivm.screenit.batch.jobs.cervix.AbstractCervixProjectGroepWriter;
 import nl.rivm.screenit.batch.jobs.helpers.BaseSqlScrollableResultReader;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.service.OrganisatieParameterService;
@@ -51,9 +51,9 @@ public class CervixOudeNietIngestuurdeZasReader extends BaseSqlScrollableResultR
 	private Long getProjectId()
 	{
 		var context = getExecutionContext();
-		if (!context.containsKey(CervixOudeNietIngestuurdeZasConstants.PROJECT_GROEP_ID))
+		if (!context.containsKey(AbstractCervixProjectGroepWriter.PROJECT_GROEP_ID))
 		{
-			return context.getLong(CervixOudeNietIngestuurdeZasConstants.PROJECT_ID);
+			return context.getLong(AbstractCervixProjectGroepWriter.PROJECT_ID);
 		}
 		throw new IllegalStateException();
 	}

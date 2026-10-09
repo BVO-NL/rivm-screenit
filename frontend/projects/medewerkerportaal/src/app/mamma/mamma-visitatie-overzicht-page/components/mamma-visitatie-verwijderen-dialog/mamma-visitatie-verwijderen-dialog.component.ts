@@ -23,6 +23,7 @@ import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { MammaVisitatieDto } from '@shared/types/mamma/dto/visitatie/mamma-visitatie.dto'
 import { DsButtonComponent } from '@topicus-rgp-ds/web'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-mamma-visitatie-verwijderen-dialog',
@@ -35,6 +36,7 @@ import { DsButtonComponent } from '@topicus-rgp-ds/web'
   `,
 })
 export class MammaVisitatieVerwijderenDialogComponent {
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly visitatie = inject(DIALOG_DATA) as MammaVisitatieDto
   private readonly dialogRef = inject(DialogRef)
 

@@ -25,6 +25,7 @@ import java.util.Collections;
 
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.batch.jobs.cervix.AbstractCervixProjectGroepWriter;
 import nl.rivm.screenit.batch.jobs.helpers.BaseLogListener;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.SortState;
@@ -34,11 +35,10 @@ import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.model.project.GroepSelectieType;
 import nl.rivm.screenit.model.project.Project;
-import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.model.project.ProjectStatus;
 import nl.rivm.screenit.model.project.ProjectType;
+import nl.rivm.screenit.repository.algemeen.ProjectGroepRepository;
 import nl.rivm.screenit.service.BaseProjectService;
-import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +57,7 @@ public class CervixVerlateDeelnameCovidJobListener extends BaseLogListener
 	private BaseProjectService projectService;
 
 	@Autowired
-	private HibernateService hibernateService;
+	private ProjectGroepRepository projectGroepRepository;
 
 	private String projectNaam;
 
@@ -89,7 +89,7 @@ public class CervixVerlateDeelnameCovidJobListener extends BaseLogListener
 			}
 			if (project != null)
 			{
-				jobExecution.getExecutionContext().put(CervixVerlateDeelnameCovidConstants.PROJECT_ID, project.getId());
+				jobExecution.getExecutionContext().put(AbstractCervixProjectGroepWriter.PROJECT_ID, project.getId());
 			}
 		}
 	}
@@ -126,14 +126,14 @@ public class CervixVerlateDeelnameCovidJobListener extends BaseLogListener
 		{
 			String melding;
 			var executionContext = jobExecution.getExecutionContext();
-			if (executionContext.containsKey(CervixVerlateDeelnameCovidConstants.PROJECT_ID) && StringUtils.isNotBlank(projectNaam))
+			if (executionContext.containsKey(AbstractCervixProjectGroepWriter.PROJECT_ID) && StringUtils.isNotBlank(projectNaam))
 			{
 				melding = "Geen clienten gevonden. Geen herdrukbrieven aangemaakt voor project '" + projectNaam + "'";
 				event.setLevel(Level.WARNING);
-				if (executionContext.containsKey(CervixVerlateDeelnameCovidConstants.PROJECT_GROEP_ID))
+				if (executionContext.containsKey(AbstractCervixProjectGroepWriter.PROJECT_GROEP_ID))
 				{
-					var groepId = executionContext.getLong(CervixVerlateDeelnameCovidConstants.PROJECT_GROEP_ID);
-					var groep = hibernateService.get(ProjectGroep.class, groepId);
+					var groepId = executionContext.getLong(AbstractCervixProjectGroepWriter.PROJECT_GROEP_ID);
+					var groep = projectGroepRepository.findById(groepId).orElse(null);
 					if (groep != null)
 					{
 						if (groep.getPopulatie() > 0)
@@ -142,7 +142,6 @@ public class CervixVerlateDeelnameCovidJobListener extends BaseLogListener
 							event.setLevel(Level.INFO);
 						}
 						groep.setActief(false);
-						hibernateService.saveOrUpdate(groep);
 					}
 					else
 					{

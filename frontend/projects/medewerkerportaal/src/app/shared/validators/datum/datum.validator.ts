@@ -23,6 +23,7 @@ import { addDays, addMonths, addYears, isAfter, isBefore, isValid, parse, startO
 import { formatNLDate, isValideTijd, normaliseerNaarDate, parseDate } from '@shared/utils/date-utils'
 import { TIME_FORMAT } from '@shared/constants'
 import { NotificationService } from '@shared/services/notification/notification.service'
+import { ALGEMEEN_STRINGS as algemeen } from '@shared/strings'
 
 export const datumInVerledenValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   if (!control.dirty) {
@@ -34,7 +35,16 @@ export const datumInVerledenValidator: ValidatorFn = (control: AbstractControl):
     return null
   }
 
-  return startOfDay(datum) < startOfDay(new Date()) ? { datumInVerleden: 'De datum ligt in het verleden. Dit is niet toegestaan.' } : null
+  return startOfDay(datum) < startOfDay(new Date()) ? { datumInVerleden: algemeen.errors.datumInVerleden } : null
+}
+
+export const datumTijdInVerledenValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const datumTijd = normaliseerNaarDate(control.value)
+  if (!datumTijd || !isValid(datumTijd)) {
+    return null
+  }
+
+  return isBefore(datumTijd, new Date()) ? { datumTijdInVerleden: algemeen.errors.datumTijdInVerleden } : null
 }
 
 export const valideDatumValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -42,7 +52,7 @@ export const valideDatumValidator: ValidatorFn = (control: AbstractControl): Val
     return null
   }
   const datum = normaliseerNaarDate(control.value)
-  return datum && isValid(datum) ? null : { valideDatum: 'De ingevoerde datum is niet valide.' }
+  return datum && isValid(datum) ? null : { valideDatum: algemeen.errors.invalidDate }
 }
 
 export const createDatumTijdInVerledenValidator =
@@ -70,7 +80,7 @@ export const createDatumTijdInVerledenValidator =
       invalid = datum < new Date()
     }
 
-    const validatieBericht = 'Datum en/of tijd liggen in het verleden. Dit is niet toegestaan.'
+    const validatieBericht = algemeen.errors.datumEnOfTijdInVerleden
     const validatieError = invalid ? { datumTijdInVerleden: validatieBericht } : null
     toonOfLeegNotificaties(validatieError == null, validatieBericht, notificationService)
     return validatieError
@@ -90,7 +100,7 @@ export const createMinimumDatumValidator =
     }
 
     const peilDatum = addDays(controleDatum, plusDagen)
-    return isBefore(ingevoerdeDatum, peilDatum) ? { minimumDatum: `De datum mag niet voor ${formatNLDate(peilDatum)} liggen` } : null
+    return isBefore(ingevoerdeDatum, peilDatum) ? { minimumDatum: algemeen.errors.minimumDatum(formatNLDate(peilDatum)) } : null
   }
 
 export const createMaximumDatumValidator =
@@ -107,7 +117,7 @@ export const createMaximumDatumValidator =
     }
 
     const peilDatum = addMonths(controleDatum, maxMaanden)
-    return isAfter(ingevoerdeDatum, peilDatum) ? { maximumDatum: `De datum mag niet na ${formatNLDate(peilDatum)} liggen` } : null
+    return isAfter(ingevoerdeDatum, peilDatum) ? { maximumDatum: algemeen.errors.maximumDatum(formatNLDate(peilDatum)) } : null
   }
 
 export const createStartEindTijdValidator = (startVeld: string, eindVeld: string, notificationService?: NotificationService): ValidatorFn => {
@@ -122,7 +132,7 @@ export const createStartEindTijdValidator = (startVeld: string, eindVeld: string
     const startDatum = parse(startTijd, TIME_FORMAT, new Date())
     const eindDatum = parse(eindTijd, TIME_FORMAT, new Date())
 
-    const validatieBericht = 'De starttijd moet voor de eindtijd liggen'
+    const validatieBericht = algemeen.errors.veldVoorVeld(algemeen.labels.starttijd, algemeen.labels.eindtijd)
     const validatieError = eindDatum <= startDatum ? { startEindTijd: validatieBericht } : null
     toonOfLeegNotificaties(validatieError == null, validatieBericht, notificationService)
     return validatieError
@@ -132,7 +142,7 @@ export const createStartEindTijdValidator = (startVeld: string, eindVeld: string
 export const createStartEindDatumValidator = (
   startVeld: string,
   eindVeld: string,
-  validatieBericht = 'De startdatum moet voor de einddatum liggen',
+  validatieBericht = algemeen.errors.veldVoorVeld(algemeen.labels.begindatum, algemeen.labels.einddatum),
   notificationService?: NotificationService,
 ): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {

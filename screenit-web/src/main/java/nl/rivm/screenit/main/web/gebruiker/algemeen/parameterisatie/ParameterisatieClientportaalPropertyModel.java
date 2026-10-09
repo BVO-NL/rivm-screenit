@@ -27,8 +27,8 @@ import java.util.Map;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.model.Parameterisatie;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.ChainingModel;
 import org.apache.wicket.model.IComponentInheritedModel;

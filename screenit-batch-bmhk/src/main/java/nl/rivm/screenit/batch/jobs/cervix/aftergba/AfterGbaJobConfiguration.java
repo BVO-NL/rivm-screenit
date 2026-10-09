@@ -56,7 +56,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Step deelnamemodusBijwerkenStep(CervixDeelnamemodusReader reader, CervixDeelnamemodusWriter writer)
 	{
 		return new StepBuilder("deelnamemodusBijwerkenStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -66,7 +67,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Step retourzendingStep(RetourzendingReader reader, RetourzendingWriter writer)
 	{
 		return new StepBuilder("retourzendingStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

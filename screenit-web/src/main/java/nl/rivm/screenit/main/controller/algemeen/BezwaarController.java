@@ -95,8 +95,7 @@ public class BezwaarController extends BaseController
 	@Operation(summary = "Herstel een BRP-bezwaar", description = "Trekt een bestaand BRP-bezwaar van een client in op basis van BSN, geboortedatum en een PDF-bestand.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "BRP-bezwaar succesvol hersteld"),
-		@ApiResponse(responseCode = "400", description = "Ongeldige invoer opgegeven"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "400", description = "Ongeldige invoer opgegeven")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_BEZWAAR_BRP, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -144,8 +143,7 @@ public class BezwaarController extends BaseController
 	@GetMapping("/clienten")
 	@Operation(summary = "Zoek clienten met BRP-bezwaar", description = "Zoekt clienten met een actief BRP-bezwaar op basis van BSN en geboortedatum.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Clienten met BRP-bezwaar succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Clienten met BRP-bezwaar succesvol opgehaald")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_BEZWAAR_BRP, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -161,8 +159,7 @@ public class BezwaarController extends BaseController
 	@Operation(summary = "Vervang document van onderzoeksresultaten actie", description = "Vervangt de ondergetekende brief die hoort bij het onderzoeksresultaten actie")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Brief id van nieuwe getekende brief"),
-		@ApiResponse(responseCode = "400", description = "Ongeldige invoer opgegeven"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "400", description = "Ongeldige invoer opgegeven")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.VERVANGEN_DOCUMENTEN, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -184,8 +181,7 @@ public class BezwaarController extends BaseController
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Bezwaarbrief succesvol vervangen"),
 		@ApiResponse(responseCode = "400", description = "Ongeldige invoer opgegeven"),
-		@ApiResponse(responseCode = "404", description = "Bezwaarmoment niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Bezwaarmoment niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.VERVANGEN_DOCUMENTEN, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -210,8 +206,7 @@ public class BezwaarController extends BaseController
 	@Operation(summary = "Verstuur de bevestigingsbrieven nogmaals", description = "Maakt de oorspronkelijke bevestigingsbrieven van de onderzoeksresultaten actie opnieuw aan")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Bevestigingsbrieven succesvol opnieuw aangemaakt"),
-		@ApiResponse(responseCode = "404", description = "Onderzoeksresultaten actie niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Onderzoeksresultaten actie niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_BEZWAAR, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -231,8 +226,7 @@ public class BezwaarController extends BaseController
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Bevestigingsbrieven succesvol opnieuw aangemaakt"),
 		@ApiResponse(responseCode = "401", description = "Niet gemachtigd om de bevestigingsbrieven opnieuw te versturen"),
-		@ApiResponse(responseCode = "404", description = "Bezwaarmoment niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Bezwaarmoment niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_BEZWAAR, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
@@ -254,8 +248,7 @@ public class BezwaarController extends BaseController
 	@Operation(summary = "Activeer een tegengehouden bezwaarbrief", description = "Zorgt dat een tegengehouden bezwaarbrief niet meer tegengehouden wordt zodat deze opnieuw verstuurd wordt")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Brief wordt niet meer tegengehouden"),
-		@ApiResponse(responseCode = "404", description = "Brief niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Brief niet gevonden")
 	})
 	@SecurityConstraint(actie = Actie.AANPASSEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })

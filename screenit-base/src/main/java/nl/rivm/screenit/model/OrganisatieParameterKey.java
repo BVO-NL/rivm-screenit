@@ -59,6 +59,10 @@ public enum OrganisatieParameterKey
 
 	CERVIX_PROJECT_OUDE_ZAS(OrganisatieType.RIVM, String.class, null, Bevolkingsonderzoek.CERVIX),
 
+	CERVIX_CAMBIOS_LABORATORIUM(OrganisatieType.BMHK_LABORATORIUM, Boolean.class, null, Bevolkingsonderzoek.CERVIX),
+
+	CERVIX_PROJECT_CAMBIOS(OrganisatieType.RIVM, String.class, null, Bevolkingsonderzoek.CERVIX),
+
 	CERVIX_ORDER_NIEUWE_STIJL(OrganisatieType.BMHK_LABORATORIUM, Boolean.class, null, Bevolkingsonderzoek.CERVIX),
 
 	CERVIX_HPV_ORDER_NIEUW(OrganisatieType.BMHK_LABORATORIUM, Boolean.class, null, Bevolkingsonderzoek.CERVIX),

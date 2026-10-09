@@ -46,7 +46,7 @@ import nl.rivm.screenit.repository.algemeen.ProjectBriefActieRepository;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.util.ProjectUtil;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 

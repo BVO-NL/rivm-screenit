@@ -30,8 +30,8 @@ import nl.rivm.screenit.batch.VrijSlotComparator;
 import nl.rivm.screenit.model.colon.dto.VrijSlot;
 import nl.rivm.screenit.util.BigDecimalUtil;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ai.timefold.solver.core.api.domain.common.PlanningId;
 import ai.timefold.solver.core.api.domain.entity.PlanningEntity;

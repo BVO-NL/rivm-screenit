@@ -37,6 +37,7 @@ import { NotificationService } from '@shared/services/notification/notification.
 import { filter, switchMap, take } from 'rxjs'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   imports: [BaseDialogComponent, BezwaarLijstComponent, DsButtonComponent, EnumLabelPipe, BrievenLijstComponent, SingleFileSelectorComponent, ReactiveFormsModule],
@@ -59,6 +60,7 @@ export class BezwaarMomentDialogComponent {
   private readonly notificatieService = inject(NotificationService)
   private readonly dialogService = inject(Dialog)
 
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly briefActies = signal<BriefActie[]>((this.data.bezwaarMoment?.briefActies ?? []).filter((actie) => actie !== BriefActie.TEMPLATE_INZIEN))
   protected readonly brieven = signal<BriefDto[]>(this.sorteerOpCreatieDatum(this.data.gebeurtenis.brieven))
   protected readonly briefActieLabels = briefActieLabels
@@ -175,7 +177,7 @@ export class BezwaarMomentDialogComponent {
     }
 
     this.dialogService
-      .open(ConfirmationDialogComponent, { data: { title: 'Bevestiging', body: 'Weet u zeker dat u het document wilt vervangen?' } })
+      .open(ConfirmationDialogComponent, { data: { title: 'Bevestiging', body: 'Weet u zeker dat u het document wilt vervangen?' }, hasBackdrop: true })
       .closed.pipe(
         take(1),
         filter((bevestiging: unknown) => bevestiging === true),

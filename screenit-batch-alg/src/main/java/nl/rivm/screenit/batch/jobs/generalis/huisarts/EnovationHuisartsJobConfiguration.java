@@ -53,7 +53,8 @@ public class EnovationHuisartsJobConfiguration extends AbstractJobConfiguration
 	public Step huisartsInfoUpdateStep(EnovationHuisartsReader reader, EnovationHuisartsWriter writer)
 	{
 		return new StepBuilder("huisartsInfoUpdateStep", repository)
-			.<Object[], Object[]> chunk(10, transactionManager)
+			.<Object[], Object[]> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

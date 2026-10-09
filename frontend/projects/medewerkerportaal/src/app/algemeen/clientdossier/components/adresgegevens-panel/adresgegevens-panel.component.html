@@ -22,29 +22,29 @@
   <ng-template ds-card-header-content *appAutorisatie="adresgegevensWijzigenConstraint">
     <button ds-button-tertiary (click)="openAdresgegevensBewerkenModal()" data-testid="bewerken_btn">
       <ds-icon [icon]="faPencil"/>
-      Bewerken
+      {{ strings.algemeen.buttons.bewerken }}
     </button>
   </ng-template>
   @if (client(); as client) {
     <div class="client-gegevens-lijst">
       <div class="client-gegevens-rij">
-        <span class="client-gegevens-label">Straatnaam en huisnummer</span>
+        <span class="client-gegevens-label">{{ strings.algemeen.labels.straatnaamHuisnummer }}</span>
         <span class="client-gegevens-waarde">{{ client.volledigeAdres | legeWaarde }}</span>
       </div>
       <div class="client-gegevens-rij">
-        <span class="client-gegevens-label">Postcode</span>
+        <span class="client-gegevens-label">{{ strings.algemeen.labels.postcode }}</span>
         <span class="client-gegevens-waarde">{{ client.postcode }}</span>
       </div>
       <div class="client-gegevens-rij">
-        <span class="client-gegevens-label">Woonplaats</span>
+        <span class="client-gegevens-label">{{ strings.algemeen.labels.plaats }}</span>
         <span class="client-gegevens-waarde">{{ client.plaats }}</span>
       </div>
       <div class="client-gegevens-rij">
-        <span class="client-gegevens-label">Tijdelijk adres</span>
+        <span class="client-gegevens-label">{{ strings.algemeen.labels.tijdelijkAdres }}</span>
         <span class="client-gegevens-waarde">{{ client.tijdelijkAdresVolledig | legeWaarde }}</span>
       </div>
       <div class="client-gegevens-rij">
-        <span class="client-gegevens-label">Postadres</span>
+        <span class="client-gegevens-label">{{ strings.algemeen.labels.postAdres }}</span>
         <span class="client-gegevens-waarde">{{ client.postadres | legeWaarde }}</span>
       </div>
     </div>

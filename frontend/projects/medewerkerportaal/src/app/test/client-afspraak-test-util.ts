@@ -31,6 +31,7 @@ export const maakClientAfspraak = (overrides: Partial<ClientAfspraakDto> = {}): 
     adres: maakAdres({ straat: 'Utrechtseweg', huisnummer: 1, postcode: '3511 AA', plaats: 'Utrecht' }),
   },
   locatieBeschrijving: null,
+  verlopenZonderConclusie: false,
   ...overrides,
 })
 
@@ -43,6 +44,7 @@ export const maakColonAfspraak = (overrides: Partial<ColonIntakeafspraakDto> = {
     adres: maakAdres({ straat: 'Utrechtseweg', huisnummer: 1, postcode: '3511 AA', plaats: 'Utrecht' }),
   },
   locatieBeschrijving: null,
+  verlopenZonderConclusie: false,
   digitaal: false,
   ...overrides,
 })

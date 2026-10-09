@@ -25,11 +25,16 @@ import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
 
+import nl.rivm.screenit.PreferenceKey;
+import nl.rivm.screenit.main.dto.algemeen.AfspraakActie;
+import nl.rivm.screenit.main.dto.algemeen.AfspraakDto;
 import nl.rivm.screenit.main.exception.EntityNietGevondenException;
+import nl.rivm.screenit.main.mappers.colon.ColonAfspraakMapper;
 import nl.rivm.screenit.main.service.colon.ColonIntakeafspraakService;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActieType;
@@ -41,8 +46,10 @@ import nl.rivm.screenit.model.colon.WerklijstIntakeFilter;
 import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamer;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
+import nl.rivm.screenit.model.colon.enums.ColonIntakeafspraakType;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.repository.colon.ColonIntakeAfspraakRepository;
 import nl.rivm.screenit.repository.colon.ColonIntakelocatieRepository;
 import nl.rivm.screenit.service.ClientContactService;
@@ -52,6 +59,7 @@ import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.service.colon.PlanningService;
 import nl.rivm.screenit.specification.colon.ColonIntakeAfspraakSpecification;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.PersoonUtil;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -62,6 +70,8 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class ColonIntakeafspraakServiceImpl implements ColonIntakeafspraakService
 {
+	private static final List<ColonAfspraakStatus> WIJZIGBARE_STATUSSEN = List.of(ColonAfspraakStatus.GEPLAND, ColonAfspraakStatus.UITGEVOERD);
+
 	private final ColonIntakeAfspraakRepository intakeAfspraakRepository;
 
 	private final ColonIntakelocatieRepository intakelokatieRepository;
@@ -70,11 +80,15 @@ public class ColonIntakeafspraakServiceImpl implements ColonIntakeafspraakServic
 
 	private final OrganisatieParameterService organisatieParameterService;
 
+	private final ClientContactService clientContactService;
+
 	private final ICurrentDateSupplier currentDateSupplier;
 
 	private final ColonBaseAfspraakService baseAfspraakService;
 
-	private final ClientContactService clientContactService;
+	private final ColonAfspraakMapper afspraakMapper;
+
+	private final SimplePreferenceService preferenceService;
 
 	private Specification<ColonIntakeAfspraak> getSpecification(ColonIntakelocatie intakelocatie, WerklijstIntakeFilter zoekObject)
 	{
@@ -118,12 +132,55 @@ public class ColonIntakeafspraakServiceImpl implements ColonIntakeafspraakServic
 	public ColonIntakeAfspraak verplaatsAfspraak(Client client, VrijSlotZonderKamer gekozenVrijSlotZonderKamer, LocalDateTime datumTijdBuitenRooster, BriefType briefType,
 		boolean briefTegenhouden, boolean verwezenMedischeRedenenDoorInfolijn, String opmerking, OrganisatieMedewerker organisatieMedewerker)
 	{
+		controleerClientNietVertrokkenUitNederland(client);
+
 		var nieuweAfspraak = maakNieuweAfspraak(client, gekozenVrijSlotZonderKamer, datumTijdBuitenRooster);
 		var buitenRooster = datumTijdBuitenRooster != null;
 
 		baseAfspraakService.verplaatsAfspraak(nieuweAfspraak, organisatieMedewerker, briefType, briefTegenhouden, !buitenRooster, verwezenMedischeRedenenDoorInfolijn);
 
 		clientContactService.maakClientContact(client, currentDateSupplier.getLocalDateTime(), List.of(ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN),
+			opmerking, organisatieMedewerker);
+
+		return nieuweAfspraak;
+	}
+
+	private void controleerClientNietVertrokkenUitNederland(Client client)
+	{
+		if (PersoonUtil.isVertrokkenUitNederland(client.getPersoon()))
+		{
+			throw new IllegalStateException("error.colon.intakeafspraak.vertrokken.uit.nederland");
+		}
+	}
+
+	@Override
+	public boolean ligtInSpoedperiode(VrijSlotZonderKamer afspraakslot)
+	{
+		if (afspraakslot == null || afspraakslot.getStartTijd() == null)
+		{
+			return false;
+		}
+
+		var startDatum = DateUtil.toLocalDate(afspraakslot.getStartTijd());
+		var huidigeDatum = currentDateSupplier.getLocalDate();
+		var intakeNietWijzigbaar = preferenceService.getInteger(PreferenceKey.INTAKE_NIET_WIJZIGBAAR.name());
+		var laatsteSpoedDatum = DateUtil.plusWerkdagen(huidigeDatum, intakeNietWijzigbaar - 1);
+		return !startDatum.isBefore(huidigeDatum) && !startDatum.isAfter(laatsteSpoedDatum);
+	}
+
+	@Override
+	@Transactional
+	public ColonIntakeAfspraak maakAfspraak(Client client, VrijSlotZonderKamer gekozenVrijSlotZonderKamer, LocalDateTime datumTijdBuitenRooster, BriefType briefType,
+		boolean briefTegenhouden, String opmerking, OrganisatieMedewerker organisatieMedewerker)
+	{
+		controleerClientNietVertrokkenUitNederland(client);
+
+		var nieuweAfspraak = maakNieuweAfspraak(client, gekozenVrijSlotZonderKamer, datumTijdBuitenRooster);
+		var buitenRooster = datumTijdBuitenRooster != null;
+
+		baseAfspraakService.maakNieuweAfspraak(client, nieuweAfspraak, briefTegenhouden, !buitenRooster, briefType, organisatieMedewerker);
+
+		clientContactService.maakClientContact(client, currentDateSupplier.getLocalDateTime(), List.of(ClientContactActieType.COLON_NIEUWE_AFSPRAAK_AANMAKEN),
 			opmerking, organisatieMedewerker);
 
 		return nieuweAfspraak;
@@ -164,6 +221,7 @@ public class ColonIntakeafspraakServiceImpl implements ColonIntakeafspraakServic
 		nieuweAfspraak.setGewijzigdOp(currentDateSupplier.getLocalDateTime());
 		nieuweAfspraak.setAangemaaktOp(currentDateSupplier.getLocalDateTime());
 		nieuweAfspraak.setStatus(ColonAfspraakStatus.GEPLAND);
+		nieuweAfspraak.setIntakeafspraakType(ColonIntakeafspraakType.OP_LOCATIE);
 
 		if (gekozenVrijSlotZonderKamer.getAfstand() != null)
 		{
@@ -191,5 +249,94 @@ public class ColonIntakeafspraakServiceImpl implements ColonIntakeafspraakServic
 		}
 
 		return nieuweAfspraak;
+	}
+
+	@Override
+	@Transactional
+	public void annuleerAfspraak(Long afspraakId, boolean briefTegenhouden, String notitie, OrganisatieMedewerker organisatieMedewerker)
+	{
+		var afspraak = getAfTeZeggenAfspraak(afspraakId);
+		var client = afspraak.getClient();
+
+		baseAfspraakService.annuleerAfspraak(afspraak, organisatieMedewerker, ColonAfspraakStatus.GEANNULEERD_VIA_INFOLIJN, briefTegenhouden);
+
+		clientContactService.maakClientContact(client, currentDateSupplier.getLocalDateTime(), List.of(ClientContactActieType.COLON_AFSPRAAK_WIJZIGEN_AFZEGGEN),
+			notitie, organisatieMedewerker);
+	}
+
+	private ColonIntakeAfspraak getAfTeZeggenAfspraak(Long afspraakId)
+	{
+		var afspraak = intakeAfspraakRepository.findById(afspraakId)
+			.orElseThrow(() -> new EntityNietGevondenException("Intakeafspraak", afspraakId));
+		if (afspraak.getStatus() != ColonAfspraakStatus.GEPLAND)
+		{
+			throw new EntityNietGevondenException("Geplande intakeafspraak", afspraakId);
+		}
+		return afspraak;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<AfspraakDto> getAfspraken(Client client)
+	{
+		return intakeAfspraakRepository.findAllByClientIdAndStatusInOrderByVanafDesc(client.getId(), WIJZIGBARE_STATUSSEN).stream()
+			.filter(this::isWijzigbaarOfDoorverwezen)
+			.map(afspraak -> afspraakMapper.colonAfspraakToAfspraakDto(afspraak, organisatieParameterService, currentDateSupplier))
+			.toList();
+	}
+
+	private boolean isWijzigbaarOfDoorverwezen(ColonIntakeAfspraak afspraak)
+	{
+		return baseAfspraakService.magWijzigenAfzeggen(afspraak) || baseAfspraakService.heeftOnafgerondeVerwijzingOmMedischeRedenen(afspraak);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<AfspraakActie> getAfspraakActies(Client client, Long afspraakId)
+	{
+		var colonDossier = client.getColonDossier();
+		var afspraak = getAfspraakOfNull(client, afspraakId);
+		var heeftOnafgerondeVerwijzingOmMedischeRedenen = baseAfspraakService.heeftOnafgerondeVerwijzingOmMedischeRedenen(afspraak);
+
+		List<AfspraakActie> acties = new ArrayList<>();
+		if (colonDossier != null && colonDossier.getLaatsteScreeningRonde() != null && baseAfspraakService.magNieuweAfspraakMaken(client))
+		{
+			acties.add(AfspraakActie.MAKEN);
+		}
+
+		if (afspraak == null || !isWijzigbaarOfDoorverwezen(afspraak))
+		{
+			return acties;
+		}
+
+		var isVertrokkenUitNederland = PersoonUtil.isVertrokkenUitNederland(client.getPersoon());
+
+		if (!heeftOnafgerondeVerwijzingOmMedischeRedenen)
+		{
+			acties.add(AfspraakActie.AFZEGGEN);
+			if (!isVertrokkenUitNederland)
+			{
+				acties.add(AfspraakActie.VERPLAATSEN);
+			}
+		}
+		if (!isVertrokkenUitNederland)
+		{
+			acties.add(AfspraakActie.LOCATIE_WIJZIGEN);
+		}
+		return acties;
+	}
+
+	private ColonIntakeAfspraak getAfspraakOfNull(Client client, Long afspraakId)
+	{
+		if (afspraakId == null)
+		{
+			return null;
+		}
+		var afspraak = intakeAfspraakRepository.findById(afspraakId).orElseThrow(() -> new EntityNietGevondenException("Intakeafspraak", afspraakId));
+		if (!client.getId().equals(afspraak.getClient().getId()))
+		{
+			throw new EntityNietGevondenException("Intakeafspraak", afspraakId);
+		}
+		return afspraak;
 	}
 }

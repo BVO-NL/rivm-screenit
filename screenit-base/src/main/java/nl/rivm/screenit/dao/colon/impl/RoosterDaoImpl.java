@@ -24,6 +24,7 @@ package nl.rivm.screenit.dao.colon.impl;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -260,12 +261,12 @@ public class RoosterDaoImpl implements RoosterDao
 					   JOIN colon.afspraakslot afs_sub ON afs_sub.id = ts_sub.id \
 					   JOIN colon.intakekamer k_sub ON ts_sub.kamer = k_sub.id AND k_sub.actief = true \
 					   WHERE ts_sub.type != 'BLOKKADE' \
-					   AND NOT EXISTS(SELECT 1 FROM colon.intakeafspraak ia_sub WHERE ia_sub.afspraakslot = afs_sub.id AND (ia_sub.status = :status1 OR ia_sub.status = :status2)) \
+					   AND NOT EXISTS(SELECT 1 FROM colon.intakeafspraak ia_sub WHERE ia_sub.afspraakslot = afs_sub.id AND (ia_sub.status = :status1 OR ia_sub.status = :status2)%s) \
 					   AND NOT EXISTS(SELECT 1 FROM blokkades b_sub WHERE b_sub.kamer = ts_sub.kamer AND b_sub.vanaf < ts_sub.tot AND b_sub.tot > ts_sub.vanaf) \
 					   AND DATE_TRUNC('week', ts_sub.vanaf) >= DATE_TRUNC('week', CAST(:vanaf AS TIMESTAMP)) \
 					   AND DATE_TRUNC('week', ts_sub.vanaf) <= DATE_TRUNC('week', CAST(:totEnMet AS TIMESTAMP) - INTERVAL '1 day') \
 					   GROUP BY k_sub.intakelocatie, DATE_TRUNC('week', ts_sub.vanaf) \
-					)""");
+					)""".formatted(huidigeAfspraakClause("ia_sub", filter.getHuidigAfspraakId())));
 			}
 		}
 
@@ -314,9 +315,12 @@ public class RoosterDaoImpl implements RoosterDao
 
 			if (!filter.isDigitaleAfspraak())
 			{
-				querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2))");
+				querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2)")
+					.append(huidigeAfspraakClause("ia", filter.getHuidigAfspraakId()))
+					.append(")");
 				params.put("status1", ColonAfspraakStatus.GEPLAND.name());
 				params.put("status2", ColonAfspraakStatus.UITGEVOERD.name());
+				voegHuidigeAfspraakIdToe(params, filter.getHuidigAfspraakId());
 				querySB.append(" and not exists(select 1 from blokkades b where b.kamer=ts.kamer and b.vanaf<ts.tot and b.tot>ts.vanaf) ");
 				querySB.append(" and ts.vanaf>:vanaf and ts.vanaf<:totEnMet");
 			}
@@ -356,6 +360,7 @@ public class RoosterDaoImpl implements RoosterDao
 			{
 				params.put("status1", ColonAfspraakStatus.GEPLAND.name());
 				params.put("status2", ColonAfspraakStatus.UITGEVOERD.name());
+				voegHuidigeAfspraakIdToe(params, filter.getHuidigAfspraakId());
 				querySB.append(
 					" and exists(select 1 from algemeen.organisatie_parameter op where op.organisatie = il.id and op.key = 'COLON_DIGITALE_INTAKE_ENABLED' and lower(op.value) = 'true')");
 
@@ -409,24 +414,47 @@ public class RoosterDaoImpl implements RoosterDao
 		return query;
 	}
 
+	private String huidigeAfspraakClause(String afspraakAlias, Long huidigeAfspraakId)
+	{
+
+		return huidigeAfspraakId != null ? " and " + afspraakAlias + ".id != :huidigeAfspraakId" : "";
+	}
+
+	private void voegHuidigeAfspraakIdToe(Map<String, Object> params, Long huidigeAfspraakId)
+	{
+		if (huidigeAfspraakId != null)
+		{
+			params.put("huidigeAfspraakId", huidigeAfspraakId);
+		}
+	}
+
 	@Override
 	public List<ColonIntakekamer> getKamers(LocalDateTime startTijd, Long intakelocatieId)
+	{
+		return getKamers(startTijd, intakelocatieId, null);
+	}
+
+	@Override
+	public List<ColonIntakekamer> getKamers(LocalDateTime startTijd, Long intakelocatieId, Long huidigeAfspraakId)
 	{
 		var querySB = new StringBuilder();
 
 		querySB.append("select {k.*}");
 
-//2ee0e105-a0c4-4a43-b610-f2739cbc0ce7
+//85b5a7a8-59ff-49df-8965-f436ee015213
 		querySB.append(" from colon.afspraakslot afs");
 		querySB.append(" join colon.tijdslot ts on afs.id=ts.id");
 		querySB.append(" join colon.intakekamer k on ts.kamer=k.id");
 
-//2ee0e105-a0c4-4a43-b610-f2739cbc0ce7
+//85b5a7a8-59ff-49df-8965-f436ee015213
 		var params = new HashMap<String, Object>();
 		querySB.append(" and k.actief = true");
-		querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2))");
+		querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2)")
+			.append(huidigeAfspraakClause("ia", huidigeAfspraakId))
+			.append(")");
 		params.put("status1", ColonAfspraakStatus.GEPLAND.name());
 		params.put("status2", ColonAfspraakStatus.UITGEVOERD.name());
+		voegHuidigeAfspraakIdToe(params, huidigeAfspraakId);
 		querySB.append(
 			" and not EXISTS(select b.id from colon.tijdslot b where b.type='BLOKKADE' "
 				+ "and b.kamer=ts.kamer and b.vanaf<ts.tot and b.tot>ts.vanaf)");

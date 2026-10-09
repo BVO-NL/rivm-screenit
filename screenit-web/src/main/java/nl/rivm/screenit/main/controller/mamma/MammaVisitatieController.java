@@ -82,8 +82,7 @@ public class MammaVisitatieController
 	@PostMapping(value = "/zoeken")
 	@Operation(summary = "Zoek visitaties", description = "Zoekt visitaties op basis van filtercriteria.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Visitaties succesvol gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Visitaties succesvol gevonden")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,
@@ -110,8 +109,7 @@ public class MammaVisitatieController
 	@Operation(summary = "Zoek visitaties op omschrijving", description = "Geeft visitaties terug met een omschrijving die past bij de opgegeven waarde.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Visitaties succesvol opgehaald"),
-		@ApiResponse(responseCode = "400", description = "De opgegeven waarde is ongeldig"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "400", description = "De opgegeven waarde is ongeldig")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,
@@ -134,8 +132,7 @@ public class MammaVisitatieController
 	@Operation(summary = "Maak een visitatie aan", description = "Maakt een nieuwe visitatie aan met metadata en optionele bijlagen.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Visitatie succesvol aangemaakt"),
-		@ApiResponse(responseCode = "413", description = "Bestand is te groot om te uploaden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "413", description = "Bestand is te groot om te uploaden")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,
@@ -157,8 +154,7 @@ public class MammaVisitatieController
 	@Operation(summary = "Genereer een insteltechniek-visitatielijst", description = "Genereert een visitatielijst voor insteltechniek op basis van metadata en een optioneel bestand.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Visitatielijst succesvol gegenereerd"),
-		@ApiResponse(responseCode = "413", description = "Bestand is te groot om te uploaden"),
-		@ApiResponse(responseCode = "500", description = "Genereren van de visitatielijst is mislukt")
+		@ApiResponse(responseCode = "413", description = "Bestand is te groot om te uploaden")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,
@@ -188,8 +184,7 @@ public class MammaVisitatieController
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Visitatie succesvol bijgewerkt"),
 		@ApiResponse(responseCode = "400", description = "Id in pad en metadata komen niet overeen"),
-		@ApiResponse(responseCode = "413", description = "Bestand is te groot om te uploaden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "413", description = "Bestand is te groot om te uploaden")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,
@@ -218,8 +213,7 @@ public class MammaVisitatieController
 	@Operation(summary = "Verwijder een visitatie", description = "Verwijdert een visitatie op basis van het opgegeven id.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Visitatie succesvol verwijderd"),
-		@ApiResponse(responseCode = "404", description = "Visitatie niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Visitatie niet gevonden")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,

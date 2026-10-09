@@ -21,7 +21,7 @@ package nl.rivm.screenit.model.berichten;
  * =========================LICENSE_END==================================
  */
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ca.uhn.hl7v2.AcknowledgmentCode;
 import ca.uhn.hl7v2.model.Message;

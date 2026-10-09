@@ -70,7 +70,7 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.EnumStringUtil;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.crypto.hash.Sha512Hash;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;

@@ -26,6 +26,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { WINDOW } from '@shared/tokens/window.token'
 import { DsButtonComponent } from '@topicus-rgp-ds/web'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { StringsService } from '@shared/strings'
 
 declare global {
   interface Window {
@@ -51,6 +52,7 @@ export class SessionTimeoutComponent implements OnInit {
   dialogRef = inject(DialogRef)
   document: Document = inject(DOCUMENT)
   window: Window = inject(WINDOW)
+  protected readonly strings = inject(StringsService).getStrings()
 
   ngOnInit() {
     this.interval

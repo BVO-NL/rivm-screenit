@@ -80,8 +80,7 @@ public class ColonAfspraakslotController extends BaseController
 	@Operation(summary = "Haal afspraakslots op", description = "Geeft afspraakslots terug voor de opgegeven periode van de ingelogde intakelocatie.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Afspraakslots succesvol opgehaald"),
-		@ApiResponse(responseCode = "400", description = "Ongeldig verzoek"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "400", description = "Ongeldig verzoek")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })
@@ -113,8 +112,7 @@ public class ColonAfspraakslotController extends BaseController
 	@Operation(summary = "Zoek afspraakslots", description = "Zoekt afspraakslots op basis van datum, tijd, kamer en weekdagen.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Afspraakslots succesvol gevonden"),
-		@ApiResponse(responseCode = "400", description = "Ongeldig verzoek"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "400", description = "Ongeldig verzoek")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_LOCATIE_ROOSTER, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON })

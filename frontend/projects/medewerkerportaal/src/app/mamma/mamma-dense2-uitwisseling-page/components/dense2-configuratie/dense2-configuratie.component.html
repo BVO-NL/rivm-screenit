@@ -18,21 +18,22 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<ds-card cardTitle="Configuratie"
-         cardSubHeader="Vul hier de configuratie in voor de DENSE-2 studie. Links ziet u de projecten waarvoor de configuratie geldt en rechts de projectnaam.">
+<ds-card [cardTitle]="strings.mamma.dense2.configuratie.cardTitle"
+         [cardSubHeader]="strings.mamma.dense2.configuratie.subheader">
   <form [formGroup]="configuratieForm">
-    <ds-input label="DENSE-2 CEM" formControlName="cem" data-testid="input_cem"/>
-    <ds-input label="DENSE-2 MRI" formControlName="mri" data-testid="input_mri"/>
-    <ds-input label="DENSE-2 Controlegroep" formControlName="controleGroep" data-testid="input_controleGroep"/>
-    <ds-input label="DENSE-2 Herinnering CEM" formControlName="herinneringCem" data-testid="input_herinnering_cem"/>
-    <ds-input label="DENSE-2 Herinnering MRI" formControlName="herinneringMri" data-testid="input_herinnering_mri"/>
+    <ds-input [label]="strings.mamma.dense2.configuratie.labels.cem" formControlName="cem" data-testid="input_cem"/>
+    <ds-input [label]="strings.mamma.dense2.configuratie.labels.mri" formControlName="mri" data-testid="input_mri"/>
+    <ds-input [label]="strings.mamma.dense2.configuratie.labels.controlegroep" formControlName="controleGroep" data-testid="input_controleGroep"/>
+    <ds-input [label]="strings.mamma.dense2.configuratie.labels.herinneringCem" formControlName="herinneringCem" data-testid="input_herinnering_cem"/>
+    <ds-input [label]="strings.mamma.dense2.configuratie.labels.herinneringMri" formControlName="herinneringMri" data-testid="input_herinnering_mri"/>
 
-    <app-project-selector formControlName="excludeProjecten" label="Deelnemers uit deze projecten excluderen"/>
+    <app-project-selector formControlName="excludeProjecten" [label]="strings.mamma.dense2.configuratie.labels.excluderen"/>
 
-    <ds-toggle label="Densiteit meting DENSE-2 opslaan" formControlName="metingOpslaan" [message]="metingOpslaanCtrl.value ? 'Aan' : 'Uit'"/>
+    <ds-toggle [label]="strings.mamma.dense2.configuratie.labels.dichtheidMeting" formControlName="metingOpslaan"
+               [message]="metingOpslaanCtrl.value ? strings.algemeen.labels.aan : strings.algemeen.labels.uit"/>
 
   </form>
   <ng-template ds-footer-actions-right>
-    <button ds-button-primary [disabled]="configuratieForm.invalid" (click)="configuratieOpslaan()">Opslaan</button>
+    <button ds-button-primary [disabled]="configuratieForm.invalid" (click)="configuratieOpslaan()">{{ strings.algemeen.buttons.opslaan }}</button>
   </ng-template>
 </ds-card>

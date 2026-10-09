@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.web.component.dropdown;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 
 public class ScreenitBooleanDropdown extends ScreenitDropdown<Boolean>

@@ -54,8 +54,7 @@ public class MammaAfspraakDrempelOverzichtRestController
 	@GetMapping(value = "/getAfspraakDrempelOverzichtStandplaats")
 	@Operation(summary = "Haal afspraakdrempeloverzicht van een standplaats op", description = "Geeft een overzicht terug van de afspraakdrempel voor een specifieke standplaats.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Afspraakdrempeloverzicht succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Afspraakdrempeloverzicht succesvol opgehaald")
 	})
 	@SecurityConstraint(
 		actie = Actie.INZIEN,
@@ -72,8 +71,7 @@ public class MammaAfspraakDrempelOverzichtRestController
 	@GetMapping(value = "/getAfspraakDrempelOverzichtScreeningsOrganisatie")
 	@Operation(summary = "Haal afspraakdrempeloverzicht van een screeningsorganisatie op", description = "Geeft een overzicht terug van de afspraakdrempel voor een specifieke screeningsorganisatie.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Afspraakdrempeloverzicht succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Afspraakdrempeloverzicht succesvol opgehaald")
 	})
 	@SecurityConstraint(
 		actie = Actie.INZIEN,

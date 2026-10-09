@@ -81,7 +81,8 @@ public class CervixVerlateDeelnameCovidJobConfiguration extends AbstractJobConfi
 	public Step verlateDeelnameCovidPerLabStep(CervixVerlateDeelnameCovidReader reader, CervixVerlateDeelnameCovidWriter writer)
 	{
 		return new StepBuilder("verlateDeelnameCovidPerLabStep", repository)
-			.<Long, Long> chunk(1, transactionManager)
+			.<Long, Long> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

@@ -88,7 +88,7 @@ import nl.rivm.screenit.util.cervix.CervixTariefUtil;
 import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.IBANValidator;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;

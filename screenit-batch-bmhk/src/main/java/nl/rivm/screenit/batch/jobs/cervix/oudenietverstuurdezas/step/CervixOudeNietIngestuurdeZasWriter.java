@@ -24,36 +24,25 @@ package nl.rivm.screenit.batch.jobs.cervix.oudenietverstuurdezas.step;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.batch.jobs.cervix.oudenietverstuurdezas.CervixOudeNietIngestuurdeZasConstants;
-import nl.rivm.screenit.batch.jobs.helpers.BaseWriter;
+import nl.rivm.screenit.batch.jobs.cervix.AbstractCervixProjectGroepWriter;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LogEvent;
-import nl.rivm.screenit.model.project.GroepInvoer;
-import nl.rivm.screenit.model.project.Project;
-import nl.rivm.screenit.model.project.ProjectGroep;
 import nl.rivm.screenit.service.BaseProjectService;
-import nl.rivm.screenit.service.HibernateService;
-import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
-import nl.rivm.screenit.util.DateUtil;
 
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
 @AllArgsConstructor
-public class CervixOudeNietIngestuurdeZasWriter extends BaseWriter<Client>
+public class CervixOudeNietIngestuurdeZasWriter extends AbstractCervixProjectGroepWriter<Client>
 {
 	private final BaseProjectService projectService;
 
-	private final HibernateService hibernateService;
-
 	private final LogService logService;
-
-	private final ICurrentDateSupplier currentDateSupplier;
 
 	@Override
 	protected void write(Client client) throws Exception
@@ -62,7 +51,7 @@ public class CervixOudeNietIngestuurdeZasWriter extends BaseWriter<Client>
 		var logEvent = new LogEvent();
 		try
 		{
-			LOG.info("Voeg client (id: " + client.getId() + ") toe aan project groep '" + projectGroep.getNaam() + "'");
+			LOG.info("Voeg client (id: " + client.getId() + ") toe aan projectgroep '" + projectGroep.getNaam() + "'");
 			projectService.addClientToProjectGroep(projectGroep, client);
 		}
 		catch (IllegalStateException e)
@@ -73,33 +62,5 @@ public class CervixOudeNietIngestuurdeZasWriter extends BaseWriter<Client>
 			logEvent.setMelding(melding);
 		}
 		logService.logGebeurtenis(LogGebeurtenis.CERVIX_CLIENT_OUDE_NIET_INGESTUURDE_ZAS_HERINNERING, logEvent, client, Bevolkingsonderzoek.CERVIX);
-	}
-
-	private ProjectGroep prepareProjectGroep()
-	{
-		ProjectGroep projectGroep;
-		var context = getExecutionContext();
-		if (!context.containsKey(CervixOudeNietIngestuurdeZasConstants.PROJECT_GROEP_ID))
-		{
-			var groepsNaam = "Populatie van run " + DateUtil.formatShortDate(currentDateSupplier.getDate());
-			Long projectId = context.getLong(CervixOudeNietIngestuurdeZasConstants.PROJECT_ID);
-			var project = hibernateService.load(Project.class, projectId);
-			LOG.info("Maak project groep '" + groepsNaam + "' voor project '" + project.getNaam() + "'");
-			projectGroep = new ProjectGroep();
-			projectGroep.setProject(project);
-			project.getGroepen().add(projectGroep);
-			projectGroep.setActief(true);
-			projectGroep.setGroepInvoer(GroepInvoer.CRITERIA);
-			projectGroep.setActiefDatum(currentDateSupplier.getDate());
-			projectGroep.setNaam(groepsNaam);
-			projectGroep.setPopulatie(0);
-			hibernateService.saveOrUpdate(projectGroep);
-			context.put(CervixOudeNietIngestuurdeZasConstants.PROJECT_GROEP_ID, projectGroep.getId());
-		}
-		else
-		{
-			projectGroep = hibernateService.load(ProjectGroep.class, context.getLong(CervixOudeNietIngestuurdeZasConstants.PROJECT_GROEP_ID));
-		}
-		return projectGroep;
 	}
 }

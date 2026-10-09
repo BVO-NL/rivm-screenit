@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {Component, input} from '@angular/core'
-import {ColonBulkAanmakenException} from '@shared/types/colon/colon-bulk-aanmaken-exception'
+import { Component, inject, input } from '@angular/core'
+import { ColonBulkAanmakenException } from '@shared/types/colon/colon-bulk-aanmaken-exception'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-bulk-aanmaken-resultaten-tabel',
@@ -27,9 +28,9 @@ import {ColonBulkAanmakenException} from '@shared/types/colon/colon-bulk-aanmake
     <table class="ds-table">
       <thead>
         <tr class="ds-header-row">
-          <th class="ds-header-cell datum-kolom">Datum</th>
-          <th class="ds-header-cell datum-kolom">Tijd</th>
-          <th class="ds-header-cell">Reden</th>
+          <th class="ds-header-cell datum-kolom">{{ strings.algemeen.labels.datum }}</th>
+          <th class="ds-header-cell datum-kolom">{{ strings.algemeen.labels.tijd }}</th>
+          <th class="ds-header-cell">{{ strings.algemeen.labels.reden }}</th>
         </tr>
       </thead>
       <tbody>
@@ -53,4 +54,5 @@ import {ColonBulkAanmakenException} from '@shared/types/colon/colon-bulk-aanmake
 })
 export class BulkAanmakenResultatenTabelComponent {
   exceptions = input.required<ColonBulkAanmakenException[]>()
+  protected readonly strings = inject(StringsService).getStrings()
 }

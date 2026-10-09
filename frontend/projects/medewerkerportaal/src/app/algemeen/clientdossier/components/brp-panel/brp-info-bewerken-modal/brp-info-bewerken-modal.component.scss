@@ -37,7 +37,7 @@
 .postcode-plaats-groep {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--plaats-groep-font-size);
+  gap: var(--base-font-size);
 
   ds-input {
     &[formcontrolname="postcode"] {

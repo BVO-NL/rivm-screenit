@@ -57,6 +57,7 @@ import { KamerSelectorComponent } from '@/colon/colon-rooster-page/components/ka
 import { ColonTijdslotType } from '@shared/types/colon/colon-tijdslot-type'
 import { bepaalFoutmeldingBijOpslaanTijdslot } from '@/colon/utils/colon-utils'
 import { TimepickerComponent } from '@shared/components/timepicker/timepicker.component'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-afspraakslot-bewerken-dialog',
@@ -92,6 +93,7 @@ export class AfspraakslotBewerkenDialogComponent {
   private readonly dialogService = inject(Dialog)
   private readonly autorisatieService: AutorisatieService = inject(AutorisatieService)
   private readonly notificationService: NotificationService = inject(NotificationService)
+  protected readonly strings = inject(StringsService).getStrings()
   afspraakslotForm: FormGroup = this.formBuilder.group(
     {
       id: null,
@@ -166,9 +168,9 @@ export class AfspraakslotBewerkenDialogComponent {
 
   get title(): string {
     if (this.bewerkenToegestaan) {
-      return this.isNieuw ? 'Aanmaken afspraakslot(s)' : 'Bewerken afspraakslot'
+      return this.isNieuw ? this.strings.colon.rooster.afspraakslot.titleNieuw : this.strings.colon.rooster.afspraakslot.titleBestaand
     }
-    return 'Afspraakslot'
+    return this.strings.colon.rooster.afspraakslot.titleReadOnly
   }
 
   get aantalBlokkenCtrl(): FormControl {
@@ -230,9 +232,10 @@ export class AfspraakslotBewerkenDialogComponent {
     this.dialogService
       .open(ConfirmationDialogComponent, {
         data: {
-          title: 'Weet u zeker dat u dit afspraakslot wilt verwijderen?',
+          title: this.strings.colon.rooster.afspraakslot.confirm.deleteBody,
           body: `${kamer?.naam}: ${formatNLDate(formValue.datum)} van ${formValue.vanaf} tot ${formValue.tot}`,
         },
+        hasBackdrop: true,
         minWidth: '300px',
       })
       .closed.pipe(take(1))

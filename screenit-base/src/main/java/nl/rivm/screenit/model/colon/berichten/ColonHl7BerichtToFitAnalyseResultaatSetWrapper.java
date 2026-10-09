@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.model.colon.ColonFitAnalyseResultaatDto;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.v251.datatype.IS;

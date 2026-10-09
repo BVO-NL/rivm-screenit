@@ -107,7 +107,8 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 	public Step verwijderIndicatieTeOudeClientenStep(ExecutionContextPromotionListener gbaPromotionListener, TeOudeClientenReader reader, TeOudeClientenWriter writer)
 	{
 		return new StepBuilder("verwijderIndicatieTeOudeClientenStep", repository).listener(gbaPromotionListener)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -118,7 +119,8 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 		DefinitieveAfmeldingIndicatieVerwijderenWriter writer)
 	{
 		return new StepBuilder("verwijderIndicatieDefinitieveAfmeldingStep", repository).listener(gbaPromotionListener)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -129,7 +131,8 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 		TransgenderIndicatieVerwijderenWriter writer)
 	{
 		return new StepBuilder("verwijderIndicatieTransgenderStep", repository).listener(gbaPromotionListener)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -140,7 +143,8 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 		IndicatieTerugzettenVoorDoelgroepWriter writer)
 	{
 		return new StepBuilder("terugzettenIndicatieVoorDoelgroepStep", repository).listener(gbaPromotionListener)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -151,7 +155,8 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 	{
 		return new StepBuilder("verwerkVo107Step", repository)
 			.listener(gbaPromotionListener)
-			.<Vo107Bericht, Vo107Bericht> chunk(1, transactionManager)
+			.<Vo107Bericht, Vo107Bericht> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -164,7 +169,8 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 		return new StepBuilder("verwerkVo105Step", repository)
 			.listener(gbaPromotionListener)
 			.listener(tellingListener)
-			.<Long, Vo105Bericht> chunk(10, transactionManager)
+			.<Long, Vo105Bericht> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)
@@ -184,7 +190,8 @@ public class GbaJobConfiguration extends AbstractJobConfiguration
 	public Step dossiersAanmakenStep(DossierReader reader, DossierWriter writer)
 	{
 		return new StepBuilder("dossiersAanmakenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

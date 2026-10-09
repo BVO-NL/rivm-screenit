@@ -53,7 +53,8 @@ public class CervixHpvMinFormulierVerwijderenJobConfiguration extends AbstractJo
 	public Step hpvMinFormulierVerwijderenStep(CervixHpvMinFormulierVerwijderenReader reader, CervixHpvMinFormulierVerwijderenWriter writer)
 	{
 		return new StepBuilder("hpvMinFormulierVerwijderenStep", repository)
-			.<Long, Long> chunk(100, transactionManager)
+			.<Long, Long> chunk(100)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -63,7 +64,8 @@ public class CervixHpvMinFormulierVerwijderenJobConfiguration extends AbstractJo
 	public Step oudeLabformulierenVerwijderenStep(CervixOudeLabformulierenVerwijderenReader reader, CervixOudeLabformulierenVerwijderenWriter writer)
 	{
 		return new StepBuilder("oudeLabformulierenVerwijderenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

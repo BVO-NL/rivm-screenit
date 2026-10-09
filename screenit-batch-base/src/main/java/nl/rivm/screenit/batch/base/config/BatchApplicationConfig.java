@@ -25,7 +25,7 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.enums.BatchApplicationType;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

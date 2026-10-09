@@ -25,4 +25,5 @@ export interface ClientAfspraakDto extends EntityDto {
   vanaf: string
   locatie: ClientAfspraakLocatieDto
   locatieBeschrijving: string | null
+  verlopenZonderConclusie: boolean
 }

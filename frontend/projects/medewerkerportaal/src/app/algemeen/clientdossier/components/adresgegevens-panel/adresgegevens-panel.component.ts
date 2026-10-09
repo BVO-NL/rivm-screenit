@@ -31,9 +31,10 @@ import { filter, switchMap, take } from 'rxjs'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'
-import { LegeWaardePipe } from '@shared/pipes/lege-waarde/lege-waarde.pipe'
 import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
-import { AdresgegevensBewerkenModalComponent } from './adresgegevens-bewerken-modal/adresgegevens-bewerken-modal.component'
+import { LegeWaardePipe } from '@shared/pipes/lege-waarde/lege-waarde.pipe'
+import { StringsService } from '@shared/strings'
+import { AdresgegevensBewerkenModalComponent } from '@algemeen/clientdossier/components/adresgegevens-panel/adresgegevens-bewerken-modal/adresgegevens-bewerken-modal.component'
 
 @Component({
   selector: 'app-adresgegevens-panel',
@@ -43,6 +44,7 @@ import { AdresgegevensBewerkenModalComponent } from './adresgegevens-bewerken-mo
 export class AdresgegevensPanelComponent {
   private readonly clientService = inject(ClientService)
   private readonly dialog = inject(Dialog)
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly client = this.clientService.select('client')
   protected readonly faPencil = faPencil
   protected readonly adresgegevensWijzigenConstraint: SecurityConstraint = {

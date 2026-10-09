@@ -48,7 +48,8 @@ public class SignaleringGenderJobConfiguration extends AbstractJobConfiguration
 	public Step signaleringGenderStep(SignaleringGenderReader reader, SignaleringGenderWriter writer)
 	{
 		return new StepBuilder("signaleringGenderStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

@@ -61,7 +61,8 @@ public class CervixBriefJobConfiguration extends AbstractJobConfiguration
 	public Step brievenCleanupStep(CervixBriefCleanupReader reader, CervixBriefCleanupWriter writer)
 	{
 		return new StepBuilder("brievenCleanupStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -91,7 +92,8 @@ public class CervixBriefJobConfiguration extends AbstractJobConfiguration
 	public Step brievenControleStep(CervixBrievenControleReader reader, CervixBrievenControleWriter writer)
 	{
 		return new StepBuilder("brievenControleStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -101,7 +103,8 @@ public class CervixBriefJobConfiguration extends AbstractJobConfiguration
 	public Step brievenGenererenStep(CervixBrievenGenererenReader reader, CervixBrievenGenererenProcessor processor, CervixBrievenGenererenWriter writer)
 	{
 		return new StepBuilder("brievenGenererenStep", repository)
-			.<Long, CervixBrief> chunk(50, transactionManager)
+			.<Long, CervixBrief> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)

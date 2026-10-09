@@ -114,6 +114,8 @@ public enum DashboardType
 
 	CERVIX_OUDE_NIET_INGESTUURDE_ZAS("Herinneren oude ZAS (Z) insturen", Bevolkingsonderzoek.CERVIX),
 
+	CERVIX_CAMBIOS_INCLUSIE("Inclusie Cambiosstudie", Bevolkingsonderzoek.CERVIX),
+
 	CERVIX_ILM("ILM BMHK", Bevolkingsonderzoek.CERVIX),
 
 	CERVIX_CONTROLE_MISSENDE_UITSLAGEN("Controle missende uitslagen", Bevolkingsonderzoek.CERVIX),

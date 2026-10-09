@@ -63,8 +63,7 @@ public class MedewerkerController extends BaseController
 	@GetMapping
 	@Operation(summary = "Haal medewerkers op", description = "Geeft actieve medewerkers terug die gekoppeld zijn aan het opgegeven recht.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Medewerkers succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Medewerkers succesvol opgehaald")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,

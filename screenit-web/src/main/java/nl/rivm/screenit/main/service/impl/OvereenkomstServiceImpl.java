@@ -63,7 +63,7 @@ import nl.rivm.screenit.specification.algemeen.AfgeslotenOrganisatieOvereenkomst
 import nl.rivm.screenit.specification.algemeen.OrganisatieSpecification;
 import nl.rivm.screenit.specification.algemeen.OvereenkomstSpecification;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

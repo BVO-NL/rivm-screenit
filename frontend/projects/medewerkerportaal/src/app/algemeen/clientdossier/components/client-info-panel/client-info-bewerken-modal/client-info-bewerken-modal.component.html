@@ -18,25 +18,25 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog size="xl" titel="Contactgegevens aanpassen">
+<app-base-dialog size="xl" [titel]="strings.algemeen.clientInfoBewerken.dialogTitle">
   <div body>
     <ds-summary-panel>
       <div class="row">
         <div class="col">
           <ds-description
-            label="Burgerservicenummer"
+            [label]="strings.algemeen.labels.bsn"
             value="{{ clientData.bsn }}"/>
           <ds-description
-            label="Geboortenaam"
+            [label]="strings.algemeen.labels.geboortenaam"
             value="{{ (clientData.tussenvoegsel ? clientData.tussenvoegsel + ' ' : '') + clientData.achternaam }}"/>
         </div>
         <div class="col">
           <ds-description
-            label="Geboortedatum"
-            value="{{ clientData.geboortedatum | date:NL_DATE_FORMAT }}"/>
-          <ds-description
-            *appAutorisatie="genderIdentiteitConstraint"
-            label="Genderidentiteit"
+            [label]="strings.algemeen.labels.geboortedatum"
+          value="{{ clientData.geboortedatum | date:NL_DATE_FORMAT }}"/>
+        <ds-description
+          [label]="strings.algemeen.labels.genderidentiteit"
+          *appAutorisatie="genderIdentiteitConstraint"
             value="{{ clientData.geslacht | enumLabel: geslachtLabel }}"/>
         </div>
       </div>
@@ -45,24 +45,24 @@
 
       <div class="contactgegevens-inputs" *appAutorisatie="contactgegevensConstraint">
         <ds-input
-          label="Mobiel nummer"
-          [errorMessage]="{ mobielTelefoon: 'Het mobiele nummer is incorrect.' }"
+          [label]="strings.algemeen.labels.mobielNummer"
+          [errorMessage]="{ mobielTelefoon: strings.algemeen.errors.invalidMobile }"
           formControlName="mobielNummer"
         />
         <ds-input
-          label="Extra nummer"
-          [errorMessage]="{ telefoon: 'Het telefoonnummer is incorrect.' }"
+          [label]="strings.algemeen.labels.extraNummer"
+          [errorMessage]="{ telefoon: strings.algemeen.errors.invalidPhone }"
           formControlName="extraNummer"
         />
         <ds-input
-          label="E-mailadres"
-          [errorMessage]="{ email: 'Het e-mailadres is incorrect.' }"
+          [label]="strings.algemeen.labels.emailadres"
+          [errorMessage]="{ email: strings.algemeen.errors.invalidEmail }"
           formControlName="emailadres"
         />
       </div>
       <ds-dropdown
         class="contactgegevens-dropdowns" *appAutorisatie="aanspreekvormConstraint"
-        label="Aanspreekvorm"
+        [label]="strings.algemeen.labels.aanspreekvorm"
         formControlName="aanspreekvorm"
         [items]="aanspreekvormOpties"
         bindLabel="naam"
@@ -73,7 +73,7 @@
       />
       <div class="doelgroep-inputs" *appAutorisatie="doelgroepConstraint">
         <ds-dropdown
-          label="Doelgroep"
+          [label]="strings.algemeen.labels.doelgroep"
           formControlName="doelgroep"
           [items]="doelgroepOpties"
           bindLabel="naam"
@@ -84,24 +84,24 @@
         </ds-dropdown>
         @if (selectedDoelgroep === Doelgroep.DUBBELE_TIJD) {
           <ds-input
-            label="Reden"
+            [label]="strings.algemeen.labels.reden"
             formControlName="dubbelTijdReden"
             [required]="true"
             class="dubbele-tijd-reden"
             maxlength="255"
-            [errorMessage]="{required: `Reden is verplicht wanneer doelgroep 'Dubbele tijd' is geselecteerd.`, maxlength: `Reden mag niet meer dan 255 karakters bevatten.`}"
+            [errorMessage]="{required: strings.algemeen.errors.verplicht(strings.algemeen.labels.reden), maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.reden, 255)}"
           />
         }
       </div>
     </form>
   </div>
   <ng-container buttons>
-    <button (click)="cancel()" data-testid="btn_annuleren" ds-button-tertiary type="button">Annuleren</button>
+    <button (click)="cancel()" data-testid="btn_annuleren" ds-button-tertiary type="button">{{ strings.algemeen.buttons.annuleren }}</button>
     <button (click)="save()"
             data-testid="btn_opslaan"
             [disabled]="contactgegevensForm.invalid"
             ds-button-primary>
-      Opslaan
+      {{ strings.algemeen.buttons.opslaan }}
     </button>
   </ng-container>
 </app-base-dialog>

@@ -56,7 +56,8 @@ public class ClientgegevensVerwijderenJobConfiguration extends AbstractJobConfig
 	public Step oudeDossiersLegenStep(OudeDossiersLegenReader reader, OudeDossiersLegenWriter writer)
 	{
 		return new StepBuilder("oudeDossiersLegen", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -66,7 +67,8 @@ public class ClientgegevensVerwijderenJobConfiguration extends AbstractJobConfig
 	public Step persoonsgegevensVerwijderenStep(PersoonsgegevensVerwijderenReader reader, PersoonsgegevensVerwijderenWriter writer)
 	{
 		return new StepBuilder("persoonsgegevensVerwijderenStep", repository)
-			.<Long, Long> chunk(1, transactionManager)
+			.<Long, Long> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -76,7 +78,8 @@ public class ClientgegevensVerwijderenJobConfiguration extends AbstractJobConfig
 	public Step clientgegevensVerwijderenStep(ClientVerwijderenReader reader, ClientVerwijderenWriter writer)
 	{
 		return new StepBuilder("clientgegevensVerwijderenStep", repository)
-			.<Long, Long> chunk(1, transactionManager)
+			.<Long, Long> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

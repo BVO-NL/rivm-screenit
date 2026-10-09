@@ -97,7 +97,8 @@ public class MammaKansberekeningJobConfiguration extends AbstractJobConfiguratio
 	public Step rondeSamplesStep(MammaScreeningRondeSampleReader reader, MammaScreeningRondeSampleWriter writer)
 	{
 		return new StepBuilder("rondeSamplesStep", repository)
-			.<Long, Long> chunk(500, transactionManager)
+			.<Long, Long> chunk(500)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -107,7 +108,8 @@ public class MammaKansberekeningJobConfiguration extends AbstractJobConfiguratio
 	public Step afspraakSamplesStep(MammaAfspraakSampleReader reader, MammaAfspraakSampleWriter writer)
 	{
 		return new StepBuilder("afspraakSamplesStep", repository)
-			.<Long, Long> chunk(500, transactionManager)
+			.<Long, Long> chunk(500)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -125,7 +127,8 @@ public class MammaKansberekeningJobConfiguration extends AbstractJobConfiguratio
 	public Step rondeEventsStep(MammaScreeningRondeEventReader reader, MammaScreeningRondeEventWriter writer)
 	{
 		return new StepBuilder("rondeEventsStep", repository)
-			.<Long, Long> chunk(500, transactionManager)
+			.<Long, Long> chunk(500)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -143,7 +146,8 @@ public class MammaKansberekeningJobConfiguration extends AbstractJobConfiguratio
 	public Step afspraakEventsStep(MammaAfspraakEventReader reader, MammaAfspraakEventWriter writer)
 	{
 		return new StepBuilder("afspraakEventsStep", repository)
-			.<Long, Long> chunk(500, transactionManager)
+			.<Long, Long> chunk(500)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

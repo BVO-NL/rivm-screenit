@@ -21,10 +21,19 @@
 <app-client-paspoort/>
 
 <div class="afspraken-panels">
-  <app-afspraak-panel [afspraakEnActies]="mammaAfspraakEnActies()" [bvo]="Bevolkingsonderzoek.MAMMA" (tijdstipWijzigen)="tijdstipWijzigenAfspraak.set($event)"/>
-  <app-afspraak-panel [afspraakEnActies]="colonAfspraakEnActies()" [bvo]="Bevolkingsonderzoek.COLON" (tijdstipWijzigen)="tijdstipWijzigenAfspraak.set($event)"/>
+  <app-afspraak-panel data-testid="afspraak_panel_mamma" [afspraakEnActies]="mammaAfspraakEnActies()" [bvo]="Bevolkingsonderzoek.MAMMA"
+                      (tijdstipWijzigen)="openAfspraakDialog('tijdstip_wijzigen', $event)" (locatieWijzigen)="openAfspraakDialog('locatie_wijzigen', $event)"
+                      (afspraakAfgezegd)="getMammaAfspraak()"
+                      (afspraakMaken)="openAfspraakDialog('aanmaken', null)"
+  />
+  <app-afspraak-panel data-testid="afspraak_panel_colon" [afspraakEnActies]="colonAfspraakEnActies()" [bvo]="Bevolkingsonderzoek.COLON"
+                      (tijdstipWijzigen)="openAfspraakDialog('tijdstip_wijzigen', $event)" (locatieWijzigen)="openAfspraakDialog('locatie_wijzigen', $event)"
+                      (afspraakAfgezegd)="getColonAfspraak()"
+                      (afspraakMaken)="openAfspraakDialog('aanmaken', null)"
+  />
 </div>
 
-@if (tijdstipWijzigenAfspraak() !== null) {
-  <app-colon-client-afspraak-verplaatsen [afspraak]="tijdstipWijzigenAfspraak()" (sluiten)="afspraakTijdstipSluiten()"/>
+@if (afspraakDialogMode() !== null) {
+  <app-colon-client-afspraak-dialog data-testid="client_afspraak_dialog" [afspraakDialogMode]="afspraakDialogMode()" [afspraak]="teVerplaatsenAfspraak()"
+                                    (sluiten)="afspraakDialogSluiten($event)"/>
 }

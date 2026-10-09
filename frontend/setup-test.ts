@@ -1,3 +1,5 @@
+export {}
+
 class ResizeObserver {
   observe() {}
   unobserve() {}
@@ -92,7 +94,6 @@ class MockFileList implements FileList {
       [Symbol.iterator]() {
         return this
       },
-      [Symbol.dispose]() {},
     } as ArrayIterator<File>
   }
 }
@@ -143,7 +144,6 @@ class MockDataTransferItemList implements DataTransferItemList {
       [Symbol.iterator]() {
         return this
       },
-      [Symbol.dispose]() {},
     } as ArrayIterator<DataTransferItem>
   }
 }

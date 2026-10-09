@@ -26,6 +26,7 @@ import { ColonRoosterBeperking } from '@shared/types/colon/colon-rooster-beperki
 import { ColonBulkAanmakenException } from '@shared/types/colon/colon-bulk-aanmaken-exception'
 import { BulkAanmakenResultatenTabelComponent } from '@/colon/colon-rooster-page/components/bulk-aanmaken-resultaten-tabel/bulk-aanmaken-resultaten-tabel.component'
 import { DsButtonComponent } from '@topicus-rgp-ds/web'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-bulk-aanmaken-bevestigings-popup',
@@ -36,6 +37,7 @@ export class BulkAanmakenBevestigingsPopupComponent {
   private dialogRef: DialogRef<boolean> = inject(DialogRef)
   dialogData: { exceptions: ColonBulkAanmakenException[]; typeTijdslot: string } = inject(DIALOG_DATA)
   exceptions: { hard: ColonBulkAanmakenException[]; zacht: ColonBulkAanmakenException[] } = { hard: [], zacht: [] }
+  protected readonly strings = inject(StringsService).getStrings()
 
   get heeftZachteBeperkingen(): boolean {
     return this.exceptions.zacht.length > 0

@@ -66,7 +66,7 @@ public class GlobalExceptionHandler
 		{
 			node.set("afspraakslots", objectMapper.valueToTree(((FeestdagValidatieException) ex).getParameters()));
 		}
-		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(node.toString());
+		return ResponseEntity.unprocessableContent().body(node.toString());
 	}
 
 	@ExceptionHandler(BeperkingException.class)
@@ -79,13 +79,13 @@ public class GlobalExceptionHandler
 		var node = objectMapper.createObjectNode();
 		node.set("messages", messagesArrayNode);
 		node.put("beperkingType", ex.getBeperkingType().toString());
-		return ResponseEntity.unprocessableEntity().body(objectMapper.writeValueAsString(node));
+		return ResponseEntity.unprocessableContent().body(objectMapper.writeValueAsString(node));
 	}
 
 	@ExceptionHandler(BulkAanmakenException.class)
 	public ResponseEntity<String> handleBulkAanmakenException(BulkAanmakenException ex)
 	{
-		return ResponseEntity.unprocessableEntity().body(ex.toJson());
+		return ResponseEntity.unprocessableContent().body(ex.toJson());
 	}
 
 	@ExceptionHandler(OpslaanVerwijderenTijdBlokException.class)
@@ -96,14 +96,14 @@ public class GlobalExceptionHandler
 		var node = objectMapper.createObjectNode();
 		node.put("message", message);
 		node.put("additionalInfo", ex.getAdditionalMessageInfo());
-		return ResponseEntity.unprocessableEntity().body(node.toString());
+		return ResponseEntity.unprocessableContent().body(node.toString());
 	}
 
 	@ExceptionHandler(BulkVerwijderenException.class)
 	public ResponseEntity<String> handleBulkVerwijderenException(BulkVerwijderenException ex)
 	{
 		LOG.error(ex.getMessage());
-		return ResponseEntity.unprocessableEntity().body(ex.toJson());
+		return ResponseEntity.unprocessableContent().body(ex.toJson());
 	}
 
 	@ExceptionHandler(EntityNietGevondenException.class)
@@ -111,7 +111,7 @@ public class GlobalExceptionHandler
 	{
 		LOG.warn(ex.getMessage());
 		var node = objectMapper.createObjectNode();
-		node.put("foutmelding", ex.getMessage());
+		node.put("message", ex.getMessage());
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(node.toString());
 	}
 
@@ -120,7 +120,7 @@ public class GlobalExceptionHandler
 	{
 		LOG.warn(ex.getMessage());
 		var node = objectMapper.createObjectNode();
-		node.put("foutmelding", "De gevraagde gegevens zijn niet gevonden");
+		node.put("message", "De gevraagde gegevens zijn niet gevonden");
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(node.toString());
 	}
 
@@ -129,7 +129,7 @@ public class GlobalExceptionHandler
 	{
 		LOG.warn(ex.getMessage());
 		var node = objectMapper.createObjectNode();
-		node.put("foutmelding", ex.getMessage());
+		node.put("message", ex.getMessage());
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(node.toString());
 	}
 
@@ -138,7 +138,7 @@ public class GlobalExceptionHandler
 	{
 		LOG.warn(ex.getMessage());
 		var node = objectMapper.createObjectNode();
-		node.put("foutmelding", ex.getMessage());
+		node.put("message", ex.getMessage());
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(node.toString());
 	}
 
@@ -147,7 +147,7 @@ public class GlobalExceptionHandler
 	{
 		LOG.warn(ex.getMessage());
 		var node = objectMapper.createObjectNode();
-		node.put("foutmelding", ex.getMessage());
+		node.put("message", ex.getMessage());
 		return ResponseEntity.badRequest().body(node.toString());
 	}
 
@@ -156,8 +156,8 @@ public class GlobalExceptionHandler
 	{
 		LOG.warn(ex.getMessage());
 		var node = objectMapper.createObjectNode();
-		node.put("foutmelding", "Bestand is te groot om te uploaden");
-		return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(node.toString());
+		node.put("message", "Bestand is te groot om te uploaden");
+		return ResponseEntity.status(HttpStatus.CONTENT_TOO_LARGE).body(node.toString());
 	}
 
 	@ExceptionHandler(IllegalStateException.class)

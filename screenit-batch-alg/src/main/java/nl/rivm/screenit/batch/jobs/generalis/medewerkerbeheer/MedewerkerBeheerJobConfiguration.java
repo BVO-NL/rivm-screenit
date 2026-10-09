@@ -55,7 +55,8 @@ public class MedewerkerBeheerJobConfiguration extends AbstractJobConfiguration
 	public Step wachtwoordVerlooptHerinneringStep(WachtwoordVerlooptHerinneringReader reader, WachtwoordVerlooptHerinneringWriter writer)
 	{
 		return new StepBuilder("wachtwoordVerlooptHerinneringStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -65,7 +66,8 @@ public class MedewerkerBeheerJobConfiguration extends AbstractJobConfiguration
 	public Step medewerkerInactiverenStep(MedewerkerInactiverenReader reader, MedewerkerInactiverenWriter writer)
 	{
 		return new StepBuilder("medewerkerInactiverenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -75,7 +77,8 @@ public class MedewerkerBeheerJobConfiguration extends AbstractJobConfiguration
 	public Step rolKoppelingInactiverenStep(RolKoppelingInactiverenReader reader, RolKoppelingInactiverenWriter writer)
 	{
 		return new StepBuilder("rolKoppelingInactiverenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

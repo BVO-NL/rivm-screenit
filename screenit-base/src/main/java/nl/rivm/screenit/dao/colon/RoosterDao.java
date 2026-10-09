@@ -50,4 +50,6 @@ public interface RoosterDao
 
 	List<ColonIntakekamer> getKamers(LocalDateTime startTijd, Long intakelocatieId);
 
+	List<ColonIntakekamer> getKamers(LocalDateTime startTijd, Long intakelocatieId, Long huidigeAfspraakId);
+
 }

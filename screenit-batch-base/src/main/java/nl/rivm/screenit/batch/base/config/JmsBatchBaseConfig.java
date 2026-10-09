@@ -27,6 +27,7 @@ import nl.rivm.screenit.batch.jms.listener.JMSStartJobListener;
 import nl.rivm.screenit.config.JmsConfig;
 
 import org.quartz.Scheduler;
+import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.context.annotation.Bean;
@@ -56,9 +57,10 @@ public class JmsBatchBaseConfig
 	}
 
 	@Bean
-	public JMSJobStatusListener jmsJobStatusListener(JobOperator jobOperator, JobRepository jobRepository, JmsTemplate jmsTemplate, Scheduler scheduler)
+	public JMSJobStatusListener jmsJobStatusListener(JobOperator jobOperator, JobRegistry jobRegistry, JobRepository jobRepository, JmsTemplate jmsTemplate,
+		Scheduler scheduler)
 	{
-		return new JMSJobStatusListener(jobOperator, jobRepository, jmsTemplate, scheduler);
+		return new JMSJobStatusListener(jobOperator, jobRegistry, jobRepository, jmsTemplate, scheduler);
 	}
 
 	@Bean

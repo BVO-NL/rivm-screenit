@@ -24,7 +24,7 @@ export interface VrijSlotZonderKamerDto {
   startTijd: Date
   eindTijd: Date
   intakelocatie: ColonIntakelocatie
-  naam: string
   plaats: string
   afstand: number
+  locatieBeschrijving: string | null
 }

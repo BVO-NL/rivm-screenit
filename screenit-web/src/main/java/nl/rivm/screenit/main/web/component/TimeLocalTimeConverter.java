@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import org.apache.commons.beanutils.ConversionException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.util.convert.IConverter;
 
 public class TimeLocalTimeConverter implements IConverter<LocalDate>

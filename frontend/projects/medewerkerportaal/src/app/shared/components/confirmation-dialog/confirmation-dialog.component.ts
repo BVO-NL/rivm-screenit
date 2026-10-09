@@ -21,30 +21,25 @@
 import { Component, inject } from '@angular/core'
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
-import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
-import { DsButtonComponent } from '@topicus-rgp-ds/web'
+import { DomSanitizer } from '@angular/platform-browser'
+import { DsButtonComponent, DsIconComponent } from '@topicus-rgp-ds/web'
+import { StringsService } from '@shared/strings'
+import { saneerHtml } from '@shared/utils/html-utils'
+import { faClose } from '@fortawesome/pro-light-svg-icons'
 
 @Component({
   selector: 'app-confirmation-dialog',
-  imports: [BaseDialogComponent, DsButtonComponent],
-  template: `
-    <app-base-dialog [titel]="dialogData.title" [enableClose]="false">
-      <div body class="bevestigingstekst">{{ dialogData.body }}</div>
-      <div buttons class="btn-group">
-        <button (click)="handleNo()" data-testid="button_confirmation_nee" ds-button-secondary type="button">{{ dialogData.neeBtnTekst ?? 'Nee' }}</button>
-        <button (click)="handleYes()" data-testid="button_confirmation_ja" ds-button-primary type="button">{{ dialogData.jaBtnTekst ?? 'Ja' }}</button>
-      </div>
-    </app-base-dialog>
-  `,
-  styles: [`
-    .bevestigingstekst {
-      font-size: var(--screenit-font-size);
-    }
-  `],
+  imports: [DsButtonComponent, DsIconComponent],
+  templateUrl: './confirmation-dialog.component.html',
+  styleUrl: './confirmation-dialog.component.scss',
 })
 export class ConfirmationDialogComponent {
   private dialogRef: DialogRef<boolean> = inject(DialogRef)
-  dialogData: { title: string; body: string; neeBtnTekst?: string, jaBtnTekst?: string } = inject(DIALOG_DATA)
+  dialogData: { title: string; body: string; neeButtonTekst?: string; jaButtonTekst?: string } = inject(DIALOG_DATA)
+  protected readonly strings = inject(StringsService).getStrings()
+  protected titel = this.dialogData.title ? this.dialogData.title : this.dialogData.body
+  protected body = this.titel !== this.dialogData.body ? saneerHtml(inject(DomSanitizer), this.dialogData.body) : undefined
+  protected readonly faClose = faClose
 
   handleYes() {
     this.dialogRef.close(true)

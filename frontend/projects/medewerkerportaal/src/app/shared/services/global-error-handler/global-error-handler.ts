@@ -18,21 +18,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { ErrorHandler, inject, Injectable, isDevMode, NgZone } from '@angular/core'
+import { ErrorHandler, inject, Injectable, isDevMode } from '@angular/core'
 import { HttpErrorResponse } from '@angular/common/http'
 import { NotificationService } from '@shared/services/notification/notification.service'
+import { ALGEMEEN_STRINGS as strings } from '@shared/strings/algemeen.strings'
 
 @Injectable({ providedIn: 'root' })
 export class GlobalErrorHandler implements ErrorHandler {
-  private notificationService: NotificationService = inject(NotificationService)
-  private zone: NgZone = inject(NgZone)
+  private notificationService = inject(NotificationService)
 
   handleError(error: Error) {
     if (error.message.startsWith('NG')) {
       return
     }
 
-    let message = 'Er ging iets mis. Neem contact op met de beheerder.'
+    let message = strings.errors.exceptie
     if (error instanceof HttpErrorResponse) {
       if (error.error) {
         if (error.error.message) {
@@ -59,6 +59,6 @@ export class GlobalErrorHandler implements ErrorHandler {
   }
 
   private showError(message: string): void {
-    this.zone.run(() => this.notificationService.error(message))
+    this.notificationService.error(message)
   }
 }

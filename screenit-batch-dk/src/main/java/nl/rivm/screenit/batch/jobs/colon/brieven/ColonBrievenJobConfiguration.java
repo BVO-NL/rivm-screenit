@@ -61,7 +61,8 @@ public class ColonBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step brievenCleanupStep(ColonBriefCleanupReader reader, ColonBriefCleanupWriter writer)
 	{
 		return new StepBuilder("brievenCleanupStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -91,7 +92,8 @@ public class ColonBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step brievenControleStep(ColonBrievenControleReader reader, ColonBrievenControleWriter writer)
 	{
 		return new StepBuilder("brievenControleStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -101,7 +103,8 @@ public class ColonBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step brievenGenererenStep(ColonBrievenGenererenReader reader, ColonBrievenGenererenProcessor processor, ColonBrievenGenererenWriter writer)
 	{
 		return new StepBuilder("brievenGenererenStep", repository)
-			.<Long, ColonBrief> chunk(50, transactionManager)
+			.<Long, ColonBrief> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)

@@ -1,8 +1,6 @@
-package nl.rivm.screenit.main.service.colon;
-
 /*-
  * ========================LICENSE_START=================================
- * screenit-web
+ * medewerkerportaal
  * %%
  * Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
  * %%
@@ -20,16 +18,17 @@ package nl.rivm.screenit.main.service.colon;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+:host {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: #fff;
+  padding: 1rem;
 
-import java.util.List;
-
-import nl.rivm.screenit.main.dto.algemeen.AfspraakActie;
-import nl.rivm.screenit.main.dto.algemeen.AfspraakDto;
-import nl.rivm.screenit.model.Client;
-
-public interface ColonAfspraakService
-{
-	List<AfspraakDto> getAfspraken(Client client);
-
-	List<AfspraakActie> getAfspraakActies(Client client, Long afspraakId);
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 }

@@ -22,6 +22,7 @@ import {Adres} from "../adres/Adres"
 import {ColonIntakeafspraakType} from "./ColonIntakeafspraakType"
 
 export type ColonIntakeafspraakDto = {
+	id: number
 	naamIntakelocatie: string
 	adres: Adres
 	afspraakAfgezegd: boolean

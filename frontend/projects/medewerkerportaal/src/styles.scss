@@ -82,14 +82,25 @@
   --border-color: rgb(225, 233, 239);
   --stale-background-color: #f9f9f9;
   --clientdossier-background-color: #eef2f6;
-  --ruimte-middel: 0.75rem;
-  --screenit-font-size: .8125rem;
-  --plaats-groep-font-size: 1rem;
-  --plaats-group-ondertitel-ruimte: 1.25rem;
   --clientgegevens-label-color: #6b7280;
   --empty-state-icon-color: #b9c7d0;
-  --default-line-height: 1.25rem;
   --digitaal-badge-color: #7202CA;
+
+  --ruimte-middel: 0.75rem;
+  --base-font-size: 1rem;
+  --screenit-font-size: .8125rem;
+  --plaats-group-ondertitel-ruimte: 1.25rem;
+  --default-line-height: 1.25rem;
+
+  --font-weight-1: #{functions.get-font-weight(1)};
+  --font-weight-2: #{functions.get-font-weight(2)};
+  --font-weight-3: #{functions.get-font-weight(3)};
+  --font-weight-4: #{functions.get-font-weight(4)};
+  --font-weight-5: #{functions.get-font-weight(5)};
+  --font-weight-6: #{functions.get-font-weight(6)};
+  --font-weight-7: #{functions.get-font-weight(7)};
+  --font-weight-8: #{functions.get-font-weight(8)};
+  --font-weight-9: #{functions.get-font-weight(9)};
 
   --spacer-0: #{functions.get-spacer(0)};
   --spacer-1: #{functions.get-spacer(1)};
@@ -118,6 +129,12 @@ input[type='number'] {
 
 h2 {
   font-size: 24px;
+}
+
+.pagina-sectie-header {
+  font-size: var(--base-font-size);
+  font-weight: var(--font-weight-7);
+  margin-bottom: var(--spacer-3);
 }
 
 .pdf-inzien-dialog {
@@ -153,7 +170,7 @@ fa-icon.ng-fa-icon.sidebar-collapse-button__icon {
 .info-label {
   color: var(--clientgegevens-label-color);
   font-family: var(--ds-font-family), "Arial", "sans-serif";
-  font-weight: 400;
+  font-weight: var(--font-weight-4);
   font-size: var(--screenit-font-size);
   line-height: var(--default-line-height);
 }

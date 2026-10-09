@@ -18,29 +18,32 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-page titel="Roosterbeperkingen voor tijd en weekend">
-  <form [formGroup]="beperkingForm" (ngSubmit)="save()">
-    <ds-card cardTitle="Tijdsbeperking (elke dag)" class="mb-3 display-block">
-      <app-colon-rooster-beperking [required]="true" formControlName="nachtBeperkingType" label="Beperking"/>
-      <div class="nacht-beperking-row">
-        <app-timepicker formControlName="nachtBeperkingEindDisabled" label="Ochtend"/>
-        <app-timepicker [required]="true" data-testid="input_nacht_beperking_eind"
-                        formControlName="nachtBeperkingEind" id="ochtend"/>
-      </div>
-      <div class="nacht-beperking-row">
-        <app-timepicker [required]="true"
-                        formControlName="nachtBeperkingBegin"
-                        data-testid="input_nacht_beperking_start" label="Avond">
-        </app-timepicker>
-        <app-timepicker formControlName="nachtBeperkingBeginDisabled"></app-timepicker>
-      </div>
-    </ds-card>
+<ds-page-header [title]="strings.colon.weekendWerkdag.pageTitle" [showBackButton]="false"/>
+<form [formGroup]="beperkingForm" (ngSubmit)="save()" class="inhoud">
+  <ds-card [cardTitle]="strings.colon.weekendWerkdag.tijdsbeperkingTitle" class="mb-3 display-block">
+    <app-colon-rooster-beperking [required]="true" formControlName="nachtBeperkingType"
+                                 [label]="strings.colon.weekendWerkdag.labels.beperking"/>
+    <div class="nacht-beperking-row">
+      <app-timepicker formControlName="nachtBeperkingEindDisabled"
+                      [label]="strings.colon.weekendWerkdag.labels.ochtend"/>
+      <app-timepicker [required]="true" data-testid="input_nacht_beperking_eind"
+                      formControlName="nachtBeperkingEind" id="ochtend"/>
+    </div>
+    <div class="nacht-beperking-row">
+      <app-timepicker [required]="true"
+                      formControlName="nachtBeperkingBegin"
+                      data-testid="input_nacht_beperking_start" [label]="strings.colon.weekendWerkdag.labels.avond">
+      </app-timepicker>
+      <app-timepicker formControlName="nachtBeperkingBeginDisabled"></app-timepicker>
+    </div>
+  </ds-card>
 
-    <ds-card cardTitle="Weekendbeperking" class="mb-4 display-block">
-      <app-colon-rooster-beperking [required]="true" formControlName="zaterdagBeperkingType" label="Zaterdag"/>
-      <app-colon-rooster-beperking [required]="true" formControlName="zondagBeperkingType" label="Zondag"/>
-    </ds-card>
+  <ds-card [cardTitle]="strings.colon.weekendWerkdag.weekendbeperkingTitle" class="mb-4 display-block">
+    <app-colon-rooster-beperking [required]="true" formControlName="zaterdagBeperkingType"
+                                 [label]="strings.colon.weekendWerkdag.labels.zaterdag"/>
+    <app-colon-rooster-beperking [required]="true" formControlName="zondagBeperkingType"
+                                 [label]="strings.colon.weekendWerkdag.labels.zondag"/>
+  </ds-card>
 
-    <button ds-button-primary type="submit" *appAutorisatie="constraint"> Opslaan</button>
-  </form>
-</app-page>
+  <button ds-button-primary type="submit" *appAutorisatie="constraint"> {{ strings.algemeen.buttons.opslaan }}</button>
+</form>

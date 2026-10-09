@@ -18,25 +18,25 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<ds-card cardTitle="Status bevolkingsonderzoek">
+<ds-card [cardTitle]="strings.algemeen.bvoStatus.cardTitle">
 
   <table ds-table [dataSource]="bvoStatussen()" [fullWidth]="true">
     <ng-container dsColumnDef="bevolkingsonderzoek">
-      <th *dsHeaderCellDef ds-header-cell>Bevolkingsonderzoek</th>
+      <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.bevolkingsonderzoek }}</th>
       <td *dsCellDef="let row" ds-cell>{{ row.bevolkingsonderzoek | bvoLabel }}</td>
     </ng-container>
 
     <ng-container dsColumnDef="status">
-      <th *dsHeaderCellDef ds-header-cell>Status</th>
+      <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.status }}</th>
       <td *dsCellDef="let row" ds-cell>
         <app-actief-indicator [actief]="row.actief"/>
       </td>
     </ng-container>
 
     <ng-container dsColumnDef="vervolg-indicatie">
-      <th *dsHeaderCellDef ds-header-cell>Vervolg indicatie</th>
+      <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.bvoStatus.columns.vervolgIndicatie }}</th>
       <td *dsCellDef="let row" ds-cell>
-        {{ row.datumVolgendeUitnodiging ? `Volgende uitnodiging op ${(row.datumVolgendeUitnodiging | date: NL_DATE_FORMAT)}` : '-' }}
+        {{ row.datumVolgendeUitnodiging ? strings.algemeen.bvoStatus.volgendeUitnodiging((row.datumVolgendeUitnodiging | date: NL_DATE_FORMAT) ?? '') : '-' }}
       </td>
     </ng-container>
 

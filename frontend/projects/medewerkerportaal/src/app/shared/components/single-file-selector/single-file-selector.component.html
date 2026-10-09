@@ -38,7 +38,7 @@
       } @else {
         <button ds-button-secondary (click)="openFileSelector()" [disabled]="isDisabled">
           <ds-icon [icon]="fileUpload"/>
-          <span>Bladeren</span>
+          <span>{{ strings.algemeen.buttons.bladeren }}</span>
         </button>
       }
     </div>
@@ -48,7 +48,7 @@
     @if (fileCtrl.dirty) {
       <span class="ds-form-element-hint-error-container__error">
       @if (fileCtrl.hasError('required')) {
-        <span>Het bestand is verplicht</span>
+        <span>{{ strings.algemeen.errors.verplicht('Het bestand') }}</span>
       }
 
         @if (fileCtrl.hasError('extensie')) {

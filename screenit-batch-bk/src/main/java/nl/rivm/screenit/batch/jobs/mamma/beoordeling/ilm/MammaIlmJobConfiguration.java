@@ -127,7 +127,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	public Step beeldenSignalerenStep(MammaBeeldenStatusSignalerenReader reader, MammaBeeldenStatusSignalerenWriter writer)
 	{
 		return new StepBuilder("beeldenSignalerenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -137,7 +138,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	public Step uploadBeeldenSignalerenStep(MammaBeeldenStatusUploadSignalerenReader reader, MammaBeeldenStatusUploadSignalerenWriter writer)
 	{
 		return new StepBuilder("uploadBeeldenSignalerenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -147,7 +149,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	public Step bezwaarBeeldenSignalerenStep(MammaBeeldenStatusBezwaarSignalerenReader reader, MammaBeeldenStatusBezwaarSignalerenWriter writer)
 	{
 		return new StepBuilder("bezwaarBeeldenSignalerenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -157,7 +160,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	public Step gunstigeBeeldenVerwijderenStep(MammaBeeldenGunstigReader reader, MammaBeeldenGunstigWriter writer)
 	{
 		return new StepBuilder("gunstigeBeeldenVerwijderenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -167,7 +171,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	public Step overigeBeeldenVerwijderenStep(MammaBeeldenStatusOverigReader reader, MammaBeeldenStatusOverigWriter writer)
 	{
 		return new StepBuilder("overigeBeeldenVerwijderenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -177,11 +182,11 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	public Step palgaVerslagenVerwijderenStep(MammaPalgaImportVerslagenVerwijderenReader reader, MammaPalgaImportVerslagenVerwijderenWriter writer)
 	{
 		return new StepBuilder("palgaVerslagenVerwijderenStep", repository)
-			.<Long, Long> chunk(1, transactionManager)
+			.<Long, Long> chunk(1)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.faultTolerant()
-			.noRollback(Exception.class)
 			.build();
 	}
 
@@ -189,7 +194,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	public Step ilmApplicatieLoggingVerwijderenStep(IlmApplicatieLoggingVerwijderenReader reader, IlmApplicatieLoggingVerwijderenWriter writer)
 	{
 		return new StepBuilder("ilmApplicatieLoggingVerwijderenStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -199,7 +205,8 @@ public class MammaIlmJobConfiguration extends AbstractJobConfiguration
 	public Step rondesVerwijderenStep(MammaScreeningRondesVerwijderenReader reader, MammaScreeningRondesVerwijderenWriter writer)
 	{
 		return new StepBuilder("rondesVerwijderenStep", repository)
-			.<Long, Long> chunk(MammaIlmJobListener.MAX_AANTAL_RONDES_VERWERKEN_IN_STEP, transactionManager)
+			.<Long, Long> chunk(MammaIlmJobListener.MAX_AANTAL_RONDES_VERWERKEN_IN_STEP)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

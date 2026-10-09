@@ -19,11 +19,14 @@
   =========================LICENSE_END==================================
   -->
 <form class="row" [formGroup]="filterForm">
-  <ds-card cardTitle="Periode en medewerker" class="col-md-3 col-12">
-    <ds-duration-datepicker [inForm]="true" [min]="onderzoekMinDatum" label="Onderzoeksdatum" formControlName="onderzoeksdatum"/>
-    <ds-dropdown label="Medewerker" [inForm]="true" [items]="medewerkers()" bindLabel="naam" bindValue="id" appendTo="body" formControlName="medewerkerId"/>
+  <ds-card [cardTitle]="strings.mamma.fotobespreking.labels.periodeMedewerkerTitle" class="col-md-3 col-12">
+    <ds-range-datepicker [inForm]="true" [minDate]="onderzoekMinDatum" [label]="strings.mamma.labels.onderzoeksdatum"
+                         formControlName="onderzoeksdatum"/>
+    <ds-dropdown [label]="strings.algemeen.labels.medewerker" [inForm]="true" [items]="medewerkers()" bindLabel="naam"
+                 bindValue="id" appendTo="body"
+                 formControlName="medewerkerId"/>
     <ds-dropdown
-      label="Beoordelingseenheden"
+      [label]="strings.mamma.labels.beoordelingseenheden"
       formControlName="beoordelingseenheidIds"
       [items]="beoordelingseenheden()"
       [multiple]="true"
@@ -35,7 +38,7 @@
     />
 
     <ds-dropdown
-      label="Screeningseenheden"
+      [label]="strings.mamma.labels.screeningseenheden"
       formControlName="screeningseenheidIds"
       [items]="screeningseenheden()"
       [multiple]="true"
@@ -47,32 +50,37 @@
     />
   </ds-card>
 
-  <ds-card cardTitle="Specificaties onderzoek" class="col-md-6 col-12">
+  <ds-card [cardTitle]="strings.mamma.fotobespreking.labels.specificatiesTitle" class="col-md-6 col-12">
     <div class="row">
       <div class="col-6">
-        <ds-dropdown [multiple]="true" bindLabel="naam" bindValue="waarde" [items]="filterOpties().redenFotobesprekingDoorMbber" [inForm]="true" appendTo="body"
+        <ds-dropdown [multiple]="true" bindLabel="naam" bindValue="waarde"
+                     [items]="filterOpties().redenFotobesprekingDoorMbber" [inForm]="true" appendTo="body"
                      formControlName="redenFotobesprekingDoorMbber"
-                     label="Reden fotobespreking door MBB'er"/>
-        <ds-dropdown [multiple]="true" bindLabel="naam" bindValue="waarde" [items]="filterOpties().redenFotobesprekingDoorRadioloog" [inForm]="true" appendTo="body"
+                     [label]="strings.mamma.fotobespreking.labels.redenMbber"/>
+        <ds-dropdown [multiple]="true" bindLabel="naam" bindValue="waarde"
+                     [items]="filterOpties().redenFotobesprekingDoorRadioloog" [inForm]="true" appendTo="body"
                      formControlName="redenFotobesprekingDoorRadioloog"
-                     label="Reden fotobespreking door radioloog"/>
-        <ds-dropdown [multiple]="true" bindLabel="naam" bindValue="waarde" [items]="filterOpties().redenFotobesprekingMetMbber" [inForm]="true" appendTo="body"
+                     [label]="strings.mamma.fotobespreking.labels.redenRadioloog"/>
+        <ds-dropdown [multiple]="true" bindLabel="naam" bindValue="waarde"
+                     [items]="filterOpties().redenFotobesprekingMetMbber" [inForm]="true" appendTo="body"
                      formControlName="redenFotobesprekingMetMbber"
-                     label="Reden fotobespreking met MBB'er"/>
+                     [label]="strings.mamma.fotobespreking.labels.redenMetMbber"/>
       </div>
       <div class="col-6">
-        <ds-dropdown [multiple]="true" bindLabel="naam" bindValue="waarde" [items]="filterOpties().redenDoorverwijzing" [inForm]="true" appendTo="body"
+        <ds-dropdown [multiple]="true" bindLabel="naam" bindValue="waarde" [items]="filterOpties().redenDoorverwijzing"
+                     [inForm]="true" appendTo="body"
                      formControlName="redenDoorverwijzing"
-                     label="Reden doorverwijzing"/>
-        <ds-dropdown [multiple]="true" bindLabel="naam" bindValue="waarde" [items]="filterOpties().followUp" [inForm]="true" appendTo="body" formControlName="followUp"
-                     label="Follow-up"/>
+                     [label]="strings.mamma.fotobespreking.labels.redenDoorverwijzing"/>
+        <ds-dropdown [multiple]="true" bindLabel="naam" bindValue="waarde" [items]="filterOpties().followUp"
+                     [inForm]="true" appendTo="body" formControlName="followUp"
+                     [label]="strings.mamma.labels.followUp"/>
       </div>
     </div>
   </ds-card>
 
-  <ds-card cardTitle="Client" class="col-md-3 col-12">
-    <ds-input [inForm]="true" label="BSN" formControlName="bsn"/>
-    <ds-datepicker [inForm]="true" label="Geboortedatum" formControlName="geboortedatum"/>
+  <ds-card [cardTitle]="strings.algemeen.labels.client" class="col-md-3 col-12">
+    <ds-input [inForm]="true" [label]="strings.algemeen.labels.bsn" formControlName="bsn"/>
+    <ds-datepicker [inForm]="true" [label]="strings.algemeen.labels.geboortedatum" formControlName="geboortedatum"/>
   </ds-card>
 </form>
 

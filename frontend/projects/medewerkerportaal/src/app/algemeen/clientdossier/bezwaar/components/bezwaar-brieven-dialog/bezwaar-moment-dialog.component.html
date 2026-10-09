@@ -18,14 +18,14 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog titel="Keuzehistorie" size="xxl" [sluitResultaat]="laatsteActie()">
+<app-base-dialog [titel]="strings.algemeen.bezwaar.bezwaarMomentDialog.titel" size="xxl" [sluitResultaat]="laatsteActie()">
   <div body>
     <div class="row">
       <div class="col-6 display-block">
         <app-bezwaar-lijst class="display-block" [bezwaarMoment]="data.bezwaarMoment"/>
         @if (toonFormulierVervangen()) {
           <div class="row mt-3">
-            <div class="col-4 info-label">Bestand uploaden</div>
+            <div class="col-4 info-label">{{ strings.algemeen.labels.bestandUploaden }}</div>
             <app-single-file-selector class="col-8" acceptedExtensie="pdf" [required]="true" [formControl]="uploadFormulierCtrl"/>
           </div>
         }
@@ -42,6 +42,6 @@
         {{ actie | enumLabel: briefActieLabels }}
       </button>
     }
-    <button ds-button-primary (click)="sluiten()" data-testid="sluiten_button">Sluiten</button>
+    <button ds-button-primary (click)="sluiten()" data-testid="sluiten_button">{{ strings.algemeen.buttons.sluiten }}</button>
   </ng-container>
 </app-base-dialog>

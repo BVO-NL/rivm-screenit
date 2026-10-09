@@ -48,7 +48,7 @@ import nl.rivm.screenit.service.cervix.CervixLabformulierService;
 import nl.rivm.screenit.specification.cervix.CervixBMHKLaboratoriumSpecification;
 import nl.rivm.screenit.util.DateUtil;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

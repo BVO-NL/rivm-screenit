@@ -50,7 +50,8 @@ public class ColonFitHerinneringJobConfiguration extends AbstractJobConfiguratio
 	public Step fitHerinneringStep(ColonFitHerinneringBriefReader reader, ColonFitHerinneringBriefWriter writer)
 	{
 		return new StepBuilder("fitHerinneringStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

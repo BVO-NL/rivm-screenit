@@ -26,6 +26,7 @@ import { EmptyStatePanelComponent } from '@shared/components/empty-state-panel/e
 import { NgClass } from '@angular/common'
 import { Component, computed, inject, input } from '@angular/core'
 import { faFile } from '@fortawesome/pro-solid-svg-icons'
+import { StringsService } from '@shared/strings'
 
 const GROEP_VOLGORDE: Record<string, number> = {
   ALGEMEEN: 0,
@@ -51,6 +52,7 @@ const GROEP_VOLGORDE: Record<string, number> = {
 export class BezwaarLijstComponent {
   private readonly bezwaarService = inject(BezwaarService)
   protected readonly faFile = faFile
+  protected readonly strings = inject(StringsService).getStrings()
 
   horizontaal = input<boolean>(false)
   bezwaarMoment = input<BezwaarMomentDto | undefined>()
@@ -63,7 +65,7 @@ export class BezwaarLijstComponent {
 
   protected getGroepLabel(groep: { key: string; bevolkingsonderzoek?: Bevolkingsonderzoek }) {
     if (!groep.bevolkingsonderzoek) {
-      return 'Algemeen'
+      return this.strings.algemeen.bezwaar.bezwaarLijst.groep.algemeen
     }
 
     return bevolkingsonderzoekLabels[groep.bevolkingsonderzoek] ?? groep.key

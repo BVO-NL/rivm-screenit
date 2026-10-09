@@ -56,7 +56,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Step retourzendingStep(RetourzendingReader reader, RetourzendingWriter writer)
 	{
 		return new StepBuilder("retourzendingStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -66,7 +67,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Step uitnodigingsgebiedStep(UitnodigingsgebiedReader reader, UitnodigingsgebiedWriter writer)
 	{
 		return new StepBuilder("uitnodigingsgebiedStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -76,7 +78,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Step overledenStep(OverledenReader reader, OverledenWriter writer)
 	{
 		return new StepBuilder("overledenStep", repository)
-			.<Long, Long> chunk(20, transactionManager)
+			.<Long, Long> chunk(20)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

@@ -27,9 +27,11 @@ import java.util.Date;
 import nl.rivm.screenit.main.dto.colon.ColonAfspraakslotDto;
 import nl.rivm.screenit.main.dto.colon.ColonVrijSlotZonderKamerDto;
 import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
+import nl.rivm.screenit.model.OrganisatieParameterKey;
 import nl.rivm.screenit.model.colon.ColonAfspraakslotListViewWrapper;
 import nl.rivm.screenit.model.colon.ColonIntakelocatie;
 import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamer;
+import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.colon.ColonIntakelocatieService;
 import nl.rivm.screenit.util.DateUtil;
 
@@ -67,12 +69,22 @@ public interface ColonAfspraakslotMapper
 		@Mapping(source = "intakelocatieId", target = "intakelocatie", qualifiedByName = "getIntakelocatie"),
 		@Mapping(source = "plaats", target = "plaats"),
 		@Mapping(source = "afstand", target = "afstand"),
+		@Mapping(source = "intakelocatieId", target = "locatieBeschrijving", qualifiedByName = "getLocatieBeschrijving"),
 	})
-	ColonVrijSlotZonderKamerDto vrijSlotZonderKamerNaarDto(VrijSlotZonderKamer vrijSlotZonderKamer, @Context ColonIntakelocatieService intakelocatieService);
+	ColonVrijSlotZonderKamerDto vrijSlotZonderKamerNaarDto(VrijSlotZonderKamer vrijSlotZonderKamer, @Context ColonIntakelocatieService intakelocatieService,
+		@Context OrganisatieParameterService organisatieParameterService);
 
 	@Named("getIntakelocatie")
 	default ColonIntakelocatie getIntakelocatie(Long intakelocatieId, @Context ColonIntakelocatieService intakelocatieService)
 	{
 		return intakelocatieService.getIntakelocatieById(intakelocatieId);
+	}
+
+	@Named("getLocatieBeschrijving")
+	default String getLocatieBeschrijving(Long intakelocatieId, @Context ColonIntakelocatieService intakelocatieService,
+		@Context OrganisatieParameterService organisatieParameterService)
+	{
+		var intakelocatie = intakelocatieService.getIntakelocatieById(intakelocatieId);
+		return organisatieParameterService.getOrganisatieParameter(intakelocatie, OrganisatieParameterKey.COLON_INTAKELOCATIE_BESCHRIJVING);
 	}
 }

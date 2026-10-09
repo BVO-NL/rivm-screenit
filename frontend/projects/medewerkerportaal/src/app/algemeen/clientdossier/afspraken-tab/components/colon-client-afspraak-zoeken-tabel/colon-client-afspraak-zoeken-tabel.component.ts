@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { AfterViewInit, Component, DestroyRef, effect, inject, input, output, signal, untracked, viewChild, WritableSignal } from '@angular/core'
+import { AfterViewInit, Component, computed, DestroyRef, effect, inject, input, output, signal, untracked, viewChild, WritableSignal } from '@angular/core'
 import {
   DsButtonComponent,
   DsCell,
@@ -36,7 +36,7 @@ import {
 } from '@topicus-rgp-ds/web'
 import { VrijSlotZonderKamerDto } from '@shared/types/colon/dto/vrij-slot-zonder-kamer.dto'
 import { NL_DATE_FORMAT, TIME_FORMAT } from '@shared/constants'
-import { DatePipe } from '@angular/common'
+import { DatePipe, DecimalPipe } from '@angular/common'
 import { VrijSlotZonderKamerFilter } from '@shared/types/colon/dto/vrij-slot-zonder-kamer-filter'
 import { PagineringDto } from '@shared/types/paginering'
 import { SorteerParameterDto } from '@shared/types/sort-param'
@@ -45,6 +45,7 @@ import { take } from 'rxjs'
 import { ColonIntakeafspraakService } from '@colon/services/colon-intakeafspraak/colon-intakeafspraak.service'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { MatSort, MatSortHeader, Sort } from '@angular/material/sort'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-colon-client-afspraak-zoeken-tabel',
@@ -60,6 +61,7 @@ import { MatSort, MatSortHeader, Sort } from '@angular/material/sort'
     DsRowDef,
     DsTableComponent,
     DatePipe,
+    DecimalPipe,
     DsButtonComponent,
     DsPaginatorComponent,
     MatSort,
@@ -75,9 +77,27 @@ export class ColonClientAfspraakZoekenTabelComponent implements AfterViewInit {
 
   afspraakslots: WritableSignal<VrijSlotZonderKamerDto[]> = signal([])
   query = input<VrijSlotZonderKamerFilter | null>(null)
+  toonAfstand = input<boolean>(false)
+  toonDatumTijd = input<boolean>(true)
   selecteerSlot = output<VrijSlotZonderKamerDto>()
 
-  protected readonly displayedColumns = ['datum', 'tijd', 'naam', 'plaats', 'actie']
+  protected readonly strings = inject(StringsService).getStrings()
+  protected readonly displayedColumns = computed(() => this.bepaalDisplayedColumns())
+
+  private bepaalDisplayedColumns(): string[] {
+    const kolommen: string[] = []
+    if (this.toonDatumTijd()) {
+      kolommen.push('datum', 'tijd')
+    }
+    kolommen.push('naam', 'plaats')
+    if (this.toonAfstand()) {
+      kolommen.push('afstand')
+    }
+    kolommen.push('actie')
+    return kolommen
+  }
+
+  private readonly standaardSorteerVeld = computed(() => (this.toonDatumTijd() ? 'vanaf' : 'naam'))
   protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
   protected readonly TIME_FORMAT = TIME_FORMAT
   protected paginering = signal<PagineringDto>({ paginaNummer: 1, paginaGrootte: 20, totaal: 0 })
@@ -85,8 +105,14 @@ export class ColonClientAfspraakZoekenTabelComponent implements AfterViewInit {
 
   constructor() {
     effect(() => {
+      const standaardSorteerVeld = this.standaardSorteerVeld()
       if (this.query()) {
-        untracked(() => this.getAfspraakslots())
+        untracked(() => {
+          if (this.sortering().veld === 'vanaf' && standaardSorteerVeld !== 'vanaf') {
+            this.sortering.set({ veld: standaardSorteerVeld, richting: SorteerRichting.ASC })
+          }
+          this.getAfspraakslots()
+        })
       }
     })
   }
@@ -106,7 +132,7 @@ export class ColonClientAfspraakZoekenTabelComponent implements AfterViewInit {
       ?.sortChange.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((sortEvent: Sort) => {
         if (!sortEvent.direction) {
-          this.sortering.set({ veld: 'vanaf', richting: SorteerRichting.ASC })
+          this.sortering.set({ veld: this.standaardSorteerVeld(), richting: SorteerRichting.ASC })
         } else {
           this.sortering.set({
             veld: sortEvent.active,

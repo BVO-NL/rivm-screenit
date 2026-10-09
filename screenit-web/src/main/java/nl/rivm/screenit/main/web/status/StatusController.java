@@ -61,8 +61,7 @@ public class StatusController
 	@GetMapping(value = "/status", produces = APPLICATION_JSON_VALUE)
 	@Operation(summary = "Haal de applicatiestatus op", description = "Geeft de versie, instantie en databasestatus van de applicatie terug.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Applicatiestatus succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Applicatiestatus succesvol opgehaald")
 	})
 	protected String getStatus()
 	{

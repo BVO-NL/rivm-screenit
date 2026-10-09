@@ -80,7 +80,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Step deelnamemodusBijwerkenStep(MammaDeelnamemodusReader reader, MammaDeelnamemodusWriter writer)
 	{
 		return new StepBuilder("deelnamemodusBijwerkenStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -90,7 +91,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Step ontkoppelenTehuisStep(MammaOntkoppelenTehuisReader reader, MammaOntkoppelenTehuisWriter writer)
 	{
 		return new StepBuilder("ontkoppelenTehuisStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -100,7 +102,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Step nieuwePostcodesStep(MammaNieuwePostcodesReader reader, MammaNieuwePostcodesWriter writer)
 	{
 		return new StepBuilder("nieuwePostcodesStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -110,7 +113,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Step zonderPostcodesStep(MammaZonderPostcodeReader reader, MammaZonderPostcodeWriter writer)
 	{
 		return new StepBuilder("zonderPostcodesStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -120,7 +124,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Step imsWijzigingenStep(MammaImsWijzigingenDoorsturenReader reader, MammaImsWijzigingenDoorsturenWriter writer)
 	{
 		return new StepBuilder("imsWijzigingenStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -130,7 +135,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Step afsprakenAnnulerenStep(MammaAfsprakenAnnulerenReader reader, MammaAfsprakenAnnulerenWriter writer)
 	{
 		return new StepBuilder("afsprakenAnnulerenStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -140,7 +146,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Step deelnamekansenHerzienStep(MammaDeelnamekansenHerzienReader reader, MammaDeelnamekansenHerzienWriter writer)
 	{
 		return new StepBuilder("deelnamekansenHerzienStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -150,7 +157,8 @@ public class AfterGbaJobConfiguration extends AbstractJobConfiguration
 	public Step adresGewijzigdMarkerResetStep(MammaAdresGewijzigdMarkerResetReader reader, MammaAdresGewijzigdMarkerResetWriter writer)
 	{
 		return new StepBuilder("adresGewijzigdMarkerResetStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

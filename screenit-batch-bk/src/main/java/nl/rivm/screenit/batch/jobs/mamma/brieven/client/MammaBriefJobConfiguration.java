@@ -61,7 +61,8 @@ public class MammaBriefJobConfiguration extends AbstractJobConfiguration
 	public Step brievenCleanupStep(MammaBriefCleanupReader reader, MammaBriefCleanupWriter writer)
 	{
 		return new StepBuilder("brievenCleanupStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -91,7 +92,8 @@ public class MammaBriefJobConfiguration extends AbstractJobConfiguration
 	public Step brievenControleStep(MammaBrievenControleReader reader, MammaBrievenControleWriter writer)
 	{
 		return new StepBuilder("brievenControleStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -101,7 +103,8 @@ public class MammaBriefJobConfiguration extends AbstractJobConfiguration
 	public Step brievenGenererenStep(MammaBrievenGenererenReader reader, MammaBrievenGenererenProcessor processor, MammaBrievenGenererenWriter writer)
 	{
 		return new StepBuilder("brievenGenererenStep", repository)
-			.<Long, MammaBrief> chunk(50, transactionManager)
+			.<Long, MammaBrief> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)

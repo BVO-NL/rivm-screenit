@@ -81,8 +81,7 @@ public class MammaFotobesprekingController
 	@Operation(summary = "Haal een fotobespreking op", description = "Geeft de details van een fotobespreking terug op basis van het id.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Fotobespreking succesvol opgehaald"),
-		@ApiResponse(responseCode = "404", description = "Fotobespreking niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Fotobespreking niet gevonden")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,
@@ -104,8 +103,7 @@ public class MammaFotobesprekingController
 	@Operation(summary = "Voeg onderzoeken toe aan een fotobespreking", description = "Voegt de geselecteerde clientonderzoeken toe aan een bestaande fotobespreking.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Onderzoeken succesvol verwerkt"),
-		@ApiResponse(responseCode = "404", description = "Fotobespreking niet gevonden"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "404", description = "Fotobespreking niet gevonden")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,
@@ -138,8 +136,7 @@ public class MammaFotobesprekingController
 	@GetMapping("/filter-opties")
 	@Operation(summary = "Haal filteropties voor fotobesprekingen op", description = "Geeft de beschikbare filteropties voor fotobesprekingonderzoeken terug.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Filteropties succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Filteropties succesvol opgehaald")
 	})
 	@SecurityConstraint(
 		constraint = ShiroConstraint.HasPermission,

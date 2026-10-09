@@ -24,18 +24,18 @@
     <td *dsCellDef="let row" ds-cell data-testid="brief_status">
       <div>{{ row | briefStatus : brieven() }}</div>
       @if (row.herdrukBrief) {
-        <div class="herdruk">Herdruk van {{ row.herdrukBrief.creatieDatum | date: NL_DATE_FORMAT }}</div>
+        <div class="herdruk">{{ strings.algemeen.brieven.herdrukVan }} {{ row.herdrukBrief.creatieDatum | date: NL_DATE_FORMAT }}</div>
       }
     </td>
   </ng-container>
 
   <ng-container dsColumnDef="brieftype">
-    <th *dsHeaderCellDef ds-header-cell>Brieftype</th>
+    <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.briefType }}</th>
     <td *dsCellDef="let row" ds-cell data-testid="brief_type">{{ row.documentNaam }}</td>
   </ng-container>
 
   <ng-container dsColumnDef="datum">
-    <th *dsHeaderCellDef ds-header-cell>Datum/tijd</th>
+    <th *dsHeaderCellDef ds-header-cell>{{ strings.algemeen.labels.datumTijd }}</th>
     <td *dsCellDef="let row" ds-cell data-testid="brief_datum">{{ row.creatieDatum | datumTijd }}</td>
   </ng-container>
 

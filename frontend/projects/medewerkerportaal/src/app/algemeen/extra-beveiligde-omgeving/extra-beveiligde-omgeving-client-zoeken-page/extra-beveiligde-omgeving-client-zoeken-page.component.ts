@@ -24,7 +24,9 @@ import { formatDate } from '@shared/utils/date-utils'
 import { valideDatumValidator } from '@shared/validators/datum/datum.validator'
 import { bsnValidator } from '@shared/validators/bsn/bsn.validator'
 import { Dialog } from '@angular/cdk/dialog'
-import { ExtraBeveiligdeOmgevingService } from '@/algemeen/extra-beveiligde-omgeving/services/extra-beveiligde-omgeving/extra-beveiligde-omgeving.service'
+import {
+  ExtraBeveiligdeOmgevingService
+} from '@/algemeen/extra-beveiligde-omgeving/services/extra-beveiligde-omgeving/extra-beveiligde-omgeving.service'
 import { BezwaarClient } from '@shared/types/algemeen/bezwaar-client'
 import { take } from 'rxjs'
 import { DatePipe } from '@angular/common'
@@ -43,13 +45,14 @@ import {
   DsIconComponent,
   DsInputComponent,
   DsNoDataRow,
+  DsPageHeaderComponent,
   DsRowComponent,
   DsRowDef,
   DsTableComponent,
 } from '@topicus-rgp-ds/web'
 import { NL_DATE_FORMAT } from '@shared/constants'
 import { faEye } from '@fortawesome/pro-light-svg-icons'
-import { PageComponent } from '@shared/components/page/page.component'
+import { StringsService } from '@shared/strings'
 import { DocumentService } from '@algemeen/services/document/document.service'
 
 @Component({
@@ -73,7 +76,7 @@ import { DocumentService } from '@algemeen/services/document/document.service'
     DsButtonComponent,
     DsIconComponent,
     DsNoDataRow,
-    PageComponent,
+    DsPageHeaderComponent,
   ],
   templateUrl: './extra-beveiligde-omgeving-client-zoeken-page.component.html',
   styles: `
@@ -92,6 +95,7 @@ export class ExtraBeveiligdeOmgevingClientZoekenPageComponent {
   private readonly dialogService = inject(Dialog)
   private readonly documentService = inject(DocumentService)
   private readonly extraBeveiligdeOmgevingService = inject(ExtraBeveiligdeOmgevingService)
+  protected readonly strings = inject(StringsService).getStrings()
   protected readonly eyeIcon = faEye
   protected readonly NL_DATE_FORMAT = NL_DATE_FORMAT
 

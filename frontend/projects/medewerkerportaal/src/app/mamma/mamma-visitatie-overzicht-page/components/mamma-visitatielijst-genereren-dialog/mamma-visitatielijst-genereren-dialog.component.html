@@ -18,11 +18,12 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog titel="Visitatielijsten insteltechniek genereren">
+<app-base-dialog [titel]="strings.mamma.visitatielijstGenereren.dialogTitle">
   <form [formGroup]="genererenForm" body>
-    <ds-input label="Omschrijving" formControlName="omschrijving" data-testid="input_omschrijving"/>
+    <ds-input [label]="strings.algemeen.labels.omschrijving" formControlName="omschrijving"
+              data-testid="input_omschrijving"/>
 
-    <app-single-file-selector label="Bestand"
+    <app-single-file-selector [label]="strings.algemeen.labels.bestand"
                               formControlName="bestand"
                               acceptedExtensie="csv"
                               id="bestand"
@@ -31,8 +32,12 @@
     />
   </form>
 
-  <div class="btn-group" buttons>
-    <button ds-button-secondary (click)="sluitDialog()" data-testid="annuleren_btn">Annuleren</button>
-    <button ds-button-primary (click)="rapportGenereren()" data-testid="genereren_btn">Rapport genereren</button>
-  </div>
+  <ng-container buttons>
+    <button ds-button-tertiary (click)="sluitDialog()"
+            data-testid="annuleren_btn">{{ strings.algemeen.buttons.annuleren }}
+    </button>
+    <button ds-button-primary (click)="rapportGenereren()"
+            data-testid="genereren_btn">{{ strings.mamma.visitatielijstGenereren.generateButton }}
+    </button>
+  </ng-container>
 </app-base-dialog>

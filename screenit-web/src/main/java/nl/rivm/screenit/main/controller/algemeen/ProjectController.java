@@ -65,8 +65,7 @@ public class ProjectController extends BaseController
 	@GetMapping()
 	@Operation(summary = "Haal projecten op", description = "Geeft alle projecten terug of filtert op een specifiek projecttype.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Projecten succesvol opgehaald"),
-		@ApiResponse(responseCode = "500", description = "Onverwachte fout opgetreden")
+		@ApiResponse(responseCode = "200", description = "Projecten succesvol opgehaald")
 	})
 	@SecurityConstraint(actie = Actie.INZIEN, constraint = ShiroConstraint.HasPermission, recht = { Recht.MEDEWERKER_PROJECT_OVERZICHT,
 		Recht.MEDEWERKER_BRIEFPROJECT_OVERZICHT }, bevolkingsonderzoekScopes = {

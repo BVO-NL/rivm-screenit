@@ -29,6 +29,7 @@ import { take } from 'rxjs'
 import { haalBestandsnaamZonderExtensie, maakDSFileModel } from '@/algemeen/handleidingen-overzicht-page/utils/handleidingen-util'
 import { HandleidingUpload } from '@shared/utils/file-utils'
 import { Component, inject } from '@angular/core'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-handleiding-aanmaken-dialog',
@@ -40,6 +41,7 @@ export class HandleidingAanmakenDialogComponent {
   private readonly handleidingenService = inject(HandleidingenService)
   private readonly notificationService = inject(NotificationService)
   private readonly formBuilder: FormBuilder = inject(FormBuilder)
+  protected readonly strings = inject(StringsService).getStrings()
 
   readonly handleidingForm = this.formBuilder.group({
     handleidingenUpload: this.formBuilder.control<File[]>([], { nonNullable: true }),
@@ -94,7 +96,7 @@ export class HandleidingAanmakenDialogComponent {
       .subscribe((resultaten) => {
         const nietGeslaagd = resultaten.filter((r) => !r.geslaagd)
         if (nietGeslaagd.length === 0) {
-          this.notificationService.success('Alle handleidingen zijn succesvol geüpload.')
+          this.notificationService.success(this.strings.algemeen.handleidingen.aanmaken.notifications.uploadSuccess)
         } else {
           nietGeslaagd.forEach((r) => this.notificationService.error(r.foutmelding!))
         }

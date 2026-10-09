@@ -18,13 +18,21 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-page [titel]="paginaTitel()">
-  <app-mamma-fotobespreking-filter (filter)="filterOnderzoeken($event)" class="mb-4"/>
-  <app-mamma-fotobespreking-tabel (getOnderzoeken)="getOnderzoeken()" [onderzoeken]="onderzoeken()" [(paginering)]="paginering" [(sortering)]="sortering"
-                                  [clientIds]="fotobespreking()?.clientIds"
-                                  (selectionChanged)="geselecteerdeOnderzoeken.set($event)"/>
-  <div class="btn-group mt-4">
-    <button ds-button-secondary (click)="annuleren()" data-testid="annuleren_btn">Annuleren</button>
-    <button ds-button-primary (click)="opslaan()" data-testid="opslaan_btn">Opslaan</button>
-  </div>
-</app-page>
+<ds-page-header [title]="paginaTitel()" (backButtonClicked)="annuleren()"/>
+
+<app-mamma-fotobespreking-filter (filter)="filterOnderzoeken($event)" class="filter mb-4"/>
+<app-mamma-fotobespreking-tabel
+  (getOnderzoeken)="getOnderzoeken()"
+  [onderzoeken]="onderzoeken()"
+  [(paginering)]="paginering"
+  [(sortering)]="sortering"
+  [clientIds]="fotobespreking()?.clientIds"
+  (selectionChanged)="geselecteerdeOnderzoeken.set($event)"
+/>
+<div class="btn-group mt-4">
+  <button ds-button-tertiary (click)="annuleren()"
+          data-testid="annuleren_btn">{{ strings.algemeen.buttons.annuleren }}
+  </button>
+  <button ds-button-primary (click)="opslaan()" data-testid="opslaan_btn">{{ strings.algemeen.buttons.opslaan }}
+  </button>
+</div>

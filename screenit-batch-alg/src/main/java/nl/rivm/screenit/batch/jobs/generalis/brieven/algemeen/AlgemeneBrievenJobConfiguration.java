@@ -65,7 +65,8 @@ public class AlgemeneBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step algemeneBrievenCleanupStep(AlgemeneBrievenCleanupReader reader, AlgemeneBrievenCleanupWriter writer)
 	{
 		return new StepBuilder("algemeneBrievenCleanupStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -86,7 +87,8 @@ public class AlgemeneBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step algemeneBrievenControleStep(AlgemeneBrievenControleReader reader, AlgemeneBrievenControleWriter writer)
 	{
 		return new StepBuilder("algemeneBrievenControleStep", repository)
-			.<Long, Long> chunk(250, transactionManager)
+			.<Long, Long> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -96,7 +98,8 @@ public class AlgemeneBrievenJobConfiguration extends AbstractJobConfiguration
 	public Step algemeneBrievenGenererenStep(AlgemeneBrievenGenererenReader reader, AlgemeneBrievenGenererenProcessor processor, AlgemeneBrievenGenererenWriter writer)
 	{
 		return new StepBuilder("algemeneBrievenGenererenStep", repository)
-			.<Long, AlgemeneBrief> chunk(250, transactionManager)
+			.<Long, AlgemeneBrief> chunk(250)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.processor(processor)
 			.writer(writer)

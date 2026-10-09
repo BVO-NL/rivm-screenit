@@ -50,7 +50,8 @@ public class GunstigeUitslagJobConfiguration extends AbstractJobConfiguration
 	public Step gunstigeUitslagStep(GunstigeUitslagBriefReader reader, GunstigeUitslagBriefWriter writer)
 	{
 		return new StepBuilder("gunstigeUitslagStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

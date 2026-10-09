@@ -30,6 +30,7 @@ import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
 import { subMonths } from 'date-fns'
 import { DsButtonComponent, DsDropdownComponent } from '@topicus-rgp-ds/web'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-mamma-visitatie-filter',
@@ -44,6 +45,7 @@ import { DsButtonComponent, DsDropdownComponent } from '@topicus-rgp-ds/web'
   `,
 })
 export class MammaVisitatieFilterComponent {
+  protected readonly strings = inject(StringsService).getStrings()
   private readonly formBuilder = inject(FormBuilder)
   private readonly organisatieService = inject(OrganisatieService)
   private readonly autorisatieService = inject(AutorisatieService)

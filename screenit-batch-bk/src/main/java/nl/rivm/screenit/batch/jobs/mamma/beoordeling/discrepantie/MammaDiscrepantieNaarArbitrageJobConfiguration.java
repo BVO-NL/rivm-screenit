@@ -50,7 +50,8 @@ public class MammaDiscrepantieNaarArbitrageJobConfiguration extends AbstractJobC
 	public Step beoordelingenDoorzettenNaarArbitrageStep(MammaDiscrepantieNaarArbitrageReader reader, MammaDiscrepantieNaarArbitrageWriter writer)
 	{
 		return new StepBuilder("beoordelingenDoorzettenNaarArbitrageStep", repository)
-			.<Long, Long> chunk(50, transactionManager)
+			.<Long, Long> chunk(50)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

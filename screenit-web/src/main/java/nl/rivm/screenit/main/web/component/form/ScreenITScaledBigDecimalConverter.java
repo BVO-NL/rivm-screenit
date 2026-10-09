@@ -26,7 +26,7 @@ import java.util.Locale;
 
 import nl.topicuszorg.wicket.input.converters.ScaledBigDecimalConverter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class ScreenITScaledBigDecimalConverter extends ScaledBigDecimalConverter
 {

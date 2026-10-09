@@ -21,7 +21,7 @@ package nl.rivm.screenit.batch.jobs.cervix.verlatedeelnamecovid.step;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.batch.jobs.cervix.verlatedeelnamecovid.CervixVerlateDeelnameCovidConstants;
+import nl.rivm.screenit.batch.jobs.cervix.AbstractCervixProjectGroepWriter;
 
 import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.job.flow.FlowExecutionStatus;
@@ -35,7 +35,7 @@ public class CervixVerlateDeelnameCovidDecider implements JobExecutionDecider
 	@Override
 	public FlowExecutionStatus decide(JobExecution jobExecution, StepExecution stepExecution)
 	{
-		if (jobExecution.getExecutionContext().containsKey(CervixVerlateDeelnameCovidConstants.PROJECT_ID))
+		if (jobExecution.getExecutionContext().containsKey(AbstractCervixProjectGroepWriter.PROJECT_ID))
 		{
 			return FlowExecutionStatus.FAILED;
 		}

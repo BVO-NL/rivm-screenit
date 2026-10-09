@@ -29,7 +29,7 @@ import nl.rivm.screenit.main.web.gebruiker.algemeen.batch.parameterpopuppanel.ma
 import nl.rivm.screenit.main.web.gebruiker.algemeen.batch.parameterpopuppanel.mamma.palgaimport.BatchMammaPalgaImportParameterPopupPanel;
 import nl.rivm.screenit.model.enums.JobType;
 
-import org.apache.commons.lang.reflect.ConstructorUtils;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.wicket.markup.html.form.Form;
 
 public enum JobStartPopupPanelFactory

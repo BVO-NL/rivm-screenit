@@ -57,7 +57,8 @@ public class CervixHerinnerenJobConfiguration extends AbstractJobConfiguration
 	public Step herinnerenZasStep(CervixAangevraagdeZasHerinnerenReader reader, CervixHerinnerenWriter writer)
 	{
 		return new StepBuilder("herinnerenZasStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -67,7 +68,8 @@ public class CervixHerinnerenJobConfiguration extends AbstractJobConfiguration
 	public Step herinnerenUitstrijkjeStep(CervixUitstrijkjeHerinnerenReader reader, CervixHerinnerenWriter writer)
 	{
 		return new StepBuilder("herinnerenUitstrijkjeStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -77,7 +79,8 @@ public class CervixHerinnerenJobConfiguration extends AbstractJobConfiguration
 	public Step herinnerenZasNonresponderStep(CervixZasNonResponderHerinnerenReader reader, CervixHerinnerenWriter writer)
 	{
 		return new StepBuilder("herinnerenZasNonresponderStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();
@@ -87,7 +90,8 @@ public class CervixHerinnerenJobConfiguration extends AbstractJobConfiguration
 	public Step herinnerenZasPuStep(CervixZasPrimaireUitnodigingHerinnerenReader reader, CervixHerinnerenWriter writer)
 	{
 		return new StepBuilder("herinnerenZasPuStep", repository)
-			.<Long, Long> chunk(10, transactionManager)
+			.<Long, Long> chunk(10)
+			.transactionManager(transactionManager)
 			.reader(reader)
 			.writer(writer)
 			.build();

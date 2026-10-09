@@ -35,11 +35,11 @@ import { MeldingenTabComponent } from '@algemeen/clientdossier/meldingen-tab/mel
 import { CisHistorieTabComponent } from '@algemeen/clientdossier/cis-historie-tab/cis-historie-tab.component'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { filter, map } from 'rxjs'
-import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { LoggingService } from '@algemeen/services/logging/logging.service'
 import { LogGebeurtenis } from '@shared/types/algemeen/enum/log-gebeurtenis'
 import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.directive'
+import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-client-dossier-page',
@@ -52,10 +52,10 @@ import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.direct
     DsLazyTabbedContentDirective,
     DsTabGroupComponent,
     DsPageHeaderComponent,
+    DsTabGroupComponent,
     MeldingenTabComponent,
     CisHistorieTabComponent,
     AutorisatieDirective,
-    CisHistorieTabComponent,
     AfsprakenTabComponent,
   ],
   templateUrl: './clientdossier-page.component.html',
@@ -69,6 +69,7 @@ export class ClientdossierPageComponent {
   private readonly clientContactService = inject(ClientContactService)
   private readonly loggingService = inject(LoggingService)
   private readonly router = inject(Router)
+  protected readonly strings = inject(StringsService).getStrings()
 
   protected readonly client = inject(ClientService).select('client')
   protected readonly aantalMeldingen: Signal<number> = this.clientContactService.select('aantalContactenMetMelding')
@@ -104,13 +105,13 @@ export class ClientdossierPageComponent {
     level: ToegangLevel.LANDELIJK,
     required: Required.ALL,
   }
-  protected readonly afsprakenInzienConstraint: SecurityConstraint = {
-    recht: [Recht.MEDEWERKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT],
-    actie: Actie.INZIEN,
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON],
-    required: Required.ANY,
-  }
-  protected readonly tabLabels = ['Cliëntgegevens', 'Afspraken', 'Meldingen', 'CIS Historie']
+
+  protected readonly tabLabels = [
+    this.strings.algemeen.clientDossier.tabClientgegevens,
+    this.strings.algemeen.clientDossier.tabAfspraken,
+    this.strings.algemeen.clientDossier.tabMeldingen,
+    this.strings.algemeen.clientDossier.tabCisHistorie,
+  ]
   protected actieveTabIndex = 0
 
   constructor() {

@@ -23,7 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be;
 
 import nl.rivm.screenit.model.mamma.MammaBeoordeling;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
