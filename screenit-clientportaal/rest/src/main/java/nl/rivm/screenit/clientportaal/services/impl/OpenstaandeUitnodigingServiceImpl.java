@@ -21,6 +21,7 @@ package nl.rivm.screenit.clientportaal.services.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,9 @@ import nl.rivm.screenit.clientportaal.services.colon.ColonUitnodigingService;
 import nl.rivm.screenit.factory.algemeen.BriefFactory;
 import nl.rivm.screenit.mappers.OpenstaandeUitnodigingMapper;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.cervix.CervixBrief;
+import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
+import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.uitnodiging.dto.CervixUitnodigingKeuzeResponse;
@@ -45,7 +49,8 @@ import nl.rivm.screenit.model.uitnodiging.dto.ColonUitnodigingKeuzeResponse;
 import nl.rivm.screenit.model.uitnodiging.dto.OpenstaandeUitnodigingDto;
 import nl.rivm.screenit.model.uitnodiging.dto.OpenstaandeUitnodigingMeedoenRequest;
 import nl.rivm.screenit.service.BaseHoudbaarheidService;
-import nl.rivm.screenit.service.BriefHerdrukkenService;
+import nl.rivm.screenit.service.cervix.CervixFactory;
+import nl.rivm.screenit.util.BriefUtil;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,9 +64,9 @@ public class OpenstaandeUitnodigingServiceImpl implements OpenstaandeUitnodiging
 
 	private final CervixZasService cervixZasService;
 
-	private final BriefFactory briefFactory;
+	private final CervixFactory cervixFactory;
 
-	private final BriefHerdrukkenService briefHerdrukkenService;
+	private final BriefFactory briefFactory;
 
 	private final ColonUitnodigingService colonUitnodigingService;
 
@@ -132,13 +137,27 @@ public class OpenstaandeUitnodigingServiceImpl implements OpenstaandeUitnodiging
 			LOG.warn("Kan geen nieuwe brief aanmaken voor client {}, geen screeningronde gevonden", client.getId());
 			return;
 		}
-		var nieuweBrief = briefFactory.maakBvoBrief(laatsteScreeningRonde, BriefType.CERVIX_HERINNERING_ZAS_UITNODIGING);
-		briefHerdrukkenService.opnieuwAanmaken(nieuweBrief, client);
+		var uitnodigingsBriefType = laatsteScreeningRonde.getLeeftijdcategorie().getUitnodigingsBrief();
+		var nieuweBrief = briefFactory.maakBvoBrief(laatsteScreeningRonde, uitnodigingsBriefType);
+		getLaatsteVerstuurdeBrief(laatsteScreeningRonde, uitnodigingsBriefType).ifPresent(oudeBrief ->
+		{
+			nieuweBrief.setTemplateNaam(oudeBrief.getTemplateNaam());
+			nieuweBrief.setHerdruk(oudeBrief);
+		});
+		cervixFactory.maakUitnodiging(laatsteScreeningRonde, nieuweBrief, false, false);
 	}
 
 	private void vraagNieuweZasAan(Client client)
 	{
 		cervixZasService.vraagZasAan(client, false);
+	}
+
+	private Optional<CervixBrief> getLaatsteVerstuurdeBrief(CervixScreeningRonde ronde, BriefType briefType)
+	{
+		return ronde.getUitnodigingen().stream()
+			.map(CervixUitnodiging::getBrief)
+			.filter(brief -> brief.getBriefType() == briefType && BriefUtil.isGegenereerd(brief))
+			.max(Comparator.comparing(CervixBrief::getId));
 	}
 
 	private void verwerkColon(Client client, OpenstaandeUitnodigingMeedoenRequest request, OpenstaandeUitnodigingDto colonDto)

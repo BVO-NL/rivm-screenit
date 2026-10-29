@@ -34,8 +34,9 @@ import {AanhefType} from "../../datatypes/aanhef/AanhefType"
 import {Persoon} from "../../datatypes/Persoon"
 import {Geslacht} from "../../datatypes/Geslacht"
 import {selectPersoon} from "../../selectors/ClientSelectors"
+import {FC} from "react"
 
-const AanhefWijzigenPage = () => {
+const AanhefWijzigenPage: FC = () => {
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
 	const persoon = useSelector(selectPersoon)
@@ -101,7 +102,7 @@ const AanhefWijzigenPage = () => {
 		</ActieBasePage>
 	)
 
-	function gekozenAanhef(persoon: Persoon) {
+	function gekozenAanhef(persoon: Persoon): string {
 		let aanhef = persoon.aanhef
 		if (persoon.aanhef === null) {
 			if (persoon.geslacht === Geslacht.VROUW) {

@@ -23,11 +23,21 @@ package nl.rivm.screenit.main.dto;
 
 import java.time.LocalDate;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(name = "DurationDto", description = "Datumrange met een start- en einddatum.")
-public record DurationDto(
-	LocalDate startDate,
-	LocalDate endDate)
+public class DurationDto
 {
+	LocalDate startDate;
+
+	LocalDate endDate;
 }

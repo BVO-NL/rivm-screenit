@@ -445,9 +445,8 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 		int bezwaarTermijnVerwijderdeBeelden = simplePreferenceService.getInteger(PreferenceKey.ILM_BEZWAARTERMIJN_BEELDEN_VERWIJDERD.name());
 
 		var launchUrlPassword = simplePreferenceService.getString(PreferenceKey.MAMMA_IMS_LAUNCH_URL_PASSWORD.name());
-		boolean launchUrlSha1Mode = simplePreferenceService.getBoolean(PreferenceKey.MAMMA_IMS_LAUNCH_URL_SHA1_MODE.name(), true);
 
-		return new IMSConfiguratie(hostName, ormPort, adtPort, ilmPort, bezwaarTermijnVerwijderdeBeelden, imsQueueSizeWarningThreshold, launchUrlPassword, launchUrlSha1Mode);
+		return new IMSConfiguratie(hostName, ormPort, adtPort, ilmPort, bezwaarTermijnVerwijderdeBeelden, imsQueueSizeWarningThreshold, launchUrlPassword);
 	}
 
 	@Override
@@ -464,8 +463,6 @@ public class ParameterisatieServiceImpl implements ParameterisatieService
 		simplePreferenceService.putInteger(PreferenceKey.MAMMA_IMS_QUEUE_SIZE_WARNING_THRESHOLD.name(), configuratie.getImsQueueSizeWarningThreshold());
 
 		simplePreferenceService.putString(PreferenceKey.MAMMA_IMS_LAUNCH_URL_PASSWORD.name(), configuratie.getLaunchUrlPassword());
-		simplePreferenceService.putBoolean(PreferenceKey.MAMMA_IMS_LAUNCH_URL_SHA1_MODE.name(), configuratie.isLaunchUrlSha1Mode());
-
 		logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, account, "IMS configuratie aangepast", Bevolkingsonderzoek.MAMMA);
 	}
 

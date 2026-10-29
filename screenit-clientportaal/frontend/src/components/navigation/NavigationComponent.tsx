@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useEffect, useState} from "react"
+import {FC, useEffect, useState} from "react"
 import {Nav, Navbar, NavItem} from "react-bootstrap"
 import styles from "./NavigationComponent.module.scss"
 import classNames from "classnames"
@@ -34,7 +34,7 @@ import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 import {BevolkingsonderzoekNaam} from "../../datatypes/Bevolkingsonderzoek"
 import {selectPersoon} from "../../selectors/ClientSelectors"
 
-const NavigationComponent = () => {
+const NavigationComponent: FC = () => {
 	const [sticky, setSticky] = useState(true)
 	const [expanded, setExpanded] = useState(false)
 
@@ -48,9 +48,9 @@ const NavigationComponent = () => {
 		fixNavBarPositieBijScrollen()
 	}, [])
 
-	const hideNavbar = () => setTimeout(() => setExpanded(false), 200)
+	const hideNavbar = (): NodeJS.Timeout => setTimeout(() => setExpanded(false), 200)
 
-	const hideNavbarEnStuurDatadogEvent = (itemName: string) => {
+	const hideNavbarEnStuurDatadogEvent = (itemName: string): void => {
 		datadogService.stuurEvent("menuItemGeklikt", AnalyticsCategorie.MENUBALK, {naam: itemName})
 		hideNavbar()
 	}
@@ -117,7 +117,7 @@ const NavigationComponent = () => {
 		</Navbar>
 	)
 
-	function fixNavBarPositieBijScrollen() {
+	function fixNavBarPositieBijScrollen(): void {
 		window.addEventListener("scroll", () => {
 			setSticky(document.body.scrollTop < 100 && document.documentElement.scrollTop < 100)
 		})

@@ -35,6 +35,7 @@ import { OrganisatieDto } from '@shared/types/algemeen/dto/organisatie.dto'
 import { iif, Observable, startWith, switchMap } from 'rxjs'
 import { OrganisatieService } from '@/algemeen/services/organisatie/organisatie.service'
 import { StringsService } from '@shared/strings'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-mamma-fotobespreking-filter',
@@ -68,7 +69,7 @@ export class MammaFotobesprekingFilterComponent {
     { validators: fotobesprekingFilterValidator(this.notificationsService) },
   )
 
-  onderzoekMinDatum = formatDate(subYears(new Date(), 2))
+  onderzoekMinDatum = formatDate(subYears(DateService.nu(), 2))
   filter = output<MammaFotobesprekingOnderzoekFilterDto>()
   medewerkers = toSignal(this.medewerkerService.getMedewerkers(Recht.MEDEWERKER_SCREENING_MAMMA_SE_ONDERZOEK), { initialValue: [] })
   filterOpties = toSignal(this.fotobesprekingService.getFilterOpties(), {

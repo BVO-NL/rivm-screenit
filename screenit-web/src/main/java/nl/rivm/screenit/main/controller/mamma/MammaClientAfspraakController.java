@@ -55,15 +55,15 @@ public class MammaClientAfspraakController
 
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAKEN,
 		bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
-	@Operation(summary = "Haal mamma-afspraken op", description = "Haalt de geplande mamma-afspraken op.")
+	@Operation(summary = "Haal geplande mamma-afspraak op", description = "Haalt de geplande mamma-afspraak op.")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Mamma-afspraken opgehaald"),
+		@ApiResponse(responseCode = "200", description = "Mamma-afspraak opgehaald"),
 		@ApiResponse(responseCode = "404", description = "Client niet gevonden")
 	})
-	@GetMapping
-	public ResponseEntity<List<AfspraakDto>> getAfspraken(@RequestParam Long clientId)
+	@GetMapping("/gepland")
+	public ResponseEntity<AfspraakDto> getGeplandeAfspraak(@RequestParam Long clientId)
 	{
-		return ResponseEntity.ok(mammaClientAfspraakService.getAfspraken(clientId));
+		return ResponseEntity.ok(mammaClientAfspraakService.getGeplandeAfspraak(clientId));
 	}
 
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAKEN,

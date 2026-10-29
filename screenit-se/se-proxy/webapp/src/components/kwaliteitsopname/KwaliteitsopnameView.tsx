@@ -91,21 +91,11 @@ export default class KwaliteitsopnameView extends Component<KwaliteitsopnameView
 	}
 
 	setReden(reden: KwaliteitsopnameReden): void {
-		this.setState({
-			...this.state,
-			...{
-				reden,
-			},
-		})
+		this.setState({reden})
 	}
 
 	setVoorOfNaKalibratie(voorOfNaKalibratie: VoorOfNaKalibratie): void {
-		this.setState({
-			...this.state,
-			...{
-				voorOfNaKalibratie,
-			},
-		})
+		this.setState({voorOfNaKalibratie})
 	}
 
 	magRedenInzien = (reden: KwaliteitsopnameReden, tomosyntheseMogelijk: boolean): boolean => {

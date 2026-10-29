@@ -27,6 +27,7 @@ import nl.rivm.screenit.main.web.ScreenitApplication;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.filter.SecurityHeadersFilter;
 import nl.rivm.screenit.main.web.gebruiker.base.MedewerkerBasePage;
+import nl.rivm.screenit.service.EnvironmentInfoService;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
@@ -58,6 +59,9 @@ public abstract class AngularBasePage extends MedewerkerBasePage
 
 	@SpringBean(name = "applicationEnvironment")
 	private String applicationEnvironment;
+
+	@SpringBean
+	private EnvironmentInfoService environmentInfoService;
 
 	@Override
 	public void onInitialize()
@@ -144,7 +148,7 @@ public abstract class AngularBasePage extends MedewerkerBasePage
 
 		var style = "styles.css";
 		response.render(
-			new CssUrlReferenceHeaderItem(medewerkerPortaalResourceUrl + style, "screen", "stylesheet"));
+			new CssUrlReferenceHeaderItem(medewerkerPortaalResourceUrl + style + "?version=" + environmentInfoService.getVersion(), "screen", "stylesheet"));
 		if (Boolean.TRUE.equals(testModus))
 		{
 			response.render(CssHeaderItem.forUrl("assets/css/test.css"));

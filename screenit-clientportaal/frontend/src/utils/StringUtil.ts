@@ -22,12 +22,12 @@ export function concatWithSpace(...args: any[]): string {
     return args.filter(Boolean).join(" ")
 }
 
-export function placeNonBreakingSpaceInDate(value: string) {
+export function placeNonBreakingSpaceInDate(value: string): string {
     const gesplitteString: string[] = value.split(" ")
-    return gesplitteString[0] + " " + gesplitteString[1] + "&nbsp;" + gesplitteString[2]
+    return `${gesplitteString[0]  } ${  gesplitteString[1]  }&nbsp;${  gesplitteString[2]}`
 }
 
-export function splitAdresString(adres?: string) {
+export function splitAdresString(adres?: string): string {
     const gesplitteAdres = adres ? adres.split(",", 2) : ""
-    return gesplitteAdres[0] + "<br>" + gesplitteAdres[1]
+    return `${gesplitteAdres[0]  }<br>${  gesplitteAdres[1]}`
 }

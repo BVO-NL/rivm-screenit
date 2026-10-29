@@ -24,7 +24,7 @@ import {setLoggedInAction, setUnauthorizedAction} from "../actions/Authenticatie
 import HttpStatusCode from "../datatypes/HttpStatus"
 import {HTTPError} from "ky"
 
-export const processLogin = () => (dispatch: Dispatch) => {
+export const processLogin = () => (dispatch: Dispatch): void => {
 	ScreenitBackend.put("login", {
 		json: {userAgent: navigator.userAgent},
 	}).catch((error: HTTPError) => {

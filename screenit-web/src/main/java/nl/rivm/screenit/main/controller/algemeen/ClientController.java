@@ -41,6 +41,7 @@ import nl.rivm.screenit.main.dto.algemeen.TijdelijkAdresDto;
 import nl.rivm.screenit.main.mappers.algemeen.ClientMapper;
 import nl.rivm.screenit.main.mappers.algemeen.DossierGebeurtenisWrapper;
 import nl.rivm.screenit.main.mappers.algemeen.ScreeningRondeGebeurtenisWrapper;
+import nl.rivm.screenit.main.mappers.algemeen.TijdelijkAdresMapper;
 import nl.rivm.screenit.main.model.DossierGebeurtenis;
 import nl.rivm.screenit.main.model.ScreeningRondeGebeurtenis;
 import nl.rivm.screenit.main.service.DossierService;
@@ -51,7 +52,6 @@ import nl.rivm.screenit.main.service.algemeen.ProjectService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.mappers.ProjectClientMapper;
-import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.algemeen.dto.ProjectClientDto;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -59,10 +59,11 @@ import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.logging.LogEvent;
-import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
+import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -93,8 +94,6 @@ public class ClientController extends BaseController
 
 	private final ClientMapper clientMapper;
 
-	private final ClientRepository clientRepository;
-
 	private final LogService logService;
 
 	private final ProjectService projectService;
@@ -110,6 +109,10 @@ public class ClientController extends BaseController
 	private final ScreeningRondeGebeurtenisWrapper screeningRondeGebeurtenisWrapper;
 
 	private final ClientContactService clientContactService;
+
+	private final MammaBaseAfspraakService mammaBaseAfspraakService;
+
+	private final TijdelijkAdresMapper tijdelijkAdresMapper;
 
 	private final DossierGebeurtenisWrapper dossierGebeurtenisWrapper;
 
@@ -155,6 +158,20 @@ public class ClientController extends BaseController
 	{
 		var actieveBvos = clientZoekenService.getActieveBvos(clientId);
 		return ResponseEntity.ok(actieveBvos);
+	}
+
+	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
+	@Operation(summary = "Haal de BVO's van de doelgroep op", description = "Haal de BVO's op tot wiens doelgroep de client behoort, bijvoorbeeld voor het bepalen van de te "
+		+ "wijzigen keuzes gebruik gegevens")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Lijst met bevolkingsonderzoeken")
+	})
+	@GetMapping("/{clientId}/doelgroep-bvos")
+	public ResponseEntity<List<Bevolkingsonderzoek>> getDoelgroepBvos(@PathVariable Long clientId)
+	{
+		var doelgroepBvos = clientZoekenService.getDoelgroepBvos(clientId);
+		return ResponseEntity.ok(doelgroepBvos);
 	}
 
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
@@ -212,15 +229,13 @@ public class ClientController extends BaseController
 	@GetMapping("{id}/contactgegevens")
 	public ResponseEntity<ClientContactgegevensDto> getContactgegevens(@PathVariable Long id)
 	{
-		return clientRepository.findById(id)
-			.map(client ->
-			{
-				var contactgegevens = clientMapper.clientToClientContactgegevensDto(client, clientContactService);
-				clientService.zetDoelgroepenVanClient(client, contactgegevens);
-				return contactgegevens;
-			})
-			.map(ResponseEntity::ok)
-			.orElse(ResponseEntity.notFound().build());
+		var client = getClientOfGooiNotFoundException(id);
+		var contactgegevens = clientMapper.clientToClientContactgegevensDto(client);
+		clientService.zetDoelgroepenVanClient(client, contactgegevens);
+		contactgegevens.setMammaAfspraakDatumTijd(mammaBaseAfspraakService.findOpenAfspraak(client)
+			.map(afspraak -> DateUtil.toLocalDateTime(afspraak.getVanaf()))
+			.orElse(null));
+		return ResponseEntity.ok().body(contactgegevens);
 	}
 
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
@@ -233,19 +248,14 @@ public class ClientController extends BaseController
 	@GetMapping("{id}/paspoort")
 	public ResponseEntity<ClientPaspoortDto> getPaspoort(@PathVariable Long id)
 	{
-		return clientRepository.findById(id)
-			.map(client ->
-			{
-				var paspoort = clientMapper.clientToClientPaspoortDto(client);
-				paspoort.setDoelgroepen(clientService.bepaalDoelgroepenVanClient(client));
-				if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_INZIEN_A_NUMMER, Actie.INZIEN))
-				{
-					paspoort.setAnummer(client.getPersoon().getAnummer());
-				}
-				return paspoort;
-			})
-			.map(ResponseEntity::ok)
-			.orElse(ResponseEntity.notFound().build());
+		var client = getClientOfGooiNotFoundException(id);
+		var paspoort = clientMapper.clientToClientPaspoortDto(client);
+		paspoort.setDoelgroepen(clientService.bepaalDoelgroepenVanClient(client));
+		if (ScreenitSession.get().checkPermission(Recht.MEDEWERKER_INZIEN_A_NUMMER, Actie.INZIEN))
+		{
+			paspoort.setAnummer(client.getPersoon().getAnummer());
+		}
+		return ResponseEntity.ok().body(paspoort);
 	}
 
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
@@ -359,7 +369,7 @@ public class ClientController extends BaseController
 		{
 			return ResponseEntity.ok(null);
 		}
-		return ResponseEntity.ok(clientMapper.tijdelijkAdresToDto(tijdelijkAdres));
+		return ResponseEntity.ok(tijdelijkAdresMapper.tijdelijkAdresToDto(tijdelijkAdres));
 	}
 
 	@SecurityConstraint(actie = Actie.AANPASSEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
@@ -374,18 +384,7 @@ public class ClientController extends BaseController
 	{
 		var account = getIngelogdeGebruiker();
 		var client = getClientOfGooiNotFoundException(clientId);
-		var huidigTijdelijkAdres = client.getPersoon().getTijdelijkAdres();
-		TijdelijkAdres tijdelijkAdres;
-		if (huidigTijdelijkAdres != null)
-		{
-			clientMapper.updateTijdelijkAdres(huidigTijdelijkAdres, tijdelijkAdresDto);
-			tijdelijkAdres = huidigTijdelijkAdres;
-		}
-		else
-		{
-			tijdelijkAdres = clientMapper.dtoToTijdelijkAdres(tijdelijkAdresDto);
-		}
-		clientContactService.saveTijdelijkAdres(account, client, tijdelijkAdres);
+		clientContactService.saveTijdelijkAdres(account, client, tijdelijkAdresMapper.naarTijdelijkAdres(client, tijdelijkAdresDto));
 		return ResponseEntity.ok().build();
 	}
 

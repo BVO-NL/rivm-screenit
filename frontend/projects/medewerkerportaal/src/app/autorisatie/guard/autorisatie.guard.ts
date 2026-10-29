@@ -24,7 +24,7 @@ import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
 
 export function autorisatieGuard(constraint: SecurityConstraint): CanActivateFn {
-  return (route) => {
+  return () => {
     const autorisatieService = inject(AutorisatieService)
     return autorisatieService.isToegestaan(constraint)
   }

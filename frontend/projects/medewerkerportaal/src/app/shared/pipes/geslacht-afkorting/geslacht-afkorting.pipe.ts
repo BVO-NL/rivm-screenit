@@ -33,7 +33,7 @@ import { Required } from '@shared/types/autorisatie/required'
 })
 export class GeslachtAfkortingPipe implements PipeTransform {
   private autorisatieService = inject(AutorisatieService)
-  transform(geslacht: Geslacht | undefined | null, fallback: string = ''): string {
+  transform(geslacht: Geslacht | undefined | null, fallback = ''): string {
     if (
       !this.autorisatieService.isToegestaan({
         recht: [Recht.MEDEWERKER_TOON_GENDERINDETITEIT],

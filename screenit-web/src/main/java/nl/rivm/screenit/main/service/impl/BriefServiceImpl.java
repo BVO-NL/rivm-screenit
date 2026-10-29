@@ -264,9 +264,9 @@ public class BriefServiceImpl implements BriefService
 	}
 
 	@Override
-	public Optional<ClientBrief<?, ?, ?>> getBriefById(Long id, String briefCategorie)
+	public ClientBrief<?, ?, ?> getBriefById(Long id, String briefCategorie)
 	{
 		var repo = briefFactory.getBriefTypeRepository(briefCategorie);
-		return repo.findById(id);
+		return repo.getReferenceById(id);
 	}
 }

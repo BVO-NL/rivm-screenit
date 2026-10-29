@@ -27,13 +27,13 @@ import {CervixUitstelType} from "../datatypes/cervix/CervixUitstelType"
 import {CervixUitstelStatus} from "../datatypes/cervix/CervixUitstelStatus"
 import type {KyResponse} from "ky"
 
-export const getHuidigeCervixUitstelStatus = () => async (dispatch: Dispatch<ResetCervixUitstelStatusAction>) => {
+export const getHuidigeCervixUitstelStatus = () => async (dispatch: Dispatch<ResetCervixUitstelStatusAction>): Promise<ResetCervixUitstelStatusAction> => {
 	return ScreenitBackend.get<CervixUitstelStatus>("cervix/uitstellen/status").json()
 		.then(response => dispatch(setCervixUitstelStatusAction(response)))
 }
 
-export const getHuidigeCervixUitstel = () => async (dispatch: Dispatch<CervixUitstelAction>) => {
-	return ScreenitBackend.get<CervixUitstelDto>(`cervix/uitstellen/huidig`)
+export const getHuidigeCervixUitstel = () => async (dispatch: Dispatch<CervixUitstelAction>): Promise<CervixUitstelAction> => {
+	return ScreenitBackend.get<CervixUitstelDto>("cervix/uitstellen/huidig")
 		.then(verwerkHuidigeCervixUitstelResponse)
 		.then(response => dispatch(createCervixUitstelAction(response)))
 }
@@ -45,7 +45,7 @@ export async function verwerkHuidigeCervixUitstelResponse(response: KyResponse<C
 	return {uitstellenTotDatum: null}
 }
 
-export const saveCervixUitstel = (cervixUitstel: CervixUitstelFormulier, uitstelBijZwangerschap: number) => (dispatch: Dispatch) => {
+export const saveCervixUitstel = (cervixUitstel: CervixUitstelFormulier, uitstelBijZwangerschap: number) => (dispatch: Dispatch): Promise<CervixUitstelAction> => {
 	const cervixUitstelDto: CervixUitstelDto = {
 		uitstelType: cervixUitstel.uitstelType,
 		uitstellenTotDatum: getUitstellenTotDatum(cervixUitstel, uitstelBijZwangerschap),

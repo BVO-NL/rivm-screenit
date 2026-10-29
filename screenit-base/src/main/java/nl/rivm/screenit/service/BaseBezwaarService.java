@@ -25,9 +25,11 @@ import java.util.List;
 import java.util.Optional;
 
 import nl.rivm.screenit.model.Account;
+import nl.rivm.screenit.model.Bezwaar;
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.OnderzoeksresultatenActie;
+import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -44,6 +46,14 @@ public interface BaseBezwaarService
 
 	List<BezwaarGroupViewWrapper> getBezwaarGroupViewWrappers(BezwaarMoment moment, boolean verzoekTotBezwaarTeZien);
 
+	List<Bezwaar> getBewerkbareBezwaren(Client client, BezwaarMoment laatstVoltooideMoment, List<BezwaarType> bezwaarTypes);
+
+	List<Bezwaar> getBewerkbareBezwaren(List<Bevolkingsonderzoek> bevolkingsonderzoeken, BezwaarMoment laatstVoltooideMoment, List<BezwaarType> bezwaarTypes);
+
+	List<Bezwaar> bepaalNieuweBezwaren(BezwaarMoment laatstVoltooideMoment, List<Bezwaar> bewerkbareBezwaren, List<Bezwaar> gekozenBezwaren);
+
+	boolean zijnBezwarenGewijzigd(BezwaarMoment laatstVoltooideMoment, List<Bezwaar> nieuweBezwaren);
+
 	BezwaarBrief maakBezwaarAanvraag(Client client, boolean zonderHandtekening, BriefType briefType);
 
 	BezwaarBrief maakBezwaarAanvraag(Client client);
@@ -53,6 +63,8 @@ public interface BaseBezwaarService
 	void bezwaarAfronden(BezwaarMoment moment, Account account);
 
 	void onderzoeksresultatenVerwijderen(OnderzoeksresultatenActie actie, Account account, List<BezwaarGroupViewWrapper> groupWrappers) throws IllegalStateException;
+
+	void onderzoeksresultatenVerwijderen(Client client, UploadDocument getekendeBrief, List<Bevolkingsonderzoek> bevolkingsonderzoeken, Account account);
 
 	boolean isBezwaarNieuwVergelekenMetVorigeBezwaarMoment(BezwaarMoment bezwaarMoment, BezwaarType bezwaarType);
 

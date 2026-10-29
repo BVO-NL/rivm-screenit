@@ -61,9 +61,9 @@ export default class IdentificatieView extends Component<IdentificatieViewStateP
 	}
 
 	toggle = (): void => {
-		this.setState({
-			dropdownOpen: !this.state.dropdownOpen,
-		})
+		this.setState(vorigeState => ({
+			dropdownOpen: !vorigeState.dropdownOpen,
+		}))
 	}
 
 	onIdentificatieSoortChange = (value: Identificatiesoort | undefined): void => {

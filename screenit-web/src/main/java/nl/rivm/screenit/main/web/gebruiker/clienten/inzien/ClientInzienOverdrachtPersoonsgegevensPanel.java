@@ -32,6 +32,7 @@ import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.gebruiker.clienten.inzien.popup.overdrachtpersoonsgegevens.OverdrachtGegevensAanvraagPopupPanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
+import nl.rivm.screenit.model.algemeen.OverdrachtType;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -93,8 +94,6 @@ public class ClientInzienOverdrachtPersoonsgegevensPanel extends GenericPanel<Cl
 
 		container.add(new ListView<>("gebeurtenissen", gebeurtenissen)
 		{
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void populateItem(ListItem<OverdrachtPersoonsgegevensDossierGebeurtenis> item)
 			{
@@ -106,8 +105,6 @@ public class ClientInzienOverdrachtPersoonsgegevensPanel extends GenericPanel<Cl
 
 				gebeurtenisContainer.add(new AjaxEventBehavior("click")
 				{
-					private static final long serialVersionUID = 1L;
-
 					@Override
 					protected void onEvent(AjaxRequestTarget target)
 					{
@@ -137,6 +134,11 @@ public class ClientInzienOverdrachtPersoonsgegevensPanel extends GenericPanel<Cl
 
 	private String overdrachtOmschrijving(OverdrachtPersoonsgegevens overdracht)
 	{
+		if (overdracht.getType() == OverdrachtType.CLIENTPORTAAL)
+		{
+			return getString("overdracht.clientportaal");
+		}
+
 		switch (overdracht.getStatus())
 		{
 		case BRIEF:

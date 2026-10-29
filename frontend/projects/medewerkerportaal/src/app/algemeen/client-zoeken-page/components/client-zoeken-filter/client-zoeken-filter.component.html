@@ -39,7 +39,9 @@
       <ds-input label="&#160;" [placeholder]="strings.algemeen.placeholders.huisnummer" formControlName="huisnummer" data-testid="huisnummer_input"
                 inputmode="numeric" appAlleenCijfers
                 autocomplete="off"
-                [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Huisnummer', 10), pattern: strings.algemeen.errors.huisnummerAlleenCijfers }"/>
+                [dsMaxLength]="MAX_KARAKTERS.huisnummer"
+                [showCounter]="false"
+                [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Huisnummer', MAX_KARAKTERS.huisnummer), pattern: strings.algemeen.errors.huisnummerAlleenCijfers }"/>
     </div>
     <ds-input label="BSN"
               placeholder="BSN"

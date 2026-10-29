@@ -32,7 +32,7 @@ import properties from "./BvoCard.json"
 import VerticalDividerComponent from "../vectors/VerticalDividerComponent"
 import SpanWithHtml from "../span/SpanWithHtml"
 import {useWindowDimensions} from "../../utils/Hooks"
-import {JSX} from "react"
+import {FC, JSX} from "react"
 import {selectClient} from "../../selectors/ClientSelectors"
 
 export type BvoCardProps = {
@@ -41,7 +41,7 @@ export type BvoCardProps = {
 	onClick: () => void;
 }
 
-const BvoCard = (props: BvoCardProps) => {
+const BvoCard: FC<BvoCardProps> = (props) => {
 	const {width} = useWindowDimensions()
 	const bvoNaam = props.bvo === (width > 576 && Bevolkingsonderzoek.CERVIX) ? properties.BMHK_NAAM_GESPLITST : BevolkingsonderzoekNaam[props.bvo]
 	const client = useSelector(selectClient)

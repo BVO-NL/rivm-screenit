@@ -24,9 +24,7 @@ import { formatDate } from '@shared/utils/date-utils'
 import { valideDatumValidator } from '@shared/validators/datum/datum.validator'
 import { bsnValidator } from '@shared/validators/bsn/bsn.validator'
 import { Dialog } from '@angular/cdk/dialog'
-import {
-  ExtraBeveiligdeOmgevingService
-} from '@/algemeen/extra-beveiligde-omgeving/services/extra-beveiligde-omgeving/extra-beveiligde-omgeving.service'
+import { ExtraBeveiligdeOmgevingService } from '@/algemeen/extra-beveiligde-omgeving/services/extra-beveiligde-omgeving/extra-beveiligde-omgeving.service'
 import { BezwaarClient } from '@shared/types/algemeen/bezwaar-client'
 import { take } from 'rxjs'
 import { DatePipe } from '@angular/common'
@@ -54,6 +52,7 @@ import { NL_DATE_FORMAT } from '@shared/constants'
 import { faEye } from '@fortawesome/pro-light-svg-icons'
 import { StringsService } from '@shared/strings'
 import { DocumentService } from '@algemeen/services/document/document.service'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-extra-beveiligde-omgeving-client-zoeken-page',
@@ -103,7 +102,7 @@ export class ExtraBeveiligdeOmgevingClientZoekenPageComponent {
     geboortedatum: this.formBuilder.control<Date | null>(null, [Validators.required, valideDatumValidator]),
     bsn: ['', [Validators.required, bsnValidator]],
   })
-  maxGeboorteDatum = formatDate(new Date())
+  maxGeboorteDatum = formatDate(DateService.nu())
   clienten = signal<BezwaarClient[]>([])
   document: string | undefined | null
   displayedColumns = ['bsn', 'geboortedatum', 'inzien']

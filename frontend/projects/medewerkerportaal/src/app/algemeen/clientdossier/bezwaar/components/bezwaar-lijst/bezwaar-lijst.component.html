@@ -24,15 +24,30 @@
       @let testId = 'bezwaar_groep_' + groep.key.toLowerCase();
       <div class="mb-3" [ngClass]="{ col: horizontaal() }" [attr.data-testid]="testId">
         <div class="groep-label">{{ getGroepLabel(groep) }}</div>
-        <ul>
+        @if (bewerkbaar()) {
           @for (bezwaar of groep.bezwaren; track bezwaar.type) {
-            @let testId = 'bezwaar_' + bezwaar.type.toLowerCase();
-            <li [attr.data-testid]="testId">{{ bezwaar.naam }}</li>
+            @let testId = 'checkbox_' + groep.key.toLowerCase() + '_' + bezwaar.type.toLowerCase();
+            <ds-checkbox
+              class="zonder-validatie"
+              [ngModel]="isGeselecteerd(bezwaar)"
+              (ngModelChange)="wisselBezwaar(bezwaar, $event)"
+              [ngModelOptions]="{ standalone: true }"
+              [disabled]="isDisabled()"
+              [attr.data-testid]="testId">
+              {{ bezwaar.naam }}
+            </ds-checkbox>
           }
-        </ul>
+        } @else {
+          <ul>
+            @for (bezwaar of groep.bezwaren; track bezwaar.type) {
+              @let testId = 'bezwaar_' + bezwaar.type.toLowerCase();
+              <li [attr.data-testid]="testId">{{ bezwaar.naam }}</li>
+            }
+          </ul>
+        }
       </div>
     }
   </div>
-} @else {
+} @else if (!bewerkbaar()) {
   <app-empty-state-panel data-testid="geen_actuele_keuzes" [icon]="faFile" [titel]="strings.algemeen.bezwaar.bezwaarLijst.geenBezwaren.titel" [subtekst]="subtekst()"/>
 }

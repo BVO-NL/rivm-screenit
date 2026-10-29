@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useEffect} from "react"
+import {FC, useEffect} from "react"
 import {Col, Container, Row} from "react-bootstrap"
 import styles from "./BvoLandingPage.module.scss"
 import bvoStyles from "../../../components/BvoStyle.module.scss"
@@ -47,7 +47,7 @@ type Props = {
 	beschikbareActies: ClientContactActieType[]
 }
 
-const MammaLandingPage = (props: Props) => {
+const MammaLandingPage: FC<Props> = (props) => {
 	const {dossier, beschikbareActies} = props
 
 	const locatieHuidigeAfspraak = dossier.huidigeAfspraak ? splitAdresString(dossier.huidigeAfspraak.adresStandplaats) : ""
@@ -62,7 +62,7 @@ const MammaLandingPage = (props: Props) => {
 
 	return (
 		<Container fluid className={styles.content}>
-			<KruimelpadComponent className={bvoStyles.mamma} onTerugKlik={() => navigate('/')}/>
+			<KruimelpadComponent className={bvoStyles.mamma} onTerugKlik={() => navigate("/")}/>
 			<Row className={landingPageStyle.inleiding}>
 				<Col md={8}>
 					<BvoInleidingComponent/>

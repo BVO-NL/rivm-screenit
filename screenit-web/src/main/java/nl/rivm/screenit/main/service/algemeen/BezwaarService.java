@@ -27,18 +27,28 @@ import java.util.List;
 
 import nl.rivm.screenit.main.model.BriefActie;
 import nl.rivm.screenit.model.Account;
+import nl.rivm.screenit.model.Bezwaar;
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.BezwaarBrief;
+import nl.rivm.screenit.model.enums.BezwaarType;
 
 import org.springframework.web.multipart.MultipartFile;
 
 public interface BezwaarService
 {
 	void bezwaarBRPIntrekken(OrganisatieMedewerker organisatieMedewerker, Client client, MultipartFile document) throws IOException;
+
+	List<Bezwaar> getBewerkbareBezwaren(Client client);
+
+	void bezwaarDirectVerwerken(Client client, List<Bezwaar> gekozenBezwaren, MultipartFile briefBestand, String notitie, OrganisatieMedewerker organisatieMedewerker)
+		throws IOException;
+
+	void gegevensVerwijderen(Client client, List<Bezwaar> gekozenBezwaren, List<BezwaarType> toegestaneBezwaarTypes, MultipartFile briefBestand, String notitie,
+		OrganisatieMedewerker organisatieMedewerker) throws IOException;
 
 	List<Client> getClientenMetBezwaarBrp(String bsn, LocalDate geboortedatum, OrganisatieMedewerker organisatieMedewerker);
 

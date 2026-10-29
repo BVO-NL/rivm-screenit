@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {FC, JSX, useContext} from "react"
+import {FC, JSX, use} from "react"
 import {Navigate, Route, Routes} from "react-router"
 import NotFound from "../pages/NotFoundPage"
 import {ClientContactActieType} from "../datatypes/ClientContactActieType"
@@ -34,7 +34,7 @@ import {KeycloakContext} from "../components/KeycloakProvider"
 import {selectBeschikbareActies} from "../selectors/ClientSelectors"
 
 export const AppRoutes: FC = () => {
-	const {initialized, keycloak} = useContext(KeycloakContext)
+	const {initialized, keycloak} = use(KeycloakContext)
 	const authenticatie = useSelector((state: State) => state.authenticatie)
 
 	const contactActions = useSelector(selectBeschikbareActies)

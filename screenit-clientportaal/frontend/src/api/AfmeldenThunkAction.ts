@@ -21,7 +21,8 @@
 import {Bevolkingsonderzoek} from "../datatypes/Bevolkingsonderzoek"
 import ScreenitBackend from "../utils/Backend"
 import {AfmeldingDto} from "../datatypes/afmelden/AfmeldingDto"
+import {ResponsePromise} from "ky"
 
-export const saveNieuwAfmeldMoment = (bvo: Bevolkingsonderzoek, afmeldingDto: AfmeldingDto) => () => {
+export const saveNieuwAfmeldMoment = (bvo: Bevolkingsonderzoek, afmeldingDto: AfmeldingDto) => (): ResponsePromise<unknown> => {
 	return ScreenitBackend.post(`afmelden/${bvo.toLowerCase()}`, {json: afmeldingDto})
 }

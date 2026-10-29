@@ -131,7 +131,8 @@ public enum JobType
 	CERVIX_CAMBIOS_INCLUSIE(
 		BatchApplicationType.CERVIX,
 		new Bevolkingsonderzoek[] { CERVIX },
-		new OrganisatieParameterKey[] { OrganisatieParameterKey.CERVIX_CAMBIOS_LABORATORIUM, OrganisatieParameterKey.CERVIX_PROJECT_CAMBIOS }),
+		new OrganisatieParameterKey[] { OrganisatieParameterKey.CERVIX_CAMBIOS_LABORATORIUM, OrganisatieParameterKey.CERVIX_PROJECT_CAMBIOS_UITSTRIJKJE,
+			OrganisatieParameterKey.CERVIX_PROJECT_CAMBIOS_ZAS }),
 
 	CERVIX_CONTROLE_MISSENDE_UITSLAGEN(BatchApplicationType.CERVIX, new Bevolkingsonderzoek[] { CERVIX },
 		new OrganisatieParameterKey[] { OrganisatieParameterKey.CERVIX_SIGNALERINGSTERMIJN_MISSENDE_UITSLAGEN }),
@@ -197,6 +198,8 @@ public enum JobType
 	SIGNALERING_GENDER(BatchApplicationType.GENERALIS, new Bevolkingsonderzoek[] { CERVIX, MAMMA }),
 
 	CLIENTGEGEVENS_VERWIJDEREN(BatchApplicationType.GENERALIS, new Bevolkingsonderzoek[] { COLON, CERVIX, MAMMA }),
+
+	OVERDRACHT_PERSOONSGEGEVENS_DATADUMP(BatchApplicationType.GENERALIS, new Bevolkingsonderzoek[] { COLON, CERVIX, MAMMA }),
 
 	;
 

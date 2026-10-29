@@ -24,7 +24,7 @@ import baseStyles from "../BasePage.module.scss"
 import styles from "./BezwaarWijzigenPage.module.scss"
 import KruimelpadComponent from "../../components/kruimelpad/KruimelpadComponent"
 import SpanWithHtml from "../../components/span/SpanWithHtml"
-import {useEffect} from "react"
+import {FC, useEffect} from "react"
 import {Container} from "react-bootstrap"
 import {Bezwaar, BezwaarMoment} from "../../datatypes/Bezwaar"
 import {getLaatsteBezwaarMoment, saveNieuwBezwaarMoment} from "../../api/BezwaarThunkAction"
@@ -42,7 +42,7 @@ import {BezwaarType} from "../../datatypes/BezwaarType"
 import {useNavigate} from "react-router"
 import properties from "./BezwaarWijzigenPage.json"
 
-const BezwaarWijzigenPage = () => {
+const BezwaarWijzigenPage: FC = () => {
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
 	const behoortTotMammaDoelgroep = useSelector(selectBehoortTotMammaDoelgroep)
@@ -56,12 +56,12 @@ const BezwaarWijzigenPage = () => {
 
 	useEffect(() => {
 		dispatch(getLaatsteBezwaarMoment())
-		return () => {
+		return (): void => {
 			dispatch(setLaatsteBezwaarMomentAction([]))
 		}
 	}, [dispatch])
 
-	function laadBezwaren() {
+	function laadBezwaren(): void {
 		alleBezwaren.filter(bezwaar => (
 			(behoortTotMammaDoelgroep && bezwaar.bevolkingsonderzoek === Bevolkingsonderzoek.MAMMA) ||
 			(behoortTotCervixDoelgroep && bezwaar.bevolkingsonderzoek === Bevolkingsonderzoek.CERVIX) ||
@@ -84,7 +84,7 @@ const BezwaarWijzigenPage = () => {
 		return ""
 	}
 
-	function opslaan(bezwaren: BezwaarMoment) {
+	function opslaan(bezwaren: BezwaarMoment): void {
 		dispatch(saveNieuwBezwaarMoment(bezwaren)).finally(() => navigate("/profiel"))
 	}
 
@@ -104,8 +104,8 @@ const BezwaarWijzigenPage = () => {
 																formikProps={formikProps}
 																buttonLabel={properties.opslaan.button.label}>
 
-						{bvoSpecifiekeBezwaren.length > 0 && bvoSpecifiekeBezwaren.map((b, index) =>
-							<BezwaarBlok bezwaar={b} key={`${b.type  }_${  index}`}
+						{bvoSpecifiekeBezwaren.length > 0 && bvoSpecifiekeBezwaren.map((b) =>
+							<BezwaarBlok bezwaar={b} key={`${b.type}_${b.bevolkingsonderzoek}`}
 										 onChange={(event) => formikProps.setFieldValue(String(alleBezwaren.indexOf(b)), event)}
 										 abstract={getBezwaarString(b.type, "abstract")}
 										 meer={getBezwaarString(b.type, "meer")} standalone={false}
@@ -117,9 +117,9 @@ const BezwaarWijzigenPage = () => {
 							<SpanWithHtml value={getString(properties.overige_zorgverleners.text)}/>
 						</div>
 
-						{zorgverlenerBezwaren.length > 0 && zorgverlenerBezwaren.map((b, index) =>
+						{zorgverlenerBezwaren.length > 0 && zorgverlenerBezwaren.map((b) =>
 							<BezwaarBlok bezwaar={b}
-										 key={`${b.type  }_${  index}`}
+										 key={`${b.type}_${b.bevolkingsonderzoek}`}
 										 onChange={(event) => formikProps.setFieldValue(String(alleBezwaren.indexOf(b)), event)}
 										 abstract={getBezwaarString(b.type, "abstract")}
 										 meer={getBezwaarString(b.type, "meer")} standalone={false}

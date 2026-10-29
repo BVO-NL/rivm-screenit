@@ -68,11 +68,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>nl.topicuszorg.hibernate-extensions</groupId>
             <artifactId>hibernate-extension-spring</artifactId>
             <classifier>tests</classifier>

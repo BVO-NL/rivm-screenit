@@ -21,6 +21,7 @@
 import TextBlobComponent from "./TextBlobComponent"
 import properties from "./BvoLandingBlobComponent.json"
 import {getString} from "../../utils/TekstPropertyUtil"
+import {FC} from "react"
 
 export type BvoLandingBlobComponentProps = {
 	afspraakMoment: string,
@@ -28,7 +29,7 @@ export type BvoLandingBlobComponentProps = {
 	extraTekst?: string
 }
 
-const BvoLandingBlobComponent = (props: BvoLandingBlobComponentProps) => {
+const BvoLandingBlobComponent: FC<BvoLandingBlobComponentProps> = (props) => {
     return (
 		<TextBlobComponent titel={getString(properties.afspraak.titel)}
 						   tekst={getString(properties.afspraak.moment, [props.afspraakMoment])}

@@ -43,6 +43,7 @@ import { EnumLabelPipe } from '@shared/pipes/enum-label/enum-label.pipe'
 import { isStringNullOfLeeg } from '@shared/utils/string-utils'
 import { clientContactActieLabels } from '@shared/utils/client-contact-actie-utils'
 import { StringsService } from '@shared/strings'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-notitie-dialog',
@@ -157,7 +158,7 @@ export class NotitieDialogComponent {
       .maakContact({
         clientId: this.clientService.clientId(),
         notitie,
-        datumTijd: new Date(),
+        datumTijd: DateService.nu(),
         acties: [{ type: ClientContactActieType.GEEN }],
       })
       .pipe(take(1))

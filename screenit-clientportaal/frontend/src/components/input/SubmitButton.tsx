@@ -21,6 +21,7 @@
 import {ArrowType} from "../vectors/ArrowIconComponent"
 import {Formik} from "formik"
 import Button from "./Button"
+import {FC} from "react"
 
 export type SubmitButtonProps = {
 	className?: string
@@ -31,7 +32,7 @@ export type SubmitButtonProps = {
 	lightStyle?: boolean
 }
 
-const SubmitButton = (props: SubmitButtonProps) => {
+const SubmitButton: FC<SubmitButtonProps> = (props) => {
 
     return (
         <Formik initialValues={{}}

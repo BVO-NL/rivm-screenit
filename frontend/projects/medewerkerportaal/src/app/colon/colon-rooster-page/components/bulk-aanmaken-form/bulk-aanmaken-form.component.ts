@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { afterNextRender, Component, DestroyRef, forwardRef, inject, Injector, OnInit, ChangeDetectionStrategy } from '@angular/core'
+import { afterNextRender, ChangeDetectorRef, Component, DestroyRef, forwardRef, inject, Injector, OnInit } from '@angular/core'
 import {
   ControlContainer,
   ControlValueAccessor,
@@ -44,12 +44,12 @@ import { WeekdagOptie } from '@shared/types/weekdag-optie'
 import { addDays, addMonths, addWeeks, isValid } from 'date-fns'
 import { formatDate } from '@shared/utils/date-utils'
 import { StringsService } from '@shared/strings'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-bulk-aanmaken',
   imports: [ReactiveFormsModule, DsCheckboxComponent, DsDatepickerComponent, DsDropdownComponent, DsWeekdaySelectorComponent],
   templateUrl: './bulk-aanmaken-form.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -68,8 +68,8 @@ export class BulkAanmakenFormComponent implements ControlValueAccessor, Validato
   protected readonly strings = inject(StringsService).getStrings()
   herhalingsfrequentie = ColonHerhalingsfrequentie
   dagen = TDS_DAGEN
-  maxDatum: string = addMonths(new Date(), COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN).toISOString()
-  minDatum: string = addDays(new Date(), 1).toISOString()
+  maxDatum: string = addMonths(DateService.nu(), COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN).toISOString()
+  minDatum: string = addDays(DateService.nu(), 1).toISOString()
   herhalingOpties = [
     {
       label: this.strings.colon.rooster.labels.nietHerhalen,
@@ -97,6 +97,7 @@ export class BulkAanmakenFormComponent implements ControlValueAccessor, Validato
   })
   private destroyRef: DestroyRef = inject(DestroyRef)
   private injector = inject(Injector)
+  private cdr = inject(ChangeDetectorRef)
   private onChange: ((value: ColonHerhaling) => void) | undefined
   private onTouched: (() => void) | undefined
 
@@ -117,6 +118,7 @@ export class BulkAanmakenFormComponent implements ControlValueAccessor, Validato
       )
 
       this.setValidators()
+      this.cdr.markForCheck()
     })
 
     this.herhalingForm.valueChanges.pipe(takeUntilDestroyed(), distinctUntilChanged()).subscribe(() => {
@@ -172,6 +174,7 @@ export class BulkAanmakenFormComponent implements ControlValueAccessor, Validato
     } else {
       this.herhalingForm.enable()
     }
+    this.cdr.markForCheck()
   }
 
   writeValue(obj: ColonHerhaling | null): void {
@@ -188,6 +191,7 @@ export class BulkAanmakenFormComponent implements ControlValueAccessor, Validato
     } else {
       this.herhalingForm.patchValue(obj, { emitEvent: false })
     }
+    this.cdr.markForCheck()
   }
 
   validate(): ValidationErrors | null {
@@ -211,6 +215,7 @@ export class BulkAanmakenFormComponent implements ControlValueAccessor, Validato
         }
 
         this.updateValidaties()
+        this.cdr.markForCheck()
       })
   }
 

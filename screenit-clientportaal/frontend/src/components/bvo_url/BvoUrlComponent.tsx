@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import {FC} from "react"
 import styles from "./BvoUrlComponent.module.scss"
 
 export type BvoUrlProperties = {
@@ -26,7 +27,7 @@ export type BvoUrlProperties = {
 	onClick?: () => void;
 }
 
-export const BvoUrlComponent = (props: BvoUrlProperties) => {
+export const BvoUrlComponent: FC<BvoUrlProperties> = (props) => {
 	return (
 		<div className={styles.infoLinkContainer}>
 			<a href={props.link} target="_blank" rel="noopener noreferrer" onClick={props.onClick}>

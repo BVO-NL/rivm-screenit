@@ -20,10 +20,11 @@
  */
 import { Component, inject, OnInit, signal } from '@angular/core'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
-import { DsButtonComponent, DsInputComponent, DsValidators } from '@topicus-rgp-ds/web'
+import { DsButtonComponent, DsInputComponent, DsValidators, MaxLengthDirective } from '@topicus-rgp-ds/web'
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Dialog, DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { TijdelijkAdresDto } from '@shared/types/algemeen/dto/tijdelijk-adres.dto'
+import { NotPersisted } from '@shared/types/not-presisted'
 import { ClientService } from '@/algemeen/services/client/client.service'
 import { ClientBrpGegevensDto } from '@shared/types/algemeen/dto/clientbrpgegevens.dto'
 import { filter, switchMap, take } from 'rxjs'
@@ -37,10 +38,11 @@ import { Required } from '@shared/types/autorisatie/required'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 import { StringsService } from '@shared/strings'
+import { MAX_KARAKTERS } from '@shared/constants'
 
 @Component({
   selector: 'app-brp-info-bewerken-modal',
-  imports: [BaseDialogComponent, DsButtonComponent, DsInputComponent, ReactiveFormsModule, AutorisatieDirective],
+  imports: [BaseDialogComponent, DsButtonComponent, DsInputComponent, ReactiveFormsModule, AutorisatieDirective, MaxLengthDirective],
   templateUrl: './brp-info-bewerken-modal.component.html',
   styleUrl: './brp-info-bewerken-modal.component.scss',
 })
@@ -50,6 +52,7 @@ export class BrpInfoBewerkenModalComponent implements OnInit {
   private readonly clientService = inject(ClientService)
   private readonly dialog = inject(Dialog)
   protected readonly strings = inject(StringsService).getStrings()
+  protected readonly MAX_KARAKTERS = MAX_KARAKTERS
 
   protected readonly tijdelijkAdres = signal<TijdelijkAdresDto | undefined>(undefined)
   protected readonly brpInfo = inject(DIALOG_DATA) as ClientBrpGegevensDto | undefined
@@ -82,7 +85,7 @@ export class BrpInfoBewerkenModalComponent implements OnInit {
 
   protected save() {
     if (this.brpInfo && this.brpInfo.id && this.brpGegevensForm.valid) {
-      const tijdelijkAdres: TijdelijkAdresDto = {
+      const tijdelijkAdres: NotPersisted<TijdelijkAdresDto> = {
         clientId: String(this.brpInfo.id),
         straat: this.brpGegevensForm.value.straat ?? '',
         huisnummer: this.brpGegevensForm.value.huisnummer ?? 0,

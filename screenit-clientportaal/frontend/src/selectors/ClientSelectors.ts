@@ -19,9 +19,15 @@
  * =========================LICENSE_END==================================
  */
 import {State} from "../datatypes/State"
+import {Client} from "../datatypes/Client"
+import {ClientContactActieType} from "../datatypes/ClientContactActieType"
+import {Persoon} from "../datatypes/Persoon"
+import {OverdrachtPersoonsgegevens} from "../datatypes/OverdrachtPersoonsgegevens"
 
-export const selectClient = (state: State) => state.client
+export const selectClient = (state: State): Client => state.client
 
-export const selectBeschikbareActies = (state: State) => state.client.beschikbareActies.beschikbareActies
+export const selectBeschikbareActies = (state: State): ClientContactActieType[] => state.client.beschikbareActies.beschikbareActies
 
-export const selectPersoon = (state: State) => state.client.persoon
+export const selectPersoon = (state: State): Persoon => state.client.persoon
+
+export const selectOverdrachtPersoonsgegevens = (state: State): OverdrachtPersoonsgegevens => state.client.overdrachtPersoonsgegevens

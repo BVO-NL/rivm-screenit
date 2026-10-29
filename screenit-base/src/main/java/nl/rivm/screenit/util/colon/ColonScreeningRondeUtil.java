@@ -23,8 +23,7 @@ package nl.rivm.screenit.util.colon;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.Comparator;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
@@ -37,8 +36,6 @@ import nl.rivm.screenit.model.colon.ColonScreeningRonde;
 import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.util.DateUtil;
-
-import org.springframework.beans.support.PropertyComparator;
 
 public class ColonScreeningRondeUtil
 {
@@ -117,8 +114,8 @@ public class ColonScreeningRondeUtil
 
 	public static boolean magUitnodigingMetFitMaken(ColonDossier dossier, int aantalRondesUitnodigingsbriefZonderFit)
 	{
-		List<ColonScreeningRonde> rondes = new ArrayList<>(dossier.getScreeningRondes());
-		Collections.sort(rondes, new PropertyComparator<>("creatieDatum", false, false));
+		var rondes = new ArrayList<>(dossier.getScreeningRondes());
+		rondes.sort(Comparator.comparing(ColonScreeningRonde::getCreatieDatum).reversed());
 		if (rondes.size() < aantalRondesUitnodigingsbriefZonderFit)
 		{
 			return true;

@@ -28,12 +28,12 @@ import {showToast} from "../utils/ToastUtil"
 import {FitStatus} from "../datatypes/colon/FitStatus"
 import {KyResponse} from "ky"
 
-export const getHuidigeFitStatus = () => (dispatch: Dispatch<ResetFitStatus>) => {
+export const getHuidigeFitStatus = () => (dispatch: Dispatch<ResetFitStatus>): Promise<ResetFitStatus> => {
 	return ScreenitBackend.get<FitStatus>("colon/fit/status").json()
 		.then(response => dispatch(setHuidigeFitStatusAction(response)))
 }
 
-export const saveFitAanvraag = () => () => {
+export const saveFitAanvraag = () => (): Promise<void> => {
 	return ScreenitBackend.put("colon/fit/aanvragen")
 		.then(() => {
 			showToast(getString(properties.toast.title), getString(properties.toast.description))

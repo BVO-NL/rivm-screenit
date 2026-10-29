@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {ClientContactActieType} from "./ClientContactActieType";
+import {ClientContactActieType} from "./ClientContactActieType"
 
 export type ContactActiesDto = {
     beschikbareActies: ClientContactActieType[];

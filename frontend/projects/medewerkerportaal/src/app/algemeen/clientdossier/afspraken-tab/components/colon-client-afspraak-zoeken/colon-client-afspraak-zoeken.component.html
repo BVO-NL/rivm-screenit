@@ -27,9 +27,9 @@
   @if (isTijdstipWijzigenBuitenGeplandeSlots()) {
     <div class="mt-3" data-testid="datum-tijd-buiten-rooster">
       <h4 class="pagina-sectie-header">{{ strings.algemeen.afspraken.verplaatsenDialog.afspraakZoekenStep.subtitel }}</h4>
-      <ds-datetimepicker class="datetimepicker" [label]="strings.algemeen.labels.datumTijd" [required]="true" [fullWidth]="true" [inForm]="true"
-                         [errorMessage]="{required: strings.algemeen.errors.verplicht(strings.algemeen.labels.datumTijd), invalidDateTime: strings.algemeen.errors.invalidDateTime}"
-                         [formControl]="datumTijdBuitenRoosterCtrl" data-testid="datum-tijd-buiten-rooster-veld"/>
+      <app-datum-tijd-picker class="datetimepicker" [label]="strings.algemeen.labels.datumTijd" [required]="true"
+                             [errorMessage]="{required: strings.algemeen.errors.verplicht(strings.algemeen.labels.datumTijd), invalidDateTime: strings.algemeen.errors.invalidDateTime}"
+                             [control]="datumTijdBuitenRoosterCtrl" data-testid="datum-tijd-buiten-rooster-veld"/>
     </div>
   }
   @if (gezocht() && !isTijdstipWijzigenBuitenGeplandeSlots()) {

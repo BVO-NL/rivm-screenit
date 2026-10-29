@@ -54,9 +54,9 @@ export default class VorigOnderzoekView extends Component<VorigOnderzoekViewStat
 	}
 
 	toggleOpengeklapt = (): void => {
-		this.setState({
-			opengeklapt: !this.state.opengeklapt,
-		})
+		this.setState(vorigeState => ({
+			opengeklapt: !vorigeState.opengeklapt,
+		}))
 	}
 
 	render(): JSX.Element {

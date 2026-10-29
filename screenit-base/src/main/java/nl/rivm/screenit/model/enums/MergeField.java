@@ -65,6 +65,7 @@ import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.cervix.CervixHuisarts;
 import nl.rivm.screenit.model.cervix.CervixHuisartsLocatie;
+import nl.rivm.screenit.model.cervix.CervixMonster;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
 import nl.rivm.screenit.model.cervix.enums.CervixLeeftijdcategorie;
@@ -130,7 +131,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.envers.query.AuditEntity;
 import org.krysalis.barcode4j.impl.AbstractBarcodeBean;
 import org.krysalis.barcode4j.impl.fourstate.RoyalMailCBCBean;
-import org.springframework.beans.support.PropertyComparator;
 
 import com.google.common.base.Strings;
 
@@ -2864,6 +2864,69 @@ public enum MergeField
 			}
 		},
 
+	CERVIX_CAMBIOSSTUDIE_MONSTERID_UITSTRIJKJE(
+		"_CAMBIOSSTUDIE_MONSTERID_UITSTRIJKJE",
+		MergeFieldTestType.OVERIGE,
+		String.class,
+		() -> "123456789",
+		NIET_NAAR_INPAKCENTRUM,
+		NIET_IN_HUISARTSBERICHT)
+		{
+			@Override
+			public Object getFieldValue(MailMergeContext context)
+			{
+
+				var uitslagMonster = getCervixUitslagMonster(context);
+				if (CervixMonsterUtil.isUitstrijkje(uitslagMonster))
+				{
+					return uitslagMonster.getMonsterId();
+				}
+				var uitnodiging = context.getCervixUitnodiging();
+				if (uitnodiging != null && uitnodiging.getMonsterType() == CervixMonsterType.UITSTRIJKJE && uitnodiging.getMonster() != null)
+				{
+					return uitnodiging.getMonster().getMonsterId();
+				}
+				return null;
+			}
+		},
+
+	CERVIX_CAMBIOSSTUDIE_MONSTERID_ZAS(
+		"_CAMBIOSSTUDIE_MONSTERID_ZAS",
+		MergeFieldTestType.OVERIGE,
+		String.class,
+		() -> "Z12345678",
+		NIET_NAAR_INPAKCENTRUM,
+		NIET_IN_HUISARTSBERICHT)
+		{
+			@Override
+			public Object getFieldValue(MailMergeContext context)
+			{
+				var uitslagMonster = getCervixUitslagMonster(context);
+				return CervixMonsterUtil.isZAS(uitslagMonster) ? uitslagMonster.getMonsterId() : null;
+			}
+		},
+
+	CERVIX_DATUM_HPV_ANALYSE(
+		"_DATUM_HPV_ANALYSE",
+		MergeFieldTestType.OVERIGE,
+		String.class,
+		() -> "01-01-2026",
+		NIET_NAAR_INPAKCENTRUM,
+		NIET_IN_HUISARTSBERICHT)
+		{
+			@Override
+			public Object getFieldValue(MailMergeContext context)
+			{
+				var uitslagMonster = getCervixUitslagMonster(context);
+				if (uitslagMonster != null && uitslagMonster.getLaatsteHpvBeoordeling() != null
+					&& uitslagMonster.getLaatsteHpvBeoordeling().getAnalyseDatum() != null)
+				{
+					return DateUtil.formatShortDate(uitslagMonster.getLaatsteHpvBeoordeling().getAnalyseDatum());
+				}
+				return null;
+			}
+		},
+
 	BMHKLAB_NAAM("_BMHKLAB_NAAM", MergeFieldTestType.BMHKLAB, "bmhkLaboratorium.naam", String.class)
 		{
 			@Override
@@ -4428,6 +4491,21 @@ public enum MergeField
 		return handtekening ? laboratorium.getHandtekeningMedischMircobioloog() : laboratorium.getMedischMircobioloog();
 	}
 
+	private static CervixMonster getCervixUitslagMonster(MailMergeContext context)
+	{
+
+		var brief = BriefUtil.getOrigineleBrief(context.getBrief());
+		while (brief instanceof CervixBrief cervixBrief)
+		{
+			if (cervixBrief.getMonster() != null)
+			{
+				return (CervixMonster) Hibernate.unproxy(cervixBrief.getMonster());
+			}
+			brief = BriefUtil.getOrigineleBrief(cervixBrief.getHerdruk());
+		}
+		return null;
+	}
+
 	private static String getValueVanHeraanmeldenTekstKey(ClientBrief<?, ?, ?> brief)
 	{
 		var heraanmeldenMergeVeldService = getBean(HeraanmeldenMergeVeldService.class);
@@ -4630,7 +4708,7 @@ public enum MergeField
 		if (colonUitnodigingen != null && colonUitnodigingen.size() > 1)
 		{
 			colonUitnodigingen = new ArrayList<>(colonUitnodigingen);
-			colonUitnodigingen.sort(new PropertyComparator<>("creatieDatum", false, false));
+			colonUitnodigingen.sort(Comparator.comparing(ColonUitnodiging::getCreatieDatum).reversed());
 			var eenNaLaatsteUitnodiging = colonUitnodigingen.get(1);
 			if (eenNaLaatsteUitnodiging.getGekoppeldeFitRegistratie() != null)
 			{

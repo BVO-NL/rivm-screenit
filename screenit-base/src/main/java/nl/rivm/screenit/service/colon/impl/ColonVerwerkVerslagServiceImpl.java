@@ -22,7 +22,7 @@ package nl.rivm.screenit.service.colon.impl;
  */
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -65,7 +65,6 @@ import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.support.PropertyComparator;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -356,7 +355,7 @@ public class ColonVerwerkVerslagServiceImpl implements ColonVerwerkVerslagServic
 		if (rondeVoorVerslag == null)
 		{
 			var screeningRondes = new ArrayList<>(dossier.getScreeningRondes());
-			Collections.sort(screeningRondes, new PropertyComparator<>("creatieDatum", false, false));
+			screeningRondes.sort(Comparator.comparing(ColonScreeningRonde::getCreatieDatum).reversed());
 
 			var heeftOngunstigeUitslagOuderDanOnderzoeksdatum = onderzoeksdatum == null
 				|| screeningRondes.stream().anyMatch(r -> isOngunstigeUitslagVerwerktVoorOnderzoeksdatum(r, onderzoeksdatum));

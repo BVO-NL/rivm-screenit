@@ -24,7 +24,7 @@ import {createPersoonAction} from "../actions/PersoonAction"
 import {AanhefDto} from "../datatypes/aanhef/AanhefDto"
 import {Persoon} from "../datatypes/Persoon"
 
-export const saveAanhef = (aanhef: AanhefDto) => (dispatch: Dispatch) => {
+export const saveAanhef = (aanhef: AanhefDto) => (dispatch: Dispatch): Promise<void> => {
 	return ScreenitBackend.put<Persoon>("persoon/aanhef", {json: aanhef}).json()
 		.then(response => {
 			dispatch(createPersoonAction(response))

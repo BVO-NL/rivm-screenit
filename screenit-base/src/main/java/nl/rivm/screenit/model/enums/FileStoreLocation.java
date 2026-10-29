@@ -106,7 +106,7 @@ public enum FileStoreLocation
 
 	BEZWAAR(File.separator + "algemeen" + File.separator + "client" + File.separator + "{id}" + File.separator + "bezwaar" + File.separator, false, true),
 
-	OVERDRACHT_PERSOONSGEVENS(
+	OVERDRACHT_PERSOONSGEGEVENS(
 		File.separator + "algemeen" + File.separator + "client" + File.separator + "{id}" + File.separator + "overdrachtpersoonsgegevens" + File.separator,
 		false,
 		true),

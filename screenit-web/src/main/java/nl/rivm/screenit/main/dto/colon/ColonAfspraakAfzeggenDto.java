@@ -21,8 +21,16 @@ package nl.rivm.screenit.main.dto.colon;
  * =========================LICENSE_END==================================
  */
 
-public record ColonAfspraakAfzeggenDto(
-	boolean briefTegenhouden,
-	String notitie)
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+public class ColonAfspraakAfzeggenDto
 {
+	boolean briefTegenhouden;
+
+	String notitie;
 }

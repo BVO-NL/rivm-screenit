@@ -18,13 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import {FC} from "react"
 import styles from "./HuisIcon.module.scss"
 
 export type HuisIconProps = {
     className?: string
 }
 
-const HuisIcon = (props: HuisIconProps) => {
+const HuisIcon: FC<HuisIconProps> = (props) => {
     return (
         <svg className={props.className} version="1.1" id="Layer_1" xmlns="http:
              viewBox="0 0 47 47" xmlSpace="preserve">

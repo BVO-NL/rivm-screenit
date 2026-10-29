@@ -21,11 +21,12 @@ package nl.rivm.screenit.main.controller.cervix;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.persistence.EntityNotFoundException;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.dto.cervix.CervixCisHistorieDto;
-import nl.rivm.screenit.main.exception.EntityNietGevondenException;
 import nl.rivm.screenit.main.service.cervix.CervixCisHistorieService;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
@@ -64,7 +65,7 @@ public class CervixCisHistorieController
 		Bevolkingsonderzoek.CERVIX })
 	ResponseEntity<CervixCisHistorieDto> getCisHistorie(@PathVariable Long clientId)
 	{
-		var client = clientService.getClientById(clientId).orElseThrow(() -> new EntityNietGevondenException("Client", clientId));
+		var client = clientService.getClientById(clientId).orElseThrow(() -> new EntityNotFoundException("Client niet gevonden met id: '" + clientId + "'"));
 		var historie = cisHistorieService.getCisHistorieByClient(client);
 		return ResponseEntity.ok(historie);
 	}

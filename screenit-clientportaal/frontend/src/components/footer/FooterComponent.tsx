@@ -25,8 +25,9 @@ import {getBevolkingsonderzoekNederlandUrl, getContactUrl} from "../../utils/Url
 import properties from "./FooterComponent.json"
 import datadogService from "../../services/DatadogService"
 import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
+import {FC} from "react"
 
-const FooterComponent = () => {
+const FooterComponent: FC = () => {
 	return (
 		<Row className={classNames(styles.footer, "footer", "align-items-center")}>
 			<Col md={4}>

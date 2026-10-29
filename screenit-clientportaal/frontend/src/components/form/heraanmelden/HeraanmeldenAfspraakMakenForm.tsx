@@ -25,12 +25,13 @@ import SubmitForm from "../SubmitForm"
 import {FormControl, FormControlLabel, Radio, RadioGroup} from "@mui/material"
 import styles from "./HeraanmeldenAfspraakMakenForm.module.scss"
 import properties from "../../../pages/bvo/gedeeld/HeraanmeldenPage.json"
+import {FC} from "react"
 
 export type HeraanmeldenAfspraakMakenFormProps = {
 	onSubmitSucces: (value: boolean) => void
 }
 
-const HeraanmeldenAfspraakMakenForm = (props: HeraanmeldenAfspraakMakenFormProps) => {
+const HeraanmeldenAfspraakMakenForm: FC<HeraanmeldenAfspraakMakenFormProps> = (props) => {
 
 	type NieuweAfspraakMaken = {
 		afspraakMaken: string
@@ -76,7 +77,7 @@ const HeraanmeldenAfspraakMakenForm = (props: HeraanmeldenAfspraakMakenFormProps
 					</FormControl>
 				</SubmitForm>)}
 		</Formik>
-	</>;
+	</>
 }
 
 export default HeraanmeldenAfspraakMakenForm

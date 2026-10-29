@@ -31,11 +31,12 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.EntityNotFoundException;
+
 import lombok.Getter;
 import lombok.Setter;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.main.exception.EntityNietGevondenException;
 import nl.rivm.screenit.main.service.colon.ColonIntakeafspraakService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
@@ -621,7 +622,7 @@ public class ColonClientAfspraakVerplaatsenPanel extends GenericPanel<ColonIntak
 		{
 			nieuweAfspraak = intakeafspraakService.maakNieuweAfspraak(getModelObject().getClient(), gekozenVrijSlotZonderKamer, DateUtil.toLocalDateTime(datumTijdBuitenRooster));
 		}
-		catch (EntityNietGevondenException ex)
+		catch (EntityNotFoundException ex)
 		{
 			return List.of(ex.getMessage());
 		}

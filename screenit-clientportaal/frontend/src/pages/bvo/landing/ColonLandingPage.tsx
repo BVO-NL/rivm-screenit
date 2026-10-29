@@ -58,7 +58,7 @@ const ColonLandingPage: FC<Props> = ({dossier, beschikbareActies}) => {
 
 	return (
 		<Container fluid className={styles.content}>
-			<KruimelpadComponent className={bvoStyles.colon} onTerugKlik={() => navigate('/')}/>
+			<KruimelpadComponent className={bvoStyles.colon} onTerugKlik={() => navigate("/")}/>
 			<Row className={landingPageStyle.inleiding}>
 				<Col md={8}>
 					<BvoInleidingComponent/>

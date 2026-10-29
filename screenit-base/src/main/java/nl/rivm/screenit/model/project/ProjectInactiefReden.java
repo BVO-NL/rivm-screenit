@@ -43,11 +43,13 @@ public enum ProjectInactiefReden
 
 	VALT_UIT_2DE_BUIS_PROJECT("Cliënt geïnactiveerd door afwijkingen in het vergelijkend onderzoek project"),
 
-	INACTIVATIE_VERGELIJKEND_ONDERZOEK("Cliënt geïnactiveerd door afwijkingen in het vergelijkend onderzoek project");
+	INACTIVATIE_VERGELIJKEND_ONDERZOEK("Cliënt geïnactiveerd door afwijkingen in het vergelijkend onderzoek project"),
+
+	VERVANGENDE_BRIEF_ONTVANGEN("Cliënt geïnactiveerd na ontvangst vervangende brief");
 
 	public final String naam;
 
-	private ProjectInactiefReden(String naam)
+	ProjectInactiefReden(String naam)
 	{
 		this.naam = naam;
 	}

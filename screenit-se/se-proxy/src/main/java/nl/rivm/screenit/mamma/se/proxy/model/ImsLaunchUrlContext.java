@@ -21,6 +21,8 @@ package nl.rivm.screenit.mamma.se.proxy.model;
  * =========================LICENSE_END==================================
  */
 
-public record ImsLaunchUrlContext(String gebruikersnaam, String bsn, String uitnodigingsNr)
+import org.jspecify.annotations.Nullable;
+
+public record ImsLaunchUrlContext(String gebruikersnaam, @Nullable String bsn, @Nullable String uitnodigingsNr)
 {
 }

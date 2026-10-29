@@ -120,3 +120,12 @@ ds-tab-group {
 ds-footer:not(:has(.ds-footer__footer-actions:not(:empty))) {
   display: none;
 }
+
+.ds-form-element-host.zonder-validatie {
+  .ds-form-element-container {
+    margin-bottom: 0.5rem;
+  }
+  .ds-form-element-hint-error-container {
+    display: none;
+  }
+}

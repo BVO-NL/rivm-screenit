@@ -21,27 +21,132 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
+import lombok.extern.slf4j.Slf4j;
+
+import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.model.AanvraagBriefStatus;
+import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.EnovationHuisarts;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.Persoon;
+import nl.rivm.screenit.model.ScreeningRonde;
+import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
+import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens_;
+import nl.rivm.screenit.model.algemeen.OverdrachtType;
+import nl.rivm.screenit.model.berichten.Verslag;
+import nl.rivm.screenit.model.cervix.CervixDossier;
+import nl.rivm.screenit.model.cervix.CervixMonster;
+import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
+import nl.rivm.screenit.model.cervix.CervixUitstrijkje;
+import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.colon.ColonScreeningRonde;
+import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
+import nl.rivm.screenit.model.colon.enums.ColonConclusieType;
+import nl.rivm.screenit.model.colon.enums.ColonFitRegistratieStatus;
+import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
+import nl.rivm.screenit.model.enums.FileStoreLocation;
+import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.model.mamma.MammaAfspraak;
+import nl.rivm.screenit.model.mamma.MammaBeoordeling;
+import nl.rivm.screenit.model.mamma.MammaDossier;
+import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag;
+import nl.rivm.screenit.model.mamma.MammaLezing;
+import nl.rivm.screenit.model.mamma.MammaOnderzoek;
+import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
+import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
+import nl.rivm.screenit.model.mamma.enums.MammaDownloadDoel;
+import nl.rivm.screenit.model.verslag.NullFlavourQuantity;
+import nl.rivm.screenit.model.verslag.Quantity;
+import nl.rivm.screenit.model.verslag.VraagElement;
+import nl.rivm.screenit.repository.algemeen.OverdrachtPersoonsgegevensRepository;
+import nl.rivm.screenit.repository.cervix.CervixBaseMonsterRepository;
+import nl.rivm.screenit.repository.mamma.MammaDownloadOnderzoekenVerzoekRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BaseOverdrachtPersoonsgegevensService;
-import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.RondeNummerService;
+import nl.rivm.screenit.service.UploadDocumentService;
+import nl.rivm.screenit.service.colon.ColonBaseFitService;
+import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
+import nl.rivm.screenit.service.mamma.MammaBaseLaesieService;
+import nl.rivm.screenit.service.mamma.MammaBaseOnderzoekService;
+import nl.rivm.screenit.service.mamma.MammaBaseUitwisselportaalService;
+import nl.rivm.screenit.util.AdresUtil;
+import nl.rivm.screenit.util.NaamUtil;
+import nl.rivm.screenit.util.StringUtil;
+import nl.rivm.screenit.util.WorkbookPdfUtil;
+import nl.rivm.screenit.util.cervix.CervixCisHistoryUtil;
+import nl.rivm.screenit.util.cervix.CervixMonsterUtil;
+import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
+import nl.topicuszorg.hibernate.object.model.HibernateObject;
+import nl.topicuszorg.organisatie.model.Adres;
 
+import org.apache.commons.beanutils.PropertyUtilsBean;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
+import static nl.rivm.screenit.specification.algemeen.OverdrachtPersoonsgegevensSpecification.heeftClient;
+import static nl.rivm.screenit.specification.algemeen.OverdrachtPersoonsgegevensSpecification.heeftDataDump;
+import static nl.rivm.screenit.specification.algemeen.OverdrachtPersoonsgegevensSpecification.heeftType;
+
+@Slf4j
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
 public class BaseOverdrachtPersoonsgegevensServiceImpl implements BaseOverdrachtPersoonsgegevensService
 {
+	private static final Comparator<ScreeningRonde<?, ?, ?, ?>> SORTEER_OP_CREATIE_DATUM = Comparator.comparing(ScreeningRonde::getCreatieDatum);
+
 	@Autowired
-	private HibernateService hibernateService;
+	private OverdrachtPersoonsgegevensRepository repository;
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
@@ -49,25 +154,925 @@ public class BaseOverdrachtPersoonsgegevensServiceImpl implements BaseOverdracht
 	@Autowired
 	private BaseBriefService briefService;
 
+	@Autowired
+	private MammaBaseUitwisselportaalService baseUitwisselportaalService;
+
+	@Autowired
+	private MammaBaseOnderzoekService mammaOnderzoekService;
+
+	@Autowired
+	private ApplicationEventPublisher applicationEventPublisher;
+
+	@Autowired
+	private UploadDocumentService uploadDocumentService;
+
+	@Autowired
+	private LogService logService;
+
+	@Autowired
+	private RondeNummerService rondeNummerService;
+
+	@Autowired
+	private MammaBaseLaesieService baseLaesieService;
+
+	@Autowired
+	private MammaBaseBeoordelingService baseBeoordelingService;
+
+	@Autowired
+	private ColonBaseFitService colonBaseFitService;
+
+	@Autowired
+	private CervixBaseMonsterRepository cervixBaseMonsterRepository;
+
+	@Autowired
+	private MammaDownloadOnderzoekenVerzoekRepository mammaDownloadOnderzoekVerzoekRepository;
+
 	@Override
-	public void maakOverdrachtVerzoek(Client client)
+	@Transactional
+	public void maakOverdrachtVerzoek(Client client, OverdrachtPersoonsgegevens overdrachtPersoonsgegevens, OrganisatieMedewerker ingelogdeGebruiker) throws IOException
 	{
 		AlgemeneBrief brief = null;
-		if (client.getPersoon().getDatumVertrokkenUitNederland() == null)
-		{
-			brief = briefService.maakAlgemeneBrief(client, BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_AANVRAAG);
-		}
+
 		var overdracht = new OverdrachtPersoonsgegevens();
 		overdracht.setClient(client);
-		overdracht.setVerstuurdeAanvraagbrief(brief);
-		overdracht.setStatus(AanvraagBriefStatus.BRIEF);
 		overdracht.setStatusDatum(currentDateSupplier.getDate());
-		overdracht.setBkGegevens(false);
-		overdracht.setBkBeelden(false);
-		overdracht.setBmhkGegevens(false);
-		overdracht.setDkGegevens(false);
-		hibernateService.saveOrUpdate(overdracht);
+		overdracht.setType(overdrachtPersoonsgegevens.getType());
+
+		if (overdrachtPersoonsgegevens.getType() == OverdrachtType.CLIENTPORTAAL)
+		{
+			overdracht.setBkGegevens(overdrachtPersoonsgegevens.getBkGegevens());
+			overdracht.setBkBeelden(overdrachtPersoonsgegevens.getBkBeelden());
+			overdracht.setBmhkGegevens(overdrachtPersoonsgegevens.getBmhkGegevens());
+			overdracht.setDkGegevens(overdrachtPersoonsgegevens.getDkGegevens());
+			overdracht.setStatus(AanvraagBriefStatus.VERWERKT);
+		}
+		else
+		{
+			if (client.getPersoon().getDatumVertrokkenUitNederland() == null)
+			{
+				brief = briefService.maakAlgemeneBrief(client, BriefType.CLIENT_INZAGE_PERSOONSGEGEVENS_AANVRAAG);
+			}
+			overdracht.setVerstuurdeAanvraagbrief(brief);
+			overdracht.setStatus(AanvraagBriefStatus.BRIEF);
+			overdracht.setBkGegevens(false);
+			overdracht.setBkBeelden(false);
+			overdracht.setBmhkGegevens(false);
+			overdracht.setDkGegevens(false);
+		}
+
+		repository.persist(overdracht);
+
+		if (overdracht.getBkBeelden())
+		{
+			var onderzoeken = mammaOnderzoekService.getOnderzoekenMetBeelden(client);
+			if (!onderzoeken.isEmpty())
+			{
+				var downloadVerzoek = baseUitwisselportaalService.maakDownloadVerzoek(onderzoeken, ingelogdeGebruiker, MammaDownloadDoel.OVERDRACHT_PERSOONSGEGEVENS);
+				overdracht.setMammaDownloadOnderzoekenVerzoek(downloadVerzoek);
+				applicationEventPublisher.publishEvent(new StartDownloadingEvent());
+			}
+		}
+	}
+
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void onStartDownloading(StartDownloadingEvent event)
+	{
+		baseUitwisselportaalService.startDownloading();
+	}
+
+	private record StartDownloadingEvent()
+	{
+	}
+
+	@Override
+	@Transactional
+	public void maakPdf(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens, OutputStream outputStream, Account account)
+	{
+		try (var workbook = bouwWorkbook(overdrachtPersoonsgegevens))
+		{
+			WorkbookPdfUtil.schrijfAlsPdf(workbook, outputStream);
+			logService.logGebeurtenis(LogGebeurtenis.CLIENT_OVERDRACHT_PERSOONSGEGEVENS_GEDOWNLOAD, account, overdrachtPersoonsgegevens.getClient());
+		}
+		catch (Exception e)
+		{
+			LOG.error(e.getMessage(), e);
+			throw new IllegalStateException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	@Transactional
+	public void genereerEnPersisteerDataDump(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens)
+	{
+		File pdfFile = null;
+		File zipFile = null;
+		try (var workbook = bouwWorkbook(overdrachtPersoonsgegevens))
+		{
+			pdfFile = File.createTempFile("overdracht-persoonsgegevens-datadump-", ".pdf");
+			try (var fileOutputStream = new FileOutputStream(pdfFile))
+			{
+				WorkbookPdfUtil.schrijfAlsPdf(workbook, fileOutputStream);
+			}
+
+			var beeldenVerzoek = overdrachtPersoonsgegevens.getMammaDownloadOnderzoekenVerzoek();
+			File beeldenZipFile = null;
+			var beeldenZipBestand = beeldenVerzoek != null && beeldenVerzoek.getZipBestand() != null ? beeldenVerzoek.getZipBestand() : null;
+			if (Boolean.TRUE.equals(overdrachtPersoonsgegevens.getBkBeelden()) && beeldenZipBestand != null)
+			{
+				beeldenZipFile = uploadDocumentService.load(beeldenZipBestand);
+			}
+			zipFile = voegPdfToeAanZip(pdfFile, beeldenZipFile);
+
+			var uploadDocument = new UploadDocument(zipFile, "clientgegevens.zip", "application/zip", true);
+			uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.OVERDRACHT_PERSOONSGEGEVENS, overdrachtPersoonsgegevens.getClient().getId());
+
+			overdrachtPersoonsgegevens.setGegenereerdeDataDump(uploadDocument);
+			overdrachtPersoonsgegevens.setDataDumpGegenereerdOp(currentDateSupplier.getLocalDateTime());
+
+			if (beeldenZipBestand != null)
+			{
+				uploadDocumentService.delete(beeldenZipBestand);
+				overdrachtPersoonsgegevens.setMammaDownloadOnderzoekenVerzoek(null);
+				mammaDownloadOnderzoekVerzoekRepository.delete(beeldenVerzoek);
+			}
+
+			logService.logGebeurtenis(LogGebeurtenis.CLIENT_OVERDRACHT_PERSOONSGEGEVENS_GEGENEREERD, overdrachtPersoonsgegevens.getClient());
+		}
+		catch (Exception e)
+		{
+			LOG.error(e.getMessage(), e);
+			throw new IllegalStateException(e.getMessage(), e);
+		}
+		finally
+		{
+			verwijderTijdelijkBestand(pdfFile);
+			verwijderTijdelijkBestand(zipFile);
+		}
+	}
+
+	private void verwijderTijdelijkBestand(File file)
+	{
+		if (file != null && file.exists() && !file.delete())
+		{
+			LOG.warn("Tijdelijk bestand {} is niet verwijderd", file.getPath());
+		}
+	}
+
+	private File voegPdfToeAanZip(File pdfFile, File beeldenZipFile) throws IOException
+	{
+		var zipFile = File.createTempFile("overdracht-persoonsgegevens-datadump-", ".zip");
+		try (var zipOut = new ZipOutputStream(new FileOutputStream(zipFile)))
+		{
+			if (beeldenZipFile != null)
+			{
+				try (var zipIn = new ZipInputStream(new FileInputStream(beeldenZipFile)))
+				{
+					ZipEntry entry;
+					while ((entry = zipIn.getNextEntry()) != null)
+					{
+						zipOut.putNextEntry(new ZipEntry(entry.getName()));
+						zipIn.transferTo(zipOut);
+						zipOut.closeEntry();
+					}
+				}
+			}
+
+			zipOut.putNextEntry(new ZipEntry("clientgegevens.pdf"));
+			Files.copy(pdfFile.toPath(), zipOut);
+			zipOut.closeEntry();
+		}
+		return zipFile;
+	}
+
+	@Override
+	@Transactional
+	public void verwijderDataDump(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens)
+	{
+		if (overdrachtPersoonsgegevens.getGegenereerdeDataDump() != null)
+		{
+			uploadDocumentService.delete(overdrachtPersoonsgegevens.getGegenereerdeDataDump());
+
+			overdrachtPersoonsgegevens.setGegenereerdeDataDump(null);
+			repository.persist(overdrachtPersoonsgegevens);
+		}
+	}
+
+	@Override
+	public OverdrachtPersoonsgegevens getOverdrachtPersoonsgegevensVoorClient(Client client)
+	{
+		return repository.findFirst(heeftClient(client).and(heeftDataDump()).and(heeftType(OverdrachtType.CLIENTPORTAAL)),
+			Sort.by(Sort.Direction.DESC, OverdrachtPersoonsgegevens_.DATA_DUMP_GEGENEREERD_OP)).orElse(null);
+	}
+
+	private Workbook bouwWorkbook(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens)
+	{
+		var workbook = new XSSFWorkbook();
+
+		var createHelper = workbook.getCreationHelper();
+
+		var cellStyleDate = workbook.createCellStyle();
+		var cellStyleDateTime = workbook.createCellStyle();
+
+		cellStyleDate.setDataFormat(createHelper.createDataFormat().getFormat(Constants.DEFAULT_DATE_FORMAT));
+		cellStyleDateTime.setDataFormat(createHelper.createDataFormat().getFormat(Constants.DEFAULT_DATE_TIME_SECONDS_FORMAT));
+
+		var client = overdrachtPersoonsgegevens.getClient();
+		var persoon = client.getPersoon();
+		addClientGegevens(workbook, createHelper, cellStyleDate, persoon);
+		if (Boolean.TRUE.equals(overdrachtPersoonsgegevens.getDkGegevens()))
+		{
+			addDkGegevens(workbook, cellStyleDate, cellStyleDateTime, client.getColonDossier());
+		}
+		if (Boolean.TRUE.equals(overdrachtPersoonsgegevens.getBmhkGegevens()))
+		{
+			addBmhkGegevens(workbook, cellStyleDateTime, client.getCervixDossier());
+		}
+		if (Boolean.TRUE.equals(overdrachtPersoonsgegevens.getBkGegevens()))
+		{
+			addBkGegevens(workbook, cellStyleDateTime, client.getMammaDossier());
+		}
+		return workbook;
+	}
+
+	private void addBkGegevens(Workbook workbook, CellStyle cellStyleDateTime, MammaDossier mammaDossier)
+	{
+		var sheet = workbook.createSheet(Bevolkingsonderzoek.MAMMA.getNaam());
+		var rondes = new ArrayList<>(mammaDossier.getScreeningRondes());
+		rondes.sort(SORTEER_OP_CREATIE_DATUM);
+
+		addRow(sheet, "Doelgroep", StringUtil.enumName2readableString(mammaDossier.getDoelgroep().name()), null);
+		for (var ronde : rondes)
+		{
+			addRow(sheet, "Ronde", rondeNummerService.geefRondeNummer(ronde), ronde.getCreatieDatum(), cellStyleDateTime);
+			addBkHuisarts(cellStyleDateTime, sheet, ronde);
+			addBkOnderzoeken(cellStyleDateTime, sheet, ronde);
+			addBKFollowUpVerslagen(cellStyleDateTime, sheet, ronde);
+			addEmptyRow(sheet);
+		}
+	}
+
+	private void addBkHuisarts(CellStyle cellStyleDateTime, Sheet sheet, MammaScreeningRonde ronde)
+	{
+		var huisarts = ronde.getHuisarts();
+		if (huisarts != null)
+		{
+			addRow(sheet, "Huisarts", getVolledigeHuisArtsTekst(huisarts), ronde.getDatumVastleggenHuisarts(), cellStyleDateTime);
+		}
+		else
+		{
+			var geenHuisartsOptie = ronde.getGeenHuisartsOptie();
+			if (geenHuisartsOptie != null)
+			{
+				addRow(sheet, "Huisarts", geenHuisartsOptie.name(), ronde.getDatumVastleggenHuisarts(), cellStyleDateTime);
+			}
+		}
+	}
+
+	private void addBkOnderzoeken(CellStyle cellStyleDateTime, Sheet sheet, MammaScreeningRonde ronde)
+	{
+		ronde.getUitnodigingen().stream().flatMap((uitnodiging) -> uitnodiging.getAfspraken().stream()).forEach(afspraak ->
+		{
+			addBkAfspraakIdentificatie(cellStyleDateTime, sheet, afspraak);
+			addBkOnderzoekSe(cellStyleDateTime, sheet, afspraak);
+			addBkBeoordelingen(cellStyleDateTime, sheet, afspraak.getOnderzoek());
+		});
+	}
+
+	private void addBkLaesies(CellStyle cellStyleDateTime, Sheet sheet, MammaBeoordeling beoordeling)
+	{
+		if (beoordeling.getVerslagLezing() != null)
+		{
+			var laesieString = baseLaesieService.getAllLaesieTekstVoorVerslagLezing(beoordeling.getVerslagLezing());
+			addRow(sheet, "Laesies", laesieString, beoordeling.getStatusDatum(), cellStyleDateTime);
+		}
+	}
+
+	private void addBkNevenbevindingen(CellStyle cellStyleDateTime, Sheet sheet, MammaBeoordeling beoordeling)
+	{
+		if (baseBeoordelingService.heeftBeoordelingNevenbevindingen(beoordeling))
+		{
+			var nevenbevindingenString = baseBeoordelingService.getMammaLezingEnumsTekst(MammaLezing::getNevenbevindingen, beoordeling.getEersteLezing(),
+				beoordeling.getTweedeLezing());
+			var nevenbevindingOpmerkingTekst = baseBeoordelingService.getNevenbevindingOpmerkingTekst("\n", beoordeling.getEersteLezing(), beoordeling.getTweedeLezing());
+			addRow(sheet, "Nevenbevindingen", nevenbevindingenString, beoordeling.getStatusDatum(), cellStyleDateTime);
+			if (nevenbevindingOpmerkingTekst != null)
+			{
+				addRow(sheet, "Nevenbevindingen opmerking", nevenbevindingOpmerkingTekst, beoordeling.getStatusDatum(), cellStyleDateTime);
+			}
+		}
+	}
+
+	private void addBkBeoordelingen(CellStyle cellStyleDateTime, Sheet sheet, MammaOnderzoek onderzoek)
+	{
+		if (onderzoek != null)
+		{
+			for (var beoordeling : onderzoek.getBeoordelingen())
+			{
+				if (MammaBeoordelingStatus.isUitslagStatus(beoordeling.getStatus()))
+				{
+					addRow(sheet, "Uitslag", beoordeling.getStatus().getNaam(), beoordeling.getStatusDatum(), cellStyleDateTime);
+					addBkLaesies(cellStyleDateTime, sheet, beoordeling);
+					addBkNevenbevindingen(cellStyleDateTime, sheet, beoordeling);
+				}
+			}
+		}
+	}
+
+	private void addBkOnderzoekSe(CellStyle cellStyleDateTime, Sheet sheet, MammaAfspraak afspraak)
+	{
+		var label = "Afspraak";
+		var status = StringUtil.enumName2readableString(afspraak.getStatus().name());
+		var se = afspraak.getStandplaatsPeriode().getScreeningsEenheid().getNaam();
+		var datum = afspraak.getVanaf();
+		var densiteit = "";
+
+		var onderzoek = afspraak.getOnderzoek();
+		if (onderzoek != null)
+		{
+			status = StringUtil.enumName2readableString(onderzoek.getStatus().name());
+			se = onderzoek.getScreeningsEenheid().getNaam();
+			datum = onderzoek.getAfgerondOp() != null ? onderzoek.getAfgerondOp() : onderzoek.getCreatieDatum();
+			label = "Onderzoek";
+
+			var mammografie = onderzoek.getMammografie();
+			if (mammografie != null && mammografie.getDensiteit() != null)
+			{
+				densiteit = ", densiteit: " + mammografie.getDensiteit();
+			}
+		}
+		addRow(sheet, label, status + " : " + se + densiteit, datum, cellStyleDateTime);
+	}
+
+	private void addBkAfspraakIdentificatie(CellStyle cellStyleDateTime, Sheet sheet, MammaAfspraak afspraak)
+	{
+		var identificatienummer = afspraak.getIdentificatienummer();
+		var identificatieSoort = afspraak.getIdentificatiesoort();
+		if (identificatieSoort != null)
+		{
+			addRow(sheet, "Identificatie",
+				StringUtil.enumName2readableString(identificatieSoort.name()) + " : " + identificatienummer,
+				afspraak.getIngeschrevenOp(),
+				cellStyleDateTime);
+		}
+	}
+
+	private void addBKFollowUpVerslagen(CellStyle cellStyleDateTime, Sheet sheet, MammaScreeningRonde ronde)
+	{
+		for (var verslag : ronde.getFollowUpVerslagen())
+		{
+			addVerslagRow(cellStyleDateTime, sheet, verslag);
+		}
+		for (var radiologieVerslag : ronde.getFollowUpRadiologieVerslagen())
+		{
+			addMammaFollowUpRadiologieverslagRow(cellStyleDateTime, sheet, radiologieVerslag);
+		}
+	}
+
+	private void addDkGegevens(Workbook workbook, CellStyle cellStyleDate, CellStyle cellStyleDateTime, ColonDossier dossier)
+	{
+		var sheet = workbook.createSheet(Bevolkingsonderzoek.COLON.getNaam());
+		List<ColonScreeningRonde> rondes = new ArrayList<>(dossier.getScreeningRondes());
+		rondes.sort(SORTEER_OP_CREATIE_DATUM);
+		for (var ronde : rondes)
+		{
+			addRow(sheet, "Ronde", rondeNummerService.geefRondeNummer(ronde), ronde.getCreatieDatum(), cellStyleDateTime);
+			addDkHuisarts(cellStyleDateTime, sheet, ronde);
+			addFitRegistraties(cellStyleDateTime, sheet, ronde);
+			addIntakeConclusies(cellStyleDate, cellStyleDateTime, sheet, ronde);
+			addDkVerslagen(cellStyleDateTime, sheet, ronde);
+			addEmptyRow(sheet);
+		}
+		sheet.autoSizeColumn(0);
+		sheet.autoSizeColumn(2);
+	}
+
+	private void addDkHuisarts(CellStyle cellStyleDateTime, Sheet sheet, ColonScreeningRonde ronde)
+	{
+		var huisarts = ronde.getHuisarts();
+		if (huisarts != null)
+		{
+			addRow(sheet, "Huisarts", getVolledigeHuisArtsTekst(huisarts), ronde.getDatumVastleggenHuisarts(), cellStyleDateTime);
+		}
+	}
+
+	private void addFitRegistraties(CellStyle cellStyleDateTime, Sheet sheet, ColonScreeningRonde ronde)
+	{
+		ronde.getFitRegistraties().stream()
+			.filter(test -> test.getStatus() == ColonFitRegistratieStatus.UITGEVOERD && ColonFitRegistratieUtil.heeftUitslag(test))
+			.forEach(test ->
+			{
+				var interpretatie = ColonFitRegistratieUtil.getInterpretatie(test, test.getStatus(), false).toLowerCase();
+				addRow(sheet, "Uitslag FIT (" + interpretatie + ")", colonBaseFitService.getToonbareWaarde(test),
+					test.getStatusDatum(),
+					cellStyleDateTime);
+			});
+	}
+
+	private void addIntakeConclusies(CellStyle cellStyleDate, CellStyle cellStyleDateTime, Sheet sheet, ColonScreeningRonde ronde)
+	{
+		for (var afspraak : ronde.getAfspraken())
+		{
+			var conclusie = afspraak.getConclusie();
+			if (afspraak.getStatus() == ColonAfspraakStatus.UITGEVOERD && conclusie != null)
+			{
+				addRow(sheet, "Conclusie intake afspraak", conclusie.getType(), conclusie.getDatum(), cellStyleDateTime);
+				if (conclusie.getType() == ColonConclusieType.COLOSCOPIE)
+				{
+					addRow(sheet, "Datum coloscopie", conclusie.getDatumColoscopie(), conclusie.getDatum(), cellStyleDate, cellStyleDateTime);
+				}
+			}
+		}
+	}
+
+	private void addDkVerslagen(CellStyle cellStyleDateTime, Sheet sheet, ColonScreeningRonde ronde)
+	{
+		for (var verslag : ronde.getVerslagen())
+		{
+			addVerslagRow(cellStyleDateTime, sheet, verslag);
+		}
+	}
+
+	private void addBmhkGegevens(Workbook workbook, CellStyle cellStyleDateTime, CervixDossier dossier)
+	{
+		var sheet = workbook.createSheet(Bevolkingsonderzoek.CERVIX.getNaam());
+		List<CervixScreeningRonde> rondes = new ArrayList<>(dossier.getScreeningRondes());
+		rondes.sort(SORTEER_OP_CREATIE_DATUM);
+		for (var ronde : rondes)
+		{
+			addRow(sheet, "Ronde", rondeNummerService.geefRondeNummer(ronde), ronde.getCreatieDatum(), cellStyleDateTime);
+			addBmhkUitslagen(cellStyleDateTime, sheet, ronde);
+			addBmhkVerslagen(cellStyleDateTime, sheet, ronde);
+			addEmptyRow(sheet);
+		}
+		addCISHistorie(cellStyleDateTime, dossier, sheet);
+		sheet.autoSizeColumn(0);
+		sheet.autoSizeColumn(2);
+	}
+
+	private void addBmhkUitslagen(CellStyle cellStyleDateTime, Sheet sheet, CervixScreeningRonde ronde)
+	{
+		var ontvangenMonsters = cervixBaseMonsterRepository.findAllByOntvangstScreeningRonde(ronde);
+		for (var monster : ontvangenMonsters)
+		{
+			addUitstrijkje(cellStyleDateTime, sheet, monster);
+			addZAS(cellStyleDateTime, sheet, monster);
+		}
+	}
+
+	private void addUitstrijkje(CellStyle cellStyleDateTime, Sheet sheet, CervixMonster monster)
+	{
+		if (CervixMonsterUtil.isUitstrijkje(monster))
+		{
+			var uitstrijkje = CervixMonsterUtil.getUitstrijkje(monster);
+			addBmhkHuisarts(cellStyleDateTime, sheet, uitstrijkje);
+			var beoordeling = uitstrijkje.getLaatsteHpvBeoordeling();
+			if (beoordeling != null && beoordeling.getHpvUitslag() != null)
+			{
+				addRow(sheet, "HPV uitslag (uitstrijkje)", beoordeling.getHpvUitslag().getNaam(), beoordeling.getAnalyseDatum(), cellStyleDateTime);
+			}
+		}
+	}
+
+	private void addBmhkHuisarts(CellStyle cellStyleDateTime, Sheet sheet, CervixUitstrijkje uitstrijkje)
+	{
+		var labformulier = uitstrijkje.getLabformulier();
+		if (labformulier != null && labformulier.getHuisartsLocatie() != null)
+		{
+			var huisartsLocatie = labformulier.getHuisartsLocatie();
+			var huisarts = huisartsLocatie.getHuisarts();
+			var volledigeHuisartsTekst = "Huisarts: " + NaamUtil.getNaamHuisarts(huisarts) + ", Praktijk: " + huisarts.getNaam() + ", Adres: "
+				+ AdresUtil.getVolledigeAdresString(huisartsLocatie.getLocatieAdres()) + ", Locatie: " + huisartsLocatie.getNaam();
+			addRow(sheet, "Uitstrijkend arts", volledigeHuisartsTekst, labformulier.getStatusDatum(), cellStyleDateTime);
+		}
+	}
+
+	private void addZAS(CellStyle cellStyleDateTime, Sheet sheet, CervixMonster monster)
+	{
+		if (CervixMonsterUtil.isZAS(monster))
+		{
+			var zas = CervixMonsterUtil.getZAS(monster);
+			var beoordeling = zas.getLaatsteHpvBeoordeling();
+			if (beoordeling != null && beoordeling.getHpvUitslag() != null)
+			{
+				addRow(sheet, "HPV uitslag (ZAS)", beoordeling.getHpvUitslag().getNaam(), beoordeling.getAnalyseDatum(), cellStyleDateTime);
+			}
+		}
+	}
+
+	private void addBmhkVerslagen(CellStyle cellStyleDateTime, Sheet sheet, CervixScreeningRonde ronde)
+	{
+		for (var verslag : ronde.getVerslagen())
+		{
+			addVerslagRow(cellStyleDateTime, sheet, verslag);
+		}
+	}
+
+	private void addVerslagRow(CellStyle cellStyleDateTime, Sheet sheet, Verslag<?, ?> verslag)
+	{
+		var ontvangenBericht = verslag.getOntvangenBericht();
+		var verslagContent = verslag.getVerslagContent();
+		if (verslagContent != null)
+		{
+			String label = switch (verslag.getType())
+			{
+				case CERVIX_CYTOLOGIE -> "Ontvangen cytologie verslag";
+				case MDL -> "Ontvangen coloscopie verslag";
+				case PA_LAB -> "Ontvangen pathologie verslag";
+				case MAMMA_PA_FOLLOW_UP, MAMMA_PA_FOLLOW_UP_MONITOR -> "Ontvangen follow-up pathologie verslag";
+				default -> throw new IllegalArgumentException();
+			};
+
+			try
+			{
+				var ontvangen = verslag.getDatumVerwerkt();
+				if (ontvangenBericht != null)
+				{
+					ontvangen = ontvangenBericht.getOntvangen();
+				}
+				var mapper = new ObjectMapper();
+				mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+				mapper.addMixInAnnotations(Object.class, MixInByPropName.class);
+				mapper.setSerializationInclusion(Include.NON_EMPTY);
+				mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+				mapper.setPropertyNamingStrategy(new ReplaceNamingStrategy());
+				var simpleModule = new SimpleModule("SimpleModule", Version.unknownVersion());
+				simpleModule.addSerializer(Date.class, new DateJsonSerializer());
+				simpleModule.addSerializer(Boolean.class, new BooleanJsonSerializer());
+				simpleModule.addSerializer(Quantity.class, new QuantityJsonSerializer());
+				simpleModule.addSerializer(NullFlavourQuantity.class, new NullFlavourQuantityJsonSerializer());
+				mapper.registerModule(simpleModule);
+				var writer = mapper.writerWithDefaultPrettyPrinter();
+
+				addRow(sheet, label, writer.writeValueAsString(Hibernate.unproxy(verslagContent)), ontvangen,
+					cellStyleDateTime);
+			}
+			catch (JsonProcessingException e)
+			{
+				LOG.error("fout bij maken json van verslag {}", verslag.getId(), e);
+			}
+		}
+	}
+
+	private void addMammaFollowUpRadiologieverslagRow(CellStyle cellStyleDateTime, Sheet sheet, MammaFollowUpRadiologieVerslag radiologieVerslag)
+	{
+		if (radiologieVerslag.getIngevoerdOp() != null)
+		{
+			var label = "Ontvangen follow-up radiologie verslag";
+			var ingevoerdOp = radiologieVerslag.getIngevoerdOp();
+			var rowStrings = new ArrayList<String>();
+			if (radiologieVerslag.getConclusieBirads() != null)
+			{
+				rowStrings.add(StringUtil.kvp2String("Birads", StringUtil.enumName2readableString(radiologieVerslag.getConclusieBirads().name())));
+			}
+			if (radiologieVerslag.getConclusieEersteUitslagRadiologie() != null)
+			{
+				rowStrings.add(StringUtil.kvp2String("Conclusie eerste uitslag radiologie", radiologieVerslag.getConclusieEersteUitslagRadiologie()));
+			}
+			if (radiologieVerslag.getPathologieUitgevoerd() != null)
+			{
+				rowStrings.add(StringUtil.kvp2String("Pathologie aangevraagd", StringUtil.boolean2String(radiologieVerslag.getPathologieUitgevoerd())));
+			}
+			if (radiologieVerslag.getRadioloogTumorGrootteClassificatie() != null)
+			{
+				rowStrings.add(StringUtil.kvp2String("Tumorgrootte classificatie", radiologieVerslag.getRadioloogTumorGrootteClassificatie().name()));
+			}
+			if (radiologieVerslag.getRadioloogTumorGrootte() != null)
+			{
+				rowStrings.add(StringUtil.kvp2String("Tumorgrootte in cm", radiologieVerslag.getRadioloogTumorGrootte().toString()));
+			}
+			if (!rowStrings.isEmpty())
+			{
+				var row = String.join(", ", rowStrings);
+				addRow(sheet, label, row, ingevoerdOp, cellStyleDateTime);
+			}
+		}
+	}
+
+	@JsonIgnoreProperties(value = { "id" })
+	private static class MixInByPropName
+	{
+	}
+
+	private static class ReplaceNamingStrategy extends PropertyNamingStrategy
+	{
+
+		@Override
+		public String nameForGetterMethod(MapperConfig<?> config, AnnotatedMethod method, String defaultName)
+		{
+			var declaringClass = method.getDeclaringClass();
+			if (HibernateObject.class.isAssignableFrom(declaringClass))
+			{
+				var field = FieldUtils.getDeclaredField(declaringClass, defaultName, true);
+				if (field != null)
+				{
+					var annotation = field.getAnnotation(VraagElement.class);
+					if (annotation != null && annotation.displayName() != null)
+					{
+						defaultName = annotation.displayName();
+					}
+				}
+			}
+			return defaultName;
+		}
+	}
+
+	private static class DateJsonSerializer extends JsonSerializer<Date>
+	{
+
+		@Override
+		public void serialize(Date value, JsonGenerator jgen, SerializerProvider provider) throws IOException
+		{
+			jgen.writeString(Constants.getDateFormat().format(value));
+		}
+	}
+
+	private static class BooleanJsonSerializer extends JsonSerializer<Boolean>
+	{
+
+		@Override
+		public void serialize(Boolean value, JsonGenerator jgen, SerializerProvider provider) throws IOException
+		{
+			jgen.writeString(Boolean.TRUE.equals(value) ? "Ja" : "Nee");
+		}
+	}
+
+	private static class NullFlavourQuantityJsonSerializer extends JsonSerializer<NullFlavourQuantity>
+	{
+
+		@Override
+		public void serialize(NullFlavourQuantity value, JsonGenerator gen, SerializerProvider serializers) throws IOException
+		{
+			var quantity = value.getValue();
+			if (value.getUnit() != null)
+			{
+				quantity += " " + value.getUnit();
+			}
+			else if (StringUtils.isBlank(value.getValue()) && Boolean.TRUE.equals(value.getNullFlavour()))
+			{
+				quantity = "niet van toepassing";
+			}
+			gen.writeString(quantity);
+		}
 
 	}
 
+	private static class QuantityJsonSerializer extends JsonSerializer<Quantity>
+	{
+
+		@Override
+		public void serialize(Quantity value, JsonGenerator gen, SerializerProvider serializers) throws IOException
+		{
+			var quantity = value.getValue();
+			if (value.getUnit() != null)
+			{
+				quantity += " " + value.getUnit();
+			}
+			gen.writeString(quantity);
+		}
+
+	}
+
+	private void addCISHistorie(CellStyle cellStyleDateTime, CervixDossier dossier, Sheet sheet)
+	{
+		if (dossier.getCisHistorie() != null)
+		{
+			var ongestructureerdeRegelsPerRonde = CervixCisHistoryUtil
+				.getOngestructureerdeRegelsPerRonde(dossier.getCisHistorie(), true);
+			var rondeVolgorde = CervixCisHistoryUtil.getOrderdKeys(ongestructureerdeRegelsPerRonde, true);
+			addRow(sheet, "CIS historie", null, null);
+			for (var ronde : rondeVolgorde)
+			{
+				addRow(sheet, "Ronde", ronde, null);
+				for (var regel : ongestructureerdeRegelsPerRonde.get(ronde))
+				{
+					addRow(sheet, "Regel", regel.getTekst(), regel.getDatum(), cellStyleDateTime);
+				}
+			}
+		}
+	}
+
+	private void addClientGegevens(Workbook workbook, CreationHelper createHelper, CellStyle cellStyleDate, Persoon persoon)
+	{
+		var sheet = workbook.createSheet("Clientgegevens");
+		addGbaPersoonGegevens(workbook, sheet, createHelper, cellStyleDate, persoon);
+
+		addGbaAdres(sheet, persoon);
+		addTijdelijkGbaAdres(sheet, persoon);
+		addTijdelijkAdres(sheet, persoon, cellStyleDate);
+		sheet.autoSizeColumn(0);
+		sheet.autoSizeColumn(1);
+	}
+
+	private void addGbaPersoonGegevens(Workbook workbook, Sheet sheet, CreationHelper createHelper, CellStyle cellStyleDate, Persoon persoon)
+	{
+		var cellStyleGeboortedatum = workbook.createCellStyle();
+		addRow(sheet, "Bsn", persoon, "bsn", null);
+		addRow(sheet, "Anummer", persoon, "anummer", null);
+		addRow(sheet, "Geslachtsnaam", persoon, "achternaam", null);
+		addRow(sheet, "Geslachtsnaam tussenvoegsel", persoon, "tussenvoegsel", null);
+		addRow(sheet, "Voornamen", persoon, "voornaam", null);
+		addRow(sheet, "Naamgebruik", persoon, "naamGebruik", null);
+		addRow(sheet, "Adellijke titel", persoon, "titel", null);
+		var geboortedatumPattern = "dd-MM-yyyy";
+		if (persoon.getGeboortedatumPrecisie() != null)
+		{
+			geboortedatumPattern = persoon.getGeboortedatumPrecisie().getDatePattern();
+		}
+		cellStyleGeboortedatum.setDataFormat(createHelper.createDataFormat().getFormat(geboortedatumPattern));
+		addRow(sheet, "Geboortedatum", persoon, "geboortedatum", cellStyleGeboortedatum);
+		addRow(sheet, "Geslacht", persoon, "geslacht", null);
+		addRow(sheet, "Datum vestiging Nederland", persoon, "datumVestigingNederland", cellStyleDate);
+		addRow(sheet, "Datum vertrokken uit Nederland", persoon, "datumVertrokkenUitNederland", cellStyleDate);
+		addRow(sheet, "Partner achternaam", persoon, "partnerAchternaam", null);
+		addRow(sheet, "Partner tussenvoegsel", persoon, "partnerTussenvoegsel", cellStyleDate);
+		addRow(sheet, "Datum aangaan partnerschap", persoon, "datumAangaanPartnerschap", cellStyleDate);
+		addRow(sheet, "Datum ontbinding partnerschap", persoon, "datumOntbindingPartnerschap", cellStyleDate);
+	}
+
+	private void addGbaAdres(Sheet sheet, Persoon persoon)
+	{
+		var gbaAdres = persoon.getGbaAdres();
+		addAdres(sheet, gbaAdres, "BRP ");
+		addRow(sheet, "BRP Locatie beschrijving", gbaAdres, "locatieBeschrijving", null);
+		addRow(sheet, "BRP Gemeente", gbaAdres, "gbaGemeente.naam", null);
+	}
+
+	private void addTijdelijkGbaAdres(Sheet sheet, Persoon persoon)
+	{
+		Adres adres = persoon.getTijdelijkGbaAdres();
+		if (adres != null)
+		{
+			addAdres(sheet, adres, "Tijdelijk BRP ");
+		}
+	}
+
+	private void addTijdelijkAdres(Sheet sheet, Persoon persoon, CellStyle cellStyleDate)
+	{
+		var adres = persoon.getTijdelijkAdres();
+		if (adres != null)
+		{
+			addAdres(sheet, adres, "Tijdelijk ");
+			addRow(sheet, "Tijdelijk adres startdatum", adres, "startDatum", cellStyleDate);
+			addRow(sheet, "Tijdelijk adres einddatum", adres, "eindDatum", cellStyleDate);
+		}
+	}
+
+	private void addAdres(Sheet sheet, Adres adres, String labelPrefix)
+	{
+		addRow(sheet, labelPrefix + "Straat", adres, "straat", null);
+		addRow(sheet, labelPrefix + "Huisnummer", adres, "huisnummer", null);
+		addRow(sheet, labelPrefix + "Huisletter", adres, "huisletter", null);
+		addRow(sheet, labelPrefix + "Huisnummer toevoeging", adres, "huisnummerToevoeging", null);
+		addRow(sheet, labelPrefix + "Huisnummer aanduiding", adres, "huisnummerAanduiding", null);
+		addRow(sheet, labelPrefix + "Postcode", adres, "postcode", null);
+		addRow(sheet, labelPrefix + "Plaats", adres, "plaats", null);
+		addRow(sheet, labelPrefix + "Locatie beschrijving", adres, "locatieBeschrijving", null);
+	}
+
+	private void addEmptyRow(Sheet sheet)
+	{
+		addRow(sheet, null, null, null);
+	}
+
+	private void addRow(Sheet sheet, String label, Object rootObject, String property, CellStyle style)
+	{
+		try
+		{
+			var value = PropertyUtilsBean2.getInstance().getNestedProperty(rootObject, property);
+			if (value != null)
+			{
+				addRow(sheet, label, value, style);
+			}
+		}
+		catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
+		{
+			LOG.error("Fout bij ophalen value", e);
+		}
+	}
+
+	private void addRow(Sheet sheet, String label, Object value, Date datumTijd, CellStyle dateStyle, CellStyle dateTimeStyle)
+	{
+		var row = addRow(sheet, label, value, dateStyle);
+		if (datumTijd != null)
+		{
+			var cell = row.createCell(2);
+			addCellValue(cell, datumTijd, dateTimeStyle);
+		}
+	}
+
+	private void addRow(Sheet sheet, String label, Object value, Date datumTijd, CellStyle dateTimeStyle)
+	{
+		addRow(sheet, label, value, datumTijd, null, dateTimeStyle);
+	}
+
+	private Row addRow(Sheet sheet, String label, Object value, CellStyle style)
+	{
+		var row = sheet.createRow(sheet.getPhysicalNumberOfRows());
+		var cell = row.createCell(0);
+		addCellValue(cell, label, style);
+
+		cell = row.createCell(1);
+		addCellValue(cell, value, style);
+		return row;
+	}
+
+	private void addCellValue(Cell cell, Object cellValue, CellStyle style)
+	{
+		if (cellValue instanceof Double)
+		{
+			cell.setCellValue((Double) cellValue);
+		}
+		else if (cellValue instanceof Date)
+		{
+			cell.setCellValue((Date) cellValue);
+			cell.setCellStyle(style);
+		}
+		else if (cellValue != null)
+		{
+			cell.setCellValue(cellValue.toString());
+		}
+	}
+
+	private String getVolledigeHuisArtsTekst(EnovationHuisarts huisarts)
+	{
+		return "Huisarts: " + NaamUtil.getNaamHuisarts(huisarts) + ", Praktijk: " + huisarts.getPraktijknaam() + ", Adres: "
+			+ AdresUtil.getVolledigeAdresString(huisarts.getAdres());
+	}
+
+	static class PropertyUtilsBean2 extends PropertyUtilsBean
+	{
+		private static PropertyUtilsBean2 instance;
+
+		protected static PropertyUtilsBean2 getInstance()
+		{
+			if (instance == null)
+			{
+				instance = new PropertyUtilsBean2();
+			}
+			return instance;
+		}
+
+		@Override
+		public Object getNestedProperty(Object bean, String name) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+		{
+
+			if (bean == null)
+			{
+				throw new IllegalArgumentException("No bean specified");
+			}
+			if (name == null)
+			{
+				throw new IllegalArgumentException("No name specified for bean class '" +
+					bean.getClass() + "'");
+			}
+
+			var resolver = getResolver();
+			while (resolver.hasNested(name))
+			{
+				var next = resolver.next(name);
+				Object nestedBean;
+				if (bean instanceof Map)
+				{
+					nestedBean = getPropertyOfMapBean((Map) bean, next);
+				}
+				else if (resolver.isMapped(next))
+				{
+					nestedBean = getMappedProperty(bean, next);
+				}
+				else if (resolver.isIndexed(next))
+				{
+					nestedBean = getIndexedProperty(bean, next);
+				}
+				else
+				{
+					nestedBean = getSimpleProperty(bean, next);
+				}
+				if (nestedBean == null)
+				{
+					return null;
+				}
+				bean = nestedBean;
+				name = resolver.remove(name);
+			}
+
+			if (bean instanceof Map)
+			{
+				bean = getPropertyOfMapBean((Map) bean, name);
+			}
+			else if (resolver.isMapped(name))
+			{
+				bean = getMappedProperty(bean, name);
+			}
+			else if (resolver.isIndexed(name))
+			{
+				bean = getIndexedProperty(bean, name);
+			}
+			else
+			{
+				bean = getSimpleProperty(bean, name);
+			}
+			return bean;
+
+		}
+	}
 }

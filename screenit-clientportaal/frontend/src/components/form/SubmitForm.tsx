@@ -53,6 +53,8 @@ const SubmitForm = <T, >(props: FormProps<T>): ReactNode => {
 					disableButton={props.formikProps.isSubmitting}
 					label={props.buttonLabel}
 					displayArrow={ArrowType.ARROW_RIGHT}
+					id="submit_btn"
+					testId="submit_btn"
 					onClick={props.formikProps.handleSubmit}/>
 		</form>
 	)

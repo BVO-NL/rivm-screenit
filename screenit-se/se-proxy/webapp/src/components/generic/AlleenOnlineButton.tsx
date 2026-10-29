@@ -51,9 +51,9 @@ export default class AlleenOnlineButton<P extends AlleenOnlineButtonProps> exten
 	}
 
 	toggle = (): void => {
-		this.setState({
-			popoverOpen: !this.state.popoverOpen,
-		})
+		this.setState(vorigeState => ({
+			popoverOpen: !vorigeState.popoverOpen,
+		}))
 	}
 
 	render(): JSX.Element {

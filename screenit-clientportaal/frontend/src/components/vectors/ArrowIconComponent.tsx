@@ -25,6 +25,7 @@ import ArrowDown from "../../scss/media/ArrowDown.svg"
 import ArrowRight from "../../scss/media/ArrowRight.svg"
 import ArrowUp from "../../scss/media/ArrowUp.svg"
 import ArrowLeft from "../../scss/media/ArrowLeft.svg"
+import {FC} from "react"
 
 export type ArrowIconProps = {
 	className?: string,
@@ -42,7 +43,7 @@ export enum ArrowType {
 	"CHEVRON_RIGHT",
 }
 
-const ArrowIconComponent = (props: ArrowIconProps) => {
+const ArrowIconComponent: FC<ArrowIconProps> = (props) => {
 
 	switch (props.type) {
 		case ArrowType.ARROW_UP:

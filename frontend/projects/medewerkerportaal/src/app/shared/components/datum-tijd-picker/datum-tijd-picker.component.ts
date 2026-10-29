@@ -20,12 +20,13 @@
  */
 import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { FormControl, ReactiveFormsModule, ValidationErrors } from '@angular/forms'
-import { DsDatetimepickerComponent, provideDsIsoStringDateAdapter } from '@topicus-rgp-ds/web'
+import { DsDatetimepickerComponent } from '@topicus-rgp-ds/web'
+import { provideScreenitIsoStringDateAdapter } from '@shared/adapters/screenit-iso-string-date-adapter'
 
 @Component({
   selector: 'app-datum-tijd-picker',
   imports: [ReactiveFormsModule, DsDatetimepickerComponent],
-  providers: [provideDsIsoStringDateAdapter()],
+  providers: [provideScreenitIsoStringDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <ds-datetimepicker
@@ -35,6 +36,7 @@ import { DsDatetimepickerComponent, provideDsIsoStringDateAdapter } from '@topic
       [timePlaceholder]="timePlaceholder()"
       [errorMessage]="errorMessage()"
       [maxVisibleErrors]="maxVisibleErrors()"
+      [required]="required()"
     />
   `,
   styles: `
@@ -52,6 +54,7 @@ export class DatumTijdPickerComponent {
   label = input<string>('')
   datePlaceholder = input<string>('')
   timePlaceholder = input<string>('')
+  required = input<boolean>(false)
   errorMessage = input<ValidationErrors>({})
   maxVisibleErrors = input<number>(1)
 }

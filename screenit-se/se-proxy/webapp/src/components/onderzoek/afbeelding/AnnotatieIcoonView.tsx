@@ -221,10 +221,10 @@ export default class AnnotatieIcoonView extends Component<AnnotatieIcoonViewStat
 				this.onStop(e, position)
 			}
 
-			this.setState({
+			this.setState(vorigeState => ({
 				isOutsideCanvas: draggedIconOutsideCanvas,
-				hasBeenOnCanvas: this.state.hasBeenOnCanvas || !draggedIconOutsideCanvas,
-			})
+				hasBeenOnCanvas: vorigeState.hasBeenOnCanvas || !draggedIconOutsideCanvas,
+			}))
 		}
 	}
 

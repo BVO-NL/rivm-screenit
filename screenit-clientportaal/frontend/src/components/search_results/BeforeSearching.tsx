@@ -20,12 +20,13 @@
  */
 import styles from "./BeforeSearching.module.scss"
 import SpanWithHtml from "../span/SpanWithHtml"
+import {FC} from "react"
 
 export type BeforeSearchingProps = {
 	text: string
 }
 
-const BeforeSearching = (props: BeforeSearchingProps) => {
+const BeforeSearching: FC<BeforeSearchingProps> = (props) => {
 
 	return (
 		<div className={styles.beforeSearching}>
@@ -45,4 +46,4 @@ const BeforeSearching = (props: BeforeSearchingProps) => {
 
 }
 
-export default BeforeSearching;
+export default BeforeSearching

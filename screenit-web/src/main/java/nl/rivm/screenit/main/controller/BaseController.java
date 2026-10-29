@@ -21,7 +21,8 @@ package nl.rivm.screenit.main.controller;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.exception.EntityNietGevondenException;
+import jakarta.persistence.EntityNotFoundException;
+
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
@@ -41,6 +42,6 @@ public class BaseController
 
 	protected Client getClientOfGooiNotFoundException(Long clientId)
 	{
-		return clientService.getClientById(clientId).orElseThrow(() -> new EntityNietGevondenException("Client", clientId));
+		return clientService.getClientById(clientId).orElseThrow(() -> new EntityNotFoundException("Client niet gevonden met id: '" + clientId + "'"));
 	}
 }

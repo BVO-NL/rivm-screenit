@@ -24,12 +24,13 @@ import bvoStyle from "../BvoStyle.module.scss"
 import classNames from "classnames"
 
 import VerticalDividerComponent from "../vectors/VerticalDividerComponent"
+import {FC} from "react"
 
 export type BvoCardSmallProps = {
 	bvo: Bevolkingsonderzoek;
 }
 
-const BvoCardSmall = (props: BvoCardSmallProps) => {
+const BvoCardSmall: FC<BvoCardSmallProps> = (props) => {
 	const bvoNaam = BevolkingsonderzoekNaam[props.bvo]
 
 	return (

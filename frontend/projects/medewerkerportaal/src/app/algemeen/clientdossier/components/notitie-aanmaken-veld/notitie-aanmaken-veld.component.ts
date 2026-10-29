@@ -18,41 +18,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { ChangeDetectionStrategy, Component, computed, forwardRef, inject, input, signal, WritableSignal } from '@angular/core'
+import { Component, computed, forwardRef, inject, input, signal, WritableSignal } from '@angular/core'
 import { DsButtonComponent, DsIconComponent, DsTextareaComponent } from '@topicus-rgp-ds/web'
 import { faPlus } from '@fortawesome/pro-light-svg-icons'
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
+import { AbstractControl, ControlValueAccessor, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, Validators } from '@angular/forms'
 import { StringsService } from '@shared/strings'
 
 @Component({
   selector: 'app-notitie-aanmaken-veld',
   imports: [DsButtonComponent, DsIconComponent, DsTextareaComponent, FormsModule],
   templateUrl: './notitie-aanmaken-veld.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => NotitieAanmakenVeldComponent),
       multi: true,
     },
+    {
+      provide: NG_VALIDATORS,
+      useExisting: forwardRef(() => NotitieAanmakenVeldComponent),
+      multi: true,
+    },
   ],
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
 })
-export class NotitieAanmakenVeldComponent implements ControlValueAccessor {
+export class NotitieAanmakenVeldComponent implements ControlValueAccessor, Validator {
   protected readonly faPlus = faPlus
   protected veldZichtbaar: WritableSignal<boolean> = signal(false)
-  protected isDisabled = false
-  protected value = ''
-  protected readonly toevoegenLabel = inject(StringsService).getStrings().algemeen.notities.buttons.notitieToevoegen
-  label = input<string>('Notitie')
+  protected isDisabled = signal(false)
+  protected value = signal('')
+  private readonly strings = inject(StringsService).getStrings().algemeen
+  protected readonly toevoegenLabel = this.strings.notities.buttons.notitieToevoegen
+  protected readonly placeholder = this.strings.notities.placeholder
+  label = input<string>(this.strings.labels.notitie)
   gebruikExterneLabel = input<boolean>(false)
   interneLabel = computed(() => (this.gebruikExterneLabel() ? '' : this.label()))
   externeLabel = computed(() => (this.gebruikExterneLabel() ? this.label() : ''))
+  maxLength = input(2048)
+  protected readonly foutmeldingen = computed(() => ({ maxlength: this.strings.errors.maxKarakters(this.label(), this.maxLength()) }))
 
   protected onChange: ((val: string) => void) | null = null
   private onTouched: (() => void) | null = null
 
   writeValue(obj: string): void {
-    this.value = obj
+    this.value.set(obj)
   }
 
   registerOnChange(fn: (val: string) => void): void {
@@ -64,12 +77,16 @@ export class NotitieAanmakenVeldComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.isDisabled = isDisabled
+    this.isDisabled.set(isDisabled)
   }
 
   onUpdate(value: string) {
     this.onChange!(value)
     this.onTouched!()
+  }
+
+  validate(control: AbstractControl): ValidationErrors | null {
+    return Validators.maxLength(this.maxLength())(control)
   }
 
   protected toonVeld() {

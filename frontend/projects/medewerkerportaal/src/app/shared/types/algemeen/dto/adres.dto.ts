@@ -18,7 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-export interface AdresDto {
+import { EntityDto } from '@shared/types/algemeen/dto/entity.dto'
+
+export interface AdresDto extends EntityDto {
   straat: string
   huisnummer: number
   huisletter: string

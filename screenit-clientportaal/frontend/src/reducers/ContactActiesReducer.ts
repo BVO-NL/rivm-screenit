@@ -18,15 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {ContactActiesDto, geenBeschikbareContactActies} from "../datatypes/ContactActiesDto";
-import {ContactActiesAction, RESET_BESCHIKBARE_CONTACT_ACTIES} from "../actions/ContactActiesReduxAction";
+import {ContactActiesDto, geenBeschikbareContactActies} from "../datatypes/ContactActiesDto"
+import {ContactActiesAction, RESET_BESCHIKBARE_CONTACT_ACTIES} from "../actions/ContactActiesReduxAction"
 
 function ContactActiesReducer(stateSlice: ContactActiesDto = geenBeschikbareContactActies, action: ContactActiesAction): ContactActiesDto {
     switch (action.type) {
         case RESET_BESCHIKBARE_CONTACT_ACTIES:
             return action.beschikbareContactActies
         default:
-            return stateSlice;
+            return stateSlice
     }
 }
 

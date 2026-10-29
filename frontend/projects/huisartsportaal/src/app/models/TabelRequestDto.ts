@@ -18,9 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-export interface SortOptionsDto {
-  [key: string]: SortOrder
-}
+export type SortOptionsDto = Record<string, SortOrder>
 
 export interface PaginationDto {
   first: number

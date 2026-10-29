@@ -32,13 +32,19 @@
         </ng-template>
       </ds-tab>
     }
-    <ds-tab [titel]="tabLabels[2]" *appAutorisatie="meldingenConstraint" [count]="aantalMeldingen()">
+    <ds-tab [titel]="tabLabels[2]" *appAutorisatie="actiesConstraint">
+      <ng-template dsLazyContentDirective>
+        <app-acties-tab/>
+      </ng-template>
+    </ds-tab>
+    <ds-tab [titel]="tabLabels[3]" *appAutorisatie="meldingenConstraint" [count]="aantalMeldingen()">
       <ng-template dsLazyContentDirective>
         <app-meldingen-tab/>
       </ng-template>
     </ds-tab>
+
     @if (isCisHistorieTabZichtbaar()) {
-      <ds-tab [titel]="tabLabels[3]">
+      <ds-tab [titel]="tabLabels[4]">
         <ng-template dsLazyContentDirective>
           <app-cis-historie-tab/>
         </ng-template>

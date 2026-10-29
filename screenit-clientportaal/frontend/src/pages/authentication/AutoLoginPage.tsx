@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useContext, useEffect, useState} from "react"
+import {FC, use, useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Col, Row} from "react-bootstrap"
 import {State} from "../../datatypes/State"
@@ -29,22 +29,20 @@ import {getBevolkingsonderzoekNederlandUrl, getBevolkingsonderzoekNederlandUrlNa
 import {Navigate} from "react-router"
 import {KeycloakContext} from "../../components/KeycloakProvider"
 
-const AutoLoginPage = () => {
-	const {initialized: keycloakInitialized, keycloak} = useContext(KeycloakContext)
+const AutoLoginPage: FC = () => {
+	const {initialized: keycloakInitialized, keycloak} = use(KeycloakContext)
 	const dispatch = useDispatch()
 	const authenticatie = useSelector((state: State) => state.authenticatie)
-	const [loginTimeout, setLoginTimeout] = useState<NodeJS.Timeout | undefined>(undefined)
-
 	useEffect(() => {
 		if (keycloakInitialized && !keycloak.authenticated) {
-			setLoginTimeout(setTimeout(() => {
+			const loginTimeout = setTimeout(() => {
 				dispatch(setLoggingInAction(true))
-			}, 3000))
+			}, 3000)
+			return (): void => clearTimeout(loginTimeout)
 		}
 	}, [keycloakInitialized, keycloak, dispatch])
 
 	if (keycloak.authenticated && authenticatie.isLoggedIn && !authenticatie.isLoggingOut) {
-		loginTimeout && clearTimeout(loginTimeout)
 		return <Navigate replace to={"/"}/>
 	} else {
 		return (

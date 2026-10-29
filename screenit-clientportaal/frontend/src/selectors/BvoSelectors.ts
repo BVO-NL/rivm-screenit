@@ -21,10 +21,10 @@
 import {State} from "../datatypes/State"
 import {Bevolkingsonderzoek, Bevolkingsonderzoeken} from "../datatypes/Bevolkingsonderzoek"
 
-export const selectBehoortTotMammaDoelgroep = (state: State) => state.landingOverzicht.behoortTotMammaDoelgroep
-export const selectBehoortTotCervixDoelgroep = (state: State) => state.landingOverzicht.behoortTotCervixDoelgroep
-export const selectBehoortTotColonDoelgroep = (state: State) => state.landingOverzicht.behoortTotColonDoelgroep
-export const selectBvos = (state: State) => {
+export const selectBehoortTotMammaDoelgroep = (state: State): boolean => state.landingOverzicht.behoortTotMammaDoelgroep
+export const selectBehoortTotCervixDoelgroep = (state: State): boolean => state.landingOverzicht.behoortTotCervixDoelgroep
+export const selectBehoortTotColonDoelgroep = (state: State): boolean => state.landingOverzicht.behoortTotColonDoelgroep
+export const selectBvos = (state: State): (Bevolkingsonderzoek | null)[] => {
 	const behoortTotBvos: Array<Bevolkingsonderzoek | null> = Bevolkingsonderzoeken.filter(bvo => {
 		return (bvo === Bevolkingsonderzoek.MAMMA && state.landingOverzicht.behoortTotMammaDoelgroep) || (bvo === Bevolkingsonderzoek.COLON && state.landingOverzicht.behoortTotColonDoelgroep) || (bvo === Bevolkingsonderzoek.CERVIX && state.landingOverzicht.behoortTotCervixDoelgroep)
 	})

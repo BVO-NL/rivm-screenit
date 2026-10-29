@@ -22,6 +22,7 @@ import styles from "./ActiveToastsComponent.module.scss"
 import {Col, Row} from "react-bootstrap"
 import classNames from "classnames"
 import SpanWithHtml from "../span/SpanWithHtml"
+import {FC} from "react"
 
 interface ErrorToastProps {
 	index: number
@@ -31,10 +32,10 @@ interface ErrorToastProps {
 	ariaLive: "off" | "assertive" | "polite" | undefined
 }
 
-const ErrorToast = (props: ErrorToastProps) => {
+const ErrorToast: FC<ErrorToastProps> = (props) => {
 	const {index, title, description, clickClearButton, ariaLive} = props
 	return (
-		<Row className={classNames(styles.toast, styles.error)} key={"toast_" + index} role="alert" aria-live={ariaLive}>
+		<Row className={classNames(styles.toast, styles.error)} key={`toast_${  index}`} role="alert" aria-live={ariaLive}>
 			<Col xs={10} className={styles.toastText}>
 				<i className={classNames("material-icons")}>warning</i>
 				<SpanWithHtml className={styles.title} value={title || ""}/>

@@ -18,11 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-export function isEmpty(obj: any) {
+export function isEmpty(obj: any): boolean {
 	return Object.keys(obj).length === 0
 }
 
-export function isEmptyOrUndefined(obj: any) {
+export function isEmptyOrUndefined(obj: any): boolean {
 	return obj === undefined || isEmpty(obj)
 }
 

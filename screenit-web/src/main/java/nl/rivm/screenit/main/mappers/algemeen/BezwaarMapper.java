@@ -37,4 +37,10 @@ public interface BezwaarMapper
 		@Mapping(target = "bevolkingsonderzoek", source = "bevolkingsonderzoek"),
 	})
 	BezwaarDto bezwaarToDto(Bezwaar bezwaar);
+
+	@Mappings({
+		@Mapping(target = "id", ignore = true),
+		@Mapping(target = "bezwaarMoment", ignore = true),
+	})
+	Bezwaar dtoToBezwaar(BezwaarDto dto);
 }

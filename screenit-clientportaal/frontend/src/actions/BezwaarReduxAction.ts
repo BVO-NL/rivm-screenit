@@ -18,21 +18,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {BezwaarMoment} from '../datatypes/Bezwaar';
-import {BezwaarType} from "../datatypes/BezwaarType";
+import {BezwaarMoment} from "../datatypes/Bezwaar"
+import {BezwaarType} from "../datatypes/BezwaarType"
 
 export type BezwaarActions = ResetBezwaarMoment | BezwaarToggle;
 
-export const RESET_LAATSTE_BEZWAAR_MOMENT = 'RESET_LAATSTE_BEZWAAR_MOMENT';
+export const RESET_LAATSTE_BEZWAAR_MOMENT = "RESET_LAATSTE_BEZWAAR_MOMENT"
 
 export type ResetBezwaarMoment = { type: typeof RESET_LAATSTE_BEZWAAR_MOMENT, bezwaarMoment: BezwaarMoment }
 
 export const setLaatsteBezwaarMomentAction = (bezwaarMoment: BezwaarMoment): ResetBezwaarMoment => ({
     type: RESET_LAATSTE_BEZWAAR_MOMENT,
     bezwaarMoment: bezwaarMoment
-});
+})
 
-export const BEZWAAR_TOGGLE = 'BEZWAAR_TOGGLE';
+export const BEZWAAR_TOGGLE = "BEZWAAR_TOGGLE"
 
 export type BezwaarToggle = { type: typeof BEZWAAR_TOGGLE, bezwaarMoment: BezwaarMoment, bezwaarType: BezwaarType }
 
@@ -40,4 +40,4 @@ export const toggleBezwaarAction = (bezwaarMoment: BezwaarMoment, type: BezwaarT
     type: BEZWAAR_TOGGLE,
     bezwaarMoment: bezwaarMoment,
     bezwaarType: type
-});
+})

@@ -22,18 +22,19 @@ import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
 import {OpenstaandeUitnodiging} from "../datatypes/uitnodiging/OpenstaandeUitnodiging"
 import {SetOpenstaandeUitnodigingen, setOpenstaandeUitnodigingenReduxAction} from "../actions/MammaDossierAction"
+import {ResponsePromise} from "ky"
 
 export type VerwerkOpenstaandeUitnodigingenRequest = {
 	colonKeuze?: string
 	cervixKeuze?: string
 }
 
-export const getOpenstaandeUitnodigingen = () => async (dispatch: Dispatch<SetOpenstaandeUitnodigingen>) => {
+export const getOpenstaandeUitnodigingen = () => async (dispatch: Dispatch<SetOpenstaandeUitnodigingen>): Promise<SetOpenstaandeUitnodigingen> => {
 	return ScreenitBackend.get<OpenstaandeUitnodiging[]>("mamma/afspraak/openstaande-uitnodiging").json()
 		.then(result => dispatch(setOpenstaandeUitnodigingenReduxAction(result)))
 }
 
-export const verwerkOpenstaandeUitnodigingen = (request: VerwerkOpenstaandeUitnodigingenRequest) => () => {
+export const verwerkOpenstaandeUitnodigingen = (request: VerwerkOpenstaandeUitnodigingenRequest) => (): ResponsePromise<unknown> => {
 	return ScreenitBackend.post("mamma/afspraak/openstaande-uitnodiging/meedoen", {
 		json: request,
 	})

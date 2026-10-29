@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.service.mamma.MammaUitwisselportaalService;
+import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.PollingAbstractAjaxTimerBehavior;
 import nl.rivm.screenit.main.web.component.table.AjaxImageCellPanel;
 import nl.rivm.screenit.main.web.component.table.ClientColumn;
@@ -43,6 +44,7 @@ import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Medewerker;
 import nl.rivm.screenit.model.OrganisatieType;
+import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.MammaOnderzoekType;
@@ -50,6 +52,8 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek;
+import nl.rivm.screenit.model.mamma.enums.MammaDownloadDoel;
+import nl.rivm.screenit.service.mamma.MammaBaseUitwisselportaalService;
 import nl.rivm.screenit.util.NaamUtil;
 import nl.topicuszorg.wicket.component.link.IndicatingAjaxSubmitLink;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -96,6 +100,9 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 
 	@SpringBean
 	private MammaUitwisselportaalService uitwisselPortaalService;
+
+	@SpringBean
+	private MammaBaseUitwisselportaalService baseUitwisselportaalService;
 
 	private WebMarkupContainer passport = null;
 
@@ -151,6 +158,7 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 	{
 		List<IColumn<MammaDownloadOnderzoekenVerzoek, String>> columns = new ArrayList<>();
 
+		var magOverdrachtPersoonsgegevensInzien = ScreenitSession.get().checkPermission(Recht.MEDEWERKER_MAMMA_INZAGE_UPLOADVERZOEK_OVERDRACHT_PERSOONSGEGEVENS, Actie.INZIEN);
 		columns.add(new DateTimePropertyColumn<>(Model.of("Aangemaakt"), "aangemaaktOp", "aangemaaktOp", Constants.getDateTimeFormat()));
 		columns.add(new PropertyColumn<>(Model.of("Door"), "aangemaaktDoor.medewerker")
 		{
@@ -170,6 +178,10 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 		columns.add(meldingKolom());
 		columns.add(downloadKolom());
 		columns.add(new DateTimePropertyColumn<>(Model.of("Gedownload op"), "gedownloadOp", "gedownloadOp", Constants.getDateTimeFormat()));
+		if (magOverdrachtPersoonsgegevensInzien)
+		{
+			columns.add(new EnumPropertyColumn<>(Model.of("Doel"), "doel", "doel", this));
+		}
 		columns.add(opnieuwOphalenKolom());
 
 		verzoekFilter = ModelUtil.ccModel(uitwisselPortaalService.maakDownloadVerzoekFilter(getIngelogdeOrganisatieMedewerker()));
@@ -195,7 +207,7 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<MammaDownloadOnderzoekenVerzoek>> cellItem, String componentId, IModel<MammaDownloadOnderzoekenVerzoek> rowModel)
 			{
-				if (uitwisselPortaalService.zipKanGedownloadWorden(rowModel.getObject()))
+				if (baseUitwisselportaalService.zipKanGedownloadWorden(rowModel.getObject()))
 				{
 					cellItem.add(new AjaxImageCellPanel<>(componentId, rowModel, "icon-refresh")
 					{
@@ -204,8 +216,8 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 						{
 							try
 							{
-								uitwisselPortaalService.resetDownloadVerzoek(getModelObject());
-								uitwisselPortaalService.startDownloading();
+								baseUitwisselportaalService.resetDownloadVerzoek(getModelObject());
+								baseUitwisselportaalService.startDownloading();
 								info("Verzoek voor ophalen van beelden en verslag is opnieuw gestart.");
 								timer.restartTimer(target);
 								target.add(werklijst);
@@ -233,7 +245,7 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 			@Override
 			public void populateItem(Item<ICellPopulator<MammaDownloadOnderzoekenVerzoek>> cellItem, String componentId, IModel<MammaDownloadOnderzoekenVerzoek> rowModel)
 			{
-				if (uitwisselPortaalService.zipKanGedownloadWorden(rowModel.getObject()))
+				if (baseUitwisselportaalService.zipKanGedownloadWorden(rowModel.getObject()))
 				{
 					cellItem.add(getDownloadCell(componentId, rowModel));
 				}
@@ -365,8 +377,8 @@ public class MammaExchangeDownloadPage extends MammaExchangeBasePage
 				{
 					try
 					{
-						uitwisselPortaalService.maakDownloadVerzoek(onderzoeken, getIngelogdeOrganisatieMedewerker());
-						uitwisselPortaalService.startDownloading();
+						baseUitwisselportaalService.maakDownloadVerzoek(onderzoeken, getIngelogdeOrganisatieMedewerker(), MammaDownloadDoel.UITWISSELPORTAAL);
+						baseUitwisselportaalService.startDownloading();
 						info("Verzoek voor ophalen van beelden en verslag van geselecteerde onderzoeken is gestart");
 						target.add(werklijst);
 						timer.restartTimer(target);

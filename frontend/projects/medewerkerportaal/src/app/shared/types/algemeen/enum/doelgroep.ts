@@ -23,9 +23,11 @@ export enum Doelgroep {
   MINDERVALIDE = 'MINDERVALIDE',
   SUSPECT = 'SUSPECT',
   TEHUIS = 'TEHUIS',
+  REGULIER = 'REGULIER',
 }
 
 export enum DoelgroepKiesbareOpties {
+  REGULIER = 'REGULIER',
   DUBBELE_TIJD = 'DUBBELE_TIJD',
   MINDERVALIDE = 'MINDERVALIDE',
 }
@@ -35,4 +37,5 @@ export const doelgroepLabel: Record<Doelgroep, string> = {
   [Doelgroep.MINDERVALIDE]: 'Mindervalide',
   [Doelgroep.SUSPECT]: 'Suspect',
   [Doelgroep.TEHUIS]: 'Tehuis',
+  [Doelgroep.REGULIER]: 'Regulier',
 }

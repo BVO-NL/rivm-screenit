@@ -20,10 +20,11 @@
  */
 export interface ColonRoosterInstellingen {
   geprognosticeerdeVanafDatum: Date
+  geprognosticeerdeIntakeDatum: Date
   duurAfspraakInMinuten: number
 }
 
 export interface ColonRoosterInstellingenDto {
-  geprognosticeerdeVanafDatum: string
+  geprognosticeerdeIntakeDatum: string
   duurAfspraakInMinuten: number
 }

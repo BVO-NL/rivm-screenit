@@ -27,12 +27,13 @@ import {useThunkDispatch} from "../../../index"
 import {showToast} from "../../../utils/ToastUtil"
 import {getString} from "../../../utils/TekstPropertyUtil"
 import properties from "../../../pages/bvo/colon/ColonAfspraakAfzeggenPage.json"
+import {FC} from "react"
 
-const ColonAfspraakAfzeggenForm = () => {
+const ColonAfspraakAfzeggenForm: FC = () => {
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
 
-	const afspraakAfzeggen = () => {
+	const afspraakAfzeggen = (): void => {
 		dispatch(saveAfspraakAfzeggen).then(() => {
 			showToast(getString(properties.toast.title), getString(properties.toast.description))
 			navigate("/colon")

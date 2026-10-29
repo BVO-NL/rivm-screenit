@@ -20,13 +20,14 @@
  */
 import properties from "./AdvancedSearchLinkComponent.json"
 import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
+import {FC} from "react"
 
 export type AdvancedSearchLinkComponentProps = {
 	advancedSearch: boolean
 	onClickStuurDatadogEvent?: () => void
 }
 
-const AdvancedSearchLinkComponent = (props: AdvancedSearchLinkComponentProps) => {
+const AdvancedSearchLinkComponent: FC<AdvancedSearchLinkComponentProps> = (props) => {
 	return (
 		!props.advancedSearch ?
 			<div onClick={props.onClickStuurDatadogEvent}>

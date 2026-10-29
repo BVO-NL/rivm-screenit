@@ -25,6 +25,7 @@ import bvoStyle from "../BvoStyle.module.scss"
 import {useSelectedBvo} from "../../utils/Hooks"
 import {isExternalUrl} from "../../utils/UrlUtil"
 import {useNavigate} from "react-router"
+import {FC} from "react"
 
 export type BigUrlButtonProps = {
 	title: string,
@@ -33,7 +34,7 @@ export type BigUrlButtonProps = {
 	onClickStuurDatadogEvent?: () => void
 }
 
-const BigUrlButton = (props: BigUrlButtonProps) => {
+const BigUrlButton: FC<BigUrlButtonProps> = (props) => {
 	const bvo = useSelectedBvo()
 	const navigate = useNavigate()
 
@@ -43,7 +44,11 @@ const BigUrlButton = (props: BigUrlButtonProps) => {
 				 if (props.onClickStuurDatadogEvent) {
 					 props.onClickStuurDatadogEvent()
 				 }
-				 isExternalUrl(props.link) ? window.open(props.link, "_self") : navigate(props.link)
+				 if (isExternalUrl(props.link)) {
+					 window.open(props.link, "_self")
+				 } else {
+					 navigate(props.link)
+				 }
 			 }
 			 }>
 			<span className={bvoStyle.bvoText}>{props.title}</span>

@@ -83,13 +83,12 @@ export default class HuisartsZoekenView extends Component<HuisartsZoekenProps, H
 		const target = event.target
 
 		if (target instanceof HTMLInputElement) {
-			this.setState({
-				...this.state,
+			this.setState(vorigeState => ({
 				fields: {
-					...this.state.fields,
+					...vorigeState.fields,
 					naamHuisarts: target.value,
 				},
-			})
+			}))
 		}
 	}
 
@@ -97,13 +96,12 @@ export default class HuisartsZoekenView extends Component<HuisartsZoekenProps, H
 		const target = event.target
 
 		if (target instanceof HTMLInputElement) {
-			this.setState({
-				...this.state,
+			this.setState(vorigeState => ({
 				fields: {
-					...this.state.fields,
+					...vorigeState.fields,
 					straatnaam: target.value,
 				},
-			})
+			}))
 		}
 	}
 
@@ -111,13 +109,12 @@ export default class HuisartsZoekenView extends Component<HuisartsZoekenProps, H
 		const target = event.target
 
 		if (target instanceof HTMLInputElement) {
-			this.setState({
-				...this.state,
+			this.setState(vorigeState => ({
 				fields: {
-					...this.state.fields,
+					...vorigeState.fields,
 					postcode: target.value,
 				},
-			})
+			}))
 		}
 	}
 
@@ -125,25 +122,23 @@ export default class HuisartsZoekenView extends Component<HuisartsZoekenProps, H
 		const target = event.target
 
 		if (target instanceof HTMLInputElement) {
-			this.setState({
-				...this.state,
+			this.setState(vorigeState => ({
 				fields: {
-					...this.state.fields,
+					...vorigeState.fields,
 					plaats: target.value,
 				},
-			})
+			}))
 		}
 	}
 
 	zoekHuisartsen = (): void => {
-		this.setState({
-			...this.state,
+		this.setState(vorigeState => ({
 			toonResultaten: true,
 			zoekFilter: {
-				...this.state.fields,
+				...vorigeState.fields,
 			},
 			moetVerversen: true,
-		})
+		}))
 	}
 
 	vergrendelZoekState = (): void => {
@@ -201,7 +196,7 @@ export default class HuisartsZoekenView extends Component<HuisartsZoekenProps, H
 				{this.state.toonResultaten &&
 					<HuisartsLijstContainer
 						huisartsFilter={this.state.zoekFilter} afspraak={this.props.afspraak}
-						toggle={this.props.toggle} onKiesHuisarts={this.props.selecteerHuisarts}
+						onKiesHuisarts={this.props.selecteerHuisarts}
 						moetVerversen={this.state.moetVerversen}
 						vergrendelZoekState={this.vergrendelZoekState}/>}
 			</ModalBody>

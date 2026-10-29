@@ -19,6 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms'
+import { MAX_KARAKTERS } from '@shared/constants'
 
 export function trimmedValidator(validator: ValidatorFn): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -32,7 +33,7 @@ export function trimmedValidator(validator: ValidatorFn): ValidatorFn {
 }
 
 export const positiveIntegerValidator = Validators.pattern('^[0-9]*$')
-export const huisnummerValidator = [trimmedValidator(Validators.maxLength(10)), trimmedValidator(Validators.pattern(/^\d*$/))]
+export const huisnummerValidator = [trimmedValidator(Validators.maxLength(MAX_KARAKTERS.huisnummer)), trimmedValidator(Validators.pattern(/^\d*$/))]
 export const briefkenmerkValidator = trimmedValidator(Validators.pattern(/^[Kk].+$/))
 export const huisletterValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   if (!control.value || typeof control.value !== 'string') {

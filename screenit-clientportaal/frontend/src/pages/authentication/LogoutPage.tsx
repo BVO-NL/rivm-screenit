@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useContext, useEffect} from "react"
+import {FC, use, useEffect} from "react"
 import classNames from "classnames"
 import authenticationStyle from "./AuthenticationPage.module.scss"
 import styles from "./LogoutPage.module.scss"
@@ -35,8 +35,8 @@ import {State} from "../../datatypes/State"
 import {setLoggingOutAction} from "../../actions/AuthenticatieAction"
 import {KeycloakContext} from "../../components/KeycloakProvider"
 
-const LogoutPage = () => {
-	const {initialized: keycloakInitialized, keycloak} = useContext(KeycloakContext)
+const LogoutPage: FC = () => {
+	const {initialized: keycloakInitialized, keycloak} = use(KeycloakContext)
 	const dispatch = useDispatch()
 	const authenticatie = useSelector((state: State) => state.authenticatie)
 

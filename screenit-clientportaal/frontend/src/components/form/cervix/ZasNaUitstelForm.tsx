@@ -26,13 +26,14 @@ import SubmitForm from "../SubmitForm"
 import {FormControl, FormControlLabel, Radio, RadioGroup} from "@mui/material"
 import styles from "./ZasNaUitstelForm.module.scss"
 import {formatDateText} from "../../../utils/DateUtil"
+import {FC} from "react"
 
 export type ZasNaUitstelFormProps = {
 	uitstellenTotDatum: Date | null,
 	onSubmitSucces: (value: boolean) => void
 }
 
-const ZasNaUitstelForm = (props: ZasNaUitstelFormProps) => {
+const ZasNaUitstelForm: FC<ZasNaUitstelFormProps> = (props) => {
 
 	type ZasNaUitstel = {
 		zasNaUitstelOntvangen: string
@@ -91,7 +92,7 @@ const ZasNaUitstelForm = (props: ZasNaUitstelFormProps) => {
 				</SubmitForm>)}
 
 		</Formik>
-	</>;
+	</>
 }
 
 export default ZasNaUitstelForm

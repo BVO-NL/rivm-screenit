@@ -23,14 +23,13 @@ import { FormControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } 
 import { formatDate, formatNLDate } from '@shared/utils/date-utils'
 import { bsnValidator } from '@shared/validators/bsn/bsn.validator'
 import { NotificationService } from '@shared/services/notification/notification.service'
-import {
-  ExtraBeveiligdeOmgevingService
-} from '@/algemeen/extra-beveiligde-omgeving/services/extra-beveiligde-omgeving/extra-beveiligde-omgeving.service'
+import { ExtraBeveiligdeOmgevingService } from '@/algemeen/extra-beveiligde-omgeving/services/extra-beveiligde-omgeving/extra-beveiligde-omgeving.service'
 import { take } from 'rxjs'
 import { DsButtonComponent, DsDatepickerComponent, DsInputComponent, DsPageHeaderComponent } from '@topicus-rgp-ds/web'
 import { extensieValidator } from '@shared/validators/file/file.validator'
 import { SingleFileSelectorComponent } from '@shared/components/single-file-selector/single-file-selector.component'
 import { StringsService } from '@shared/strings'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-extra-beveiligde-omgeving-keuze-herstellen-page',
@@ -58,7 +57,7 @@ export class ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent {
     bsn: ['', [Validators.required, bsnValidator]],
     bestand: this.formBuilder.control<File | null>(null, [Validators.required, extensieValidator(['pdf'])]),
   })
-  maxGeboorteDatum = formatDate(new Date())
+  maxGeboorteDatum = formatDate(DateService.nu())
 
   get bsnCtrl(): FormControl {
     return this.formGroup.get('bsn') as FormControl

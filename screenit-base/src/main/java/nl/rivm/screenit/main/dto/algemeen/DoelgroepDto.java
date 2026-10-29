@@ -26,5 +26,6 @@ public enum DoelgroepDto
 	DUBBELE_TIJD,
 	MINDERVALIDE,
 	SUSPECT,
-	TEHUIS
+	TEHUIS,
+	REGULIER
 }

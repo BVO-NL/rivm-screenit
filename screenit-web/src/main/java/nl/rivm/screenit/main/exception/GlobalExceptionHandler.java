@@ -106,15 +106,6 @@ public class GlobalExceptionHandler
 		return ResponseEntity.unprocessableContent().body(ex.toJson());
 	}
 
-	@ExceptionHandler(EntityNietGevondenException.class)
-	public ResponseEntity<String> handleClientNietGevondenException(EntityNietGevondenException ex)
-	{
-		LOG.warn(ex.getMessage());
-		var node = objectMapper.createObjectNode();
-		node.put("message", ex.getMessage());
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(node.toString());
-	}
-
 	@ExceptionHandler(EntityNotFoundException.class)
 	public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex)
 	{

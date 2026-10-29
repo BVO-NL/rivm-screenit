@@ -22,7 +22,7 @@ import BasePage from "../../../BasePage"
 import {BevolkingsonderzoekNaam} from "../../../../datatypes/Bevolkingsonderzoek"
 import properties from "./ColonAfspraakWizard.json"
 import {getString} from "../../../../utils/TekstPropertyUtil"
-import React, {createContext, ReactNode, useContext, useState} from "react"
+import React, {createContext, FC, ReactNode, use, useState} from "react"
 import WizardIndicator from "../../../../components/wizard_indicator/WizardIndicator"
 import styles from "./ColonAfspraakWizard.module.scss"
 import {WizardIndicatorProvider} from "../../../../components/wizard_indicator/WizardIndicatorContext"
@@ -38,7 +38,7 @@ type AfspraakWizardContextType = {
 const AfspraakWizardContext = createContext<AfspraakWizardContextType | undefined>(undefined)
 
 export const useAfspraakWizardContext = (): AfspraakWizardContextType => {
-	const context = useContext(AfspraakWizardContext)
+	const context = use(AfspraakWizardContext)
 	if (context === undefined) {
 		throw new Error("useAfspraakWizardContext moet binnen een ColonAfspraakWizard gebruikt worden")
 	}
@@ -49,7 +49,7 @@ export type AfspraakMakenBasePageProps = {
 	children: ReactNode,
 }
 
-const ColonAfspraakWizard = (props: AfspraakMakenBasePageProps): React.JSX.Element => {
+const ColonAfspraakWizard: FC<AfspraakMakenBasePageProps> = (props) => {
 	const intakeafspraakType = useSelector(selectIntakeafspraakType)
 	const isDigitaal = intakeafspraakType === ColonIntakeafspraakType.DIGITAAL
 	const intakeAfspraak = useSelector(selectIntakeAfspraak)
@@ -75,9 +75,9 @@ const ColonAfspraakWizard = (props: AfspraakMakenBasePageProps): React.JSX.Eleme
 				  toonBlob={false}>
 			<WizardIndicatorProvider stappen={wizardStappen}>
 				<WizardIndicator stappen={wizardStappen} className={styles.wizardIndicator}/>
-				<AfspraakWizardContext.Provider value={{openAfsluitenPopup: () => setToonBevestigingPopup(true)}}>
+				<AfspraakWizardContext value={{openAfsluitenPopup: () => setToonBevestigingPopup(true)}}>
 					{props.children}
-				</AfspraakWizardContext.Provider>
+				</AfspraakWizardContext>
 			</WizardIndicatorProvider>
 			{toonBevestigingPopup &&
 				<ColonAfspraakWizardAfsluitenPopup onSluiten={() => setToonBevestigingPopup(false)}/>

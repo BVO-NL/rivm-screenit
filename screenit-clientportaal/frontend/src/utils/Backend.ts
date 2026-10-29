@@ -35,7 +35,7 @@ export async function vervangLegeBodyDoorNull(response: KyResponse): Promise<KyR
 	const clone = response.clone()
 	const text = await clone.text()
 	if (text === "") {
-		response.text = async () => "null"
+		response.text = async (): Promise<string> => "null"
 	}
 	return response
 }

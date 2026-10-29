@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import {Bevolkingsonderzoek, BevolkingsonderzoekNaam} from "../../datatypes/Bevolkingsonderzoek"
-import {useEffect, useState} from "react"
+import {FC, useEffect, useState} from "react"
 import {useSelectedBvo} from "../../utils/Hooks"
 import InleidingComponent from "./InleidingComponent"
 import {getBevolkingsonderzoekNederlandUrl} from "../../utils/UrlUtil"
@@ -31,7 +31,7 @@ import {assertUnreachable} from "../../utils/EnumUtil"
 import ScreenitBackend from "../../utils/Backend"
 import {ColonVolgendeUitnodigingTekstDto, ColonVolgendeUitnodigingTekstType} from "../../datatypes/colon/ColonVolgendeUitnodigingTekstDto"
 
-const BvoInleidingComponent = () => {
+const BvoInleidingComponent: FC = () => {
 
 	const bvo = useSelectedBvo()!
 

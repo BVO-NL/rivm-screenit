@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.persistence.EntityNotFoundException;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +36,6 @@ import nl.rivm.screenit.main.dto.algemeen.BezwaarHerstellenDto;
 import nl.rivm.screenit.main.dto.algemeen.BriefDto;
 import nl.rivm.screenit.main.dto.algemeen.OnderzoeksresultatenActieDto;
 import nl.rivm.screenit.main.dto.algemeen.VervangDocumentDto;
-import nl.rivm.screenit.main.exception.EntityNietGevondenException;
 import nl.rivm.screenit.main.mappers.algemeen.BriefMapper;
 import nl.rivm.screenit.main.mappers.algemeen.ClientMapper;
 import nl.rivm.screenit.main.mappers.algemeen.OnderzoeksresultatenActieMapper;
@@ -167,7 +168,7 @@ public class BezwaarController extends BaseController
 		throws IOException
 	{
 		var actie = onderzoeksresultatenActieRepository.findById(vervangDocumentDto.getId())
-			.orElseThrow(() -> new EntityNietGevondenException("Document", vervangDocumentDto.getId()));
+			.orElseThrow(() -> new EntityNotFoundException("OnderzoeksresultatenActie niet gevonden met id: '" + vervangDocumentDto.getId() + "'"));
 		var briefBestand = valideerPdfBestand(vervangDocumentDto.getBestand());
 
 		var uploadDocument = uploadDocumentService.multipartToUploadDocument(briefBestand);
@@ -189,7 +190,7 @@ public class BezwaarController extends BaseController
 		throws IOException
 	{
 		var bezwaarMoment = bezwaarMomentRepository.findByBezwaarBriefId(vervangDocumentDto.getId())
-			.orElseThrow(() -> new EntityNietGevondenException("BezwaarMoment", vervangDocumentDto.getId()));
+			.orElseThrow(() -> new EntityNotFoundException("BezwaarMoment niet gevonden met id: '" + vervangDocumentDto.getId() + "'"));
 		var briefBestand = valideerPdfBestand(vervangDocumentDto.getBestand());
 
 		var uploadDocument = uploadDocumentService.multipartToUploadDocument(briefBestand);
@@ -212,8 +213,7 @@ public class BezwaarController extends BaseController
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 	public ResponseEntity<Void> verstuurBevestigingsbrievenOnderzoeksresultatenActieNogmaals(@PathVariable Long id)
 	{
-		var actie = onderzoeksresultatenActieRepository.findById(id)
-			.orElseThrow(() -> new EntityNietGevondenException("OnderzoeksresultatenActie", id));
+		var actie = onderzoeksresultatenActieRepository.getReferenceById(id);
 
 		bezwaarService.verstuurBevestigingsbrievenOnderzoeksresultatenActieNogmaals(actie, getIngelogdeGebruiker());
 
@@ -232,8 +232,7 @@ public class BezwaarController extends BaseController
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 	public ResponseEntity<List<BriefDto>> verstuurBevestigingsbrievenBezwaarMomentNogmaals(@PathVariable Long id)
 	{
-		var bezwaarMoment = bezwaarMomentRepository.findById(id)
-			.orElseThrow(() -> new EntityNietGevondenException("BezwaarMoment", id));
+		var bezwaarMoment = bezwaarMomentRepository.getReferenceById(id);
 		if (!bezwaarService.getBriefActies(bezwaarMoment).contains(BriefActie.NOGMAALS_VERSTUREN))
 		{
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

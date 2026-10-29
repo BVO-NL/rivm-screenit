@@ -95,11 +95,11 @@ public class ColonAfspraakController extends BaseController
 		@ApiResponse(responseCode = "200", description = "Intakeafspraken opgehaald"),
 		@ApiResponse(responseCode = "404", description = "Client of intakeafspraak niet gevonden")
 	})
-	@GetMapping
-	public ResponseEntity<List<AfspraakDto>> getAfspraken(@RequestParam Long clientId)
+	@GetMapping("/gepland")
+	public ResponseEntity<AfspraakDto> getGeplandeAfspraak(@RequestParam Long clientId)
 	{
 		var client = getClientOfGooiNotFoundException(clientId);
-		return ResponseEntity.ok(intakeafspraakService.getAfspraken(client));
+		return ResponseEntity.ok(intakeafspraakService.getGeplandeAfspraak(client));
 	}
 
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT,
@@ -183,11 +183,11 @@ public class ColonAfspraakController extends BaseController
 	@PostMapping("/{afspraakId}/afzeggen")
 	public ResponseEntity<Void> annuleerAfspraak(@PathVariable Long afspraakId, @RequestBody ColonAfspraakAfzeggenDto afzeggenDto)
 	{
-		if (afzeggenDto.briefTegenhouden() && !ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN))
+		if (afzeggenDto.isBriefTegenhouden() && !ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN, Actie.AANPASSEN))
 		{
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
-		intakeafspraakService.annuleerAfspraak(afspraakId, afzeggenDto.briefTegenhouden(), afzeggenDto.notitie(), getIngelogdeGebruiker());
+		intakeafspraakService.annuleerAfspraak(afspraakId, afzeggenDto.isBriefTegenhouden(), afzeggenDto.getNotitie(), getIngelogdeGebruiker());
 		return ResponseEntity.ok().build();
 	}
 

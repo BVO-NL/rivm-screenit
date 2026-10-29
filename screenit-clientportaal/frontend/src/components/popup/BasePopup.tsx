@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import style from "./BasePopup.module.scss"
-import {ReactNode} from "react"
+import {FC, ReactNode} from "react"
 import classNames from "classnames"
 import {isEmpty} from "../../utils/EmptyUtil"
 import SpanWithHtml from "../span/SpanWithHtml"
@@ -30,7 +30,7 @@ export type BasePopupProps = {
 	children: ReactNode
 }
 
-const BasePopup = (props: BasePopupProps) => {
+const BasePopup: FC<BasePopupProps> = (props) => {
 	return (
 		<div className={classNames(style.overlay, !isEmpty(props) && style.visible)}>
 			<div className={classNames(style.content)}>

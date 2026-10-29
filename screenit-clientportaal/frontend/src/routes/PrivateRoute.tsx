@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import * as React from "react"
-import {useContext} from "react"
+import {use} from "react"
 import {Navigate, RouteProps} from "react-router"
 import {useSelector} from "react-redux"
 import {State} from "../datatypes/State"
@@ -29,11 +29,11 @@ type PrivateRouteParams = RouteProps & {
 	component: React.ComponentType<any>
 }
 
-export default function PrivateRoute({component: Component, ...rest}: PrivateRouteParams) {
-	const {initialized, keycloak} = useContext(KeycloakContext)
+export default function PrivateRoute({component: Component, ...rest}: PrivateRouteParams): React.JSX.Element {
+	const {initialized, keycloak} = use(KeycloakContext)
 	const authenticatie = useSelector((state: State) => state.authenticatie)
 
-	const redirectComponent = (path: string) => {
+	const redirectComponent = (path: string): React.JSX.Element => {
 		return <Navigate replace to={{pathname: path}}/>
 	}
 

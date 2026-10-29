@@ -22,7 +22,6 @@ import {Component, JSX} from "react"
 import AfwijkingenAfbeeldingenView from "../signaleren/AfwijkingenAfbeeldingenView"
 import type {Lezing} from "../../../datatypes/Lezing"
 import {Col} from "reactstrap"
-import type {AnnotatieIcoon} from "../../../datatypes/AnnotatieIcoon"
 import BiradsWaardeView from "./BiradsWaardeView"
 import type {Aanzicht} from "../afbeelding/AnnotatieIcoonContainer"
 import AfwijkingenContainerView from "../signaleren/AfwijkingenContainerView"
@@ -47,17 +46,8 @@ export type LezingBlokViewState = {
 
 export default class LezingBlokView extends Component<LezingBlokViewProps, LezingBlokViewState> {
 
-	linksHorizontaleDoorsnedeIconen: Map<number, AnnotatieIcoon>
-	rechtsHorizontaleDoorsnedeIconen: Map<number, AnnotatieIcoon>
-	linksVerticaleDoorsnedeIconen: Map<number, AnnotatieIcoon>
-	rechtsVerticaleDoorsnedeIconen: Map<number, AnnotatieIcoon>
-
 	constructor(props: LezingBlokViewProps) {
 		super(props)
-		this.linksHorizontaleDoorsnedeIconen = this.props.lezing.lezingAanzichten && this.props.lezing.lezingAanzichten.linksHorizontaleDoorsnede ? this.props.lezing.lezingAanzichten.linksHorizontaleDoorsnede.iconenById : new Map()
-		this.rechtsHorizontaleDoorsnedeIconen = this.props.lezing.lezingAanzichten && this.props.lezing.lezingAanzichten.rechtsHorizontaleDoorsnede ? this.props.lezing.lezingAanzichten.rechtsHorizontaleDoorsnede.iconenById : new Map()
-		this.linksVerticaleDoorsnedeIconen = this.props.lezing.lezingAanzichten && this.props.lezing.lezingAanzichten.linksVerticaleDoorsnede ? this.props.lezing.lezingAanzichten.linksVerticaleDoorsnede.iconenById : new Map()
-		this.rechtsVerticaleDoorsnedeIconen = this.props.lezing.lezingAanzichten && this.props.lezing.lezingAanzichten.rechtsVerticaleDoorsnede ? this.props.lezing.lezingAanzichten.rechtsVerticaleDoorsnede.iconenById : new Map()
 		this.updateParentState.bind(this)
 	}
 

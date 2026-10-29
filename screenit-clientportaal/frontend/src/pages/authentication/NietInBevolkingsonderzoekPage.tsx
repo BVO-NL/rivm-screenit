@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import authenticationStyle from "./AuthenticationPage.module.scss"
-import {useCallback} from "react"
+import {FC, useCallback} from "react"
 import {Col, Row} from "react-bootstrap"
 import {getString} from "../../utils/TekstPropertyUtil"
 import SpanWithHtml from "../../components/span/SpanWithHtml"
@@ -31,7 +31,7 @@ import Button from "../../components/input/Button"
 import {ArrowType} from "../../components/vectors/ArrowIconComponent"
 import {useNavigate} from "react-router"
 
-const NietInBevolkingsonderzoekPage = () => {
+const NietInBevolkingsonderzoekPage: FC = () => {
 	const navigate = useNavigate()
 
 	const logoutCallback = useCallback(() => {

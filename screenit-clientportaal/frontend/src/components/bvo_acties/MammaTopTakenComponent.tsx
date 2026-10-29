@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useEffect} from "react"
+import {FC, useEffect} from "react"
 import {Col, Row} from "react-bootstrap"
 import TopTaakComponent from "../taken/TopTaakComponent"
 import {ClientContactActieType} from "../../datatypes/ClientContactActieType"
@@ -42,7 +42,7 @@ export type MammaTopTakenComponentProps = {
 	beschikbareActies: ClientContactActieType[]
 }
 
-const MammaTopTakenComponent = (props: MammaTopTakenComponentProps) => {
+const MammaTopTakenComponent: FC<MammaTopTakenComponentProps> = (props) => {
 
 	const dispatch = useThunkDispatch()
 

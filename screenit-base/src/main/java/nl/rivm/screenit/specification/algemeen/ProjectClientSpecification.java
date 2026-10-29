@@ -72,6 +72,26 @@ public class ProjectClientSpecification
 		return (r, q, cb) -> cb.equal(r.get(ProjectClient_.project), project);
 	}
 
+	public static Specification<ProjectClient> heeftProjectMetIdIn(List<Long> projectIds)
+	{
+		return (r, q, cb) -> r.get(ProjectClient_.project).get(AbstractHibernateObject_.id).in(projectIds);
+	}
+
+	public static ExtendedSpecification<ProjectClient> heeftProjectBriefVerstuurdVoorAfdrukken()
+	{
+		return (r, q, cb) ->
+		{
+			var subquery = q.subquery(Long.class);
+			var briefRoot = subquery.from(ProjectBrief.class);
+			subquery.select(briefRoot.get(ProjectBrief_.projectClient).get(AbstractHibernateObject_.id))
+				.where(cb.and(
+					cb.equal(briefRoot.get(ProjectBrief_.projectClient), r),
+					BriefSpecification.<ProjectBrief> isVerstuurdVoorAfdrukken().toPredicate(briefRoot, q, cb)));
+
+			return cb.exists(subquery);
+		};
+	}
+
 	public static Specification<ProjectClient> heeftExcludeerAfmelding(List<Bevolkingsonderzoek> onderzoeken)
 	{
 		return (r, q, cb) ->

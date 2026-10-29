@@ -27,13 +27,14 @@ import ZASAanvragenIcon from "../../scss/media/icons_toptaken/ZasAanvragenIcon/Z
 import HeraanmeldenIcon from "../../scss/media/icons_toptaken/HeraanmeldenIcon/HeraanmeldenIcon"
 import UitstellenIcon from "../../scss/media/icons_toptaken/UitstellenIcon/UitstellenIcon"
 import HerdrukkenIcon from "../../scss/media/icons_toptaken/HerdrukkenIcon/HerdrukkenIcon"
+import {FC} from "react"
 
 export type CervixTopTakenComponentProps = {
     className?: string
     beschikbareActies: ClientContactActieType[]
 }
 
-const CervixTopTakenComponent = (props: CervixTopTakenComponentProps) => {
+const CervixTopTakenComponent: FC<CervixTopTakenComponentProps> = (props) => {
 
     return (
         <Row className={props.className}>

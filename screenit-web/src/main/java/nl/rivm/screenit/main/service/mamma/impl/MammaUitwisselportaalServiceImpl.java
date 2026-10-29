@@ -21,57 +21,49 @@ package nl.rivm.screenit.main.service.mamma.impl;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 
-import nl.rivm.screenit.Constants;
 import nl.rivm.screenit.main.service.mamma.MammaUitwisselportaalService;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.OrganisatieMedewerker_;
 import nl.rivm.screenit.model.OrganisatieType;
-import nl.rivm.screenit.model.UploadDocument;
-import nl.rivm.screenit.model.enums.BestandStatus;
-import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
-import nl.rivm.screenit.model.enums.BezwaarType;
-import nl.rivm.screenit.model.enums.FileStoreLocation;
+import nl.rivm.screenit.model.enums.Actie;
+import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
+import nl.rivm.screenit.model.enums.Recht;
+import nl.rivm.screenit.model.enums.ToegangLevel;
 import nl.rivm.screenit.model.mamma.MammaDossier;
-import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoek_;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek_;
 import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingStatus;
+import nl.rivm.screenit.model.mamma.enums.MammaDownloadDoel;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 import nl.rivm.screenit.repository.mamma.MammaDownloadOnderzoekRepository;
-import nl.rivm.screenit.service.BerichtToBatchService;
+import nl.rivm.screenit.security.Constraint;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
-import nl.rivm.screenit.service.UploadDocumentService;
+import nl.rivm.screenit.service.ScopeService;
 import nl.rivm.screenit.service.mamma.MammaBaseBeoordelingService;
 import nl.rivm.screenit.service.mamma.MammaBaseScreeningrondeService;
+import nl.rivm.screenit.service.mamma.MammaBaseUitwisselportaalService;
 import nl.rivm.screenit.specification.mamma.MammaDownloadOnderzoekSpecification;
-import nl.rivm.screenit.util.BezwaarUtil;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
@@ -79,18 +71,13 @@ import static nl.rivm.screenit.util.StringUtil.propertyChain;
 
 @Service
 @AllArgsConstructor
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class MammaUitwisselportaalServiceImpl implements MammaUitwisselportaalService
 {
 	private final ICurrentDateSupplier dateSupplier;
 
 	private final HibernateService hibernateService;
 
-	private final BerichtToBatchService berichtToBatchService;
-
 	private final MammaBaseBeoordelingService beoordelingService;
-
-	private final UploadDocumentService uploadDocumentService;
 
 	private final MammaDownloadOnderzoekenVerzoekenDataProviderServiceImpl downloadOnderzoekenVerzoekenDataProviderService;
 
@@ -100,81 +87,12 @@ public class MammaUitwisselportaalServiceImpl implements MammaUitwisselportaalSe
 
 	private final MammaBaseScreeningrondeService screeningrondeService;
 
-	private final MammaBaseBeoordelingService baseBeoordelingService;
+	private final ScopeService scopeService;
 
 	private static final OrganisatieType[] RADIOLOGIE_VERSLAG_ORGANISATIE_TYPES = new OrganisatieType[] { OrganisatieType.ZORGINSTELLING, OrganisatieType.MAMMAPOLI,
 		OrganisatieType.RADIOLOGIEAFDELING };
 
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public void maakDownloadVerzoek(List<MammaOnderzoek> onderzoeken, OrganisatieMedewerker ingelogdeOrganisatieMedewerker) throws IOException
-	{
-		var client = beoordelingService.getClientVanBeoordeling(onderzoeken.get(0).getLaatsteBeoordeling());
-		logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITWISSELPORTAAL_DOWNLOAD, ingelogdeOrganisatieMedewerker, client,
-			"Downloadverzoek aangemaakt");
-		var verzoek = new MammaDownloadOnderzoekenVerzoek();
-		verzoek.setAangemaaktDoor(ingelogdeOrganisatieMedewerker);
-		verzoek.setAangemaaktOp(dateSupplier.getDate());
-		verzoek.setStatus(BestandStatus.NOG_TE_VERWERKEN);
-		verzoek.setGewijzigdOp(verzoek.getAangemaaktOp());
-		hibernateService.saveOrUpdate(verzoek);
-		for (var onderzoek : onderzoeken)
-		{
-			var downloadOnderzoek = new MammaDownloadOnderzoek();
-			downloadOnderzoek.setOnderzoek(onderzoek);
-			downloadOnderzoek.setVerzoek(verzoek);
-			downloadOnderzoek.setStatus(BestandStatus.NOG_TE_VERWERKEN);
-			verzoek.getOnderzoeken().add(downloadOnderzoek);
-			hibernateService.saveOrUpdate(downloadOnderzoek);
-		}
-		hibernateService.saveOrUpdate(verzoek);
-		createEmptyFile(verzoek);
-	}
-
-	private void createEmptyFile(MammaDownloadOnderzoekenVerzoek verzoek) throws IOException
-	{
-		var f = File.createTempFile("dummy", ".zip"); 
-		var document = new UploadDocument();
-		document.setActief(true);
-		document.setContentType("application/zip");
-		document.setFile(f);
-
-		var zipNaam = "onderzoekData-"
-			+ verzoek.getOnderzoeken().get(0).getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient().getPersoon().getBsn()
-			+ "-"
-			+ new SimpleDateFormat(Constants.DATE_FORMAT_YYYYMMDDHHMMSS).format(new Date())
-			+ ".zip";
-		document.setNaam(zipNaam);
-		uploadDocumentService.saveOrUpdate(document, FileStoreLocation.MAMMA_VERZAMELDE_ONDERZOEK_DATA, null, true);
-		verzoek.setZipBestand(document);
-		hibernateService.saveOrUpdate(verzoek);
-	}
-
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public void startDownloading()
-	{
-		berichtToBatchService.queueMammaVerzamelOnderzoeksDataBericht();
-	}
-
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
-	public void resetDownloadVerzoek(MammaDownloadOnderzoekenVerzoek verzoek)
-	{
-		hibernateService.reload(verzoek);
-		if (verzoek.getStatus() != BestandStatus.NOG_TE_VERWERKEN && verzoek.getStatus() != BestandStatus.BEZIG_MET_VERWERKEN)
-		{
-			verzoek.setStatus(BestandStatus.NOG_TE_VERWERKEN);
-			verzoek.setGewijzigdOp(dateSupplier.getDate());
-			hibernateService.saveOrUpdate(verzoek);
-			for (var onderzoek : verzoek.getOnderzoeken())
-			{
-				onderzoek.setStatus(BestandStatus.NOG_TE_VERWERKEN);
-				onderzoek.setStatusMelding(null);
-				hibernateService.saveOrUpdate(onderzoek);
-			}
-		}
-	}
+	private final MammaBaseUitwisselportaalService baseUitwisselportaalService;
 
 	@Override
 	public Optional<MammaDownloadOnderzoekenVerzoek> geldigDownloadVerzoekVoorIngelogdeOrganisatieMedewerker(long downloadVerzoekId, OrganisatieMedewerker organisatieMedewerker)
@@ -194,39 +112,30 @@ public class MammaUitwisselportaalServiceImpl implements MammaUitwisselportaalSe
 
 		var downloadVerzoek = hibernateService.load(MammaDownloadOnderzoekenVerzoek.class, downloadVerzoekId);
 
-		return zipKanGedownloadWorden(downloadVerzoek) ? Optional.of(downloadVerzoek) : Optional.empty();
+		return baseUitwisselportaalService.zipKanGedownloadWorden(downloadVerzoek) ? Optional.of(downloadVerzoek) : Optional.empty();
 	}
 
 	@Override
 	public MammaDownloadOnderzoekenVerzoek maakDownloadVerzoekFilter(OrganisatieMedewerker organisatieMedewerker)
 	{
 		var verzoekFilter = new MammaDownloadOnderzoekenVerzoek();
+		var constraintToCheck = new Constraint();
+		constraintToCheck.setActie(Actie.INZIEN);
+		constraintToCheck.setRecht(Recht.MEDEWERKER_MAMMA_INZAGE_UPLOADVERZOEK_OVERDRACHT_PERSOONSGEGEVENS);
+		var toeganglevel = scopeService.getHoogsteToegangLevel(organisatieMedewerker, constraintToCheck, false);
 		if (organisatieMedewerker.getOrganisatie().getOrganisatieType() != OrganisatieType.RIVM)
 		{
 			verzoekFilter.setAangemaaktDoor(organisatieMedewerker);
+		}
+		if (toeganglevel != ToegangLevel.LANDELIJK)
+		{
+			verzoekFilter.setDoel(MammaDownloadDoel.UITWISSELPORTAAL);
 		}
 		return verzoekFilter;
 	}
 
 	@Override
-	public boolean zipKanGedownloadWorden(MammaDownloadOnderzoekenVerzoek downloadOnderzoekenVerzoek)
-	{
-		var status = downloadOnderzoekenVerzoek.getStatus();
-		return (status == BestandStatus.VERWERKT || status == BestandStatus.CRASH) && !heeftClientBezwaarTegenUitwisseling(downloadOnderzoekenVerzoek);
-	}
-
-	private boolean heeftClientBezwaarTegenUitwisseling(MammaDownloadOnderzoekenVerzoek downloadOnderzoekenVerzoek)
-	{
-		if (downloadOnderzoekenVerzoek.getOnderzoeken() != null && !downloadOnderzoekenVerzoek.getOnderzoeken().isEmpty())
-		{
-			var client = baseBeoordelingService.getClientVanBeoordeling(downloadOnderzoekenVerzoek.getOnderzoeken().get(0).getOnderzoek().getLaatsteBeoordeling());
-			return BezwaarUtil.isBezwaarActiefVoor(client, BezwaarType.GEEN_DIGITALE_UITWISSELING_MET_HET_ZIEKENHUIS, Bevolkingsonderzoek.MAMMA);
-		}
-		return false;
-	}
-
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
+	@Transactional
 	public void updateDownloadVerzoekInformatie(MammaDownloadOnderzoekenVerzoek verzoek, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		verzoek.setGedownloadOp(dateSupplier.getDate());

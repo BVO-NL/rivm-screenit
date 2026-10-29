@@ -290,7 +290,7 @@ public class BriefafdrukopdrachtVersturenScheduler extends BriefafdrukopdrachtMe
 				LOG.warn("Krijgen een conflict (2 keer zelfde GUID, resend) nav briefafdrukopdracht naar CommHub. {}", postFix);
 				return VerwerkingStatus.GELUKT;
 			}
-			else if (HttpStatus.INTERNAL_SERVER_ERROR == httpStatusCodeException.getStatusCode())
+			else if (HttpStatus.INTERNAL_SERVER_ERROR == httpStatusCodeException.getStatusCode() || HttpStatus.BAD_REQUEST == httpStatusCodeException.getStatusCode())
 			{
 				LOG.error("Inhoudelijke fout bij versturen van briefafdrukopdracht naar CommHub. {}, Response: '{}'", postFix,
 					httpStatusCodeException.getResponseBodyAsString(), exception);

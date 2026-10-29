@@ -96,13 +96,13 @@ export class AfsprakenTabComponent {
 
   protected getMammaAfspraak() {
     forkJoin({
-      afspraken: this.mammaClientafspraakService.getAfspraken(this.clientId),
+      afspraak: this.mammaClientafspraakService.getGeplandeAfspraak(this.clientId),
       acties: this.mammaClientafspraakService.getAfspraakActies(this.clientId),
     })
       .pipe(
-        map(({ afspraken, acties }): ClientAfspraakEnActies<MammaAfspraakDto> => ({
+        map(({ afspraak, acties }): ClientAfspraakEnActies<MammaAfspraakDto> => ({
           type: Bevolkingsonderzoek.MAMMA,
-          afspraak: afspraken.at(0) ?? null,
+          afspraak,
           acties,
         })),
         take(1),
@@ -114,13 +114,13 @@ export class AfsprakenTabComponent {
 
   protected getColonAfspraak() {
     this.colonIntakeafspraakService
-      .getAfspraken(this.clientId)
+      .getGeplandeAfspraak(this.clientId)
       .pipe(
-        switchMap((afspraken) =>
-          this.colonIntakeafspraakService.getAfspraakActies(this.clientId, afspraken.at(0)?.id).pipe(
+        switchMap((afspraak) =>
+          this.colonIntakeafspraakService.getAfspraakActies(this.clientId, afspraak?.id).pipe(
             map((acties) => ({
               type: Bevolkingsonderzoek.COLON,
-              afspraak: afspraken.at(0) ?? null,
+              afspraak,
               acties,
             })),
           ),

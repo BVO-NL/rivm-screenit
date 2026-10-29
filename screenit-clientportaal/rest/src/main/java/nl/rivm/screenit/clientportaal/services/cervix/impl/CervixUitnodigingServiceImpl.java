@@ -117,7 +117,7 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 	{
 		var herinnering = ronde.getBrieven().stream()
 			.filter(this::isGeaccepteerdeBriefVoorHerinnering)
-			.filter(BriefUtil::isVerstuurdVoorAfdrukken)
+			.filter(brief -> getReferentieDatum(brief) != null)
 			.max(Comparator.comparing(CervixBrief::getCreatieDatum, Comparator.nullsFirst(Date::compareTo)));
 
 		if (herinnering.isEmpty())
@@ -131,14 +131,19 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 			return true;
 		}
 
-		var verstuurdVoorAfdrukkenMoment = BriefUtil.getVerstuurdVoorAfdrukkenMoment(herinnering.get());
-		if (verstuurdVoorAfdrukkenMoment == null)
-		{
-			return false;
-		}
-		var dagenTussenHerinneringEnVandaag = DateUtil.aantalDagenVerschil(verstuurdVoorAfdrukkenMoment, currentDateSupplier.getDate());
+		var referentieDatum = getReferentieDatum(herinnering.get());
+		var dagenTussenHerinneringEnVandaag = DateUtil.aantalDagenVerschil(referentieDatum, currentDateSupplier.getDate());
 		var minimaleDagenTussenHerinneringEnVandaag = wekenNaAanmaakHerinnering * 7;
 		return dagenTussenHerinneringEnVandaag >= minimaleDagenTussenHerinneringEnVandaag;
+	}
+
+	private Date getReferentieDatum(CervixBrief brief)
+	{
+		if (BriefType.getCervixZasBrieven().contains(brief.getBriefType()))
+		{
+			return brief.getCreatieDatum();
+		}
+		return BriefUtil.getVerstuurdVoorAfdrukkenMoment(brief);
 	}
 
 	private boolean isGeaccepteerdeBriefVoorHerinnering(CervixBrief brief)

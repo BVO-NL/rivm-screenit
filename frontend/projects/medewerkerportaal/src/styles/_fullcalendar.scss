@@ -22,14 +22,6 @@ button:focus {
   outline: none !important;
 }
 
-.fc {
-  line-height: 20px !important;
-
-  th {
-    font-weight: var(--font-weight-7);
-  }
-}
-
 .event-icon {
   stroke: #fff;
   fill: #fff;
@@ -70,65 +62,42 @@ button:focus {
   background-color: var(--event-status-feestdag-background-color) !important;
   color: var(--event-status-blocked-text-color);
   border: none;
-  opacity: 0.6;
-  box-shadow: 0 0 0 1px var(--fc-neutral-bg-color) !important;
+  opacity: 0.3;
+  box-shadow: 0 0 0 1px var(--rooster-feestdag-schaduw-color) !important;
 }
 
 .event_status_beperking {
   background-color: var(--event-status-beperking-background-color) !important;
+  opacity: 0.3;
   border: none;
 }
 
-@for $i from 1 through 10 {
-  .aantal-kamers-#{$i} {
-    .fc-timegrid-cols {
-      .fc-day:nth-child(#{$i}n + 1) {
-        border-right-width: 2px;
-        border-right-color: #c5bcbc;
-      }
-    }
-
-    .fc-daygrid-body {
-      .fc-daygrid-day:nth-child(#{$i}n + 1) {
-        border-right-width: 2px;
-        border-right-color: #c5bcbc;
-      }
-    }
-
-    .fc-col-header {
-      .fc-col-header-cell:nth-child(#{$i}n + 1) {
-        border-right-width: 2px;
-        border-right-color: #c5bcbc;
-      }
-    }
-  }
-}
-
-.fc-timegrid-col-events:has(.event_status_feestdag) {
-  margin: 0;
-}
-
-.fc-timegrid-event {
+.rooster-kolom-event {
   cursor: pointer;
+}
 
-  .fc-event-main {
-    padding: 0;
-    .fc-event-main-frame {
-      padding: 3px 1px 0 3px;
-    }
-  }
+.rooster-dag-kolom {
+  background-color: rgb(0 0 0 / 2.35%);
 }
 
 .rotate-45 {
   transform: rotate(45deg);
 }
 
-th.fc-day {
-  font-weight: normal;
+.rooster-dag-header-vandaag {
+  background-color: var(--rooster-vandaag-header-bg-color);
+  color: var(--rooster-vandaag-header-text-color);
+  font-weight: bold;
 }
 
-th.fc-day-today {
-  background-color: var(--fc-today-header-bg-color);
-  color: var(--fc-today-header-text-color);
-  font-weight: bold;
+.rooster-header-tekst {
+  font-size: var(--rooster-header-font-size);
+  padding: 2px 0;
+}
+
+.kamer-header-tekst {
+  height: 21px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

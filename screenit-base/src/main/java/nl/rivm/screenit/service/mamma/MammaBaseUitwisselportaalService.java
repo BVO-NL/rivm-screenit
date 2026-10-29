@@ -23,18 +23,22 @@ package nl.rivm.screenit.service.mamma;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import nl.rivm.screenit.model.Account;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek;
+import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaUploadBeeldenPoging;
+import nl.rivm.screenit.model.mamma.enums.MammaDownloadDoel;
 import nl.rivm.screenit.model.mamma.enums.MammaMammografieIlmStatus;
 
 public interface MammaBaseUitwisselportaalService
 {
 
-	void kopieerVerslagPdfNaarDownloadVerzoekMap(MammaDownloadOnderzoek downloadOnderzoek);
+	boolean kopieerVerslagPdfNaarDownloadVerzoekMap(MammaDownloadOnderzoek downloadOnderzoek);
 
 	void kopieerDicomBestandNaarDownloadVerzoekMap(File dicomTempFile, String seriesNumber, MammaDownloadOnderzoek downloadOnderzoek);
 
@@ -53,4 +57,14 @@ public interface MammaBaseUitwisselportaalService
 	boolean forceerUploadPogingIlmStatus(long accessionNumber, MammaMammografieIlmStatus status, Account account);
 
 	MammaUploadBeeldenPoging getUploadPoging(Long accessionNumber);
+
+	MammaDownloadOnderzoekenVerzoek maakDownloadVerzoek(List<MammaOnderzoek> onderzoeken, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, MammaDownloadDoel doel)
+		throws IOException;
+
+	void startDownloading();
+
+	void resetDownloadVerzoek(MammaDownloadOnderzoekenVerzoek object) throws IOException;
+
+	boolean zipKanGedownloadWorden(MammaDownloadOnderzoekenVerzoek downloadOnderzoekenVerzoek);
+
 }

@@ -28,14 +28,14 @@ import {getString} from "../utils/TekstPropertyUtil"
 import properties from "./../pages/profiel/BezwaarWijzigenPage.json"
 import {showToast} from "../utils/ToastUtil"
 
-export const getLaatsteBezwaarMoment = () => (dispatch: Dispatch<ResetBezwaarMoment>) => {
-	return ScreenitBackend.get<BezwaarMoment>(`bezwaar`)
+export const getLaatsteBezwaarMoment = () => (dispatch: Dispatch<ResetBezwaarMoment>): Promise<ResetBezwaarMoment> => {
+	return ScreenitBackend.get<BezwaarMoment>("bezwaar")
 		.json()
 		.then((response: BezwaarMoment) => dispatch(setLaatsteBezwaarMomentAction(response)))
 }
 
-export const saveNieuwBezwaarMoment = (bezwaarMoment: BezwaarMoment) => (dispatch: Dispatch<ResetBezwaarMoment>) => {
-	return ScreenitBackend.post<BezwaarMoment>(`bezwaar`, {json: bezwaarMoment}).json()
+export const saveNieuwBezwaarMoment = (bezwaarMoment: BezwaarMoment) => (dispatch: Dispatch<ResetBezwaarMoment>): Promise<void> => {
+	return ScreenitBackend.post<BezwaarMoment>("bezwaar", {json: bezwaarMoment}).json()
 		.then(response => {
 			dispatch(setLaatsteBezwaarMomentAction(response))
 			showToast(getString(properties.toast.wijzigingen.titel), getString(properties.toast.wijzigingen.text))

@@ -29,12 +29,12 @@ export type CervixDossierActions =
     | ResetCervixUitstelStatusAction
     | CervixUitstelAction
 
-export const CREATE_CERVIX_DOSSIER = 'CREATE_CERVIX_DOSSIER';
+export const CREATE_CERVIX_DOSSIER = "CREATE_CERVIX_DOSSIER"
 export type CervixDossierAction = { type: typeof CREATE_CERVIX_DOSSIER, dossier: CervixDossier }
 export const createCervixDossierAction = (dossier: CervixDossier): CervixDossierAction => ({
     type: CREATE_CERVIX_DOSSIER,
     dossier: dossier
-});
+})
 
 export const RESET_HUIDIGE_ZAS_STATUS = "RESET_HUIDIGE_ZAS_STATUS"
 export type ResetZasStatusAction = { type: typeof RESET_HUIDIGE_ZAS_STATUS, zasStatus: ZasStatus }
@@ -43,14 +43,14 @@ export const setHuidigeZasStatusAction = (zasStatus: ZasStatus): ResetZasStatusA
     zasStatus: zasStatus,
 })
 
-export const RESET_CERVIX_UITSTEL_STATUS = 'RESET_CERVIX_UITSTEL_STATUS';
+export const RESET_CERVIX_UITSTEL_STATUS = "RESET_CERVIX_UITSTEL_STATUS"
 export type ResetCervixUitstelStatusAction = { type: typeof RESET_CERVIX_UITSTEL_STATUS, cervixUitstelStatus: CervixUitstelStatus }
 export const setCervixUitstelStatusAction = (cervixUitstelStatus: CervixUitstelStatus): ResetCervixUitstelStatusAction => ({
     type: RESET_CERVIX_UITSTEL_STATUS,
     cervixUitstelStatus: cervixUitstelStatus
-});
+})
 
-export const CERVIX_UITSTEL = 'CERVIX_UITSTEL';
+export const CERVIX_UITSTEL = "CERVIX_UITSTEL"
 export type CervixUitstelAction = { type: typeof CERVIX_UITSTEL, cervixUitstelDto: CervixUitstelDto }
 export const createCervixUitstelAction = (cervixUitstelDto: CervixUitstelDto): CervixUitstelAction => ({
     type: CERVIX_UITSTEL,

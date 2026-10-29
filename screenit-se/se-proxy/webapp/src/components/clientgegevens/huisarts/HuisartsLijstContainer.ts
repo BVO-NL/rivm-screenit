@@ -32,7 +32,6 @@ export type HuisartsLijstContainerProps = {
 	afspraak: Afspraak;
 	vergrendelZoekState: () => void;
 	onKiesHuisarts: (huisarts: Huisarts) => void;
-	toggle: () => void;
 	moetVerversen: boolean;
 }
 

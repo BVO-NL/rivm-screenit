@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useCallback, useContext} from "react"
+import {FC, useCallback, use} from "react"
 import {Navigate, useLocation} from "react-router"
 import {useDispatch, useSelector} from "react-redux"
 import {Col, Row} from "react-bootstrap"
@@ -45,8 +45,8 @@ enum DigidLoginAfbrekenCode {
 	"error" = "error"
 }
 
-const DigiDInloggenAfgebrokenPage = () => {
-	const {initialized: keycloakInitialized, keycloak} = useContext(KeycloakContext)
+const DigiDInloggenAfgebrokenPage: FC = () => {
+	const {initialized: keycloakInitialized, keycloak} = use(KeycloakContext)
 	const dispatch = useDispatch()
 	const authenticatie = useSelector((state: State) => state.authenticatie)
 	const digidLoginAfbrekenCode = getDigiDLoginAfbrekenCode(useLocation())
@@ -64,9 +64,9 @@ const DigiDInloggenAfgebrokenPage = () => {
 			<Row>
 				<Col sm={8}>
 					<div>
-						<h1>{getString(properties["login"]["digid"][digidLoginAfbrekenCode]["title"])}</h1>
+						<h1>{getString(properties.login.digid[digidLoginAfbrekenCode].title)}</h1>
 						<div className={authenticationStyle.introTextContainer}>
-							<SpanWithHtml value={getString(properties["login"]["digid"][digidLoginAfbrekenCode]["tekst"])}/>
+							<SpanWithHtml value={getString(properties.login.digid[digidLoginAfbrekenCode].tekst)}/>
 						</div>
 						{toonNogmaalsInloggenButton && <div className={styles.loginDigid}>
 							<Button label={getString(properties.login.button.title)} displayArrow={ArrowType.ARROW_RIGHT} onClick={login}/>
@@ -85,8 +85,8 @@ const DigiDInloggenAfgebrokenPage = () => {
 	)
 }
 
-function getDigiDLoginAfbrekenCode(location: Location) {
-	let fullDigiDLoginAfbrekenCode = new URLSearchParams(location.search).get("code")
+function getDigiDLoginAfbrekenCode(location: Location): "error" | "cancelled" | "bsn" | "sofi" {
+	const fullDigiDLoginAfbrekenCode = new URLSearchParams(location.search).get("code")
 	let digidLoginAfbrekenCodeString = fullDigiDLoginAfbrekenCode !== null && fullDigiDLoginAfbrekenCode !== undefined ? fullDigiDLoginAfbrekenCode.replace("login.digid.", "") : "error"
 	if (!Object.values(DigidLoginAfbrekenCode).includes(digidLoginAfbrekenCodeString as DigidLoginAfbrekenCode)) {
 		digidLoginAfbrekenCodeString = "error"

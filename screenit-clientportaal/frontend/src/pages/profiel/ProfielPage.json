@@ -20,11 +20,15 @@
       },
       "aanspreekvorm": "mijn aanspreekvorm wijzigen",
       "email": "mijn e-mailadres doorgeven",
-      "bezwaar": "het gebruik van mijn gegevens beheren"
+      "bezwaar": "het gebruik van mijn gegevens beheren",
+      "overdrachtPersoonsgegevens": "mijn dossier opslaan"
     },
     "subtitle": {
       "telefoonnummer": "Mijn telefoonnummer(s)",
-      "adres": "Tijdelijk adres %s %s",
+      "adres": "Tijdelijk adres",
+      "vanaf": "vanaf %s",
+      "t/m": "t/m %s",
+      "voorOnbepaaldeTijd": "voor onbepaalde tijd",
       "aanspreekvorm": "Gewenste aanspreekvorm",
       "aanspreekvormen": {
         "geachte": "Geachte %s %s",

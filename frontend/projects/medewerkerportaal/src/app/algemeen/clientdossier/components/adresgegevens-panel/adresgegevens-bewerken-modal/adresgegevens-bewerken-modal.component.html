@@ -18,35 +18,41 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<app-base-dialog size="lg" [titel]="strings.algemeen.adresgegevensBewerken.dialogTitle">
+<app-base-dialog size="lg" [titel]="alsContactActie ? strings.algemeen.adresgegevensBewerken.tijdelijkAdresHeading : strings.algemeen.adresgegevensBewerken.dialogTitle">
   <div body>
-    <ds-summary-panel>
-      <div class="row">
-        <div class="col">
-          <ds-description
-            [label]="strings.algemeen.labels.straatnaam"
-            value="{{ huidigAdres.volledigeAdres }}"/>
-          <ds-description
-            [label]="strings.algemeen.labels.plaats"
-            value="{{ huidigAdres.plaats }}"/>
+    @if (huidigAdres) {
+      <ds-summary-panel>
+        <div class="row">
+          <div class="col">
+            <ds-description
+              [label]="strings.algemeen.labels.straatnaam"
+              value="{{ huidigAdres.volledigeAdres }}"/>
+            <ds-description
+              [label]="strings.algemeen.labels.plaats"
+              value="{{ huidigAdres.plaats }}"/>
+          </div>
+          <div class="col">
+            <ds-description
+              [label]="strings.algemeen.labels.postcode"
+              value="{{ huidigAdres.postcode }}"/>
+          </div>
         </div>
-        <div class="col">
-          <ds-description
-            [label]="strings.algemeen.labels.postcode"
-            value="{{ huidigAdres.postcode }}"/>
-        </div>
-      </div>
-    </ds-summary-panel>
+      </ds-summary-panel>
+    }
     <form [formGroup]="adresgegevensForm">
       <div class="adresgegevens-tijdelijk-adres">
-        <h2 class="adresgegevens-ondertitel">{{ strings.algemeen.adresgegevensBewerken.tijdelijkAdresHeading }}</h2>
+        @if (!alsContactActie) {
+          <h2 class="adresgegevens-ondertitel" data-testid="tijdelijk_adres_ondertitel">{{ strings.algemeen.adresgegevensBewerken.tijdelijkAdresHeading }}</h2>
+        }
         <ds-input
           [label]="strings.algemeen.labels.straatnaam"
           formControlName="straat"
           maxlength="56"
           [placeholder]="strings.algemeen.labels.straatnaam"
-          [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.straatnaam), maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.straatnaam, 56) }"
+          [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.straatnaam), maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.straatnaam, MAX_KARAKTERS.straat) }"
           data-testid="tijdelijk_adres_straat"
+          [dsMaxLength]="MAX_KARAKTERS.straat"
+          [showCounter]="false"
         />
         <div class="adresgegevens-huisnummer-rij">
           <ds-input
@@ -55,31 +61,39 @@
             type="number"
             maxlength="10"
             [placeholder]="strings.algemeen.labels.huisnummer"
-            [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.huisnummer), maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.huisnummer, 10) }"
+            [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.huisnummer), maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.huisnummer, MAX_KARAKTERS.huisnummer) }"
             data-testid="tijdelijk_adres_huisnummer"
+            [dsMaxLength]="MAX_KARAKTERS.huisnummer"
+            [showCounter]="false"
           />
           <ds-input
             [label]="strings.algemeen.labels.huisletter"
             formControlName="huisletter"
             maxlength="1"
             [placeholder]="strings.algemeen.labels.huisletter"
-            [errorMessage]="{ pattern: strings.algemeen.errors.huisletterPatroon, maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.huisletter, 1) }"
+            [errorMessage]="{ pattern: strings.algemeen.errors.huisletterPatroon, maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.huisletter, MAX_KARAKTERS.huisletter) }"
             data-testid="tijdelijk_adres_huisletter"
+            [dsMaxLength]="MAX_KARAKTERS.huisletter"
+            [showCounter]="false"
           />
           <ds-input
             [label]="strings.algemeen.labels.toevoeging"
             formControlName="huisnummerToevoeging"
             maxlength="26"
             [placeholder]="strings.algemeen.labels.toevoeging"
-            [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.toevoeging, 26) }"
+            [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.toevoeging, MAX_KARAKTERS.huisnummerToevoeging) }"
             data-testid="tijdelijk_adres_toevoeging"
+            [dsMaxLength]="MAX_KARAKTERS.huisnummerToevoeging"
+            [showCounter]="false"
           />
           <ds-input
             [label]="strings.algemeen.labels.aanduiding"
             formControlName="huisnummerAanduiding"
             maxlength="2"
-            [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.aanduiding, 2) }"
+            [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.aanduiding, MAX_KARAKTERS.huisnummerAanduiding) }"
             data-testid="tijdelijk_adres_aanduiding"
+            [dsMaxLength]="MAX_KARAKTERS.huisnummerAanduiding"
+            [showCounter]="false"
           />
         </div>
         <div class="adresgegevens-postcode-rij">
@@ -96,15 +110,21 @@
             formControlName="plaats"
             maxlength="200"
             [placeholder]="strings.algemeen.labels.plaats"
-            [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.plaats), maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.plaats, 200) }"
+            [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.plaats), maxlength: strings.algemeen.errors.maxKarakters(strings.algemeen.labels.plaats, MAX_KARAKTERS.plaats) }"
             data-testid="tijdelijk_adres_plaats"
+            [dsMaxLength]="MAX_KARAKTERS.plaats"
+            [showCounter]="false"
           />
         </div>
         <div class="adresgegevens-datum-rij">
           <ds-datepicker
             [label]="strings.algemeen.labels.begindatum"
             formControlName="begindatum"
-            [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.begindatum), invalidDate: strings.algemeen.errors.invalidDate }"
+            [errorMessage]="{
+              required: strings.algemeen.errors.verplicht(strings.algemeen.labels.begindatum),
+              invalidDate: strings.algemeen.errors.invalidDate,
+              begindatumVoorEinddatum: voorEinddatumMelding
+            }"
             data-testid="tijdelijk_adres_begindatum"
           />
           <ds-datepicker
@@ -114,12 +134,16 @@
             [errorMessage]="{
               required: strings.algemeen.errors.verplicht(strings.algemeen.labels.einddatum),
               invalidDate: strings.algemeen.errors.invalidDate,
-              einddatumNaBegindatum: strings.algemeen.errors.veldNaVeld(strings.algemeen.labels.einddatum, strings.algemeen.labels.begindatum),
+              lessThanMinDate: naBegindatumMelding,
+              einddatumNaBegindatum: naBegindatumMelding,
               einddatumMaxJaren: strings.algemeen.errors.maxToekomst(strings.algemeen.labels.einddatum, '1 jaar')
             }"
             data-testid="tijdelijk_adres_einddatum"
           />
         </div>
+        @if (alsContactActie) {
+          <app-notitie-aanmaken-veld formControlName="notitie" [label]="strings.algemeen.labels.notitie" data-testid="notitie_veld"/>
+        }
       </div>
     </form>
   </div>
@@ -130,7 +154,7 @@
             data-testid="btn_opslaan"
             [disabled]="adresgegevensForm.invalid"
             ds-button-primary>
-      {{ strings.algemeen.buttons.opslaan }}
+      {{ heeftTijdelijkAdres ? strings.algemeen.buttons.wijzigingenOpslaan : strings.algemeen.buttons.toevoegen }}
     </button>
   </ng-container>
 </app-base-dialog>

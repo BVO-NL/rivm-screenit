@@ -65,7 +65,7 @@ export default class VisueleInspectieAfbeeldingView extends Component<VisueleIns
 						draggable="false" src="./images/visuele_inspectie_afbeelding.svg"
 						onLoadCapture={
 							(): void => {
-								this.props.afterLoad && this.props.afterLoad()
+								this.props.afterLoad?.()
 							}}/>
 					{this.props.iconenById ? Array.from(this.props.iconenById.values()).map((icoon: AnnotatieIcoon) => {
 						return <AnnotatieIcoonContainer

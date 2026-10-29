@@ -41,8 +41,8 @@ const KeycloakProvider: React.FC<KeycloakProviderProps> = (props) => {
 	const [initialized, setInitialized] = useState(false)
 
 	keycloak.onAuthRefreshError = props.onAuthRefreshError
-	keycloak.onReady = () => setInitialized(true)
-	keycloak.onTokenExpired = () => {
+	keycloak.onReady = (): void => setInitialized(true)
+	keycloak.onTokenExpired = (): void => {
 		keycloak.updateToken(60).then(success => {
 			if (!success) {
 				props.onAuthRefreshError()
@@ -59,9 +59,9 @@ const KeycloakProvider: React.FC<KeycloakProviderProps> = (props) => {
 	}, [])
 
 	return (
-		<KeycloakContext.Provider value={{initialized, keycloak}}>
+		<KeycloakContext value={{initialized, keycloak}}>
 			{props.children}
-		</KeycloakContext.Provider>
+		</KeycloakContext>
 	)
 }
 

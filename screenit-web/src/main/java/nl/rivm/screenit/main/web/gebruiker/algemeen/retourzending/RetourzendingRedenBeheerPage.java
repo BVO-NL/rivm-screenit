@@ -39,6 +39,7 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.RetourzendingAfhandelingType;
 import nl.rivm.screenit.service.HibernateService;
+import nl.rivm.screenit.util.DynamicPropertyComparator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -55,7 +56,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.beans.support.PropertyComparator;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 import com.google.common.primitives.Ints;
@@ -99,9 +99,6 @@ public class RetourzendingRedenBeheerPage extends RetourzendingBasePage
 
 		retourRedenAfhandelingForm.add(new IndicatingAjaxButton("toevoegen")
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)
 			{
@@ -118,19 +115,13 @@ public class RetourzendingRedenBeheerPage extends RetourzendingBasePage
 		List<IColumn<RetourredenAfhandeling, String>> columns = new ArrayList<>();
 		columns.add(new PropertyColumn<>(Model.of("Retourreden"), "retourReden", "retourReden"));
 		columns.add(new EnumPropertyColumn<>(Model.of("Afhandeling"), "afhandeling", "afhandeling"));
-		columns.add(new AbstractColumn<RetourredenAfhandeling, String>(Model.of("Verwijderen"))
+		columns.add(new AbstractColumn<>(Model.of("Verwijderen"))
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void populateItem(Item<ICellPopulator<RetourredenAfhandeling>> cellItem, String componentId, final IModel<RetourredenAfhandeling> rowModel)
 			{
-				cellItem.add(new AjaxImageCellPanel<RetourredenAfhandeling>(componentId, rowModel, "icon-trash")
+				cellItem.add(new AjaxImageCellPanel<>(componentId, rowModel, "icon-trash")
 				{
-
-					private static final long serialVersionUID = 1L;
-
 					@Override
 					protected void onClick(AjaxRequestTarget target)
 					{
@@ -145,11 +136,8 @@ public class RetourzendingRedenBeheerPage extends RetourzendingBasePage
 			}
 		});
 
-		retourRedenAfhandelingTabel = new ScreenitDataTable<>("retourRedenAfhandelingTabel", columns, new SortableDataProvider<RetourredenAfhandeling, String>()
+		retourRedenAfhandelingTabel = new ScreenitDataTable<>("retourRedenAfhandelingTabel", columns, new SortableDataProvider<>()
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public Iterator<? extends RetourredenAfhandeling> iterator(long first, long count)
 			{
@@ -162,7 +150,7 @@ public class RetourzendingRedenBeheerPage extends RetourzendingBasePage
 				var sortParam = getSort();
 				if (sortParam != null && sortParam.getProperty() != null)
 				{
-					retourredenAfhandelingen.sort(new PropertyComparator<>(sortParam.getProperty(), true, sortParam.isAscending()));
+					retourredenAfhandelingen.sort(new DynamicPropertyComparator<>(sortParam.getProperty(), true, sortParam.isAscending()));
 				}
 				return retourredenAfhandelingen;
 			}

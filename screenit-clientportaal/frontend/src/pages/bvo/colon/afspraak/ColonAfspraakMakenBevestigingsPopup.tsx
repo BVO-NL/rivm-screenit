@@ -36,6 +36,7 @@ import SubmitButton from "../../../../components/input/SubmitButton"
 import {getBvoBaseUrl} from "../../../../utils/UrlUtil"
 import {useNavigate} from "react-router"
 import {VrijSlotZonderKamer} from "../../../../datatypes/VrijSlotZonderKamer"
+import {FC} from "react"
 
 export type ColonAfspraakMakenBevestigingsPopupProps = {
 	afspraak: VrijSlotZonderKamer
@@ -43,7 +44,7 @@ export type ColonAfspraakMakenBevestigingsPopupProps = {
 	onClose: () => void
 }
 
-const ColonAfspraakMakenBevestigingsPopup = (props: ColonAfspraakMakenBevestigingsPopupProps) => {
+const ColonAfspraakMakenBevestigingsPopup: FC<ColonAfspraakMakenBevestigingsPopupProps> = (props) => {
 	const bvo = useSelectedBvo()
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()

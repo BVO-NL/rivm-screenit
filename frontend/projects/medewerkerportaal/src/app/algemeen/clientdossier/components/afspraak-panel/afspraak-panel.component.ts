@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core'
+import { Component, computed, inject, input, output } from '@angular/core'
 import { faCalendar } from '@fortawesome/pro-solid-svg-icons'
 import { DsBadgeComponent, DsButtonComponent, DsCardComponent, DsFooterActionsLeftDirective, DsFooterActionsRightDirective } from '@topicus-rgp-ds/web'
 import { EmptyStatePanelComponent } from '@shared/components/empty-state-panel/empty-state-panel.component'
@@ -61,7 +61,6 @@ type AfspraakEnActies = ClientAfspraakEnActies<ColonIntakeafspraakDto> | ClientA
   ],
   templateUrl: './afspraak-panel.component.html',
   styleUrl: './afspraak-panel.component.scss',
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class AfspraakPanel {
   private readonly dialog = inject(Dialog)

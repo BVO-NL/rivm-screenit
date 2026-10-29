@@ -18,16 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {legePersoon, Persoon} from '../datatypes/Persoon';
-import {PERSOON, PersoonActions} from '../actions/PersoonAction';
+import {legePersoon, Persoon} from "../datatypes/Persoon"
+import {PERSOON, PersoonActions} from "../actions/PersoonAction"
 
 function PersoonReducer(stateSlice: Persoon = legePersoon, action: PersoonActions): Persoon {
     switch (action.type) {
         case PERSOON:
-            return action.persoon;
+            return action.persoon
         default:
-            return stateSlice;
+            return stateSlice
     }
 }
 
-export default PersoonReducer;
+export default PersoonReducer

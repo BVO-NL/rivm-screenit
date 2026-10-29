@@ -18,9 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import {FC} from "react"
 import styles from "./MijnBevolkingsOnderzoekLogo.module.scss"
 
-const MijnBevolkingsOnderzoekLogo = () => {
+const MijnBevolkingsOnderzoekLogo: FC = () => {
 
     return (
         <svg id="Group" className={styles.style} xmlns="http:

@@ -1,0 +1,40 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog [titel]="titel" size="xl">
+  <div body>
+    <form [formGroup]="bezwaarForm" class="form-in-modal" novalidate>
+      <app-bezwaar-lijst
+        formControlName="bezwaren"
+        [bezwaarMoment]="actiefBezwaarMoment()"
+        [bezwaarOpties]="bezwaarOpties()"
+        [bewerkbaar]="true"
+        data-testid="bezwaar_lijst"/>
+      <app-single-file-selector formControlName="bestand" acceptedExtensie="pdf" [required]="true" data-testid="bestand_input"/>
+      <app-notitie-aanmaken-veld formControlName="notitie" [label]="strings.algemeen.labels.notitie" data-testid="notitie_veld" class="mt-3"/>
+    </form>
+  </div>
+  <ng-container buttons>
+    <button (click)="annuleren()" data-testid="btn_annuleren" ds-button-tertiary type="button">{{ strings.algemeen.buttons.annuleren }}</button>
+    <button (click)="verwerken()" [disabled]="bezwaarForm.invalid" data-testid="btn_verwerken" ds-button-primary type="button">
+      {{ verwerkKnopTekst }}
+    </button>
+  </ng-container>
+</app-base-dialog>

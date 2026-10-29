@@ -36,9 +36,7 @@ import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
-import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.service.BaseBriefService;
-import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -59,9 +57,6 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 	private final BootstrapDialog dialog;
 
 	@SpringBean
-	private ICurrentDateSupplier dateSupplier;
-
-	@SpringBean
 	private BaseBriefService baseBriefService;
 
 	@SpringBean
@@ -78,22 +73,13 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 
 		var client = model.getObject();
 
-		var dossier = client.getMammaDossier();
-		MammaAfspraak afspraak = null;
-		if (dossier != null)
-		{
-			var screeningRonde = dossier.getLaatsteScreeningRonde();
-			if (screeningRonde != null && screeningRonde.getLaatsteUitnodiging() != null)
-			{
-				afspraak = screeningRonde.getLaatsteUitnodiging().getLaatsteAfspraak();
-			}
-		}
+		var afspraak = baseAfspraakService.findOpenAfspraak(client).orElse(null);
 
 		var inhoud = new WebMarkupContainer("inhoud");
 		inhoud.setOutputMarkupId(true);
 		add(inhoud);
 
-		var heeftActiveAfspraak = afspraak != null && afspraak.getStatus() == MammaAfspraakStatus.GEPLAND && afspraak.getVanaf().compareTo(dateSupplier.getDate()) >= 0;
+		var heeftActiveAfspraak = afspraak != null;
 
 		setVisible(ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAKEN, Actie.INZIEN)
 			&& ((client.getMammaDossier() != null && client.getMammaDossier().getDeelnamemodus() != Deelnamemodus.SELECTIEBLOKKADE) || heeftActiveAfspraak));

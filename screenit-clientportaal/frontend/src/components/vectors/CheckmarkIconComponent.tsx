@@ -18,12 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import {FC} from "react"
+
 type CheckmarkIconComponentProps = {
     onClick: () => void,
     checked: boolean,
 }
 
-const CheckmarkIconComponent = (props: CheckmarkIconComponentProps) => {
+const CheckmarkIconComponent: FC<CheckmarkIconComponentProps> = (props) => {
     return <svg xmlns="http:
         <path id="Path"
               d="M11.345.175a.833.833,0,0,1,.146,1.169L5.012,9.678a.833.833,0,0,1-1.231.094L.26,6.439a.833.833,0,0,1,1.146-1.21L4.26,7.93,10.175.322A.833.833,0,0,1,11.345.175Z"

@@ -52,9 +52,9 @@ public class MammaVerzamelOnderzoekDataServiceImpl implements MammaVerzamelOnder
 
 	@Override
 	@Transactional
-	public void addVerslagAanVerzoek(MammaDownloadOnderzoek onderzoek)
+	public boolean addVerslagAanVerzoek(MammaDownloadOnderzoek onderzoek)
 	{
-		uitwisselPortaalservice.kopieerVerslagPdfNaarDownloadVerzoekMap(onderzoek);
+		return uitwisselPortaalservice.kopieerVerslagPdfNaarDownloadVerzoekMap(onderzoek);
 	}
 
 	@Override

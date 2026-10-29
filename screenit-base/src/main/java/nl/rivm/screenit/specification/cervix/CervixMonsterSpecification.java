@@ -32,10 +32,12 @@ import jakarta.persistence.criteria.Root;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import nl.rivm.screenit.model.BagAdres_;
 import nl.rivm.screenit.model.Brief_;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.Dossier_;
+import nl.rivm.screenit.model.Gemeente_;
 import nl.rivm.screenit.model.Persoon_;
 import nl.rivm.screenit.model.Uitnodiging_;
 import nl.rivm.screenit.model.cervix.CervixBrief;
@@ -356,20 +358,20 @@ public class CervixMonsterSpecification
 		return (r, q, cb) -> cb.equal(r.get(CervixMonster_.laboratorium).get(AbstractHibernateObject_.id), id);
 	}
 
-	public static ExtendedSpecification<CervixUitstrijkje> heeftLaboratoriumMetIdIn(List<Long> laboratoriumIds)
+	public static <T extends CervixMonster> ExtendedSpecification<T> heeftLaboratoriumMetIdIn(List<Long> laboratoriumIds)
 	{
 		return (r, q, cb) -> r.get(CervixMonster_.laboratorium).get(AbstractHibernateObject_.id).in(laboratoriumIds);
 	}
 
-	public static ExtendedSpecification<CervixUitstrijkje> heeftHpvUitslag(CervixHpvBeoordelingWaarde uitslag)
+	public static <T extends CervixMonster> ExtendedSpecification<T> heeftHpvUitslag(CervixHpvBeoordelingWaarde uitslag)
 	{
 		return CervixHpvBeoordelingSpecification.heeftHpvUitslag(uitslag)
-			.with(r -> join(r, CervixMonster_.laatsteHpvBeoordeling));
+			.<T> with(r -> join(r, CervixMonster_.laatsteHpvBeoordeling));
 	}
 
-	public static ExtendedSpecification<CervixUitstrijkje> heeftNogGeenBrief()
+	public static <T extends CervixMonster> ExtendedSpecification<T> heeftNogGeenBrief()
 	{
-		return heeftGeenBrief().with(r -> r);
+		return heeftGeenBrief().<T> with(r -> r);
 	}
 
 	public static ExtendedSpecification<CervixUitstrijkje> isNietMonsterVanUitnodigingVervolgonderzoek()
@@ -378,13 +380,24 @@ public class CervixMonsterSpecification
 			.with(r -> join(join(r, CervixMonster_.uitnodiging), CervixUitnodiging_.screeningRonde));
 	}
 
-	public static ExtendedSpecification<CervixUitstrijkje> zitNietInProjectVanType(ProjectType type)
+	public static <T extends CervixMonster> ExtendedSpecification<T> zitNietInProjectVanType(ProjectType type)
 	{
 		return ClientSpecification.zitNietInProjectVanType(type)
-			.with(r -> clientJoin(r));
+			.<T> with(r -> clientJoin(r));
 	}
 
-	private static From<?, Client> clientJoin(From<?, ? extends CervixUitstrijkje> r)
+	public static <T extends CervixMonster> ExtendedSpecification<T> heeftGemeenteMetBmhkLaboratoriumMetIdIn(List<Long> laboratoriumIds)
+	{
+		return (r, q, cb) ->
+		{
+			var persoonJoin = join(clientJoin(r), Client_.persoon);
+			var adresJoin = join(persoonJoin, Persoon_.gbaAdres);
+			var gemeenteJoin = join(adresJoin, BagAdres_.gbaGemeente);
+			return gemeenteJoin.get(Gemeente_.bmhkLaboratorium).get(AbstractHibernateObject_.id).in(laboratoriumIds);
+		};
+	}
+
+	private static From<?, Client> clientJoin(From<?, ? extends CervixMonster> r)
 	{
 		var rondeJoin = join(r, CervixMonster_.ontvangstScreeningRonde, JoinType.LEFT);
 		var dossierJoin = join(rondeJoin, CervixScreeningRonde_.dossier);

@@ -458,9 +458,16 @@ public abstract class NaamUtil
 	{
 		if (client != null)
 		{
-			var persoon = client.getPersoon();
+			return getGewensteAanspreekvormMetAanhef(client, Aanhef.bepaalJuisteAanhef(client.getPersoon()));
+		}
+		return null;
+	}
+
+	public static String getGewensteAanspreekvormMetAanhef(Client client, Aanhef aanhef)
+	{
+		if (client != null)
+		{
 			var sb = new StringBuilder();
-			var aanhef = Aanhef.bepaalJuisteAanhef(persoon);
 			sb.append(aanhef.getNaam()).append(" ");
 			if (aanhef == Aanhef.GEACHTE)
 			{

@@ -35,10 +35,13 @@ import { faClose } from '@fortawesome/pro-light-svg-icons'
 })
 export class ConfirmationDialogComponent {
   private dialogRef: DialogRef<boolean> = inject(DialogRef)
-  dialogData: { title: string; body: string; neeButtonTekst?: string; jaButtonTekst?: string } = inject(DIALOG_DATA)
+  dialogData: { title: string; body: string; neeButtonTekst?: string; jaButtonTekst?: string; neutraal?: boolean } = inject(DIALOG_DATA)
   protected readonly strings = inject(StringsService).getStrings()
-  protected titel = this.dialogData.title ? this.dialogData.title : this.dialogData.body
-  protected body = this.titel !== this.dialogData.body ? saneerHtml(inject(DomSanitizer), this.dialogData.body) : undefined
+  protected readonly titel = this.dialogData.title ? this.dialogData.title : this.dialogData.body
+  protected readonly body = this.titel !== this.dialogData.body ? saneerHtml(inject(DomSanitizer), this.dialogData.body) : undefined
+  protected readonly neutraleKnoppen = this.dialogData.neutraal ?? false
+  protected readonly neeButtonTekst = this.dialogData.neeButtonTekst ?? this.strings.algemeen.labels.nee
+  protected readonly jaButtonTekst = this.dialogData.jaButtonTekst ?? this.strings.algemeen.labels.ja
   protected readonly faClose = faClose
 
   handleYes() {
@@ -47,5 +50,9 @@ export class ConfirmationDialogComponent {
 
   handleNo() {
     this.dialogRef.close(false)
+  }
+
+  close() {
+    this.dialogRef.close()
   }
 }

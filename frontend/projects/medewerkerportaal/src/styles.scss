@@ -26,34 +26,11 @@
 @use 'styles/functions';
 
 :root {
-  --fc-page-bg-color: #fff;
-  --fc-neutral-bg-color: hsla(0, 0%, 82%, 0.3);
-  --fc-neutral-text-color: grey;
-  --fc-border-color: #e0e0e0;
-  --fc-button-text-color: #fff;
-  --fc-button-bg-color: #97a300;
-  --fc-button-border-color: #828d00;
-  --fc-button-hover-bg-color: #828d00;
-  --fc-button-hover-border-color: #828d00;
-  --fc-button-active-bg-color: #1a252f;
-  --fc-button-active-border-color: #151e27;
-  --fc-event-bg-color: #3788d8;
-  --fc-event-border-color: #3788d8;
-  --fc-event-text-color: #fff;
-  --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
-  --fc-more-link-bg-color: #d0d0d0;
-  --fc-more-link-text-color: inherit;
-  --fc-event-resizer-thickness: 8px;
-  --fc-event-resizer-dot-total-width: 8px;
-  --fc-event-resizer-dot-border-width: 1px;
-  --fc-non-business-color: hsla(0, 0%, 84%, 0.3);
-  --fc-bg-event-color: #8fdf82;
-  --fc-bg-event-opacity: 0.3;
-  --fc-highlight-color: rgba(188, 232, 241, 0.3);
-  --fc-small-font-size: 12px;
-  --fc-today-bg-color: #fff;
-  --fc-today-header-bg-color: #eae1ee;
-  --fc-today-header-text-color: #3a0151;
+  --rooster-feestdag-schaduw-color: hsla(0, 0%, 82%, 0.3);
+  --rooster-header-font-size: 12px;
+  --rooster-vandaag-header-bg-color: #eae1ee;
+  --rooster-vandaag-header-text-color: #3a0151;
+  --fc-classic-today: rgba(255, 255, 255, 0);
 
   --event-status-border-color: #DEDEDEFF;
   --event-status-free-background-color: #006600;

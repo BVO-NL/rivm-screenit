@@ -48,9 +48,11 @@ import nl.rivm.screenit.model.AanvraagBriefStatus;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.AlgemeneBrief;
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
+import nl.rivm.screenit.model.algemeen.OverdrachtType;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.FileType;
 import nl.rivm.screenit.model.enums.Recht;
+import nl.rivm.screenit.service.BaseOverdrachtPersoonsgegevensService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -86,6 +88,9 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 	private OverdrachtPersoonsgegevensService overdrachtPersoonsgegevensService;
 
 	@SpringBean
+	private BaseOverdrachtPersoonsgegevensService baseOverdrachtPersoonsgegevensService;
+
+	@SpringBean
 	private UploadDocumentService uploadDocumentService;
 
 	@SpringBean
@@ -100,6 +105,8 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 	private WebMarkupContainer documentVervangenPanel;
 
 	private BootstrapDialog dialog;
+
+	private boolean editable;
 
 	protected OverdrachtGegevensAanvraagPopupPanel(String id, IModel<OverdrachtPersoonsgegevens> model)
 	{
@@ -116,11 +123,21 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 		form.setMultiPart(true);
 		add(form);
 
+		editable = getModelObject().getType() == OverdrachtType.AANVRAAGFORMULIER;
+
+		addTypeSelect();
 		addVerstuurdeBrieven();
 		addUploadContainer();
 		addBvoKeuzeCheckboxes();
 		addVervangenPanel();
 		addButtons();
+
+	}
+
+	private void addTypeSelect()
+	{
+		var aanvraagTypes = List.of(OverdrachtType.values());
+		ComponentHelper.addDropDownChoice(form, "type", true, aanvraagTypes, true);
 	}
 
 	private void addVerstuurdeBrieven()
@@ -133,7 +150,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 			{
 				item.add(new Label("brief", Model.of(item.getModelObject())));
 			}
-		});
+		}.setVisible(editable));
 	}
 
 	private List<AlgemeneBrief> getVerstuurdeBrieven()
@@ -162,6 +179,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 		uploadContainer.setVisible(!briefOntvangen());
 		uploadContainer.setOutputMarkupId(true);
 		uploadContainer.setOutputMarkupPlaceholderTag(true);
+		uploadContainer.setVisible(editable);
 		form.add(uploadContainer);
 	}
 
@@ -209,8 +227,14 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 		addGeenHandtekeningKnop();
 		addVervangKnop();
 		addAfrondenKnop();
-		addDowndloadDataKnop();
+		addDownloadDataKnop();
 		addOpslaanKnop();
+		addAnnulerenKnop();
+	}
+
+	private void addAnnulerenKnop()
+	{
+		form.add(new Label("annuleren", Model.of(editable ? "Annuleren" : "Sluiten")));
 	}
 
 	private void addAfrondenKnop()
@@ -225,20 +249,13 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 				info(getString("info.afgerond"));
 				close(target);
 			}
-
-			@Override
-			protected void onConfigure()
-			{
-				super.onConfigure();
-				setVisible(OverdrachtGegevensAanvraagPopupPanel.this.getModelObject().getStatus() == AanvraagBriefStatus.BRIEF_ONTVANGEN
-					&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_DOWNLOAD_OVERDRACHT_PERSOONSGEGEVENS, Actie.INZIEN));
-			}
-		});
+		}.setVisible(getModelObject().getStatus() == AanvraagBriefStatus.BRIEF_ONTVANGEN
+			&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_DOWNLOAD_OVERDRACHT_PERSOONSGEGEVENS, Actie.INZIEN) && editable));
 	}
 
 	private void addDownloadAanvraagformulierKnop()
 	{
-		if (briefOntvangen())
+		if (briefOntvangen() && editable)
 		{
 			var upload = ModelUtil.sModel(getModelObject().getOntvangenAanvraagbrief());
 			form.add(new DownloadLink("downloadFormulier", new LoadableDetachableModel<>()
@@ -271,7 +288,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 				close(target);
 			}
 
-		}.setVisible(getModelObject().getGeenHandtekeningBrief() == null && !briefOntvangen()));
+		}.setVisible(getModelObject().getGeenHandtekeningBrief() == null && !briefOntvangen() && editable));
 	}
 
 	private void addVervangKnop()
@@ -284,15 +301,8 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 				documentVervangenPanel.setVisible(true);
 				target.add(documentVervangenPanel);
 			}
-
-			@Override
-			protected void onConfigure()
-			{
-				super.onConfigure();
-				setVisible(OverdrachtGegevensAanvraagPopupPanel.this.getModelObject().getOntvangenAanvraagbrief() != null
-					&& ScreenitSession.get().checkPermission(Recht.VERVANGEN_DOCUMENTEN, Actie.AANPASSEN));
-			}
-		});
+		}.setVisible(OverdrachtGegevensAanvraagPopupPanel.this.getModelObject().getOntvangenAanvraagbrief() != null
+			&& ScreenitSession.get().checkPermission(Recht.VERVANGEN_DOCUMENTEN, Actie.AANPASSEN) && editable));
 	}
 
 	private void addOpslaanKnop()
@@ -309,14 +319,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 					close(target);
 				}
 			}
-
-			@Override
-			protected void onConfigure()
-			{
-				super.onConfigure();
-				setVisible(OverdrachtGegevensAanvraagPopupPanel.this.getModelObject().getStatus() != AanvraagBriefStatus.VERWERKT);
-			}
-		});
+		}.setVisible(OverdrachtGegevensAanvraagPopupPanel.this.getModelObject().getStatus() != AanvraagBriefStatus.VERWERKT && editable));
 	}
 
 	private void valideerInvoer()
@@ -363,7 +366,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 
 	private UploadDocument maakUploadDocument() throws Exception
 	{
-		var upload = files.getObject().get(0);
+		var upload = files.getObject().getFirst();
 		var document = new UploadDocument();
 		document.setActief(Boolean.TRUE);
 		document.setContentType(upload.getContentType());
@@ -379,7 +382,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 		super.onDetach();
 	}
 
-	private void addDowndloadDataKnop()
+	private void addDownloadDataKnop()
 	{
 		final var download = new AjaxDownload()
 		{
@@ -392,12 +395,13 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 			@Override
 			protected String getFileName()
 			{
-				return "clientgegevens.xlsx";
+				return "clientgegevens.pdf";
 			}
 
 			private IResourceStream createResourceStream()
 			{
-				var rstream = new AbstractResourceStreamWriter()
+
+				return new AbstractResourceStreamWriter()
 				{
 
 					@Override
@@ -408,7 +412,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 						try
 						{
 							outputStream = new ByteArrayOutputStream();
-							overdrachtPersoonsgegevensService.createDataDump(OverdrachtGegevensAanvraagPopupPanel.this.getModelObject(), outputStream,
+							baseOverdrachtPersoonsgegevensService.maakPdf(OverdrachtGegevensAanvraagPopupPanel.this.getModelObject(), outputStream,
 								ScreenitSession.get().getIngelogdeOrganisatieMedewerker());
 
 							inputStream = new ByteArrayInputStream(outputStream.toByteArray());
@@ -416,7 +420,7 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 						}
 						catch (IOException e)
 						{
-							LOG.error("Fout bij het aanmaken van XLSX: " + e.getMessage(), e);
+							LOG.error("Fout bij het aanmaken van PDF: {}", e.getMessage(), e);
 						}
 						finally
 						{
@@ -436,13 +440,11 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 							}
 							catch (IOException e)
 							{
-								LOG.error("Fout bij het sluiten van stream: " + e.getMessage(), e);
+								LOG.error("Fout bij het sluiten van stream: {}", e.getMessage(), e);
 							}
 						}
 					}
 				};
-
-				return rstream;
 			}
 		};
 		form.add(download);
@@ -462,9 +464,8 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 			{
 				super.onConfigure();
 				setVisible(OverdrachtGegevensAanvraagPopupPanel.this.getModelObject().getStatus() == AanvraagBriefStatus.BRIEF_ONTVANGEN
-					&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_DOWNLOAD_OVERDRACHT_PERSOONSGEGEVENS, Actie.INZIEN));
+					&& ScreenitSession.get().checkPermission(Recht.MEDEWERKER_DOWNLOAD_OVERDRACHT_PERSOONSGEGEVENS, Actie.INZIEN) && editable);
 			}
-
 		});
 	}
 

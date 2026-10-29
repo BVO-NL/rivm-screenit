@@ -29,11 +29,11 @@
     <ds-input
       label="Bestandsnaam"
       formControlName="bestandsnaam"
-      [errorMessage]="{minlength: strings.algemeen.errors.minKarakters('De bestandsnaam', 3), maxlength: strings.algemeen.errors.maxKarakters('De bestandsnaam', 50)}"
+      [errorMessage]="{minlength: strings.algemeen.errors.minKarakters('De bestandsnaam', 3), maxlength: strings.algemeen.errors.maxKarakters('De bestandsnaam', MAX_KARAKTERS.bestandsnaam)}"
       data-testid="bestandsnaam_input"
       required
       minlength="3"
-      maxlength="50"
+      [dsMaxLength]="MAX_KARAKTERS.bestandsnaam"
     />
   </form>
   <ng-container buttons>

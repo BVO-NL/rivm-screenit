@@ -91,7 +91,7 @@ public class MammaOnderzoekServiceImpl implements MammaOnderzoekService
 
 	private Specification<MammaOnderzoek> zoekOnderzoekZoekSpecification(MammaFotobesprekingOnderzoekFilterDto filter)
 	{
-		return valtInPeriode(RangeUtil.closedOpen(filter.getOnderzoeksdatum().startDate(), filter.getOnderzoeksdatum().endDate()))
+		return valtInPeriode(RangeUtil.closedOpen(filter.getOnderzoeksdatum().getStartDate(), filter.getOnderzoeksdatum().getEndDate()))
 			.and(filterOpAfgerondDoor(filter.getMedewerkerId()))
 			.and(MammaBeoordelingSpecification.heeftStatusIn(MammaBeoordelingStatus.uitslagStatussen()).with(MammaOnderzoek_.laatsteBeoordeling))
 			.and(filterBeoordelingseenheidIds(filter.getBeoordelingseenheidIds()))

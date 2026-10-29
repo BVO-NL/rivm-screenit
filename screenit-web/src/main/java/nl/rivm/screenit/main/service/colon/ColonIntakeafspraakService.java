@@ -60,7 +60,7 @@ public interface ColonIntakeafspraakService
 
 	void annuleerAfspraak(Long afspraakId, boolean briefTegenhouden, String notitie, OrganisatieMedewerker organisatieMedewerker);
 
-	List<AfspraakDto> getAfspraken(Client client);
+	AfspraakDto getGeplandeAfspraak(Client client);
 
 	List<AfspraakActie> getAfspraakActies(Client client, Long afspraakId);
 }

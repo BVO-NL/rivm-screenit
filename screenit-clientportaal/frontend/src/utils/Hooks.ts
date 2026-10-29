@@ -50,7 +50,7 @@ export const useSelectedBvo = (): Bevolkingsonderzoek | undefined => {
 	}
 }
 
-export const useRefreshEnvironmentInfo = () => {
+export const useRefreshEnvironmentInfo = (): void => {
 	const dispatch = useDispatch()
 	const {authenticated} = keycloak
 
@@ -62,7 +62,7 @@ export const useRefreshEnvironmentInfo = () => {
 	}, [dispatch, authenticated])
 }
 
-export const useRefreshClient = () => {
+export const useRefreshClient = (): void => {
 	const dispatch = useThunkDispatch()
 	const authenticatie = useSelector((state: State) => state.authenticatie)
 	const location = useLocation()
@@ -81,7 +81,7 @@ export const useRefreshClient = () => {
 	}, [location.pathname, authenticatie, dispatch, authenticated])
 }
 
-export const useRefreshBvoDossier = () => {
+export const useRefreshBvoDossier = (): void => {
 	const selectedBvo = useSelectedBvo()
 
 	const isLoggedIn = useSelector((state: State) => state.authenticatie.isLoggedIn)
@@ -110,19 +110,21 @@ export const useRefreshBvoDossier = () => {
 	}, [pathname, selectedBvo, dispatch, isLoggedIn, authenticated])
 }
 
-export const useRedirectAfterSeconds = (url: string, timeoutSeconds: number) => {
+export const useRedirectAfterSeconds = (url: string, timeoutSeconds: number): void => {
 	useEffect(() => {
 		const timeout = setTimeout(() => {
 			window.location.replace(url)
 		}, timeoutSeconds * 1000)
 
-		return () => {
-			timeout && clearTimeout(timeout)
+		return (): void => {
+			if (timeout) {
+				clearTimeout(timeout)
+			}
 		}
 	}, [timeoutSeconds, url])
 }
 
-export const useHideAllToasts = () => {
+export const useHideAllToasts = (): void => {
 	const dispatch = useDispatch()
 	const location = useLocation()
 	const {pathname} = location
@@ -131,7 +133,7 @@ export const useHideAllToasts = () => {
 	}, [pathname, dispatch])
 }
 
-export const useGotoPageTop = () => {
+export const useGotoPageTop = (): void => {
 	const location = useLocation()
 	useEffect(() => {
 		window.scrollTo(0, 0)
@@ -152,14 +154,14 @@ function getWindowDimensions(): WindowDimensions {
 }
 
 export const useWindowDimensions = (): WindowDimensions => {
-	const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions())
+	const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions)
 	useEffect(() => {
-		function handleResize() {
+		function handleResize(): void {
 			setWindowDimensions(getWindowDimensions())
 		}
 
 		window.addEventListener("resize", handleResize)
-		return () => window.removeEventListener("resize", handleResize)
+		return (): void => window.removeEventListener("resize", handleResize)
 	}, [])
 	return windowDimensions
 }

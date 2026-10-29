@@ -36,8 +36,7 @@ export const extensieValidator = (toegestaneExtensies: string[]): ValidatorFn =>
   return (control: AbstractControl): ValidationErrors | null => {
     const files: FileList = control.value
     if (files) {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i]
+      for (const file of Array.from(files)) {
         const extensie = getExtensieVanBestand(file.name)
         if (extensie && !toegestaneExtensies.map((ext) => ext.toLowerCase()).includes(extensie)) {
           return { extensie: strings.errors.extensie(file.name, toegestaneExtensies) }

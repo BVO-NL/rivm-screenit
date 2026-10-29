@@ -22,6 +22,7 @@ import {Checkbox} from "@mui/material"
 import {Bezwaar} from "../../datatypes/Bezwaar"
 import BezwaarInformatieBlok from "./BezwaarInformatieBlok"
 import styles from "./BezwaarBlok.module.scss"
+import {FC} from "react"
 
 export type BezwaarBlokProps = {
 	bezwaar: Bezwaar
@@ -31,7 +32,7 @@ export type BezwaarBlokProps = {
 	standalone: boolean;
 	titel: string;
 }
-const BezwaarBlok = (props: BezwaarBlokProps) => {
+const BezwaarBlok: FC<BezwaarBlokProps> = (props) => {
 	return (<div key={props.bezwaar.type} className={styles.bezwaarBlok}>
 		<div className={styles.checkBox}>
 			<Checkbox name={props.bezwaar.type}

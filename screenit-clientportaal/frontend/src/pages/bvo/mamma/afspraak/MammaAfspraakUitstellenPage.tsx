@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useCallback, useState} from "react"
+import {FC, useCallback, useState} from "react"
 import {BevolkingsonderzoekNaam} from "../../../../datatypes/Bevolkingsonderzoek"
 import {Col, Row} from "react-bootstrap"
 import styles from "./MammaAfspraakUitstellenPage.module.scss"
@@ -51,7 +51,7 @@ export type UitstelZoekFilter = {
 	meerOpties?: boolean
 }
 
-const MammaAfspraakUitstellenPage = () => {
+const MammaAfspraakUitstellenPage: FC = () => {
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
 	const [gezocht, setGezocht] = useState<boolean>(false)
@@ -124,9 +124,9 @@ const MammaAfspraakUitstellenPage = () => {
 				<Col md={7} className={styles.results}>
 					{!gezocht &&
 						<BeforeSearching text={getString(properties.beforesearching_text)}/>}
-					{gezocht && zoekResultaten.map((kandidaatStandplaatsPeriode, index) =>
+					{gezocht && zoekResultaten.map((kandidaatStandplaatsPeriode) =>
 						<SearchResultAfspraken
-							key={index}
+							key={kandidaatStandplaatsPeriode.standplaatsPeriodeId}
 							className={styles.result}
 
 							col1={[getString(properties.searchresult.title.locatie), kandidaatStandplaatsPeriode.adres, concatWithSpace(kandidaatStandplaatsPeriode.postcode, kandidaatStandplaatsPeriode.plaats)]}

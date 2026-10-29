@@ -20,10 +20,10 @@
  */
 export type RootActions = ClearStateAction;
 
-export const CLEAR_STATE = 'CLEAR_STATE';
+export const CLEAR_STATE = "CLEAR_STATE"
 
-export type ClearStateAction = { type: 'CLEAR_STATE' }
+export type ClearStateAction = { type: "CLEAR_STATE" }
 
 export const createClearStateAction = (): ClearStateAction => ({
     type: CLEAR_STATE,
-});
+})

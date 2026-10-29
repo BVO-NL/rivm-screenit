@@ -21,7 +21,6 @@ package nl.rivm.screenit.model.mamma;
  * =========================LICENSE_END==================================
  */
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,9 +37,13 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.BestandStatus;
+import nl.rivm.screenit.model.mamma.enums.MammaDownloadDoel;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.envers.Audited;
@@ -48,13 +51,11 @@ import org.hibernate.envers.NotAudited;
 
 @Entity
 @Audited
+@Setter
+@Getter
 @Table(schema = "mamma", name = "download_onderzoeken_verzoek")
 public class MammaDownloadOnderzoekenVerzoek extends AbstractHibernateObject
 {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
 	@OneToOne(fetch = FetchType.LAZY)
 	@NotAudited
 	private UploadDocument zipBestand;
@@ -82,74 +83,7 @@ public class MammaDownloadOnderzoekenVerzoek extends AbstractHibernateObject
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date gedownloadOp;
 
-	public UploadDocument getZipBestand()
-	{
-		return zipBestand;
-	}
-
-	public void setZipBestand(UploadDocument zipBestand)
-	{
-		this.zipBestand = zipBestand;
-	}
-
-	public Date getAangemaaktOp()
-	{
-		return aangemaaktOp;
-	}
-
-	public void setAangemaaktOp(Date aangemaaktOp)
-	{
-		this.aangemaaktOp = aangemaaktOp;
-	}
-
-	public BestandStatus getStatus()
-	{
-		return status;
-	}
-
-	public void setStatus(BestandStatus status)
-	{
-		this.status = status;
-	}
-
-	public Date getGewijzigdOp()
-	{
-		return gewijzigdOp;
-	}
-
-	public void setGewijzigdOp(Date gewijzigdOp)
-	{
-		this.gewijzigdOp = gewijzigdOp;
-	}
-
-	public OrganisatieMedewerker getAangemaaktDoor()
-	{
-		return aangemaaktDoor;
-	}
-
-	public void setAangemaaktDoor(OrganisatieMedewerker aangemaaktDoor)
-	{
-		this.aangemaaktDoor = aangemaaktDoor;
-	}
-
-	public List<MammaDownloadOnderzoek> getOnderzoeken()
-	{
-		return onderzoeken;
-	}
-
-	public void setOnderzoeken(List<MammaDownloadOnderzoek> onderzoeken)
-	{
-		this.onderzoeken = onderzoeken;
-	}
-
-	public Date getGedownloadOp()
-	{
-		return gedownloadOp;
-	}
-
-	public void setGedownloadOp(Date gedownloadOp)
-	{
-		this.gedownloadOp = gedownloadOp;
-	}
-
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private MammaDownloadDoel doel;
 }

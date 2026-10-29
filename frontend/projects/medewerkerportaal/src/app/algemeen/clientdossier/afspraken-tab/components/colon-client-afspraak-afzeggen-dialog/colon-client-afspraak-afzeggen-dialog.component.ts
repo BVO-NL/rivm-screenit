@@ -20,7 +20,7 @@
  */
 import { Component, inject } from '@angular/core'
 import { Dialog, DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { DsButtonComponent, DsCheckboxComponent, DsDescriptionsComponent, DsSummaryPanelComponent } from '@topicus-rgp-ds/web'
 import { filter, switchMap, take } from 'rxjs'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
@@ -65,7 +65,7 @@ export class ColonClientAfspraakAfzeggenDialogComponent {
   private readonly dialogData = inject<{ clientId: number; afspraak: ClientAfspraakDto }>(DIALOG_DATA)
   protected readonly afspraak = this.dialogData.afspraak
   protected readonly briefTegenhoudenCtrl = new FormControl(false, { nonNullable: true })
-  protected readonly notitieCtrl = new FormControl('', { nonNullable: true, validators: [Validators.maxLength(2048)] })
+  protected readonly notitieCtrl = new FormControl('', { nonNullable: true })
 
   protected readonly brievenTegenhoudenConstraint: SecurityConstraint = {
     recht: [Recht.MEDEWERKER_CLIENT_SR_BRIEVEN_TEGENHOUDEN],

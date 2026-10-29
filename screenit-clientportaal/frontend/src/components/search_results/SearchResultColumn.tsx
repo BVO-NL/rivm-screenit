@@ -22,6 +22,7 @@ import bvoStyles from "../BvoStyle.module.scss"
 import styles from "./SearchResultColumn.module.scss"
 import classNames from "classnames"
 import SpanWithHtml from "../span/SpanWithHtml"
+import {FC} from "react"
 
 export type SearchResultColumnProps = {
     className?: string
@@ -31,7 +32,7 @@ export type SearchResultColumnProps = {
     enlargeValue2?: boolean;
 }
 
-const SearchResultColumn = (props: SearchResultColumnProps) => {
+const SearchResultColumn: FC<SearchResultColumnProps> = (props) => {
     return (
         <div className={classNames(props.className, styles.content)}>
             <span className={classNames(bvoStyles.bvoText, styles.head)}>{props.head}</span>

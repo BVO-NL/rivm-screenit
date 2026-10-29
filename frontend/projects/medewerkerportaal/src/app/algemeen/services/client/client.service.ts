@@ -23,6 +23,7 @@ import { ClientZoekenFilterDto } from '@shared/types/algemeen/dto/client-zoeken-
 import { ClientDto } from '@shared/types/algemeen/dto/client.dto'
 import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 import { TijdelijkAdresDto } from '@shared/types/algemeen/dto/tijdelijk-adres.dto'
+import { NotPersisted } from '@shared/types/not-presisted'
 import { BvoStatusDto } from '@shared/types/algemeen/dto/bvo-status.dto'
 import { map, Observable, of, switchMap, tap, throwError } from 'rxjs'
 import { ClientContactgegevensDto } from '@shared/types/algemeen/dto/clientcontactgegevens.dto'
@@ -72,7 +73,7 @@ export class ClientService extends BaseService<ClientState> {
     return this.http.post<ClientDto[]>(`${this.baseUrl}/zoeken`, filter)
   }
 
-  updateTijdelijkAdres(dto: TijdelijkAdresDto): Observable<void> {
+  updateTijdelijkAdres(dto: NotPersisted<TijdelijkAdresDto>): Observable<void> {
     return this.http.put<void>(`${this.baseUrl}/${dto.clientId}/tijdelijk-adres`, dto)
   }
 
@@ -82,6 +83,10 @@ export class ClientService extends BaseService<ClientState> {
 
   getActieveBvos(clientId: number) {
     return this.http.get<Bevolkingsonderzoek[]>(`${this.baseUrl}/${clientId}/actieve-bvos`)
+  }
+
+  getDoelgroepBvos(clientId: number) {
+    return this.http.get<Bevolkingsonderzoek[]>(`${this.baseUrl}/${clientId}/doelgroep-bvos`)
   }
 
   getBvoStatus(clientId: number): Observable<BvoStatusDto[]> {
@@ -121,7 +126,7 @@ export class ClientService extends BaseService<ClientState> {
       .pipe(catchError((error: HttpErrorResponse) => (error.status === 404 ? of(null) : throwError(() => error))))
   }
 
-  saveClientBrpTijdelijkAdres(id: number, tijdelijkAdres: TijdelijkAdresDto): Observable<void> {
+  saveClientBrpTijdelijkAdres(id: number, tijdelijkAdres: NotPersisted<TijdelijkAdresDto>): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/${id}/brp-tijdelijk-adres`, tijdelijkAdres).pipe(
       switchMap(() => this.getClient(this.select('client')().id)),
       map(() => void 0),

@@ -27,6 +27,7 @@ import { formatCompleteTijdString, formatTijdString, isValideTijd, normaliseerTi
 import { merge, of } from 'rxjs'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { CdkConnectedOverlay, CdkOverlayOrigin, ConnectedPosition } from '@angular/cdk/overlay'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-timepicker',
@@ -289,7 +290,7 @@ export class TimepickerComponent implements ControlValueAccessor, Validator, OnI
       this.geselecteerdUur.set(parseInt(uurStr, 10))
       this.geselecteerdMinuut.set(this.minutenOpties.includes(minuut) ? minuut : null)
     } else {
-      const nu = new Date()
+      const nu = DateService.nu()
       this.geselecteerdUur.set(nu.getHours())
       this.geselecteerdMinuut.set((Math.round(nu.getMinutes() / 5) * 5) % 60)
     }
@@ -299,9 +300,9 @@ export class TimepickerComponent implements ControlValueAccessor, Validator, OnI
     const uurKolom = this.uurKolomRef()?.nativeElement ?? null
     const minutenKolom = this.minutenKolomRef()?.nativeElement ?? null
 
-    const scrollUurIndex = this.geselecteerdUur() ?? new Date().getHours()
+    const scrollUurIndex = this.geselecteerdUur() ?? DateService.nu().getHours()
     const minuutIndex = this.geselecteerdMinuut() !== null ? this.minutenOpties.indexOf(this.geselecteerdMinuut()!) : -1
-    const scrollMinuutIndex = minuutIndex >= 0 ? minuutIndex : Math.floor(new Date().getMinutes() / 5)
+    const scrollMinuutIndex = minuutIndex >= 0 ? minuutIndex : Math.floor(DateService.nu().getMinutes() / 5)
 
     this.scrollNaarOptie(uurKolom, scrollUurIndex)
     this.scrollNaarOptie(minutenKolom, scrollMinuutIndex)

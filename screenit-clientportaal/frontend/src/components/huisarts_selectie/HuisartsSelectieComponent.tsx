@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React, {FC, useCallback, useEffect, useState} from "react"
+import React, {FC, useCallback, useState} from "react"
 import {Formik, FormikProps} from "formik"
 import * as Yup from "yup"
 import {Col, Row} from "react-bootstrap"
@@ -92,22 +92,17 @@ const HuisartsSelectieComponent: FC<HuisartsSelectieComponentProps> = ({
 	const [zoekResultaten, setZoekResultaten] = useState<Huisarts[]>(geenHuisartsZoekresultaten)
 	const [gekozenHuisarts, setGekozenHuisarts] = useState<Huisarts>()
 	const [gezocht, setGezocht] = useState(false)
-	const [disableMeer, setDisableMeer] = useState(true)
 	const [toonVerwijderPopup, setToonVerwijderPopup] = useState(false)
-	const [isAdvancedSearch, setAdvancedSearch] = useState<boolean>(false)
+	const [isAdvancedSearch, setIsAdvancedSearch] = useState<boolean>(false)
 
 	const geenResultaten = gezocht && zoekResultaten.length === 0
 
-	useEffect(() => {
-		setDisableMeer(zoekResultaten.length === 0 || zoekResultaten.length % 10 !== 0)
-	}, [zoekResultaten])
+	const disableMeer = zoekResultaten.length === 0 || zoekResultaten.length % 10 !== 0
 
-	useEffect(() => {
-		if (toonVerwijderPopup && !huidigeHuisarts && !mammaHuidigeGeenHuisartsOptie) {
-			setToonVerwijderPopup(false)
-			setGekozenHuisarts(undefined)
-		}
-	}, [huidigeHuisarts, mammaHuidigeGeenHuisartsOptie, toonVerwijderPopup])
+	if (toonVerwijderPopup && !huidigeHuisarts && !mammaHuidigeGeenHuisartsOptie) {
+		setToonVerwijderPopup(false)
+		setGekozenHuisarts(undefined)
+	}
 
 	const zoekHuisartsen = useCallback(async (zoek: HuisartsZoekobject, pagina: number) => {
 		const result = await dispatch(zoekHuisartsenAction(zoek, pagina))
@@ -124,7 +119,6 @@ const HuisartsSelectieComponent: FC<HuisartsSelectieComponentProps> = ({
 	const zoek = (values: HuisartsZoekobject): void => {
 		setZoekObject(values)
 		setZoekResultaten(geenHuisartsZoekresultaten)
-		setDisableMeer(false)
 		zoekHuisartsen(values, 0)
 	}
 
@@ -257,7 +251,7 @@ const HuisartsSelectieComponent: FC<HuisartsSelectieComponentProps> = ({
 										 onClick={async () => {
 											 await setFieldValue("adres.postcode", "")
 											 await setFieldValue("adres.straat", "")
-											 setAdvancedSearch(!isAdvancedSearch)
+											 setIsAdvancedSearch(!isAdvancedSearch)
 										 }}>
 										<AdvancedSearchLinkComponent
 											advancedSearch={isAdvancedSearch}

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { ChangeDetectorRef, Component, forwardRef, inject, input, viewChild, ChangeDetectionStrategy } from '@angular/core'
+import { ChangeDetectorRef, Component, computed, forwardRef, inject, input, signal, viewChild } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { DsButtonComponent, DsButtonMenuDirective, DsContextMenuItem, DsIconComponent, DsMenuItem } from '@topicus-rgp-ds/web'
 import { faAngleDown } from '@fortawesome/pro-light-svg-icons'
@@ -32,11 +32,11 @@ import { filter, fromEvent, take } from 'rxjs'
     dsButtonMenu
     [menu]="options()"
     (menuItemClicked)="menuItemClicked($event)"
-    [disabled]="disabled"
+    [disabled]="disabled()"
     (menuOpened)="setCloseOnClick()"
     data-testid="calendar-view-select-button"
   >
-    {{ selectedRange }}
+    {{ selectedRange() }}
     <ds-icon [icon]="faAngleDown"></ds-icon>
   </button>`,
   styles: [
@@ -46,7 +46,6 @@ import { filter, fromEvent, take } from 'rxjs'
       }
     `,
   ],
-  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectButtonComponent), multi: true }],
 })
 export class SelectButtonComponent<CalendarView> implements ControlValueAccessor {
@@ -55,18 +54,17 @@ export class SelectButtonComponent<CalendarView> implements ControlValueAccessor
   private buttonMenuDirective = viewChild(DsButtonMenuDirective)
   onChange: ((value: CalendarView) => void) | undefined
   onTouch: ((value: CalendarView) => void) | undefined
-  disabled = false
-  value: CalendarView | undefined
+  disabled = signal(false)
+  value = signal<CalendarView | undefined>(undefined)
 
   protected readonly faAngleDown = faAngleDown
 
-  get selectedRange(): string {
-    return (
+  selectedRange = computed(
+    () =>
       this.options()
         .flat()
-        .find((optie: DsContextMenuItem) => optie.label.toLowerCase() === this.value)?.label ?? 'Onbekend'
-    )
-  }
+        .find((optie: DsContextMenuItem) => optie.label.toLowerCase() === this.value())?.label ?? 'Onbekend',
+  )
 
   registerOnChange(fn: (value: CalendarView) => void): void {
     this.onChange = fn
@@ -77,18 +75,26 @@ export class SelectButtonComponent<CalendarView> implements ControlValueAccessor
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled
+    this.disabled.set(isDisabled)
   }
 
   menuItemClicked($event: DsMenuItem) {
-    this.value = $event.label === 'Dag' ? ('dag' as CalendarView) : $event.label === 'Werkweek' ? ('werkweek' as CalendarView) : ('week' as CalendarView)
+    const waarde = this.bepaalWaarde($event.label)
+    this.value.set(waarde)
     if (this.onChange) {
-      this.onChange(this.value)
+      this.onChange(waarde)
     }
   }
 
+  private bepaalWaarde(label: string): CalendarView {
+    if (label === 'Dag') {
+      return 'dag' as CalendarView
+    }
+    return (label === 'Werkweek' ? 'werkweek' : 'week') as CalendarView
+  }
+
   writeValue(obj: CalendarView): void {
-    this.value = obj
+    this.value.set(obj)
   }
 
   setCloseOnClick(): void {

@@ -25,12 +25,13 @@ import {Formik} from "formik"
 import SubmitForm from "../SubmitForm"
 import {FormControl, FormControlLabel, Radio, RadioGroup} from "@mui/material"
 import styles from "./HeraanmeldenUitnodigingAanvragenForm.module.scss"
+import {FC} from "react"
 
 export type HeraanmeldenUitnodigingAanvragenFormProps = {
 	onSubmitSucces: (value: boolean) => void
 }
 
-const HeraanmeldenUitnodigingAanvragenForm = (props: HeraanmeldenUitnodigingAanvragenFormProps) => {
+const HeraanmeldenUitnodigingAanvragenForm: FC<HeraanmeldenUitnodigingAanvragenFormProps> = (props) => {
 
 	type UitnodigingColonAanvragen = {
 		uitnodigingAanvragen: string
@@ -78,7 +79,7 @@ const HeraanmeldenUitnodigingAanvragenForm = (props: HeraanmeldenUitnodigingAanv
 			</SubmitForm>)}
 
 		</Formik>
-	</>;
+	</>
 }
 
 export default HeraanmeldenUitnodigingAanvragenForm

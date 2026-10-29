@@ -23,7 +23,7 @@ import mammaDossierReducer from "./mamma/MammaDossierReducer"
 import PersoonReducer from "./PersoonReducer"
 import LandingOverzichtReducer from "./LandingOverzichtReducer"
 import {CLEAR_STATE, RootActions} from "../actions/RootAction"
-import {legeState} from "../datatypes/State"
+import {legeState, State} from "../datatypes/State"
 import AuthenticatieReducer from "./AuthenticatieReducer"
 import BezwaarReducer from "./BezwaarReducer"
 import cervixDossierReducer from "./cervix/CervixDossierReducer"
@@ -36,6 +36,7 @@ import SpinnerCounterReducer from "./SpinnerCounterReducer"
 import mammaAfspraakReducer from "./mamma/MammaAfspraakReducer"
 import openstaandeUitnodigingenReducer from "./OpenstaandeUitnodigingenReducer"
 import ParametersReducer from "./ParametersReducer"
+import overdrachtPersoonsgegevensReducer from "./OverdrachtPersoonsgegevensReducer"
 
 const cpReducers = combineReducers({
 	authenticatie: AuthenticatieReducer,
@@ -49,6 +50,7 @@ const cpReducers = combineReducers({
 		persoon: PersoonReducer,
 		openstaandeUitnodigingen: openstaandeUitnodigingenReducer,
 		mammaAfspraak: mammaAfspraakReducer,
+		overdrachtPersoonsgegevens: overdrachtPersoonsgegevensReducer,
 	}),
 	landingOverzicht: LandingOverzichtReducer,
 	toasts: ToastsReducer,
@@ -56,7 +58,7 @@ const cpReducers = combineReducers({
 	parameters: ParametersReducer,
 })
 
-const rootReducer = (state: any, action: any | RootActions) => {
+const rootReducer = (state: any, action: any | RootActions): State => {
 	if (action.type === CLEAR_STATE) {
 		return cpReducers(legeState, action)
 	}

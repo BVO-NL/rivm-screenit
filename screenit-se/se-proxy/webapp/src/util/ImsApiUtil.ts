@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {createEmptyStudyIms, createLogoffIms, createLogonIms, createStudyIms} from "./ImsFactory"
+import {createConnectionTestWithEmptyMessageStudyIms, createEmptyStudyIms, createLogoffIms, createLogonIms, createStudyIms} from "./ImsFactory"
 import {store} from "../Store"
 import {createActionClearStudyForIms, createActionSetStudyForIms} from "../actions/ImsActions"
 import {createActionPutIMSConnectieStatus} from "../actions/ConnectieStatusActions"
@@ -65,17 +65,31 @@ export const sendEmptyStudyMessageToIMS = async (username: string): Promise<void
 	return fetchIMS(createEmptyStudyIms(username))
 }
 
+export const sendConnectionTestWithEmptyMessageToIMS = async (username: string): Promise<void> => {
+	console.log("send test connection message naar IMS")
+	try {
+		const launchUrl = await fetchLaunchUrlIMSLogin(username)
+		return fetchIMS(createConnectionTestWithEmptyMessageStudyIms(username, launchUrl))
+	} catch {
+		console.error("Fout bij het sturen van de test connectie naar IMS")
+	}
+}
+
 export const logonToIMS = async (username: string): Promise<void> => {
 	console.log("Inloggen naar IMS")
 	clearStudyForIms()
 
 	try {
-		const response = await fetchApiPromise("POST", "ims/launchUrl/login", createLaunchUrlContext(username))
-		const launchUrl = await response.text()
+		const launchUrl = await fetchLaunchUrlIMSLogin(username)
 		return fetchIMS(createLogonIms(username, launchUrl))
 	} catch {
 		console.error("Fout bij ophalen logon launchUrl van proxy")
 	}
+}
+
+const fetchLaunchUrlIMSLogin = async (username: string): Promise<string> => {
+	const response = await fetchApiPromise("POST", "ims/launchUrl/login", createLaunchUrlContext(username))
+	return response.text()
 }
 
 export const logoffToIMS = async (username: string): Promise<void> => {

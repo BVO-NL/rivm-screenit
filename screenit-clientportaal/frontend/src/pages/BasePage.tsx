@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {ReactNode} from "react"
+import {FC, ReactNode} from "react"
 import {Col, Container, Row} from "react-bootstrap"
 import styles from "./BasePage.module.scss"
 import {useSelectedBvo} from "../utils/Hooks"
@@ -43,7 +43,7 @@ export type BasePageProps = {
 	children: ReactNode,
 }
 
-const BasePage = (props: BasePageProps) => {
+const BasePage: FC<BasePageProps> = (props) => {
 
 	const selectedBvo = useSelectedBvo()
 

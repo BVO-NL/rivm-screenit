@@ -18,11 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router'
+import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router'
 import { inject } from '@angular/core'
 import { AuthService } from '../../services/auth/auth.service'
 
-export const scopeGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const scopeGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const authService = inject(AuthService)
   const router = inject(Router)
 

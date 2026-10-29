@@ -26,6 +26,7 @@ import { Parameter } from '@shared/types/algemeen/parameter'
 import { isBefore, startOfDay } from 'date-fns'
 import { parseDate } from '@shared/utils/date-utils'
 import { ParameterKey } from '@shared/types/algemeen/enum/parameter-key'
+import { DateService } from '@shared/services/date/date.service'
 
 interface ParameterState {
   parameters: Parameter<unknown>[]
@@ -51,7 +52,7 @@ export class ParameterService extends BaseService<ParameterState> {
       return false
     }
     const datum = parseDate(parameter.waarde as string)
-    return !isBefore(startOfDay(new Date()), startOfDay(datum))
+    return !isBefore(startOfDay(DateService.nu()), startOfDay(datum))
   }
 
   isDigitaleIntakeBeschikbaar(): boolean {

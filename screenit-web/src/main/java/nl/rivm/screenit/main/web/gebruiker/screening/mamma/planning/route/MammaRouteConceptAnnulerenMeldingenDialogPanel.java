@@ -21,9 +21,8 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.route;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import nl.rivm.screenit.dto.mamma.planning.PlanningConceptMeldingenDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningConceptMeldingenDto.PlanningMeldingDto;
@@ -47,13 +46,9 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.beans.support.PropertyComparator;
 
 public abstract class MammaRouteConceptAnnulerenMeldingenDialogPanel extends GenericPanel<PlanningConceptMeldingenDto>
 {
-
-	private static final long serialVersionUID = 1L;
-
 	@SpringBean
 	private MammaBaseConceptPlanningsApplicatie baseConceptPlanningsApplicatie;
 
@@ -75,9 +70,6 @@ public abstract class MammaRouteConceptAnnulerenMeldingenDialogPanel extends Gen
 		listContainer.setOutputMarkupId(true);
 		add(new IndicatingAjaxLink<Void>("doorvoeren")
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
@@ -92,13 +84,9 @@ public abstract class MammaRouteConceptAnnulerenMeldingenDialogPanel extends Gen
 	{
 		final var container = new WebMarkupContainer("container");
 		var screeningsEenheden = model.getObject().seMeldingen.keySet().stream().map(seId -> hibernateService.load(MammaScreeningsEenheid.class, seId))
-			.collect(Collectors.toList());
-		Collections.sort(screeningsEenheden, new PropertyComparator<>("code", false, true));
-		container.add(new ListView<MammaScreeningsEenheid>("seMeldingen", ModelUtil.listRModel(screeningsEenheden, false))
+			.sorted(Comparator.comparing(MammaScreeningsEenheid::getCode)).toList();
+		container.add(new ListView<>("seMeldingen", ModelUtil.listRModel(screeningsEenheden, false))
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void populateItem(ListItem<MammaScreeningsEenheid> item)
 			{
@@ -120,11 +108,8 @@ public abstract class MammaRouteConceptAnnulerenMeldingenDialogPanel extends Gen
 	private Component createMeldingenView(List<PlanningMeldingDto> meldingen)
 	{
 		var content = new WebMarkupContainer("content");
-		content.add(new ListView<PlanningMeldingDto>("meldingen", meldingen)
+		content.add(new ListView<>("meldingen", meldingen)
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void populateItem(ListItem<PlanningMeldingDto> item)
 			{

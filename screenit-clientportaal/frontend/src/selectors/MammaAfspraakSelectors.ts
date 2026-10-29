@@ -18,9 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import {AfspraakBevestigingOpties} from "../datatypes/mamma/AfspraakBevestigingOpties"
+import {AfspraakOptie} from "../datatypes/mamma/AfspraakOptie"
+import {HuidigeAfspraak} from "../datatypes/mamma/HuidigeAfspraak"
+import {MammaAfspraak} from "../datatypes/mamma/MammaAfspraak"
 import {State} from "../datatypes/State"
 
-export const selectMammaAfspraak = (state: State) => state.client.mammaAfspraak
-export const selectMammaAfspraakOptie = (state: State) => state.client.mammaAfspraak.afspraakOptie
-export const selectMammaAfspraakBevestigingsoptie = (state: State) => state.client.mammaAfspraak.afspraakBevestigingsoptie
-export const selectHuidigeAfspraak = (state: State) => state.client.mammaDossier.huidigeAfspraak
+export const selectMammaAfspraak = (state: State): MammaAfspraak => state.client.mammaAfspraak
+export const selectMammaAfspraakOptie = (state: State): AfspraakOptie | null => state.client.mammaAfspraak.afspraakOptie
+export const selectMammaAfspraakBevestigingsoptie = (state: State): AfspraakBevestigingOpties | null => state.client.mammaAfspraak.afspraakBevestigingsoptie
+export const selectHuidigeAfspraak = (state: State): HuidigeAfspraak | undefined => state.client.mammaDossier.huidigeAfspraak

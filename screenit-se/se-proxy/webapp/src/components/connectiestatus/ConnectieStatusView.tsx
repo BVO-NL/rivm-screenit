@@ -26,7 +26,7 @@ import {connectieStatusLevels, getMostCriticalStatusLevel} from "../../datatypes
 import type {MammografenStatus} from "../../datatypes/connectiestatus/MammografenStatus"
 import {getTijdGeledenTekst, nuTijdUrenMinuten} from "../../util/DateUtil"
 import type {ConnectieStatusItem} from "./ConnectieStatusItem"
-import {sendEmptyStudyMessageToIMS} from "../../util/ImsApiUtil"
+import {sendConnectionTestWithEmptyMessageToIMS} from "../../util/ImsApiUtil"
 import {Mammograaf} from "../../datatypes/Mammograaf"
 import {Col, Container, Row} from "reactstrap"
 
@@ -41,16 +41,16 @@ export type ConnectieStatusViewProps = {
 };
 
 export type ConnectieStatusState = {
-	intervalId?: NodeJS.Timeout;
 	refreshTimestamp: string;
 };
 
 export default class ConnectieStatusView extends Component<ConnectieStatusViewProps, ConnectieStatusState> implements ConnectieStatusItem {
 
+	private intervalId?: NodeJS.Timeout
+
 	constructor(props: ConnectieStatusViewProps) {
 		super(props)
 		this.state = {
-			intervalId: undefined,
 			refreshTimestamp: "",
 		}
 		this.refresh.bind(this)
@@ -62,15 +62,12 @@ export default class ConnectieStatusView extends Component<ConnectieStatusViewPr
 
 	componentDidMount(): void {
 		this.refresh()
-		this.setState({
-			...this.state,
-			intervalId: setInterval(() => this.refresh(), REFRESH_CONNECTIE_STATUS_INTERVAL),
-		})
+		this.intervalId = setInterval(() => this.refresh(), REFRESH_CONNECTIE_STATUS_INTERVAL)
 	}
 
 	componentWillUnmount(): void {
-		if (this.state.intervalId) {
-			clearInterval(this.state.intervalId)
+		if (this.intervalId) {
+			clearInterval(this.intervalId)
 		}
 	}
 
@@ -120,8 +117,7 @@ export default class ConnectieStatusView extends Component<ConnectieStatusViewPr
 									</p>}
 							</Row>
 							<Row className={"connectiestatus-item-data"}>
-								<button className="btn btn-primary-se" onClick={this.forceImsUpdate}>Forceer start IDS7
-									indien afgesloten
+								<button className="btn btn-primary-se" onClick={this.forceImsUpdate}>Forceer start IDS7 indien afgesloten
 								</button>
 							</Row>
 						</Col>
@@ -140,7 +136,9 @@ export default class ConnectieStatusView extends Component<ConnectieStatusViewPr
 		this.forceUpdate()
 	}
 	forceImsUpdate = (): void => {
-		this.props.gebruikersNaam && sendEmptyStudyMessageToIMS(this.props.gebruikersNaam)
+		if (this.props.gebruikersNaam) {
+			sendConnectionTestWithEmptyMessageToIMS(this.props.gebruikersNaam)
+		}
 	}
 	getStatusLevel = (): ConnectieStatusLevel => {
 		return getMostCriticalStatusLevel([this.getMammograafConnectieStatus(), this.getIMSConnectieStatus()])

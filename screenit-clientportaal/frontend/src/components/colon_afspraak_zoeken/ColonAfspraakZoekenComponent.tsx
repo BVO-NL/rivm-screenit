@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {FC, useCallback, useEffect, useRef, useState} from "react"
+import {FC, useCallback, useRef, useState} from "react"
 import {Col, Row} from "react-bootstrap"
 import styles from "./ColonAfspraakZoekenComponent.module.scss"
 import {Formik} from "formik"
@@ -80,10 +80,9 @@ const ColonAfspraakZoekenComponent: FC<ColonAfspraakZoekenComponentProps> = ({on
 	})
 	const [vrijeSloten, setVrijeSloten] = useState<VrijSlotZonderKamer[]>([])
 	const [gezocht, setGezocht] = useState<boolean>(false)
-	const [isAdvancedSearch, setAdvancedSearch] = useState<boolean>(false)
-	const [isZoekMeerKnopZichtbaar, setIsZoekMeerKnopZichtbaar] = useState<boolean>(true)
+	const [isAdvancedSearch, setIsAdvancedSearch] = useState<boolean>(false)
 
-	const gevondenAfsprakenDiv = useRef<HTMLDivElement | null>(null)
+	const gevondenAfsprakenDivRef = useRef<HTMLDivElement | null>(null)
 	const geenResultaten = vrijeSloten.length === 0 && gezocht
 	const maxResultsPerSearchInteration = 10
 
@@ -111,9 +110,7 @@ const ColonAfspraakZoekenComponent: FC<ColonAfspraakZoekenComponentProps> = ({on
 		onAfspraakGeselecteerd(kiesbareLocatie)
 	}
 
-	useEffect(() => {
-		setIsZoekMeerKnopZichtbaar(vrijeSloten.length === zoekFilter.pagecount * maxResultsPerSearchInteration)
-	}, [setIsZoekMeerKnopZichtbaar, vrijeSloten, zoekFilter.pagecount])
+	const isZoekMeerKnopZichtbaar = vrijeSloten.length === zoekFilter.pagecount * maxResultsPerSearchInteration
 
 	const validationSchema: Yup.AnyObjectSchema = Yup.object()
 		.shape({
@@ -175,8 +172,8 @@ const ColonAfspraakZoekenComponent: FC<ColonAfspraakZoekenComponentProps> = ({on
 		})
 
 		await zoekAfspraken(values as VrijSlotZonderKamerFilter)
-		if (width <= 768 && gevondenAfsprakenDiv.current) {
-			window.scrollTo(0, gevondenAfsprakenDiv.current.offsetTop - 100)
+		if (width <= 768 && gevondenAfsprakenDivRef.current) {
+			window.scrollTo(0, gevondenAfsprakenDivRef.current.offsetTop - 100)
 		}
 	}
 
@@ -228,7 +225,7 @@ const ColonAfspraakZoekenComponent: FC<ColonAfspraakZoekenComponentProps> = ({on
 										<div className={styles.advancedSearchButton}
 										     onClick={async () => {
 												 await setFieldValue("afstand", "")
-												 setAdvancedSearch(!isAdvancedSearch)
+												 setIsAdvancedSearch(!isAdvancedSearch)
 											 }}>
 											<AdvancedSearchLinkComponent advancedSearch={isAdvancedSearch}
 											                             onClickStuurDatadogEvent={() => datadogService.stuurEvent("meerzoekopties", AnalyticsCategorie.COLON_AFSPRAAK)}/>
@@ -254,10 +251,10 @@ const ColonAfspraakZoekenComponent: FC<ColonAfspraakZoekenComponentProps> = ({on
 						)}
 					</Formik>
 				</Col>
-				<Col md={7} className={styles.results} ref={gevondenAfsprakenDiv}>
-					{gezocht && vrijeSloten.map((kiesbareLocatie, index) =>
+				<Col md={7} className={styles.results} ref={gevondenAfsprakenDivRef}>
+					{gezocht && vrijeSloten.map((kiesbareLocatie) =>
 						zoekDigitaleIntakeAfspraken() ? <SearchResultDigitaleIntakeAfspraken
-							key={index}
+							key={`${kiesbareLocatie.intakelocatieid}_${kiesbareLocatie.startTijd}`}
 							className={styles.result}
 							enlargeText
 							col1={[getString(properties.resultaten.week_header, [getWeekNummer(kiesbareLocatie.startTijd)]), formatWeekRange(kiesbareLocatie.startTijd)]}
@@ -265,7 +262,7 @@ const ColonAfspraakZoekenComponent: FC<ColonAfspraakZoekenComponentProps> = ({on
 							onHoverText={getString(properties.search.hovertext_digitaal)}
 							onClickAction={() => kiesAfspraakOptie(kiesbareLocatie, zoekFilter)}
 						/> : <SearchResultAfspraken
-							key={index}
+							key={`${kiesbareLocatie.intakelocatieid}_${kiesbareLocatie.startTijd}`}
 							className={styles.result}
 							enlargeText
 

@@ -28,13 +28,14 @@ import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { GlobalErrorHandler } from '@shared/services/global-error-handler/global-error-handler'
 import { httpInterceptor } from '@shared/interceptors/http.interceptor'
 import { ParameterService } from '@/algemeen/services/parameter/parameter.service'
+import { DateService } from '@shared/services/date/date.service'
 import { forkJoin } from 'rxjs'
 import { provideRouter } from '@angular/router'
 import { HashLocationStrategy, LocationStrategy } from '@angular/common'
 import { provideDsDateFormats, provideDsDateTimeFormats, provideDsLocalStorageNotificationAdapter, provideDsTimeAdapter } from '@topicus-rgp-ds/web'
-import { provideDateFnsAdapter } from '@angular/material-date-fns-adapter'
 import { nl } from 'date-fns/locale'
 import { MAT_DATE_LOCALE } from '@angular/material/core'
+import { provideScreenitDateFnsAdapter } from '@shared/adapters/screenit-date-fns-adapter'
 import { DatepickerLocaleNl } from '@/config/mat-translations'
 import { MatDatepickerIntl } from '@angular/material/datepicker'
 import { routes } from '@/config/routes'
@@ -53,12 +54,13 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       const autorisatieService = inject(AutorisatieService)
       const parameterService = inject(ParameterService)
-      return forkJoin([autorisatieService.getMedewerker(), parameterService.getParameters()])
+      const dateService = inject(DateService)
+      return forkJoin([autorisatieService.getMedewerker(), parameterService.getParameters(), dateService.getEnvironmentInfo()])
     }),
     provideDsDateTimeFormats(),
     provideDsDateFormats(),
     provideDsTimeAdapter(),
-    provideDateFnsAdapter(),
+    provideScreenitDateFnsAdapter(),
     provideDsLocalStorageNotificationAdapter(),
     provideBrowserGlobalErrorListeners(),
     { provide: LOCALE_ID, useValue: 'nl' },

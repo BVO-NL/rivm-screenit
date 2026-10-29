@@ -26,6 +26,7 @@ import properties from "../../pages/bvo/mamma/afspraak/MammaAfspraakMakenPage.js
 import {ArrowType} from "../vectors/ArrowIconComponent"
 import {Col, Row} from "react-bootstrap"
 import classNames from "classnames"
+import {FC} from "react"
 
 export type NavigationDaysComponentProps = {
 	geselecteerdeDatum?: Date,
@@ -35,7 +36,7 @@ export type NavigationDaysComponentProps = {
 	onClickForward: () => void
 }
 
-const NavigationDaysComponent = (props: NavigationDaysComponentProps) => {
+const NavigationDaysComponent: FC<NavigationDaysComponentProps> = (props) => {
 	return (
 		<Row className={classNames(styles.navigationButtons, "text-center")}>
 			<Col xs={2} className={styles.noPadding}>

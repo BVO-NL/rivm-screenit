@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import {ResponsePromise} from "ky"
 import ScreenitBackend from "../utils/Backend"
 
-export const saveNieuwHerdrukAanvraag = () => () => {
+export const saveNieuwHerdrukAanvraag = () => (): ResponsePromise<unknown> => {
 	return ScreenitBackend.put("cervix/herdrukken/aanvragen")
 }

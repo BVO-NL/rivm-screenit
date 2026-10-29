@@ -28,8 +28,8 @@ import lombok.RequiredArgsConstructor;
 import nl.rivm.screenit.main.dto.cervix.CervixCisHistorieDto;
 import nl.rivm.screenit.main.mappers.cervix.CervixCisHistorieMapper;
 import nl.rivm.screenit.main.service.cervix.CervixCisHistorieService;
-import nl.rivm.screenit.main.util.CervixCisHistoryUtil;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.util.cervix.CervixCisHistoryUtil;
 
 import org.springframework.stereotype.Service;
 

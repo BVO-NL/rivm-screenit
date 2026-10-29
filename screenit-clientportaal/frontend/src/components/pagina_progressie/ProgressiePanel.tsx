@@ -21,6 +21,7 @@
 import styles from "./PaginaProgressie.module.scss"
 import classNames from "classnames"
 import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
+import {FC} from "react"
 
 export type ProgressiePanelProps = {
 	aantalPaginas: number,
@@ -28,7 +29,7 @@ export type ProgressiePanelProps = {
 	onTerug?: () => void
 }
 
-const ProgressiePanel = (props: ProgressiePanelProps) => {
+const ProgressiePanel: FC<ProgressiePanelProps> = (props) => {
 	return (<div className={styles.onderkant}>
 
 			{props.onTerug !== undefined && <div className={styles.terugknop} onClick={props.onTerug}>
@@ -36,7 +37,7 @@ const ProgressiePanel = (props: ProgressiePanelProps) => {
 			</div>}
 			{props.onTerug === undefined && <div className={styles.filler}/>}
 			<div className={styles.progressieBollen}>
-				{[...Array(props.aantalPaginas)].map((_e, index) => <div key={"bol_" + (index + 1)} className={getStyleClass(props, index)}></div>)}
+				{[...Array(props.aantalPaginas)].map((_e, index) => <div key={`bol_${  index + 1}`} className={getStyleClass(props, index)}></div>)}
 			</div>
 		</div>
 	)

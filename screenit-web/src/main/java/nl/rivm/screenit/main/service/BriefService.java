@@ -56,5 +56,5 @@ public interface BriefService
 
 	Optional<byte[]> getVerstuurdeBrief(String briefGuid);
 
-	Optional<ClientBrief<?, ?, ?>> getBriefById(Long id, String briefType);
+	ClientBrief<?, ?, ?> getBriefById(Long id, String briefType);
 }

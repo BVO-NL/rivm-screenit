@@ -48,7 +48,7 @@ export default class LezingenBlokView extends Component<LezingenBlokViewProps> {
 					<div>
 						<Row noGutters>
 							{this.props.vorigOnderzoek.lezingen.map((lezing: Lezing, index) => {
-								return <LezingBlokView key={index}
+								return <LezingBlokView key={`${lezing.lezingType}_${lezing.radioloogNaam}`}
 													   blokId={`${this.props.vorigOnderzoek.uitnodigingsNr}_${index}`}
 													   lezing={lezing} colWidth={this.kolomWidth}/>
 							})}
@@ -72,9 +72,9 @@ export default class LezingenBlokView extends Component<LezingenBlokViewProps> {
 									{this.props.vorigOnderzoek.nevenbevindingenOpmerkingen.length > 0 ? <Row>
 										<span className={"font-weight-bold"}>Nevenbevindingen opmerking(en): </span>
 										<br/>
-										{this.props.vorigOnderzoek.nevenbevindingenOpmerkingen.map((value, key) => {
+										{this.props.vorigOnderzoek.nevenbevindingenOpmerkingen.map((value) => {
 											return <Row className={"ondezoek-component"} noGutters
-														key={key}>{value}</Row>
+														key={value}>{value}</Row>
 										})}
 									</Row> : null}
 								</Paneel>

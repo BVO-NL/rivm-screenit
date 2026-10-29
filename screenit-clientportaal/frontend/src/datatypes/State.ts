@@ -30,6 +30,7 @@ import {leegCervixDossier} from "./CervixDossier"
 import {EnvironmentInfo, geenEnvironmentInfo} from "./EnvironmentInfo"
 import {legeMammaAfspraak} from "./mamma/MammaAfspraak"
 import {Parameter} from "./Parameter"
+import {legeOverdrachtPersoonsgegevens} from "./OverdrachtPersoonsgegevens"
 
 export type State = {
 	authenticatie: AuthenticatieState,
@@ -38,7 +39,7 @@ export type State = {
 	landingOverzicht: LandingOverzicht,
 	toasts: ToastMessage[],
 	requestMinusResponseCounter: number,
-	parameters: Parameter[]
+	parameters: Parameter[],
 }
 
 export const legeState: State = {
@@ -53,6 +54,7 @@ export const legeState: State = {
 		persoon: legePersoon,
 		openstaandeUitnodigingen: [],
 		mammaAfspraak: legeMammaAfspraak,
+		overdrachtPersoonsgegevens: legeOverdrachtPersoonsgegevens,
 	},
 	landingOverzicht: legeLandingOverzicht,
 	toasts: [],

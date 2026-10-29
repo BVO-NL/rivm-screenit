@@ -22,7 +22,7 @@ import { inject, Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs'
 import { OnderzoeksresultatenActieDto } from '@shared/types/algemeen/dto/onderzoeksresultaten-actie.dto'
-import { BezwaarType, bezwaarTypeLabels, bezwaarTypeSubtitels } from '@/shared/types/algemeen/enum/bezwaar-type'
+import { algemeneBezwaarTypes, BezwaarType, bezwaarTypeBevolkingsonderzoeken, bezwaarTypeLabels, bezwaarTypeSubtitels } from '@/shared/types/algemeen/enum/bezwaar-type'
 import { BezwaarGroupViewWrapper } from '@/shared/types/algemeen/bezwaar-group-view-wrapper'
 import { BezwaarViewWrapper } from '@/shared/types/algemeen/bezwaar-view-wrapper'
 import { BezwaarMomentDto } from '@/shared/types/algemeen/dto/bezwaar-moment.dto'
@@ -30,6 +30,7 @@ import { Bevolkingsonderzoek } from '@/shared/types/bevolkingsonderzoek'
 import { BriefType } from '@/shared/types/algemeen/enum/brief-type'
 import { getCategorieVanBriefType } from '@/shared/utils/brief-utils'
 import { BriefDto } from '@shared/types/algemeen/dto/brief.dto'
+import { BezwaarKeuze } from '@shared/types/algemeen/dto/bezwaar-verwerken.dto'
 
 @Injectable({
   providedIn: 'root',
@@ -55,21 +56,34 @@ export class BezwaarService {
   }
 
   getBezwaarGroupViewWrappers(moment: BezwaarMomentDto | undefined, verzoekTotBezwaarTeZien: boolean) {
-    const groepen: BezwaarGroupViewWrapper[] = []
-
     if (!moment) {
-      return groepen
+      return []
     }
 
-    for (const bezwaar of moment.bezwaren) {
-      if (BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER !== bezwaar.type || verzoekTotBezwaarTeZien) {
-        const groep = this.getBezwaarGroupViewWrapperFromList(groepen, bezwaar.bevolkingsonderzoek)
-        const wrapper = this.getBezwaarViewWrapper(bezwaar.type, true, bezwaar.bevolkingsonderzoek)
-        groep.bezwaren.push(wrapper)
+    return this.groepeerBezwaren(moment.bezwaren.filter((bezwaar) => BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER !== bezwaar.type || verzoekTotBezwaarTeZien))
+  }
 
-        if (!groepen.includes(groep)) {
-          groepen.push(groep)
-        }
+  getBewerkbareBezwaren(doelgroepBevolkingsonderzoeken: Bevolkingsonderzoek[], bezwaarTypes: BezwaarType[] = algemeneBezwaarTypes): BezwaarKeuze[] {
+    return [undefined, ...doelgroepBevolkingsonderzoeken].flatMap((bevolkingsonderzoek) =>
+      bezwaarTypes.filter((type) => this.hoortBijBevolkingsonderzoek(type, bevolkingsonderzoek)).map((type) => ({ type, bevolkingsonderzoek })),
+    )
+  }
+
+  private hoortBijBevolkingsonderzoek(type: BezwaarType, bevolkingsonderzoek: Bevolkingsonderzoek | undefined) {
+    const bevolkingsonderzoekenVanType = bezwaarTypeBevolkingsonderzoeken[type]
+    return bevolkingsonderzoek ? bevolkingsonderzoekenVanType.includes(bevolkingsonderzoek) : bevolkingsonderzoekenVanType.length === 0
+  }
+
+  groepeerBezwaren(bezwaren: BezwaarKeuze[]) {
+    const groepen: BezwaarGroupViewWrapper[] = []
+
+    for (const bezwaar of bezwaren) {
+      const groep = this.getBezwaarGroupViewWrapperFromList(groepen, bezwaar.bevolkingsonderzoek)
+      const wrapper = this.getBezwaarViewWrapper(bezwaar.type, true, bezwaar.bevolkingsonderzoek)
+      groep.bezwaren.push(wrapper)
+
+      if (!groepen.includes(groep)) {
+        groepen.push(groep)
       }
     }
 

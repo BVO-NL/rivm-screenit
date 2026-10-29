@@ -34,16 +34,16 @@ import nl.rivm.screenit.model.enums.Recht;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.RawValidationError;
 
 public class TechnischBeheerIMSPanel extends GenericPanel<IMSConfiguratie>
 {
@@ -66,12 +66,7 @@ public class TechnischBeheerIMSPanel extends GenericPanel<IMSConfiguratie>
 
 		imsConfigForm.add(new NumberTextField<>("bezwaarTermijnVerwijderdeBeelden").setRequired(true));
 		imsConfigForm.add(new NumberTextField<>("imsQueueSizeWarningThreshold").setRequired(true));
-
-		var launchUrlPassword = new TextField<String>("launchUrlPassword");
-		var launchUrlSha1Mode = new CheckBox("launchUrlSha1Mode");
-		imsConfigForm.add(launchUrlPassword.setRequired(true));
-		imsConfigForm.add(launchUrlSha1Mode.setRequired(true));
-		imsConfigForm.add(new Base64EncodedValidator(launchUrlPassword, launchUrlSha1Mode));
+		imsConfigForm.add(new TextField<String>("launchUrlPassword").setRequired(true).add(new Base64EncodedValidator()));
 
 		var opslaanButton = createAndGetOpslaanButton();
 		opslaanButton.setVisible(magAanpassen());
@@ -104,33 +99,19 @@ public class TechnischBeheerIMSPanel extends GenericPanel<IMSConfiguratie>
 	}
 
 	@RequiredArgsConstructor
-	private static class Base64EncodedValidator extends AbstractFormValidator
+	private static class Base64EncodedValidator implements IValidator<String>
 	{
-		private final FormComponent<String> password;
-
-		private final FormComponent<Boolean> sha1;
 
 		@Override
-		public FormComponent<?>[] getDependentFormComponents()
+		public void validate(IValidatable<String> validatable)
 		{
-			return new FormComponent[] { password, sha1 };
-		}
-
-		@Override
-		public void validate(Form<?> form)
-		{
-			if (Boolean.TRUE.equals(sha1.getConvertedInput()))
-			{
-				return;
-			}
-
 			try
 			{
-				Base64.getDecoder().decode(password.getConvertedInput());
+				Base64.getDecoder().decode(validatable.getValue());
 			}
 			catch (IllegalArgumentException e)
 			{
-				error(password);
+				validatable.error(new RawValidationError("Launch URL wachtwoord moet een Base64 gecodeerde waarde zijn."));
 			}
 		}
 	}

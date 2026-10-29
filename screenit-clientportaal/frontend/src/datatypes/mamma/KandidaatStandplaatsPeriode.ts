@@ -33,4 +33,4 @@ export type KandidaatStandplaatsPeriode = {
 
 export type AfspraakZoekResultaten = KandidaatStandplaatsPeriode[]
 
-export const geenStandplaatsPeriodeZoekResultaten = [] as AfspraakZoekResultaten;
+export const geenStandplaatsPeriodeZoekResultaten = [] as AfspraakZoekResultaten

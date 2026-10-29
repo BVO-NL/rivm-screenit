@@ -18,6 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+
 export enum BezwaarType {
   GEEN_WETENSCHAPPELIJK_ONDERZOEK = 'GEEN_WETENSCHAPPELIJK_ONDERZOEK',
   GEEN_GEBRUIK_LICHAAMSMATERIAAL_WETENSCHAPPELIJK_ONDERZOEK = 'GEEN_GEBRUIK_LICHAAMSMATERIAAL_WETENSCHAPPELIJK_ONDERZOEK',
@@ -59,3 +61,23 @@ export const bezwaarTypeSubtitels: Record<BezwaarType, string> = {
   [BezwaarType.GEEN_UITWISSELING_MET_DE_HUISARTS]: '',
   [BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER]: '',
 }
+
+export const bezwaarTypeBevolkingsonderzoeken: Record<BezwaarType, Bevolkingsonderzoek[]> = {
+  [BezwaarType.GEEN_WETENSCHAPPELIJK_ONDERZOEK]: [],
+  [BezwaarType.GEEN_GEBRUIK_LICHAAMSMATERIAAL_WETENSCHAPPELIJK_ONDERZOEK]: [Bevolkingsonderzoek.CERVIX],
+  [BezwaarType.GEEN_KWALITEITSWAARBORGING]: [],
+  [BezwaarType.GEEN_DIGITALE_UITWISSELING_MET_HET_ZIEKENHUIS]: [Bevolkingsonderzoek.MAMMA],
+  [BezwaarType.GEEN_SIGNALERING_VERWIJSADVIES]: [Bevolkingsonderzoek.CERVIX],
+  [BezwaarType.GEEN_REGISTRATIE_GEBOORTELAND]: [],
+  [BezwaarType.GEEN_OPNAME_UIT_BPR]: [],
+  [BezwaarType.GEEN_UITWISSELING_MET_DE_HUISARTS]: [Bevolkingsonderzoek.COLON],
+  [BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER]: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+}
+
+export const algemeneBezwaarTypes: BezwaarType[] = [
+  BezwaarType.GEEN_WETENSCHAPPELIJK_ONDERZOEK,
+  BezwaarType.GEEN_KWALITEITSWAARBORGING,
+  BezwaarType.GEEN_GEBRUIK_LICHAAMSMATERIAAL_WETENSCHAPPELIJK_ONDERZOEK,
+  BezwaarType.GEEN_SIGNALERING_VERWIJSADVIES,
+  BezwaarType.GEEN_DIGITALE_UITWISSELING_MET_HET_ZIEKENHUIS,
+]

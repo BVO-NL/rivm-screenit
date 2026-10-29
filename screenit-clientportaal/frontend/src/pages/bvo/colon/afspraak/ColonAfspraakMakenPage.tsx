@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useEffect, useState} from "react"
+import {FC, useEffect, useState} from "react"
 import {BevolkingsonderzoekNaam} from "../../../../datatypes/Bevolkingsonderzoek"
 import BasePage from "../../../BasePage"
 import {getString} from "../../../../utils/TekstPropertyUtil"
@@ -36,8 +36,7 @@ import {getVolledigeAdresString} from "../../../../utils/AdresUtil"
 import {weergaveColonIntake} from "../../../../utils/DateUtil"
 import {ColonIntakeafspraakType} from "../../../../datatypes/colon/ColonIntakeafspraakType"
 
-const ColonAfspraakMakenPage = () => {
-	const [isNieuweAfspraak, setIsNieuweAfspraak] = useState<boolean>(false)
+const ColonAfspraakMakenPage: FC = () => {
 	const dispatch = useThunkDispatch()
 	const huidigeIntakeAfspraak = useSelector(selectIntakeAfspraak)
 	const [gekozenAfspraak, setGekozenAfspraak] = useState<VrijSlotZonderKamer | undefined>(undefined)
@@ -47,11 +46,7 @@ const ColonAfspraakMakenPage = () => {
 		dispatch(getHuidigeIntakeAfspraak())
 	}, [dispatch])
 
-	useEffect(() => {
-		if (huidigeIntakeAfspraak && (huidigeIntakeAfspraak.afspraakAfgezegd || huidigeIntakeAfspraak.andereIntakelocatieOpVerzoekClient)) {
-			setIsNieuweAfspraak(huidigeIntakeAfspraak.afspraakAfgezegd || huidigeIntakeAfspraak.andereIntakelocatieOpVerzoekClient)
-		}
-	}, [huidigeIntakeAfspraak])
+	const isNieuweAfspraak = !!huidigeIntakeAfspraak && (huidigeIntakeAfspraak.afspraakAfgezegd || huidigeIntakeAfspraak.andereIntakelocatieOpVerzoekClient)
 
 	return (
 		<BasePage bvoName={BevolkingsonderzoekNaam.COLON}

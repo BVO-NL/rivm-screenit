@@ -36,6 +36,7 @@ import static nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek_.AANG
 import static nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek_.GEDOWNLOAD_OP;
 import static nl.rivm.screenit.specification.HibernateObjectSpecification.filterId;
 import static nl.rivm.screenit.specification.mamma.MammaDownloadOnderzoekenVerzoekSpecification.filterOpAangemaaktDoorMedewerkerVanOrganisatie;
+import static nl.rivm.screenit.specification.mamma.MammaDownloadOnderzoekenVerzoekSpecification.filterOpDoel;
 import static nl.rivm.screenit.specification.mamma.MammaDownloadOnderzoekenVerzoekSpecification.heeftGeenStatusIn;
 import static org.springframework.data.domain.Sort.Direction;
 import static org.springframework.data.domain.Sort.by;
@@ -53,7 +54,7 @@ public class MammaDownloadOnderzoekenVerzoekenDataProviderServiceImpl
 			List.of(BestandStatus.VERWIJDERD);
 
 		return filterOpAangemaaktDoorMedewerkerVanOrganisatie(aangemaaktDoor != null ? aangemaaktDoor.getOrganisatie() : null).and(heeftGeenStatusIn(bestandStatussen))
-			.and(filterId(filter.getId()));
+			.and(filterId(filter.getId())).and(filterOpDoel(filter.getDoel()));
 	}
 
 	@Override

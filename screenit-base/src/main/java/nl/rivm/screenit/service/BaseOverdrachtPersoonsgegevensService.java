@@ -21,9 +21,23 @@ package nl.rivm.screenit.service;
  * =========================LICENSE_END==================================
  */
 
+import java.io.IOException;
+import java.io.OutputStream;
+
+import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
 
 public interface BaseOverdrachtPersoonsgegevensService
 {
-    void maakOverdrachtVerzoek(Client client);
+	void maakOverdrachtVerzoek(Client client, OverdrachtPersoonsgegevens overdrachtPersoonsgegevens, OrganisatieMedewerker ingelogdeGebruiker) throws IOException;
+
+	void maakPdf(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens, OutputStream outputStream, Account account);
+
+	void genereerEnPersisteerDataDump(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens);
+
+	void verwijderDataDump(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens);
+
+	OverdrachtPersoonsgegevens getOverdrachtPersoonsgegevensVoorClient(Client client);
 }

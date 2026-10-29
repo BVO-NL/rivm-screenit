@@ -21,12 +21,21 @@ package nl.rivm.screenit.main.dto.mamma.fotobespreking;
  * =========================LICENSE_END==================================
  */
 
+import java.util.ArrayList;
 import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+@Getter
+@Setter
+@AllArgsConstructor
 @Schema(name = "MammaFotobesprekingOnderzoekResponseDto", description = "Resultaat van het koppelen van onderzoeken aan een fotobespreking.")
-public record MammaFotobesprekingOnderzoekResponseDto(
-	@Schema(description = "Meldingen die tijdens het koppelen zijn ontstaan") List<String> meldingen)
+public class MammaFotobesprekingOnderzoekResponseDto
 {
+	@Schema(description = "Meldingen die tijdens het koppelen zijn ontstaan")
+	List<String> meldingen = new ArrayList<>();
 }

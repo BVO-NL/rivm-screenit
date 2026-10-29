@@ -23,7 +23,7 @@ import ScreenitBackend from "../utils/Backend"
 import {ResetBeschikbareContactActies, setBeschikbareContactActies} from "../actions/ContactActiesReduxAction"
 import {ContactActiesDto} from "../datatypes/ContactActiesDto"
 
-export const getBeschikbareContactActies = () => async (dispatch: Dispatch<ResetBeschikbareContactActies>) => {
-	return ScreenitBackend.get<ContactActiesDto>(`acties/beschikbaar`).json()
+export const getBeschikbareContactActies = () => async (dispatch: Dispatch<ResetBeschikbareContactActies>): Promise<ResetBeschikbareContactActies> => {
+	return ScreenitBackend.get<ContactActiesDto>("acties/beschikbaar").json()
 		.then(response => dispatch(setBeschikbareContactActies(response)))
 }

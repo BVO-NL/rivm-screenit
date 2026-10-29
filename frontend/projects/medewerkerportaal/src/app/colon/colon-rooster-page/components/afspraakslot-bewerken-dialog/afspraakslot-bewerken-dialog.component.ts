@@ -58,6 +58,7 @@ import { ColonTijdslotType } from '@shared/types/colon/colon-tijdslot-type'
 import { bepaalFoutmeldingBijOpslaanTijdslot } from '@/colon/utils/colon-utils'
 import { TimepickerComponent } from '@shared/components/timepicker/timepicker.component'
 import { StringsService } from '@shared/strings'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-afspraakslot-bewerken-dialog',
@@ -81,7 +82,7 @@ import { StringsService } from '@shared/strings'
   `,
 })
 export class AfspraakslotBewerkenDialogComponent {
-  minDatum: string = new Date().toISOString()
+  minDatum: string = DateService.nu().toISOString()
   bewerkenToegestaan = false
   verwijderenToegestaan = false
   private readonly formBuilder: FormBuilder = inject(FormBuilder)
@@ -281,7 +282,7 @@ export class AfspraakslotBewerkenDialogComponent {
   }
 
   private berekenEindTijd(): void {
-    const startDate: Date = parse(this.startTijdCtrl.value, TIME_FORMAT, new Date())
+    const startDate: Date = parse(this.startTijdCtrl.value, TIME_FORMAT, DateService.nu())
     if (!isValid(startDate)) {
       return
     }

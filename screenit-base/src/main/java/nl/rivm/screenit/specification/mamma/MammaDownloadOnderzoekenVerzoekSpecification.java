@@ -36,6 +36,7 @@ import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek_;
 import nl.rivm.screenit.model.mamma.MammaOnderzoek_;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaUitnodiging_;
+import nl.rivm.screenit.model.mamma.enums.MammaDownloadDoel;
 import nl.rivm.screenit.specification.ExtendedSpecification;
 import nl.rivm.screenit.specification.SpecificationUtil;
 import nl.rivm.screenit.specification.algemeen.OrganisatieMedewerkerSpecification;
@@ -90,6 +91,16 @@ public class MammaDownloadOnderzoekenVerzoekSpecification
 	{
 
 		return (r, q, cb) -> cb.lessThanOrEqualTo(r.get(MammaDownloadOnderzoekenVerzoek_.aangemaaktOp), DateUtil.toUtilDate(datum));
+	}
+
+	public static ExtendedSpecification<MammaDownloadOnderzoekenVerzoek> heeftDoel(MammaDownloadDoel doel)
+	{
+		return (r, q, cb) -> cb.equal(r.get(MammaDownloadOnderzoekenVerzoek_.doel), doel);
+	}
+
+	public static ExtendedSpecification<MammaDownloadOnderzoekenVerzoek> filterOpDoel(MammaDownloadDoel doel)
+	{
+		return skipWhenNullExtended(doel, heeftDoel(doel));
 	}
 
 }

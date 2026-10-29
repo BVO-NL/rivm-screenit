@@ -52,7 +52,7 @@ const MammaAfspraakOverzichtPage: FC = () => {
 
 	useEffect(() => {
 		dispatch(getOpenstaandeUitnodigingen())
-	}, [])
+	}, [dispatch])
 
 	const afsluiten = (): void => {
 		datadogService.stuurEvent("afspraakoverzichtBekeken", AnalyticsCategorie.MAMMA_AFSPRAAK, {
@@ -87,6 +87,8 @@ const MammaAfspraakOverzichtPage: FC = () => {
 				<div className={styles.knoppenRechts}>
 					<Button label={properties.afspraak_maken.button.afronden}
 							onClick={afsluiten}
+							testId="afronden_btn"
+							id="afronden_btn"
 							displayArrow={ArrowType.ARROW_RIGHT}/>
 					<AfsluitenLink/>
 				</div>

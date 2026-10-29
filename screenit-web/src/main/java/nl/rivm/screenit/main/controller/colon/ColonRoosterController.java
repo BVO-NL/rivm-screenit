@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.controller.colon;
  * =========================LICENSE_END==================================
  */
 
-import java.time.DayOfWeek;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -132,7 +131,7 @@ public class ColonRoosterController
 	public ColonRoosterInstellingenDto getInstellingen()
 	{
 		var instellingen = new ColonRoosterInstellingenDto();
-		instellingen.setGeprognosticeerdeVanafDatum(uitnodigingService.getGeprognotiseerdeIntakeDatum(true).with(DayOfWeek.MONDAY));
+		instellingen.setGeprognosticeerdeIntakeDatum(uitnodigingService.getGeprognotiseerdeIntakeDatum(true));
 		instellingen.setDuurAfspraakInMinuten(organisatieParameterService.getOrganisatieParameter(ScreenitSession.get().getIntakelocatie(),
 			OrganisatieParameterKey.COLON_DUUR_AFSPRAAK_IN_MINUTEN));
 		return instellingen;

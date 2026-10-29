@@ -26,15 +26,17 @@
   }
   <ds-textarea
     [label]="interneLabel()"
-    [ngModel]="value"
+    [ngModel]="value()"
     [ngModelOptions]="{standalone: true}"
     (ngModelChange)="onUpdate($event)"
-    [disabled]="isDisabled"
-    placeholder="Voeg hier een notitie toe"
+    [disabled]="isDisabled()"
+    [maxlength]="maxLength()"
+    [errorMessage]="foutmeldingen()"
+    [placeholder]="placeholder"
     data-testid="notitie-aanmaken-veld-textarea"
   />
 } @else {
-  <button ds-button-tertiary [disabled]="isDisabled" (click)="toonVeld()" data-testid="notitie-aanmaken-veld-knop">
+  <button ds-button-tertiary [disabled]="isDisabled()" (click)="toonVeld()" data-testid="notitie-aanmaken-veld-knop">
     <ds-icon [icon]="faPlus"/>
     {{ toevoegenLabel }}
   </button>

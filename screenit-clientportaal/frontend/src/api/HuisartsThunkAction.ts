@@ -22,7 +22,9 @@ import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
 import {
 	magMammaHuisartsOntkoppelenReduxAction,
+	SetMammaGeenHuisartsOptieHuidigeRonde,
 	setMammaGeenHuisartsOptieHuidigeRondeReduxAction,
+	SetMammaGeenHuisartsOptieVorigeRonde,
 	setMammaGeenHuisartsOptieVorigeRondeReduxAction,
 	setMammaHuisartsHuidigeRondeReduxAction,
 	setMammaHuisartsVorigeRondeReduxAction,
@@ -33,7 +35,7 @@ import {setColonHuisartsHuidigeRondeReduxAction, setColonHuisartsVorigeRondeRedu
 import {getBvoBaseUrl} from "../utils/UrlUtil"
 import {assertUnreachable} from "../utils/EnumUtil"
 
-export const koppelHuisarts = (huisarts: Huisarts, bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
+export const koppelHuisarts = (huisarts: Huisarts, bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch): Promise<void> => {
 	return ScreenitBackend.post(`huisarts${getBvoBaseUrl(bvo)}?id=${huisarts.id}`)
 		.then(() => {
 			switch (bvo) {
@@ -51,7 +53,7 @@ export const koppelHuisarts = (huisarts: Huisarts, bvo?: Bevolkingsonderzoek) =>
 		})
 }
 
-export const ontkoppelHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
+export const ontkoppelHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch): Promise<void> => {
 	return ScreenitBackend.delete(`huisarts${getBvoBaseUrl(bvo)}`)
 		.then(() => {
 			switch (bvo) {
@@ -69,7 +71,7 @@ export const ontkoppelHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispa
 		})
 }
 
-export const magHuisartsKoppelen = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
+export const magHuisartsKoppelen = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch): Promise<void> => {
 	return ScreenitBackend.get<boolean>(`huisarts${getBvoBaseUrl(bvo)}/magverwijderen`).json()
 		.then(response => {
 			switch (bvo) {
@@ -85,7 +87,7 @@ export const magHuisartsKoppelen = (bvo?: Bevolkingsonderzoek) => (dispatch: Dis
 		})
 }
 
-export const getHuidigeHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
+export const getHuidigeHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch): Promise<void> => {
 	return ScreenitBackend.get<Huisarts>(`huisarts${getBvoBaseUrl(bvo)}/huidige`).json()
 		.then(response => {
 			switch (bvo) {
@@ -103,7 +105,7 @@ export const getHuidigeHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Disp
 		})
 }
 
-export const getVorigeHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
+export const getVorigeHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch): Promise<void> => {
 	return ScreenitBackend.get<Huisarts>(`huisarts${getBvoBaseUrl(bvo)}/vorige`).json()
 		.then(response => {
 			switch (bvo) {
@@ -121,17 +123,17 @@ export const getVorigeHuisarts = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispa
 		})
 }
 
-export const getHuidigeMammaGeenHuisartsOptie = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
+export const getHuidigeMammaGeenHuisartsOptie = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch): Promise<SetMammaGeenHuisartsOptieHuidigeRonde> => {
 	return ScreenitBackend.get<MammaGeenHuisartsOptie>(`huisarts${getBvoBaseUrl(bvo)}/huidige/geen`).json()
 		.then(response => dispatch(setMammaGeenHuisartsOptieHuidigeRondeReduxAction(response)))
 }
 
-export const getVorigeMammaGeenHuisartsOptie = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
+export const getVorigeMammaGeenHuisartsOptie = (bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch): Promise<SetMammaGeenHuisartsOptieVorigeRonde> => {
 	return ScreenitBackend.get<MammaGeenHuisartsOptie>(`huisarts${getBvoBaseUrl(bvo)}/vorige/geen`).json()
 		.then(response => dispatch(setMammaGeenHuisartsOptieVorigeRondeReduxAction(response)))
 }
 
-export const bevestigVorige = (vorigeHuisarts?: Huisarts, mammaVorigeGeenHuisartsOptie?: MammaGeenHuisartsOptie, bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch) => {
+export const bevestigVorige = (vorigeHuisarts?: Huisarts, mammaVorigeGeenHuisartsOptie?: MammaGeenHuisartsOptie, bvo?: Bevolkingsonderzoek) => (dispatch: Dispatch): Promise<void> => {
 	return ScreenitBackend.post(`huisarts${getBvoBaseUrl(bvo)}/vorige`)
 		.then(() => {
 			switch (bvo) {
@@ -151,7 +153,7 @@ export const bevestigVorige = (vorigeHuisarts?: Huisarts, mammaVorigeGeenHuisart
 }
 
 export const zoekHuisartsenAction = (zoek: HuisartsZoekobject, pagina: number) => {
-	return async () => {
+	return async (): Promise<Huisarts[]> => {
 		const result = await ScreenitBackend
 			.post<Huisarts[]>(`huisarts?paginaNummer=${pagina}`, {json: zoek})
 			.json()

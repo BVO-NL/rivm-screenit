@@ -70,9 +70,9 @@ export const createStateHelper = (stateSlice: Partial<RootState> = {}): RootStat
 			alleenOnline: false,
 			annulerenString: "",
 			body: undefined,
-			callback(args: unknown): void {
+			callback(): void {
 			},
-			cancelCallback(args: unknown): void {
+			cancelCallback(): void {
 			},
 			titel: "", visible: false,
 		},

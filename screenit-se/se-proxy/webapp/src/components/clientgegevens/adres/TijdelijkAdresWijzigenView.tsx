@@ -45,30 +45,26 @@ export default class TijdelijkAdresWijzigenView extends Component<TijdelijkAdres
 		super(props)
 		const tijdelijkAdres = getMandatory(store.getState().clientenById, this.props.clientId).tijdelijkAdres
 
-		if (tijdelijkAdres) {
-			this.state = {
-				straat: tijdelijkAdres.straat || "",
-				huisnummer: tijdelijkAdres.huisnummer || 0,
-				huisletter: tijdelijkAdres.huisletter || "",
-				huisnummerToevoeging: tijdelijkAdres.huisnummerToevoeging || "",
-				huisnummerAanduiding: tijdelijkAdres.huisnummerAanduiding || "",
-				postcode: tijdelijkAdres.postcode || "",
-				plaats: tijdelijkAdres.plaats || "",
-				startDatum: tijdelijkAdres.startDatum || vandaagISO(),
-				eindDatum: tijdelijkAdres.eindDatum || null,
-			}
-		} else {
-			this.state = {
-				straat: "",
-				huisnummer: 0,
-				huisletter: "",
-				huisnummerToevoeging: "",
-				huisnummerAanduiding: "",
-				postcode: "",
-				plaats: "",
-				startDatum: vandaagISO(),
-				eindDatum: null,
-			}
+		this.state = tijdelijkAdres ? {
+			straat: tijdelijkAdres.straat || "",
+			huisnummer: tijdelijkAdres.huisnummer || 0,
+			huisletter: tijdelijkAdres.huisletter || "",
+			huisnummerToevoeging: tijdelijkAdres.huisnummerToevoeging || "",
+			huisnummerAanduiding: tijdelijkAdres.huisnummerAanduiding || "",
+			postcode: tijdelijkAdres.postcode || "",
+			plaats: tijdelijkAdres.plaats || "",
+			startDatum: tijdelijkAdres.startDatum || vandaagISO(),
+			eindDatum: tijdelijkAdres.eindDatum || null,
+		} : {
+			straat: "",
+			huisnummer: 0,
+			huisletter: "",
+			huisnummerToevoeging: "",
+			huisnummerAanduiding: "",
+			postcode: "",
+			plaats: "",
+			startDatum: vandaagISO(),
+			eindDatum: null,
 		}
 	}
 
@@ -194,8 +190,8 @@ export default class TijdelijkAdresWijzigenView extends Component<TijdelijkAdres
 					<Col md={1}/>
 					<Col md={10}>
 						<ul>
-							{this.valideTijdelijkAdres().map((foutmelding: string, index: number) => {
-								return <li className={"text-danger"} key={index}>
+							{this.valideTijdelijkAdres().map((foutmelding: string) => {
+								return <li className={"text-danger"} key={foutmelding}>
 									{foutmelding}
 								</li>
 							})}

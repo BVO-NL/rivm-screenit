@@ -21,6 +21,7 @@
 import { AdresDto } from '@shared/types/algemeen/dto/adres.dto'
 
 export const maakAdres = (overrides: Partial<AdresDto> = {}): AdresDto => ({
+  id: 1,
   straat: 'Hoofdstraat',
   huisnummer: 1,
   huisletter: '',

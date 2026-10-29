@@ -23,6 +23,9 @@ package nl.rivm.screenit.main.web.gebruiker.clienten;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Predicate;
 
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.AbstractClientContactActiePanel;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.cervix.CervixClientContactAanvragenNieuweZASPanel;
@@ -517,6 +520,13 @@ public enum ClientContactActieTypeWrapper
 			}
 		},
 	;
+
+	public static List<ClientContactActieTypeWrapper> getZichtbareActies(Collection<ClientContactActieType> beschikbareActieTypes, Predicate<Recht> heeftRecht)
+	{
+		return Arrays.stream(values())
+			.filter(actie -> actie.getRecht() != null && heeftRecht.test(actie.getRecht()) && beschikbareActieTypes.contains(actie.getType()))
+			.toList();
+	}
 
 	private static ClientContactActieTypeWrapper[] getFullExclusieArrayWithoutSelf(ClientContactActieTypeWrapper self)
 	{

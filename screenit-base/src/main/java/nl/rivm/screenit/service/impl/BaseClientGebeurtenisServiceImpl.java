@@ -24,11 +24,11 @@ package nl.rivm.screenit.service.impl;
 import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.AanvraagBriefStatus;
@@ -71,7 +71,6 @@ import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 
 import org.hibernate.envers.query.AuditEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.support.PropertyComparator;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -498,8 +497,8 @@ public class BaseClientGebeurtenisServiceImpl implements BaseClientGebeurtenisSe
 	private void clientBezwaarGebeurtenissen(Client client, List<ClientGebeurtenis> gebeurtenissen, Bevolkingsonderzoek bvo)
 	{
 		var bezwaarMomenten = new ArrayList<>(client.getBezwaarMomenten()).stream().filter(bm -> AanvraagBriefStatus.VERWERKT == bm.getStatus())
-			.sorted(new PropertyComparator<>("statusDatum", false, true)).collect(Collectors.toList());
-		Map<String, Boolean> bezwaarChanges = new HashMap<>();
+			.sorted(Comparator.comparing(BezwaarMoment::getStatusDatum)).toList();
+		var bezwaarChanges = new HashMap<String, Boolean>();
 		for (var bezwaarMoment : bezwaarMomenten)
 		{
 			addBezwaarGebeurtenis(gebeurtenissen, bezwaarMoment, bezwaarChanges, BezwaarType.GEEN_KWALITEITSWAARBORGING,

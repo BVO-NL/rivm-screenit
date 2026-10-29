@@ -46,11 +46,11 @@ class ErrorBoundary extends Component<Props, State> {
 		this.isSupportedBrowser = supportedBrowsers.test(navigator.userAgent)
 	}
 
-	static getDerivedStateFromError(error: Error) {
+	static getDerivedStateFromError(): { hasError: boolean; } {
 		return {hasError: true}
 	}
 
-	componentDidCatch(error: Error, info: ErrorInfo) {
+	componentDidCatch(error: Error, info: ErrorInfo): void {
 		const renderingError = new Error(error.message)
 		renderingError.name = "ReactRenderingError"
 		renderingError.stack = info.componentStack ?? undefined
@@ -58,7 +58,7 @@ class ErrorBoundary extends Component<Props, State> {
 		datadogRum.addError(renderingError)
 	}
 
-	public render() {
+	public render(): ReactNode {
 		if (!this.state.hasError) {
 			return this.props.children
 		}

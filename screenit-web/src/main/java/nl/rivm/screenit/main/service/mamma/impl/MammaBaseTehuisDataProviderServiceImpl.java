@@ -33,10 +33,10 @@ import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
 import nl.rivm.screenit.model.mamma.MammaTehuis;
 import nl.rivm.screenit.repository.mamma.MammaTehuisRepository;
 import nl.rivm.screenit.service.mamma.MammaBaseTehuisService;
+import nl.rivm.screenit.util.DynamicPropertyComparator;
 
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.support.PropertyComparator;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -90,7 +90,7 @@ public class MammaBaseTehuisDataProviderServiceImpl extends RepositoryDataProvid
 
 		if (!sort.getProperty().startsWith("tehuis"))
 		{
-			result = result.sorted(new PropertyComparator<>(sort.getProperty(), false, sort.isAscending())).skip(first).limit(count);
+			result = result.sorted(new DynamicPropertyComparator<>(sort.getProperty(), false, sort.isAscending())).skip(first).limit(count);
 		}
 
 		return result.collect(Collectors.toList());

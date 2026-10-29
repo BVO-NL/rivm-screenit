@@ -35,7 +35,7 @@ import {getContactUrl} from "../../../../../utils/UrlUtil"
 import {useNavigate, useSearchParams} from "react-router"
 import huisartsProperties from "../../../gedeeld/huisarts/HuisartsPage.json"
 import AfsluitenLink from "../../../../../components/afsluiten_link/AfsluitenLink"
-import {FC, useEffect, useRef, useState} from "react"
+import {FC, useRef, useState} from "react"
 import Button from "../../../../../components/input/Button"
 import HuisartsSelectieComponent from "../../../../../components/huisarts_selectie/HuisartsSelectieComponent"
 import {getString} from "../../../../../utils/TekstPropertyUtil"
@@ -61,16 +61,12 @@ const MammaAfspraakHuisartsPage: FC = () => {
 	const huidigeStap = useWizardStap()
 	const afspraakBevestiging = useSelector(selectMammaAfspraakBevestigingsoptie)!
 
-	const initieleHuisarts = useRef(huidigeHuisarts)
-	const [toonWijzigen, setToonWijzigen] = useState(false)
+	const initieleHuisartsRef = useRef(huidigeHuisarts)
+	const [wijzigenGekozen, setWijzigenGekozen] = useState(false)
 	const [gekozenHuisarts, setGekozenHuisarts] = useState<Huisarts | null>(null)
 	const [searchParams] = useSearchParams()
 
-	useEffect(() => {
-		if (searchParams.get("wijzig")) {
-			setToonWijzigen(true)
-		}
-	}, [searchParams])
+	const toonWijzigen = wijzigenGekozen || !!searchParams.get("wijzig")
 
 	async function submit(): Promise<void> {
 		if (gekozenHuisarts) {
@@ -79,7 +75,7 @@ const MammaAfspraakHuisartsPage: FC = () => {
 				huisartsProperties.gedeeld.toasts.opgeslagen.description,
 			)
 
-			const huisartsBekend = initieleHuisarts.current ? "huisarts bekend" : "huisarts niet bekend"
+			const huisartsBekend = initieleHuisartsRef.current ? "huisarts bekend" : "huisarts niet bekend"
 			datadogService.stuurEvent("huisartsToegevoegd", AnalyticsCategorie.MAMMA_AFSPRAAK, {
 				naam: huisartsBekend,
 				stap: huidigeStap,
@@ -125,7 +121,7 @@ const MammaAfspraakHuisartsPage: FC = () => {
 								value={properties.huisarts.description}/>
 						</p>
 						<p>{properties.huisarts.doorgeven.bekend.description}</p>
-						<HuisartsView huisarts={huidigeHuisarts} andereHuisartsKiezen={() => setToonWijzigen(true)}/>
+						<HuisartsView huisarts={huidigeHuisarts} andereHuisartsKiezen={() => setWijzigenGekozen(true)}/>
 						<SpanWithHtml value={properties.huisarts.doorgeven.bekend.bevestiging_vraag}/>
 					</div>
 				) : (

@@ -22,8 +22,8 @@ package nl.rivm.screenit.service.impl;
  */
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.model.Client;
@@ -153,14 +153,6 @@ public class ClientDoelgroepServiceImpl implements ClientDoelgroepService
 	@Override
 	public List<Bevolkingsonderzoek> totWelkeBevolkingsonderzoekenHoortDezeClient(Client client)
 	{
-		List<Bevolkingsonderzoek> onderzoeken = new ArrayList<>();
-		for (var onderzoek : Bevolkingsonderzoek.values())
-		{
-			if (client == null || behoortTotDoelgroep(client, onderzoek))
-			{
-				onderzoeken.add(onderzoek);
-			}
-		}
-		return onderzoeken;
+		return Stream.of(Bevolkingsonderzoek.values()).filter(onderzoek -> client == null || behoortTotDoelgroep(client, onderzoek)).toList();
 	}
 }

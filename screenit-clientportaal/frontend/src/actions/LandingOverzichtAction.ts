@@ -18,15 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {LandingOverzicht} from "../datatypes/landing/LandingOverzicht";
+import {LandingOverzicht} from "../datatypes/landing/LandingOverzicht"
 
 export type LandingOverzichtActions = LandingOverzichtAction;
 
-export const LANDING_OVERZICHT = 'LANDING_OVERZICHT';
+export const LANDING_OVERZICHT = "LANDING_OVERZICHT"
 
-export type LandingOverzichtAction = { type: 'LANDING_OVERZICHT', overzicht: LandingOverzicht }
+export type LandingOverzichtAction = { type: "LANDING_OVERZICHT", overzicht: LandingOverzicht }
 
 export const createLandingOverzichtAction = (overzicht: LandingOverzicht): LandingOverzichtAction => ({
     type: LANDING_OVERZICHT,
     overzicht: overzicht
-} as LandingOverzichtAction);
+} as LandingOverzichtAction)

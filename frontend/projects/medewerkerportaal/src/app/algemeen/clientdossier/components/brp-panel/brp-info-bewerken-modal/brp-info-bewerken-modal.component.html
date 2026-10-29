@@ -27,7 +27,9 @@
         [label]="strings.algemeen.labels.straatnaam"
         formControlName="straat"
         [placeholder]="strings.algemeen.labels.straatnaam"
-        [errorMessage]="{maxlength: strings.algemeen.errors.maxKarakters('Straatnaam', 56)}"
+        [errorMessage]="{maxlength: strings.algemeen.errors.maxKarakters('Straatnaam', MAX_KARAKTERS.straat)}"
+        [dsMaxLength]="MAX_KARAKTERS.straat"
+        [showCounter]="false"
       />
       <div class="huisnummer-groep">
         <ds-input
@@ -37,31 +39,36 @@
           [placeholder]="strings.algemeen.labels.huisnummer"
           id="huisnummer"
           maxlength="10"
-          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Huisnummer', 10), pattern: strings.algemeen.errors.huisnummerAlleenCijfers }"
+          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Huisnummer', MAX_KARAKTERS.huisnummer), pattern: strings.algemeen.errors.huisnummerAlleenCijfers }"
           [required]="true"
+          [dsMaxLength]="MAX_KARAKTERS.huisnummer"
+          [showCounter]="false"
         />
         <ds-input
           [label]="strings.algemeen.labels.huisletter"
           formControlName="huisletter"
           placeholder="A"
           id="huisletter"
-          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Huisletter', 1) }"
-          maxlength="1"
+          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Huisletter', MAX_KARAKTERS.huisletter) }"
+          [dsMaxLength]="MAX_KARAKTERS.huisletter"
+          [showCounter]="false"
         />
         <ds-input
           [label]="strings.algemeen.labels.toevoeging"
           formControlName="huisnummerToevoeging"
           [placeholder]="strings.algemeen.labels.toevoeging"
           id="huisnummerToevoeging"
-          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Toevoeging', 26) }"
-          maxlength="26"
+          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Toevoeging', MAX_KARAKTERS.huisnummerToevoeging) }"
+          [dsMaxLength]="MAX_KARAKTERS.huisnummerToevoeging"
+          [showCounter]="false"
         />
         <ds-input
           [label]="strings.algemeen.labels.aanduiding"
           formControlName="huisnummerAanduiding"
           id="aanduidingBijHuisnummer"
-          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Aanduiding', 2) }"
-          maxlength="2"
+          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Aanduiding', MAX_KARAKTERS.huisnummerAanduiding) }"
+          [dsMaxLength]="MAX_KARAKTERS.huisnummerAanduiding"
+          [showCounter]="false"
         />
       </div>
       <div class="postcode-plaats-groep">
@@ -79,8 +86,10 @@
           [placeholder]="strings.algemeen.labels.plaats"
           id="plaats"
           maxlength="200"
-          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Plaats', 200) }"
+          [errorMessage]="{ maxlength: strings.algemeen.errors.maxKarakters('Plaats',  MAX_KARAKTERS.plaats) }"
           [required]="true"
+          [dsMaxLength]="MAX_KARAKTERS.plaats"
+          [showCounter]="false"
         />
       </div>
     </form>

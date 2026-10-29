@@ -35,12 +35,12 @@
         />
         <ds-input
           label="Bestandsnaam"
-          [errorMessage]="{'maxlength': strings.algemeen.errors.maxKarakters('De bestandsnaam', 50), 'minlength': strings.algemeen.errors.minKarakters('De bestandsnaam', 3)}"
+          [errorMessage]="{maxlength: strings.algemeen.errors.maxKarakters('De bestandsnaam', MAX_KARAKTERS.bestandsnaam), minlength: strings.algemeen.errors.minKarakters('De bestandsnaam', 3)}"
           [formControl]="bestandsnamen.at(i)"
           data-testid="bestandsnaam_input"
           required
           minlength="3"
-          maxlength="50"
+          [dsMaxLength]="MAX_KARAKTERS.bestandsnaam"
         />
       }
     </div>

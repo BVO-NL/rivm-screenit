@@ -55,7 +55,7 @@ const MammaAfspraakMakenPage: FC = () => {
 	const dispatch = useThunkDispatch()
 	const selectedBvo = useSelectedBvo()!
 	const {width} = useWindowDimensions()
-	const gevondenAfsprakenDiv = useRef<HTMLDivElement | null>(null)
+	const gevondenAfsprakenDivRef = useRef<HTMLDivElement | null>(null)
 	const [dagenBeschikbaar, setDagenBeschikbaar] = useState<boolean>(true)
 	const [zoekFilter, setZoekFilter] = useState<AfspraakZoekFilter>({
 		vanaf: undefined,
@@ -139,8 +139,8 @@ const MammaAfspraakMakenPage: FC = () => {
 												setBeschikbareDagen(beschikbareDagen.sort(compareAsc))
 											})}
 											onZoekenClick={() => {
-												if (width <= 768 && gevondenAfsprakenDiv.current) {
-													window.scrollTo(0, gevondenAfsprakenDiv.current.offsetTop - 100)
+												if (width <= 768 && gevondenAfsprakenDivRef.current) {
+													window.scrollTo(0, gevondenAfsprakenDivRef.current.offsetTop - 100)
 												}
 											}}
 											onChange={() => {
@@ -163,10 +163,10 @@ const MammaAfspraakMakenPage: FC = () => {
 								  onClickStuurDatadogEvent={() => stuurSecondaireActietegelEvent(properties.searchresult.button.header.contact)}
 					/>
 				</Col>
-				<Col md={7} className={styles.results} ref={gevondenAfsprakenDiv}>
-					{laatsteAfspraakZoekResultaten && laatsteAfspraakZoekResultaten.map((afspraakOptie, index) =>
+				<Col md={7} className={styles.results} ref={gevondenAfsprakenDivRef}>
+					{laatsteAfspraakZoekResultaten && laatsteAfspraakZoekResultaten.map((afspraakOptie) =>
 						<SearchResultAfspraken
-							key={index}
+							key={`${afspraakOptie.capaciteitBlokId}-${new Date(afspraakOptie.datumTijd).getTime()}`}
 							className={styles.result}
 
 							col1={["", placeNonBreakingSpaceInDate(formatDateWithDayName(afspraakOptie.datumTijd)), `${formatTime(afspraakOptie.datumTijd)} uur`]}

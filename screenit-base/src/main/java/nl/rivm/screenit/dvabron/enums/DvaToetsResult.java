@@ -24,7 +24,7 @@ package nl.rivm.screenit.dvabron.enums;
 public enum DvaToetsResult
 {
 	BLOCKED,
-	NO_INFORMATION_AVAILABLE,
+	NO_TREATMENT_RELATIONSHIP,
 	INVALID_AGE,
 	PERMITTED
 }

@@ -24,9 +24,7 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.contact;
 import java.util.Map;
 
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.colon.ColonClientNieuweAfspraakMakenPanel;
-import nl.rivm.screenit.model.AanvraagBriefStatus;
 import nl.rivm.screenit.model.Afmelding;
-import nl.rivm.screenit.model.AfmeldingType;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientBrief;
 import nl.rivm.screenit.model.ClientContactActie;
@@ -61,7 +59,7 @@ public abstract class AbstractClientContactHeraanmeldenPanel<D extends Dossier<?
 
 	protected ColonClientNieuweAfspraakMakenPanel afspraakMakenPanel = null;
 
-	protected IModel<A> herAanTeMeldenAfmeldingModel;
+	protected IModel<A> heraanTeMeldenAfmeldingModel;
 
 	public AbstractClientContactHeraanmeldenPanel(String id, IModel<ClientContactActie> model, IModel<Client> clientModel)
 	{
@@ -75,36 +73,8 @@ public abstract class AbstractClientContactHeraanmeldenPanel<D extends Dossier<?
 		super.onInitialize();
 		var dossier = getDossier(clientModel.getObject());
 
-		A herAanTeMeldenAfmelding = null;
-
-		for (var afmelding : dossier.getAfmeldingen())
-		{
-
-			if (AanvraagBriefStatus.VERWERKT.equals(afmelding.getAfmeldingStatus()) && afmelding.getHeraanmeldStatus() == null)
-			{
-				herAanTeMeldenAfmelding = afmelding;
-				break;
-			}
-		}
-		if (herAanTeMeldenAfmelding == null)
-		{
-			for (var afmelding : dossier.getLaatsteScreeningRonde().getAfmeldingen())
-			{
-
-				if (afmelding.getHeraanmeldStatus() == null &&
-					(AanvraagBriefStatus.VERWERKT.equals(afmelding.getAfmeldingStatus())
-						|| AanvraagBriefStatus.BRIEF.equals(afmelding.getAfmeldingStatus())
-						&& AfmeldingType.TIJDELIJK.equals(afmelding.getType())))
-				{
-					herAanTeMeldenAfmelding = afmelding;
-					if (AfmeldingType.TIJDELIJK.equals(herAanTeMeldenAfmelding.getType()))
-					{
-						break;
-					}
-				}
-			}
-		}
-		this.herAanTeMeldenAfmeldingModel = ModelUtil.ccModel(herAanTeMeldenAfmelding);
+		A heraanTeMeldenAfmelding = clientContactService.zoekAfmeldingOmHeraanTeMelden(dossier).orElse(null);
+		this.heraanTeMeldenAfmeldingModel = ModelUtil.ccModel(heraanTeMeldenAfmelding);
 
 		add(new Label("heraanmeldtekst", "heraanmelden"));
 
@@ -156,7 +126,7 @@ public abstract class AbstractClientContactHeraanmeldenPanel<D extends Dossier<?
 		{
 			opslaanObjecten.putAll(afspraakMakenPanel.getOpslaanObjecten());
 		}
-		var herAanTeMeldenAfmelding = herAanTeMeldenAfmeldingModel.getObject();
+		var herAanTeMeldenAfmelding = heraanTeMeldenAfmeldingModel.getObject();
 		herAanTeMeldenAfmelding.setClientWilNieuweUitnodiging(nieuweUitnodiging);
 
 		opslaanObjecten.put(ExtraOpslaanKey.HERAANMELDING, herAanTeMeldenAfmelding);
@@ -168,7 +138,7 @@ public abstract class AbstractClientContactHeraanmeldenPanel<D extends Dossier<?
 	protected void onDetach()
 	{
 		super.onDetach();
-		ModelUtil.nullSafeDetach(herAanTeMeldenAfmeldingModel);
+		ModelUtil.nullSafeDetach(heraanTeMeldenAfmeldingModel);
 		ModelUtil.nullSafeDetach(clientModel);
 	}
 

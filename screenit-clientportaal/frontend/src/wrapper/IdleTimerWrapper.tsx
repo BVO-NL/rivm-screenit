@@ -22,13 +22,13 @@ import {useDispatch, useSelector} from "react-redux"
 import {State} from "../datatypes/State"
 import {setSessionExpiredAction} from "../actions/AuthenticatieAction"
 import {IdleTimerProvider} from "react-idle-timer"
-import {JSX} from "react"
+import {FC, JSX} from "react"
 
-const IdleTimerWrapper = (props: { children: JSX.Element }) => {
+const IdleTimerWrapper: FC<{ children: JSX.Element }> = (props) => {
 	const isLoggedIn = useSelector((state: State) => state.authenticatie.isLoggedIn)
 	const dispatch = useDispatch()
 
-	const onIdle = () => {
+	const onIdle = (): void => {
 		if (isLoggedIn) {
 			dispatch(setSessionExpiredAction(true))
 		}

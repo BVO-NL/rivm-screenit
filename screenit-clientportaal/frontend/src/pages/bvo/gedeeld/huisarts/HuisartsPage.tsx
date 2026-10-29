@@ -53,7 +53,7 @@ import {AnalyticsCategorie} from "../../../../datatypes/AnalyticsCategorie"
 import HuisartsSelectieComponent from "../../../../components/huisarts_selectie/HuisartsSelectieComponent"
 import {concatWithSpace} from "../../../../utils/StringUtil"
 
-const HuisartsPage = () => {
+const HuisartsPage: React.FC = () => {
 	const dispatch = useThunkDispatch()
 	const bvo = useSelectedBvo()
 	const navigate = useNavigate()
@@ -103,7 +103,7 @@ const HuisartsPage = () => {
 		}
 	}
 
-	function bevestigHuisartsActieKeuze(keuze: HuisartsActieKeuze) {
+	function bevestigHuisartsActieKeuze(keuze: HuisartsActieKeuze): void {
 		switch (keuze) {
 			case HuisartsActieKeuze.BEVESTIGEN: {
 				dispatch(bevestigVorige(vorigeHuisarts, mammaVorigeGeenHuisartsOptie, bvo)).then(() => {
@@ -130,7 +130,7 @@ const HuisartsPage = () => {
 		keuze: Yup.string().required(getString(properties.gedeeld.tussenpagina.form.error)),
 	})
 
-	function toonKeuzePagina() {
+	function toonKeuzePagina(): React.JSX.Element {
 		if (!wilZoeken && !huidigeHuisarts && !mammaHuidigeGeenHuisartsOptie && (vorigeHuisarts || mammaVorigeGeenHuisartsOptie)) {
 			return (
 				<ActieBasePage className={styles.keuzePagina}
@@ -185,7 +185,7 @@ const HuisartsPage = () => {
 		}
 	}
 
-	function toonZoekpagina() {
+	function toonZoekpagina(): React.JSX.Element {
 		return (
 			<BasePage
 				bvoName={bevolkingsonderzoekNaam}

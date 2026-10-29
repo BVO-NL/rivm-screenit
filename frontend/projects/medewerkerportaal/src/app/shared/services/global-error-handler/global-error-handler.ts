@@ -23,12 +23,21 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { NotificationService } from '@shared/services/notification/notification.service'
 import { ALGEMEEN_STRINGS as strings } from '@shared/strings/algemeen.strings'
 
+const NEGEER_MELDING_PREFIXES = [
+  'NG',
+  'ResizeObserver loop',
+]
+
 @Injectable({ providedIn: 'root' })
 export class GlobalErrorHandler implements ErrorHandler {
   private notificationService = inject(NotificationService)
 
   handleError(error: Error) {
-    if (error.message.startsWith('NG')) {
+    if (isDevMode()) {
+      console.error(error)
+    }
+
+    if (this.moetGenegeerdWorden(error)) {
       return
     }
 
@@ -52,10 +61,11 @@ export class GlobalErrorHandler implements ErrorHandler {
     } else {
       this.showError(error.message)
     }
+  }
 
-    if (isDevMode()) {
-      console.error(error)
-    }
+  private moetGenegeerdWorden(error: Error): boolean {
+    const melding = error.cause instanceof ErrorEvent ? error.cause.message : error.message
+    return NEGEER_MELDING_PREFIXES.some((prefix) => melding.startsWith(prefix))
   }
 
   private showError(message: string): void {

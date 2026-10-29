@@ -28,7 +28,7 @@ import {formatDateText} from "../utils/DateUtil"
 import properties from "../pages/bvo/mamma/afspraak/MammaAfspraakUitstellenPage.json"
 import {showToast} from "../utils/ToastUtil"
 
-export const maakUitstel = (standplaatsPeriode: KandidaatStandplaatsPeriode) => (dispatch: Dispatch) => {
+export const maakUitstel = (standplaatsPeriode: KandidaatStandplaatsPeriode) => (dispatch: Dispatch): Promise<void> => {
 	return ScreenitBackend.post("mamma/uitstel", {json: standplaatsPeriode})
 		.then(() => {
 			showToast(getString(properties.toast.title, [formatDateText(standplaatsPeriode.filter.vanaf)]),

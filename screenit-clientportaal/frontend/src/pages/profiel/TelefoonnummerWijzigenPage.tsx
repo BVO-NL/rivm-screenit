@@ -34,8 +34,9 @@ import {showToast} from "../../utils/ToastUtil"
 import datadogService from "../../services/DatadogService"
 import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 import {selectPersoon} from "../../selectors/ClientSelectors"
+import {FC} from "react"
 
-const TelefoonnummerWijzigenPage = () => {
+const TelefoonnummerWijzigenPage: FC = () => {
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
 	const persoon = useSelector(selectPersoon)
@@ -47,11 +48,11 @@ const TelefoonnummerWijzigenPage = () => {
 
 	const validatieSchema: Yup.AnyObjectSchema = Yup.object().shape({
 		telefoonnummer1: Yup.string()
-			.test("mobielNummerValidatie", getString(properties.form.invalid_mobiel_nummer), function (value) {
+			.test("mobielNummerValidatie", getString(properties.form.invalid_mobiel_nummer), (value) => {
 				return isMobielnummerValid(value)
 			}),
 		telefoonnummer2: Yup.string()
-			.test("telefoonnummerValidatie", getString(properties.form.invalid_extra_nummer), function (value) {
+			.test("telefoonnummerValidatie", getString(properties.form.invalid_extra_nummer), (value) => {
 				return isTelefoonnummerValid(value)
 			}),
 	})

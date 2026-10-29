@@ -25,6 +25,7 @@ import {getBovengrensUitLijst, getOndergrensUitLijst, isWerkdag, lijstBevatMeege
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns"
 import {nl} from "date-fns/locale"
 import {PickerChangeHandlerContext} from "@mui/x-date-pickers/models"
+import {FC} from "react"
 
 export type ScreenitDatePickerProps = {
 	className?: string,
@@ -38,7 +39,7 @@ export type ScreenitDatePickerProps = {
 	onChange: (value: Date | null, context: PickerChangeHandlerContext<DateValidationError>) => void
 }
 
-const ScreenitDatePicker = (props: ScreenitDatePickerProps) => {
+const ScreenitDatePicker: FC<ScreenitDatePickerProps> = (props) => {
 
 	const ondergrens = getOndergrensUitLijst(props.beschikbareDagen)
 	const bovengrens = getBovengrensUitLijst(props.beschikbareDagen)

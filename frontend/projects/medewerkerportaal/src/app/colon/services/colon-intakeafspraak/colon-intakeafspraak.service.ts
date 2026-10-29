@@ -40,8 +40,8 @@ export class ColonIntakeafspraakService {
   private readonly clientContactService = inject(ClientContactService)
   private readonly baseUrl = '/api/colon/afspraak'
 
-  getAfspraken(clientId: number) {
-    return this.apiService.get<ColonIntakeafspraakDto[]>(`${this.baseUrl}?clientId=${clientId}`)
+  getGeplandeAfspraak(clientId: number) {
+    return this.apiService.get<ColonIntakeafspraakDto>(`${this.baseUrl}/gepland?clientId=${clientId}`)
   }
 
   getAfspraakActies(clientId: number, afspraakId?: number) {

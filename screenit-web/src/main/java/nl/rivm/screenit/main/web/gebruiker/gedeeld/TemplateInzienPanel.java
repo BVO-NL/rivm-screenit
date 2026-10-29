@@ -33,6 +33,8 @@ import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
 import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.gebruiker.algemeen.documenttemplatetesten.PdfViewerPanel;
 import nl.rivm.screenit.model.Brief;
+import nl.rivm.screenit.model.UploadDocument;
+import nl.rivm.screenit.model.project.ProjectBrief;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.util.BriefUtil;
 
@@ -49,6 +51,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.ContentDisposition;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
 import org.jspecify.annotations.NonNull;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
@@ -85,39 +88,25 @@ public class TemplateInzienPanel extends GenericPanel<Brief>
 		var inzienGroep = new WebMarkupContainer("inzienGroep");
 
 		Label inzienMsg;
+		inzienMsg = new Label("inzienMelding");
+		inzienMsg.setVisible(false);
 		if (brief.getBriefDefinitie() != null)
 		{
-			inzienMsg = new Label("inzienMelding");
-			inzienMsg.setVisible(false);
-			var briefTemplate = brief.getBriefDefinitie().getDocument();
-			inzienGroep.add(new IndicatingAjaxLink<Void>("inzien")
-			{
-				@Override
-				public void onClick(AjaxRequestTarget ajaxRequestTarget)
-				{
-					try
-					{
-						var pdf = baseBriefService.maakPdfVanUploadDocument(briefTemplate);
-
-						ajaxRequestTarget.appendJavaScript("$('.modal.fade.in').not('#sessieVerlopenDialog').addClass('previousDialog').modal('hide');");
-
-						pdfDialog.openWith(ajaxRequestTarget, new PdfViewerPanel(IDialog.CONTENT_ID, pdf));
-					}
-					catch (Exception e)
-					{
-						LOG.error(e.getMessage());
-					}
-				}
-			});
+			maakTemplateDownloadLink(inzienGroep, brief.getBriefDefinitie().getDocument());
+		}
+		else if (Hibernate.unproxy(brief) instanceof ProjectBrief projectBrief)
+		{
+			maakTemplateDownloadLink(inzienGroep, projectBrief.getDefinitie().getDocument());
 		}
 		else
 		{
 			inzienMsg = new Label("inzienMelding", "Gebruikte template niet beschikbaar, want deze brief is " +
 				(brief.getTemplateNaam() == null ? "nog niet verzonden" : "verzonden voordat ScreenIT de templates van de verzonden brieven ging bewaren, of nog niet verzonden"));
+			inzienMsg.setVisible(true);
 			inzienGroep.setVisible(false);
 		}
-		var downloadLink = getDownloadLink(brief);
-		inzienGroep.add(downloadLink);
+		var briefDownloadLink = getBriefDownloadLink(brief);
+		inzienGroep.add(briefDownloadLink);
 		var inzienMeldingGroup = new WebMarkupContainer("inzienMeldingGroup");
 		inzienMeldingGroup.setOutputMarkupId(true);
 		inzienMeldingGroup.add(inzienMsg);
@@ -133,7 +122,30 @@ public class TemplateInzienPanel extends GenericPanel<Brief>
 		add(inzienContainer);
 	}
 
-	private @NonNull Component getDownloadLink(Brief brief)
+	private void maakTemplateDownloadLink(WebMarkupContainer inzienGroep, UploadDocument briefTemplate)
+	{
+		inzienGroep.add(new IndicatingAjaxLink<Void>("inzien")
+		{
+			@Override
+			public void onClick(AjaxRequestTarget ajaxRequestTarget)
+			{
+				try
+				{
+					var pdf = baseBriefService.maakPdfVanUploadDocument(briefTemplate);
+
+					ajaxRequestTarget.appendJavaScript("$('.modal.fade.in').not('#sessieVerlopenDialog').addClass('previousDialog').modal('hide');");
+
+					pdfDialog.openWith(ajaxRequestTarget, new PdfViewerPanel(IDialog.CONTENT_ID, pdf));
+				}
+				catch (Exception e)
+				{
+					LOG.error(e.getMessage());
+				}
+			}
+		});
+	}
+
+	private @NonNull Component getBriefDownloadLink(Brief brief)
 	{
 		var briefGuid = brief.getCommHubGuid();
 		var downloadBehavior = createAjaxDownloadBehavior(briefGuid);

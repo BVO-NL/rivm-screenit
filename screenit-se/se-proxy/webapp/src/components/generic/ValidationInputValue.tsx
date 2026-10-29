@@ -44,7 +44,7 @@ export default class ValidationInputValue<T> extends Component<ValidationInputVa
 		const target = event.target
 
 		if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
-			this.props.onChange && this.props.onChange(target.value)
+			this.props.onChange?.(target.value)
 			this.props.updateField(this.getValidationValue(target.value), this.props.fieldId, this.props.form)
 		}
 	}

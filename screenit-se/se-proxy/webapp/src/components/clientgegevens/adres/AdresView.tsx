@@ -53,9 +53,9 @@ export default class AdresView extends Component<AdresViewProps, AdresViewState>
 	}
 
 	toggleTijdelijkAdresWijzigen = (): void => {
-		this.setState({
-			toonTijdelijkAdresWijzigenPopUp: !this.state.toonTijdelijkAdresWijzigenPopUp,
-		})
+		this.setState(vorigeState => ({
+			toonTijdelijkAdresWijzigenPopUp: !vorigeState.toonTijdelijkAdresWijzigenPopUp,
+		}))
 	}
 
 	render(): JSX.Element {

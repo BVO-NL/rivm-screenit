@@ -27,7 +27,7 @@ import { ClientContactgegevensDto } from '@shared/types/algemeen/dto/clientconta
 import { geslachtAfkorting, geslachtLabel } from '@shared/types/algemeen/enum/geslacht'
 import { take } from 'rxjs'
 import { Dialog } from '@angular/cdk/dialog'
-import { ClientInfoBewerkenModalComponent } from './client-info-bewerken-modal/client-info-bewerken-modal.component'
+import { ClientInfoBewerkenDialogComponent } from '@algemeen/clientdossier/components/client-info-panel/client-info-bewerken-dialog/client-info-bewerken-dialog.component'
 import { EnumLabelPipe } from '@shared/pipes/enum-label/enum-label.pipe'
 import { Doelgroep } from '@shared/types/algemeen/enum/doelgroep'
 import { NL_DATE_FORMAT } from '@shared/constants'
@@ -105,7 +105,7 @@ export class ClientInfoPanelComponent implements OnInit {
       return
     }
 
-    const dialogRef = this.dialog.open(ClientInfoBewerkenModalComponent, {
+    const dialogRef = this.dialog.open(ClientInfoBewerkenDialogComponent, {
       data: contactgegevens,
     })
     dialogRef.closed.pipe(take(1)).subscribe(() => {

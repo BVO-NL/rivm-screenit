@@ -57,10 +57,14 @@ export default class TelefoonView extends Component<TelefoonViewStateProps & Tel
 	}
 
 	onTelefoon1Change = (value: string): void => {
-		this.props.clientId && this.props.setTelefoon1(this.props.clientId, value)
+		if (this.props.clientId) {
+			this.props.setTelefoon1(this.props.clientId, value)
+		}
 	}
 	onTelefoon2Change = (value: string): void => {
-		this.props.clientId && this.props.setTelefoon2(this.props.clientId, value)
+		if (this.props.clientId) {
+			this.props.setTelefoon2(this.props.clientId, value)
+		}
 	}
 
 	render(): JSX.Element {

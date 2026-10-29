@@ -45,7 +45,7 @@ const WizardIndicator: FC<WizardIndicatorProps> = (props: WizardIndicatorProps) 
 		<div className={classNames(styles.stepsContainer, props.className)}>
 			{
 				props.stappen.map((stap, index) =>
-					<div className={getStepClass(index)} key={index}>
+					<div className={getStepClass(index)} key={stap.label}>
 						<div className={styles.label}>{stap.label}</div>
 						<div>
 							<div className={styles.circle}>{index + 1}</div>

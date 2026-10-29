@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {createContext, ReactElement, ReactNode, useContext} from "react"
+import {createContext, ReactElement, ReactNode, use} from "react"
 import {useLocation} from "react-router"
 
 type WizardIndicatorContextType = {
@@ -39,14 +39,14 @@ export const WizardIndicatorProvider = (props: WizardIndicatorProviderProps): Re
 	const huidigeStap = index !== -1 ? index + 1 : 0
 
 	return (
-		<WizardIndicatorContext.Provider value={{huidigeStap}}>
+		<WizardIndicatorContext value={{huidigeStap}}>
 			{props.children}
-		</WizardIndicatorContext.Provider>
+		</WizardIndicatorContext>
 	)
 }
 
 export const useWizardStap = (): number => {
-	const context = useContext(WizardIndicatorContext)
+	const context = use(WizardIndicatorContext)
 	if (context === undefined) {
 		return 0
 	}

@@ -28,20 +28,21 @@ import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
 import HuisIcon from "../../scss/media/icons_toptaken/AdresWijzigenIcon/HuisIcon"
 import {useSelectedBvo} from "../../utils/Hooks"
 import {BevolkingsonderzoekToptaakStyle} from "../../datatypes/Bevolkingsonderzoek"
+import {FC} from "react"
 
 export type KruimelpadComponentProps = {
 	className?: string,
 	onTerugKlik?: () => void
 }
 
-const KruimelpadComponent = (props: KruimelpadComponentProps) => {
+const KruimelpadComponent: FC<KruimelpadComponentProps> = (props) => {
 	const location = useLocation()
 	const currentPath = location.pathname
 	const navigate = useNavigate()
 	const bvo = useSelectedBvo()!
 
 	const crumbs = routes
-		.filter(route => matchPath(route.path + "*", currentPath))
+		.filter(route => matchPath(`${route.path  }*`, currentPath))
 		.map(({path, ...routeProps}) => {
 			const matchedPath = matchPath(path, currentPath)
 			let currentRegexIndex = 0
@@ -51,21 +52,25 @@ const KruimelpadComponent = (props: KruimelpadComponentProps) => {
 					const containsRegexCharacters = subPath.match(/(\(|\)|[|]|\*)/g)
 					return containsRegexCharacters ? Object.values(matchedPath.params)[currentRegexIndex++] : subPath
 				}).join("/"),
-			};
+			}
 		})
 	return (
 		<div className={classNames(styles.style, props.className)}>
 			<Button label={"Terug"} data-testid="terug_btn" lightStyle={true} displayArrow={ArrowType.ARROW_LEFT} arrowBeforeLabel={true} onClick={() => {
-				props.onTerugKlik ? props.onTerugKlik() : navigate(-1)
+				if (props.onTerugKlik) {
+					props.onTerugKlik()
+				} else {
+					navigate(-1)
+				}
 			}} className={bvoStyles.light}/>
 			{crumbs.filter(crumb => crumb.path && crumb.name).map((crumb, index) => {
 				if (index === 0) {
-					return <Link key={index} to={String(crumb.path)}>
+					return <Link key={crumb.path} to={String(crumb.path)}>
 						<HuisIcon className={classNames(styles.homeIcon, BevolkingsonderzoekToptaakStyle[bvo])}/>
 						<ArrowIconComponent type={ArrowType.CHEVRON_RIGHT}/>
 					</Link>
 				}
-				return <Link key={index} to={String(crumb.path)} className={classNames(styles.style)}>
+				return <Link key={crumb.path} to={String(crumb.path)} className={classNames(styles.style)}>
 					<ArrowIconComponent type={ArrowType.CHEVRON_RIGHT}/><span>{crumb.name}</span>
 				</Link>
 			})}

@@ -22,124 +22,85 @@ package nl.rivm.screenit.mamma.imsapi.service.impl;
  */
 
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import nl.rivm.screenit.mamma.imsapi.service.MammaImsLaunchUrlGenerator;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.util.UriUtils;
 
 import com.sectra.sdk.SectraUrlLaunchSharedSecret;
 
-@Slf4j
 @Service
 public class MammaImsLaunchUrlGeneratorImpl implements MammaImsLaunchUrlGenerator
 {
-	private static final Charset CHARSET = StandardCharsets.UTF_8;
+	private static final String HOST_NAME = "localhost"; 
 
 	@Override
-	public String generateLoginLaunchUrl(String encryptionKey, String username, String role, boolean launchUrlSha1Mode)
-	{
-		return launchUrlSha1Mode ?
-			generateLoginLaunchUrlSha1(encryptionKey, username, role) :
-			generateLoginLaunchUrlSharedSecret(encryptionKey, username, role);
-	}
-
-	private String generateLoginLaunchUrlSharedSecret(String encryptionKey, String username, String role)
+	public String generateLoginLaunchUrl(String encryptionKey, String username, String role)
 	{
 		return generateLaunchUrl(encryptionKey, loginParameters(username, role));
 	}
 
 	@Override
-	public String generateDesktopSyncLaunchUrl(String encryptionKey, String username, String role, String bsn, String accessionNumber, boolean launchUrlSha1Mode)
-	{
-		return launchUrlSha1Mode ?
-			generateDesktopSyncLaunchUrlSha1(encryptionKey, username, role, bsn, accessionNumber) :
-			generateDesktopSyncLaunchUrlSharedSecret(encryptionKey, username, role, bsn, accessionNumber);
-
-	}
-
-	private String generateDesktopSyncLaunchUrlSharedSecret(String encryptionKey, String username, String role, String bsn, String accessionNumber)
+	public String generateDesktopSyncLaunchUrl(String encryptionKey, String username, String role, String bsn, String accessionNumber)
 	{
 		return generateLaunchUrl(encryptionKey, desktopSyncParameters(username, role, bsn, accessionNumber));
 	}
 
-	private String generateLaunchUrl(String encryptionKey, List<UrlParameter> parameters)
+	private String generateLaunchUrl(String encryptionKey, Map<String, String> parameters)
 	{
-		var urlQueryString = createUrlQueryString(parameters);
-		var encryptedUrlQuery = SectraUrlLaunchSharedSecret.secure(urlQueryString, encryptionKey);
+		var encryptedUrlQuery = SectraUrlLaunchSharedSecret.secure(maakUrlQuery(parameters), encryptionKey);
 
-		var hostName = "localhost"; 
-		var baseUrl = "sectra:?url=https://" + hostName + "/SectraHealthcareServer&softwareUrl=https://" + hostName + "/ids7/&productId=IDS7&urlQuery=";
-
-		return baseUrl + URLEncoder.encode(encryptedUrlQuery, CHARSET);
+		return UriComponentsBuilder.newInstance()
+			.scheme("sectra")
+			.queryParam("url", maakServerUrl("/SectraHealthcareServer"))
+			.queryParam("softwareUrl", maakServerUrl("/ids7/"))
+			.queryParam("productId", "IDS7")
+			.queryParam("urlQuery", encryptedUrlQuery)
+			.build()
+			.encode(StandardCharsets.UTF_8)
+			.toUriString();
 	}
 
-	private String createUrlQueryString(List<UrlParameter> parameters)
+	private String maakUrlQuery(Map<String, String> parameters)
 	{
-		return parameters.stream().map(UrlParameter::toQueryString).collect(Collectors.joining("&"));
+		var builder = UriComponentsBuilder.newInstance();
+		parameters.forEach((key, value) -> builder.queryParam(key, URLEncoder.encode(value, StandardCharsets.UTF_8)));
+		return builder.build(true).getQuery();
 	}
 
-	private List<UrlParameter> loginParameters(String username, String role)
+	private String maakServerUrl(String path)
 	{
-		return List.of(
-			new UrlParameter("user_id", username),
-			new UrlParameter("his_id", role),
-			new UrlParameter("time", String.valueOf(Instant.now().getEpochSecond())),
-			new UrlParameter("application_id", "BVO.ContextBridge"));
+		return UriComponentsBuilder.newInstance()
+			.scheme("https")
+			.host(HOST_NAME)
+			.path(path)
+			.toUriString();
 	}
 
-	private ArrayList<UrlParameter> desktopSyncParameters(String username, String role, String bsn, String accessionNumber)
+	private Map<String, String> loginParameters(String username, String role)
 	{
-		var parameters = new ArrayList<>(loginParameters(username, role));
-		parameters.addAll(List.of(
-			new UrlParameter("pat_id", bsn),
-			new UrlParameter("acc_no", accessionNumber),
-			new UrlParameter("exam_id", accessionNumber),
-			new UrlParameter("mrn_integration_id", "Standaard"),
-			new UrlParameter("acc_no_integration_id", "PACS")));
+		var parameters = new LinkedHashMap<String, String>();
+		parameters.put("user_id", username);
+		parameters.put("his_id", role);
+		parameters.put("time", String.valueOf(Instant.now().getEpochSecond()));
+		parameters.put("application_id", "BVO.ContextBridge");
 		return parameters;
 	}
 
-	private String generateLoginLaunchUrlSha1(String encryptionKey, String username, String role)
+	private Map<String, String> desktopSyncParameters(String username, String role, String bsn, String accessionNumber)
 	{
-		return generateLaunchUrlSha1(encryptionKey, loginParameters(username, role));
-	}
-
-	private String generateDesktopSyncLaunchUrlSha1(String encryptionKey, String username, String role, String bsn, String accessionNumber)
-	{
-		return generateLaunchUrlSha1(encryptionKey, desktopSyncParameters(username, role, bsn, accessionNumber));
-	}
-
-	private String generateLaunchUrlSha1(String encryptionKey, List<UrlParameter> parameters)
-	{
-		var stringToHash = parameters.stream().map(UrlParameter::encodedValue).collect(Collectors.joining());
-		stringToHash += encryptionKey;
-
-		var hexString = DigestUtils.sha1Hex(stringToHash);
-
-		var baseUrl = "https://localhost/ids7/3pstart.aspx";
-
-		return baseUrl + "?" + createUrlQueryString(parameters) + "&key=" + hexString;
-	}
-
-	private record UrlParameter(String key, String value)
-	{
-		String toQueryString()
-		{
-			return key + "=" + encodedValue();
-		}
-
-		String encodedValue()
-		{
-			return URLEncoder.encode(value, CHARSET);
-		}
+		var parameters = loginParameters(username, role);
+		parameters.put("pat_id", bsn);
+		parameters.put("acc_no", accessionNumber);
+		parameters.put("exam_id", accessionNumber);
+		parameters.put("mrn_integration_id", "Standaard");
+		parameters.put("acc_no_integration_id", "PACS");
+		return parameters;
 	}
 }

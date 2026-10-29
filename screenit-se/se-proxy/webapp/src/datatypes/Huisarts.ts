@@ -52,11 +52,17 @@ export const getGeenHuisartsLabel = (option: GeenHuisartsOption | undefined): st
 }
 export const getHuisartsVolledigAdres = (huisarts: Huisarts): string => {
 	let adresVolledig: string = huisarts.straatnaam ? huisarts.straatnaam : ""
-	adresVolledig.length > 0 && (adresVolledig += " ")
+	if (adresVolledig.length > 0) {
+		adresVolledig += " "
+	}
 	adresVolledig += huisarts.huisnummerVolledig ? huisarts.huisnummerVolledig : ""
-	adresVolledig.length > 0 && (adresVolledig += ", ")
+	if (adresVolledig.length > 0) {
+		adresVolledig += ", "
+	}
 	adresVolledig += huisarts.postcode ? huisarts.postcode : ""
-	huisarts.postcode && huisarts.postcode.length > 0 && (adresVolledig += " ")
+	if (huisarts.postcode && huisarts.postcode.length > 0) {
+		adresVolledig += " "
+	}
 	adresVolledig += huisarts.plaats ? huisarts.plaats : ""
 	return adresVolledig
 }

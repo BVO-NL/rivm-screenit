@@ -22,6 +22,7 @@ export const ALGEMEEN_STRINGS = {
   buttons: {
     annuleren: 'Annuleren',
     opslaan: 'Opslaan',
+    toevoegen: 'Toevoegen',
     verwijderen: 'Verwijderen',
     bewerken: 'Bewerken',
     sluiten: 'Sluiten',
@@ -47,6 +48,8 @@ export const ALGEMEEN_STRINGS = {
     downloaden: 'Downloaden',
     afzeggen: 'Afzeggen',
     begrepen: 'Begrepen',
+    aanvragen: 'Aanvragen',
+    heraanmelden: 'Heraanmelden',
   },
   dialogs: {
     bevestiging: {
@@ -114,6 +117,7 @@ export const ALGEMEEN_STRINGS = {
     uur: 'uur',
     typeAfspraak: 'Type afspraak',
     brief: 'Brief',
+    kiesEenBrief: 'Kies een brief',
     betreft: 'Betreft',
     nee: 'Nee',
     ja: 'Ja',
@@ -148,6 +152,7 @@ export const ALGEMEEN_STRINGS = {
     huisnummer: '123',
     huisletter: 'A',
     mobiel: '06-12345678',
+    kiesReden: 'Kies een reden',
   },
   errors: {
     verplicht: (field: string) => `${field} is verplicht.`,
@@ -173,6 +178,8 @@ export const ALGEMEEN_STRINGS = {
     huisletterPatroon: 'Huisletter moet een letter zijn (a-z).',
     veldNaVeld: (field1: string, field2: string) => `${field1} moet na ${field2} liggen.`,
     veldVoorVeld: (field1: string, field2: string) => `${field1} moet voor ${field2} liggen.`,
+    ingevuldeDatumNa: (datum: string) => `De ingevulde datum moet na ${datum} liggen.`,
+    ingevuldeDatumVoor: (datum: string) => `De ingevulde datum moet voor ${datum} liggen.`,
     maxToekomst: (field: string, tijdseenheid: string) => `De ${field} mag maximaal ${tijdseenheid} in de toekomst liggen.`,
     aantalBestanden: (maxAantal: number) => `Er mogen maximaal ${maxAantal} bestanden worden geüpload.`,
     extensie: (bestandsnaam: string, toegestaneExtensies: string[]) =>
@@ -214,8 +221,87 @@ export const ALGEMEEN_STRINGS = {
     clientZoekenButton: 'Cliënt zoeken',
     tabClientgegevens: 'Cliëntgegevens',
     tabAfspraken: 'Afspraken',
+    tabActies: 'Acties',
     tabMeldingen: 'Meldingen',
     tabCisHistorie: 'CIS Historie',
+    acties: {
+      nietOndersteund: 'Deze actie wordt (nog) niet ondersteund',
+      opnieuwAanvragenClientgegevens: {
+        dialogTitle: 'Opnieuw aanvragen cliëntgegevens',
+        notifications: {
+          succes: 'Cliëntgegevens succesvol aangevraagd',
+        },
+      },
+      categorieen: {
+        algemeen: 'Algemeen',
+        colon: 'Darmkanker',
+        cervix: 'Baarmoederhalskanker',
+        mamma: 'Borstkanker',
+      },
+      aanhefWijzigen: {
+        dialogTitle: 'Aanhef wijzigen',
+        aanspreekvormPlaceholder: 'Kies een aanspreekvorm',
+        wijzigenButton: 'Wijzigen',
+        notifications: {
+          succes: 'Contactgegevens succesvol gewijzigd',
+        },
+      },
+      keuzeGebruikGegevensBrief: {
+        dialogTitle: 'Brief "Keuze gebruik gegevens" versturen',
+        briefkeuze: 'Briefkeuze',
+        handtekeningVergeten: 'Handtekening vergeten',
+        notifications: {
+          succes: 'Brief succesvol aangevraagd',
+        },
+      },
+      bezwaar: {
+        verwerkenDialog: {
+          titel: 'Keuzes verwerken',
+          notifications: {
+            succes: 'Keuzes succesvol verwerkt.',
+            nietGewijzigd: 'Keuzes gebruik gegevens zijn niet gewijzigd.',
+            gegevensVerwijderd: 'Gegevens succesvol verwijderd.',
+          },
+        },
+        keuzeDialog: {
+          titel: 'Keuze gebruik gegevens verwerken',
+          vraag: 'Selecteer welk proces u wilt starten voor de cliënt',
+          buttons: {
+            gegevensVerwijderen: 'Gegevens verwijderen',
+            keuzesVerwerken: 'Keuzes verwerken',
+          },
+        },
+        gegevensVerwijderenDialog: {
+          titel: 'Gegevens verwijderen',
+          waarschuwing: 'Let op: dit kan niet ongedaan gemaakt worden. Weet u zeker dat u dit wilt uitvoeren?',
+        },
+      },
+      heraanmeldenBmhk: {
+        dialogTitle: 'Heraanmelden baarmoederhalskanker',
+        uitnodigingMelding: 'Er wordt automatisch een uitnodiging gestuurd.',
+        notifications: {
+          succes: 'Cliënt succesvol heraangemeld.',
+        },
+      },
+      deelnameBuitenBvoBmhk: {
+        dialogTitle: 'Deelname buiten BVO BMHK',
+        dialogBody: 'Weet u zeker dat u de cliënt wilt registreren als deelnemer buiten BVO baarmoederhalskanker?',
+        registrerenButton: 'Ja, registreren',
+        notifications: {
+          succes: 'Cliënt succesvol geregistreerd',
+        },
+      },
+      deelnamewensen: {
+        dialogTitle: 'Deelnamewensen',
+        deelnamewensenPerBvo: 'Deelnamewensen per BVO',
+        errors: {
+          geenNieuweDeelnamewens: 'Selecteer minimaal één nieuwe deelnamewens.',
+        },
+        notifications: {
+          succes: 'Deelnamewensen succesvol opgeslagen',
+        },
+      },
+    },
   },
   clientInfoBewerken: {
     dialogTitle: 'Contactgegevens aanpassen',
@@ -225,7 +311,8 @@ export const ALGEMEEN_STRINGS = {
     },
     doelgroepWijzigenMelding: {
       titel: 'Doelgroep gewijzigd',
-      body: 'De doelgroep is gewijzigd. De cliënt heeft echter nog een afspraak. U wordt geadviseerd om deze te verzetten of uit te stellen.',
+      body: (datum: string) =>
+        `De cliënt heeft een afspraak staan op ${datum}. Het wordt geadviseerd om de afspraak te verzetten of uit te stellen als de doelgroep wordt gewijzigd.`,
     },
   },
   brpBewerken: {

@@ -52,13 +52,18 @@ public abstract class AbstractCervixProjectGroepWriter<S extends HibernateObject
 
 	protected ProjectGroep prepareProjectGroep()
 	{
+		return prepareProjectGroep(PROJECT_ID, PROJECT_GROEP_ID);
+	}
+
+	protected ProjectGroep prepareProjectGroep(String projectIdKey, String projectGroepIdKey)
+	{
 		var context = getExecutionContext();
-		if (!context.containsKey(PROJECT_GROEP_ID))
+		if (!context.containsKey(projectGroepIdKey))
 		{
 			var groepsNaam = "Populatie van run " + DateUtil.formatShortDate(currentDateSupplier.getDate());
-			var projectId = context.getLong(PROJECT_ID);
+			var projectId = context.getLong(projectIdKey);
 			var project = projectRepository.getReferenceById(projectId);
-			LOG.info("Maak project groep '" + groepsNaam + "' voor project '" + project.getNaam() + "'");
+			LOG.info("Maak project groep '{}' voor project '{}'", groepsNaam, project.getNaam());
 			var projectGroep = new ProjectGroep();
 			projectGroep.setProject(project);
 			project.getGroepen().add(projectGroep);
@@ -68,9 +73,9 @@ public abstract class AbstractCervixProjectGroepWriter<S extends HibernateObject
 			projectGroep.setNaam(groepsNaam);
 			projectGroep.setPopulatie(0);
 			projectGroepRepository.persist(projectGroep);
-			context.put(PROJECT_GROEP_ID, projectGroep.getId());
+			context.put(projectGroepIdKey, projectGroep.getId());
 			return projectGroep;
 		}
-		return projectGroepRepository.getReferenceById(context.getLong(PROJECT_GROEP_ID));
+		return projectGroepRepository.getReferenceById(context.getLong(projectGroepIdKey));
 	}
 }

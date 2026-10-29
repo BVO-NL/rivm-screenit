@@ -18,9 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import {FC} from "react"
 import styles from "./EmailadresWijzigenIcon.module.scss"
 
-const EmailadresWijzigenIcon = () => {
+const EmailadresWijzigenIcon: FC = () => {
 	return (
 		<svg version="1.1" id="Layer_1" xmlns="http:
 			 xmlSpace="preserve">

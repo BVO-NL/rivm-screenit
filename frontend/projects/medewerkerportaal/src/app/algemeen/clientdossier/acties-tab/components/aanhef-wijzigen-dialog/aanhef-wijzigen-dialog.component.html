@@ -1,0 +1,45 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog [titel]="strings.algemeen.clientDossier.acties.aanhefWijzigen.dialogTitle">
+  <div body>
+    <form [formGroup]="aanhefForm" class="form-in-modal" novalidate>
+      <ds-dropdown
+        formControlName="aanhef"
+        [label]="strings.algemeen.labels.aanspreekvorm"
+        [placeholder]="strings.algemeen.clientDossier.acties.aanhefWijzigen.aanspreekvormPlaceholder"
+        [items]="aanspreekvormOpties"
+        bindLabel="omschrijving"
+        bindValue="aanhef"
+        appendTo=".ds-modal"
+        [required]="true"
+        [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.aanspreekvorm) }"
+        data-testid="aanspreekvorm_dropdown"
+      />
+      <app-notitie-aanmaken-veld formControlName="notitie" data-testid="notitie_veld"/>
+    </form>
+  </div>
+  <ng-container buttons>
+    <button (click)="annuleren()" data-testid="btn_annuleren" ds-button-tertiary type="button">{{ strings.algemeen.buttons.annuleren }}</button>
+    <button (click)="wijzigen()" [disabled]="aanhefForm.invalid" data-testid="btn_wijzigen" ds-button-primary type="button">
+      {{ strings.algemeen.clientDossier.acties.aanhefWijzigen.wijzigenButton }}
+    </button>
+  </ng-container>
+</app-base-dialog>

@@ -20,26 +20,26 @@
  */
 import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
-import {createColonDossierAction} from "../actions/ColonDossierAction"
-import {createCervixDossierAction} from "../actions/CervixDossierAction"
-import {createMammaDossierAction} from "../actions/MammaDossierAction"
+import {ColonDossierAction, createColonDossierAction} from "../actions/ColonDossierAction"
+import {CervixDossierAction, createCervixDossierAction} from "../actions/CervixDossierAction"
+import {createMammaDossierAction, MammaDossierAction} from "../actions/MammaDossierAction"
 import {ColonDossier} from "../datatypes/colon/ColonDossier"
 import {CervixDossier} from "../datatypes/CervixDossier"
 import {MammaDossier} from "../datatypes/mamma/MammaDossier"
 
-export const refreshColonDossier = () => (dispatch: Dispatch) => {
+export const refreshColonDossier = () => (dispatch: Dispatch): Promise<ColonDossierAction> => {
 
 	return ScreenitBackend.get<ColonDossier>("dossier/colon").json()
 		.then((response) => dispatch(createColonDossierAction(response)))
 }
 
-export const refreshCervixDossier = () => (dispatch: Dispatch) => {
+export const refreshCervixDossier = () => (dispatch: Dispatch): Promise<CervixDossierAction> => {
 
 	return ScreenitBackend.get<CervixDossier>("dossier/cervix").json()
 		.then(response => dispatch(createCervixDossierAction(response)))
 }
 
-export const refreshMammaDossier = () => (dispatch: Dispatch) => {
+export const refreshMammaDossier = () => (dispatch: Dispatch): Promise<MammaDossierAction> => {
 
 	return ScreenitBackend.get<MammaDossier>("dossier/mamma").json()
 		.then(response => dispatch(createMammaDossierAction(response)))

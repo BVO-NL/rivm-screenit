@@ -25,5 +25,5 @@ export const getString = (tekst: string, extraParameters?: (string | number)[]):
         }
     }
 
-    return tekst;
+    return tekst
 }

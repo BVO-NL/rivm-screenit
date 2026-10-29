@@ -28,7 +28,7 @@ import nl.rivm.screenit.main.dto.algemeen.AfspraakDto;
 
 public interface MammaClientAfspraakService
 {
-	List<AfspraakDto> getAfspraken(Long clientId);
+	AfspraakDto getGeplandeAfspraak(Long clientId);
 
 	List<AfspraakActie> getAfspraakActies(Long clientId);
 }

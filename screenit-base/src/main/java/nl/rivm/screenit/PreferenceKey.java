@@ -349,8 +349,6 @@ public enum PreferenceKey implements IPreferenceKey
 
 	MAMMA_IMS_LAUNCH_URL_PASSWORD("IMS launch URL password", String.class),
 
-	MAMMA_IMS_LAUNCH_URL_SHA1_MODE("IMS launch URL legacy SHA1 mode", Boolean.class),
-
 	MAMMA_HL7_ENABLED("Versturen van Hl7 berichten aan of uit.", Boolean.class),
 
 	MAMMA_IMS_QUEUE_SIZE_WARNING_THRESHOLD("Queue-grootte waarschuwingsdrempel", Integer.class),

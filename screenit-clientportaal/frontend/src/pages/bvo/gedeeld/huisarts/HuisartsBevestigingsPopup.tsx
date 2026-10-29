@@ -35,6 +35,7 @@ import {ArrowType} from "../../../../components/vectors/ArrowIconComponent"
 import SubmitButton from "../../../../components/input/SubmitButton"
 import datadogService from "../../../../services/DatadogService"
 import {AnalyticsCategorie} from "../../../../datatypes/AnalyticsCategorie"
+import {FC} from "react"
 
 export type HuisartsBevestigingsPopupProps = {
 	huisarts?: Huisarts,
@@ -51,16 +52,16 @@ export enum HuisartsBevestigingsPopupType {
 	"DOORGEVEN"
 }
 
-export const HuisartsBevestigingsPopup = (props: HuisartsBevestigingsPopupProps) => {
+export const HuisartsBevestigingsPopup: FC<HuisartsBevestigingsPopupProps> = (props) => {
 	const bvo = useSelectedBvo()
 	const dispatch = useThunkDispatch()
 
-	const bevestigHuisarts = () => {
+	const bevestigHuisarts = (): void => {
 		switch (props.type) {
 			case HuisartsBevestigingsPopupType.VERWIJDEREN:
 				dispatch(ontkoppelHuisarts(bvo)).then(
 					() => {
-						props.onPrimaireKnop && props.onPrimaireKnop()
+						props.onPrimaireKnop?.()
 					},
 					() => {
 						props.onSecundaireKnop()
@@ -71,7 +72,7 @@ export const HuisartsBevestigingsPopup = (props: HuisartsBevestigingsPopupProps)
 				if (props.huisarts) {
 					dispatch(koppelHuisarts(props.huisarts, bvo)).then(
 						() => {
-							props.onPrimaireKnop && props.onPrimaireKnop()
+							props.onPrimaireKnop?.()
 						},
 						() => {
 							props.onSecundaireKnop()

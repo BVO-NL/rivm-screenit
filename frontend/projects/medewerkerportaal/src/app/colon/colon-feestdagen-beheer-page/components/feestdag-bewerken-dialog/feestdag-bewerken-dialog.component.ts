@@ -28,6 +28,7 @@ import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.
 import { DsButtonComponent, DsDatepickerComponent, DsInputComponent } from '@topicus-rgp-ds/web'
 import { formatDate } from '@shared/utils/date-utils'
 import { StringsService } from '@shared/strings'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-feestdag-bewerken-dialog',
@@ -40,7 +41,7 @@ export class FeestdagBewerkenDialogComponent {
   private readonly dialogRef: DialogRef = inject(DialogRef)
   private readonly formBuilder: FormBuilder = inject(FormBuilder)
   protected readonly strings = inject(StringsService).getStrings()
-  protected readonly minDatum = formatDate(new Date())
+  protected readonly minDatum = formatDate(DateService.nu())
 
   feestdagForm: FormGroup = this.formBuilder.group({
     naam: ['', Validators.required],
@@ -82,7 +83,7 @@ export class FeestdagBewerkenDialogComponent {
       ? { ...this.dialogData }
       : {
           naam: '',
-          datum: new Date(),
+          datum: DateService.nu(),
           beperking: ColonRoosterBeperking.HARD,
           actief: true,
         }

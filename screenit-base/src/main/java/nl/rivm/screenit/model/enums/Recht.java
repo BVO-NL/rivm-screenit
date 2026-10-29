@@ -1002,6 +1002,12 @@ public enum Recht implements INaam
 		new ToegangLevel[] { ToegangLevel.LANDELIJK },
 		Actie.INZIEN),
 
+	MEDEWERKER_MAMMA_INZAGE_UPLOADVERZOEK_OVERDRACHT_PERSOONSGEGEVENS(
+		"Inzage/overdracht persoonsgegevens beelden uitwisselportaal",
+		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.MAMMA },
+		new ToegangLevel[] { ToegangLevel.LANDELIJK },
+		Actie.INZIEN),
+
 	MEDEWERKER_MAMMA_BEELDEN_VERWIJDEREN_UPLOADVERZOEK(
 		"Beelden verwijderen uploadverzoek",
 		new Bevolkingsonderzoek[] { Bevolkingsonderzoek.MAMMA },

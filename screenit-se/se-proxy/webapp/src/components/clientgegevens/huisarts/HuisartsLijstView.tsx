@@ -44,7 +44,6 @@ export type HuisartsLijstStateProps = {
 export type HuisartsLijstDispatchProps = {
 	vergrendelZoekState: () => void;
 	onKiesHuisarts: (huisarts: Huisarts) => void;
-	toggle: () => void;
 }
 
 export type HuisartsLijstState = {
@@ -74,7 +73,6 @@ export default class HuisartsLijstView extends Component<HuisartsLijstStateProps
 
 	onSelect(row: HuisartsListItem): void {
 		this.props.onKiesHuisarts(getMandatory(this.props.huisartsen, row.id))
-		this.props.toggle()
 	}
 
 	render(): JSX.Element {

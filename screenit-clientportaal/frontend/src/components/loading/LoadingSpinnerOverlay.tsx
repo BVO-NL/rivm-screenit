@@ -23,8 +23,9 @@ import styles from "./LoadingSpinner.module.scss"
 import {CircularProgress} from "@mui/material"
 import {useSelector} from "react-redux"
 import {State} from "../../datatypes/State"
+import {FC} from "react"
 
-const LoadingSpinnerOverlay = () => {
+const LoadingSpinnerOverlay: FC = () => {
 	const requestMinusResponseCount = useSelector((state: State) => state.requestMinusResponseCounter)
 	const spinnerNodig = requestMinusResponseCount > 0
 

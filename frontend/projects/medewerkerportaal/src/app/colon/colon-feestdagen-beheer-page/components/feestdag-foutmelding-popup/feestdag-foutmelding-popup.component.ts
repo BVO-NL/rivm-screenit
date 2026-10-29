@@ -38,7 +38,7 @@ import { StringsService } from '@shared/strings'
 })
 export class FeestdagFoutmeldingPopupComponent {
   private readonly dialogRef = inject(DialogRef)
-  protected readonly error: { message: string; afspraakslots: { [intakelocatie: string]: string[] } } = inject(DIALOG_DATA)
+  protected readonly error: { message: string; afspraakslots: Record<string, string[]> } = inject(DIALOG_DATA)
   protected readonly strings = inject(StringsService).getStrings()
 
   sluiten() {

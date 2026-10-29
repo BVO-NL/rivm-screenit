@@ -28,7 +28,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.controller.BaseController;
-import nl.rivm.screenit.main.exception.EntityNietGevondenException;
 import nl.rivm.screenit.main.model.BriefActie;
 import nl.rivm.screenit.main.service.BriefService;
 import nl.rivm.screenit.main.web.ScreenitSession;
@@ -224,6 +223,6 @@ public class BriefController extends BaseController
 
 	private ClientBrief<?, ?, ?> getBriefOfGooiNotFoundException(Long briefId, String briefType)
 	{
-		return briefService.getBriefById(briefId, briefType).orElseThrow(() -> new EntityNietGevondenException("Brief", briefId));
+		return briefService.getBriefById(briefId, briefType);
 	}
 }

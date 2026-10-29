@@ -54,8 +54,11 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.validation.validator.StringValidator;
 
 import com.aspose.words.Document;
+
+import static nl.rivm.screenit.Constants.MAX_LENGTE_BRIEF_AFDRUKOPDRACHT_VELDEN;
 
 @Slf4j
 public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
@@ -197,7 +200,7 @@ public class ProjectBriefActieTemplatePage extends ProjectTemplateTestenBasePage
 				super.onSubmit(target);
 				hibernateService.saveOrUpdate(briefactieModel.getObject());
 			}
-		});
+		}.add(StringValidator.maximumLength(MAX_LENGTE_BRIEF_AFDRUKOPDRACHT_VELDEN)));
 	}
 
 	@Override

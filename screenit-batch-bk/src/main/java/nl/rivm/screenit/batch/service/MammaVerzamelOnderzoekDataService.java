@@ -26,7 +26,7 @@ import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoek;
 public interface MammaVerzamelOnderzoekDataService
 {
 
-	void addVerslagAanVerzoek(MammaDownloadOnderzoek onderzoek);
+	boolean addVerslagAanVerzoek(MammaDownloadOnderzoek onderzoek);
 
 	boolean addBeeldenAanVerzoek(MammaDownloadOnderzoek onderzoek);
 

@@ -51,8 +51,8 @@ export default class AnnotatiePaletView extends Component<AnnotatiePaletProps> {
 		}}>
 			{this.props.icoonList.map((icoonType: AnnotatieIcoonType) => {
 				return <AnnotatieIcoonContainer
-					{...this.props}
 					key={icoonType}
+					{...this.props}
 					isOpPalet={true}
 					metTextbox={false}
 					isDraggable={this.props.isEditable}

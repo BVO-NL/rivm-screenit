@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useEffect} from "react"
+import {FC, useEffect} from "react"
 import {Bevolkingsonderzoek, BevolkingsonderzoekNaam} from "../../../datatypes/Bevolkingsonderzoek"
 import {FormErrorComponent} from "../../../components/form_error/FormErrorComponent"
 import styles from "./ZasAanvragenPage.module.scss"
@@ -37,7 +37,7 @@ import LadenComponent from "../../../components/laden/LadenComponent"
 import SubmitButton from "../../../components/input/SubmitButton"
 import {useNavigate} from "react-router"
 
-const ZasAanvragenPage = () => {
+const ZasAanvragenPage: FC = () => {
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
 	const zasStatus = useSelector((state: State) => state.client.cervixDossier.zasStatus)
@@ -74,7 +74,7 @@ const ZasAanvragenPage = () => {
 		</ActieBasePage>
 	)
 
-	function getMaxAantalZassenAangevraagdError() {
+	function getMaxAantalZassenAangevraagdError(): false | React.JSX.Element {
 		return (zasStatus.maxAantalAanvragenBereikt) &&
 			<FormErrorComponent text={getString(properties.error.zas_te_vaak_aangevraagd)}/>
 	}

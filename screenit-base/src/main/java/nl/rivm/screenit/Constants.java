@@ -169,6 +169,8 @@ public class Constants
 
 	public static final String ZIP_FILE_EXTENSION = ".zip";
 
+	public static final int MAX_LENGTE_BRIEF_AFDRUKOPDRACHT_VELDEN = 40;
+
 	static
 	{
 

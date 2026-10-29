@@ -36,6 +36,7 @@ import ErrorBoundary from "./components/error_boundary/ErrorBoundary"
 import KeycloakProvider from "./components/KeycloakProvider"
 import {setLoggingOutAction} from "./actions/AuthenticatieAction"
 import datadogService from "./services/DatadogService"
+import mopinionService from "./services/MopinionService"
 import {cpStore} from "./store"
 import {nl} from "date-fns/locale"
 import {setDefaultOptions} from "date-fns"
@@ -51,6 +52,7 @@ export function useThunkDispatch(): ReduxThunkDispatch {
 }
 
 datadogService.init()
+mopinionService.init()
 
 interface MetaElement extends HTMLElement {
 	content: string;

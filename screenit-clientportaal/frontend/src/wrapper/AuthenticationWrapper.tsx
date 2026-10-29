@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {JSX, useContext, useEffect} from "react"
+import {FC, JSX, use, useEffect} from "react"
 import {useSelector} from "react-redux"
 import {State} from "../datatypes/State"
 import {setLoggingInAction, setSessionExpiredAction} from "../actions/AuthenticatieAction"
@@ -31,9 +31,9 @@ export interface AuthenticationWrapperProps {
 	children: JSX.Element;
 }
 
-const AuthenticationWrapper = (props: AuthenticationWrapperProps) => {
+const AuthenticationWrapper: FC<AuthenticationWrapperProps> = (props) => {
 	const dispatch = useThunkDispatch()
-	const {initialized: keycloakInitialized, keycloak} = useContext(KeycloakContext)
+	const {initialized: keycloakInitialized, keycloak} = use(KeycloakContext)
 	const authenticatie = useSelector((state: State) => state.authenticatie)
 
 	useEffect(() => {

@@ -56,9 +56,9 @@ export default class AfwijkingenSwitch extends Component<AfwijkingenSwitchProps,
 	}
 
 	toggle = (): void => {
-		this.setState({
-			popoverOpen: !this.state.popoverOpen,
-		})
+		this.setState(vorigeState => ({
+			popoverOpen: !vorigeState.popoverOpen,
+		}))
 	}
 
 	render(): JSX.Element {

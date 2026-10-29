@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useEffect} from "react"
+import {FC, useEffect} from "react"
 import {useSelectedBvo} from "../../../utils/Hooks"
 import {BevolkingsonderzoekNaam} from "../../../datatypes/Bevolkingsonderzoek"
 import ActieBasePage from "../../ActieBasePage"
@@ -34,7 +34,7 @@ import CervixUitstelAanvragenForm from "./CervixUitstelAanvragenForm"
 import {showToast} from "../../../utils/ToastUtil"
 import {useNavigate} from "react-router"
 
-const CervixUitstelAanvragenPage = () => {
+const CervixUitstelAanvragenPage: FC = () => {
 	const selectedBvo = useSelectedBvo()!
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
@@ -70,7 +70,7 @@ const CervixUitstelAanvragenPage = () => {
 		</ActieBasePage>
 	)
 
-	function getZasAangevraagdError() {
+	function getZasAangevraagdError(): false | React.JSX.Element {
 		return (uitstelStatus && uitstelStatus.zasAanvraagInBehandeling) &&
 			<FormErrorComponent text={getString(properties.error.zas)}/>
 	}

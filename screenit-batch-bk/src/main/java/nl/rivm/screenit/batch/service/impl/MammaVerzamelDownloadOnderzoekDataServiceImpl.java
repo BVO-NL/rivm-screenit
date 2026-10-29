@@ -37,13 +37,18 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.service.MammaVerzamelDownloadOnderzoekDataService;
 import nl.rivm.screenit.batch.service.MammaVerzamelOnderzoekDataService;
+import nl.rivm.screenit.model.Organisatie;
+import nl.rivm.screenit.model.Rivm;
 import nl.rivm.screenit.model.enums.BestandStatus;
+import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek;
+import nl.rivm.screenit.repository.algemeen.OrganisatieMedewerkerRepository;
 import nl.rivm.screenit.repository.mamma.MammaDownloadOnderzoekenVerzoekRepository;
 import nl.rivm.screenit.service.BerichtToBatchService;
 import nl.rivm.screenit.service.DatabaseRunner;
-import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.service.mamma.MammaBaseUitwisselportaalService;
 
@@ -54,9 +59,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class MammaVerzamelDownloadOnderzoekDataServiceImpl implements MammaVerzamelDownloadOnderzoekDataService
 {
-	@Autowired
-	private HibernateService hibernateService;
-
 	@Autowired
 	private ICurrentDateSupplier dateSupplier;
 
@@ -77,6 +79,15 @@ public class MammaVerzamelDownloadOnderzoekDataServiceImpl implements MammaVerza
 
 	@Autowired
 	private DatabaseRunner databaseRunner;
+
+	@Autowired
+	private LogService logService;
+
+	@Autowired
+	private OrganisatieService organisatieService;
+
+	@Autowired
+	private OrganisatieMedewerkerRepository organisatieMedewerkerRepository;
 
 	@PostConstruct
 	public void init()
@@ -104,7 +115,7 @@ public class MammaVerzamelDownloadOnderzoekDataServiceImpl implements MammaVerza
 			MammaDownloadOnderzoekenVerzoek verzoekInner = null;
 			try
 			{
-				verzoekInner = hibernateService.get(MammaDownloadOnderzoekenVerzoek.class, verzoekId);
+				verzoekInner = downloadOnderzoekenVerzoekRepository.getReferenceById(verzoekId);
 				LOG.info("Start verzamelen van beelden en verslag voor verzoek '{}'", verzoekInner.getId());
 				var finalVerzoekInner = verzoekInner;
 				databaseRunner.runInNewTransaction(() ->
@@ -117,7 +128,7 @@ public class MammaVerzamelDownloadOnderzoekDataServiceImpl implements MammaVerza
 					Files.createDirectories(Paths.get(uitwisselPortaalservice.getOnderzoekRootPath(onderzoek)));
 					databaseRunner.runInNewTransaction(() -> onderzoek.setStatus(BestandStatus.BEZIG_MET_VERWERKEN));
 					success.compareAndSet(true, verzamelOnderzoekDataService.addBeeldenAanVerzoek(onderzoek));
-					verzamelOnderzoekDataService.addVerslagAanVerzoek(onderzoek);
+					success.compareAndSet(true, verzamelOnderzoekDataService.addVerslagAanVerzoek(onderzoek));
 				}
 				createEmptyZipFile(verzoekInner);
 				uitwisselPortaalservice.zetFilesInZip(verzoekInner);
@@ -136,6 +147,15 @@ public class MammaVerzamelDownloadOnderzoekDataServiceImpl implements MammaVerza
 					{
 						finalVerzoekInner.setStatus(success.get() ? BestandStatus.VERWERKT : BestandStatus.CRASH);
 						LOG.info("Klaar met verzamelen van beelden en verslag voor verzoek {}", finalVerzoekInner.getId());
+
+						if (!success.get())
+						{
+							var client = finalVerzoekInner.getOnderzoeken().getFirst().getOnderzoek().getAfspraak().getUitnodiging().getScreeningRonde().getDossier().getClient();
+							var account = organisatieMedewerkerRepository.getReferenceById(finalVerzoekInner.getAangemaaktDoor().getId());
+							var dashboardOrganisaties = new ArrayList<Organisatie>(organisatieService.getActieveOrganisaties(Rivm.class));
+							logService.logGebeurtenis(LogGebeurtenis.MAMMA_UITWISSELPORTAAL_BEELDEN_OPHALEN_GEFAALD, dashboardOrganisaties, account, client,
+								"Inzage/overdracht persoonsgegevens");
+						}
 					});
 				}
 			}

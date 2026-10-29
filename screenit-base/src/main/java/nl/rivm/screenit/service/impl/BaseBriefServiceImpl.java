@@ -113,6 +113,7 @@ import com.aspose.words.Document;
 import com.aspose.words.ImportFormatMode;
 import com.aspose.words.PdfCompliance;
 
+import static nl.rivm.screenit.Constants.MAX_LENGTE_BRIEF_AFDRUKOPDRACHT_VELDEN;
 import static nl.rivm.screenit.specification.algemeen.ClientBriefSpecification.heeftClient;
 
 @Slf4j
@@ -543,14 +544,45 @@ public class BaseBriefServiceImpl implements BaseBriefService
 		if (batchApplicationType == null)
 		{
 			throw new IllegalArgumentException(
-				"BatchApplicationType is null voor brief " + brief.getId() + ":" + Hibernate.getClass(brief) + ", er wordt geen BRIEF_AFDRUKKEN message aangemaakt");
+				"BatchApplicationType is leeg voor brief " + brief.getId() + ":" + Hibernate.getClass(brief) + ", er wordt geen BRIEF_AFDRUKKEN message aangemaakt");
 		}
 
 		var briefafdrukopdrachtDto = briefGenerator.maakBriefafdrukopdrachtVoorGegenereerdeBrief(brief, currentDateSupplier.getLocalDateTime());
 		briefafdrukopdrachtDto.setResources(List.of(BriefafdrukopdrachtDto.Resource.builder().order(1).path(bestandsNaam).build()));
+		valideerBriefafdrukopdrachtDto(briefafdrukopdrachtDto, brief);
 		var message = messageService.queueMessage(MessageType.BRIEF_AFDRUKKEN, briefafdrukopdrachtDto, batchApplicationType.name());
 		LOG.info("Briefafdrukopdracht message id '{}' aangemaakt voor brief id '{}' in {}", message.getId(), briefafdrukopdrachtDto.getEntityId(),
 			briefafdrukopdrachtDto.getEntityType().getSimpleName());
+	}
+
+	private void valideerBriefafdrukopdrachtDto(BriefafdrukopdrachtDto briefafdrukopdrachtDto, Brief brief)
+	{
+		if (briefafdrukopdrachtDto.getKenmerk() == null || briefafdrukopdrachtDto.getKenmerk().length() > MAX_LENGTE_BRIEF_AFDRUKOPDRACHT_VELDEN)
+		{
+			throw new IllegalArgumentException(
+				"Kenmerk in briefafdrukopdrachtDto is leeg of te lang: " + briefafdrukopdrachtDto.getKenmerk() + ", briefId: '" + brief.getId() + "'");
+		}
+		if (briefafdrukopdrachtDto.getCode() == null || briefafdrukopdrachtDto.getCode().length() > MAX_LENGTE_BRIEF_AFDRUKOPDRACHT_VELDEN)
+		{
+			throw new IllegalArgumentException(
+				"Code in briefafdrukopdrachtDto is leeg of te lang: " + briefafdrukopdrachtDto.getCode() + ", Kenmerk: " + briefafdrukopdrachtDto.getKenmerk());
+		}
+		if (briefafdrukopdrachtDto.getTimestamp() == null || briefafdrukopdrachtDto.getTimestamp().length() > MAX_LENGTE_BRIEF_AFDRUKOPDRACHT_VELDEN)
+		{
+			throw new IllegalArgumentException(
+				"Timestamp in briefafdrukopdrachtDto is leeg of te lang: " + briefafdrukopdrachtDto.getTimestamp() + ", Kenmerk: " + briefafdrukopdrachtDto.getKenmerk());
+		}
+		if (briefafdrukopdrachtDto.getCodeAddendum() == null || briefafdrukopdrachtDto.getCodeAddendum().length() > MAX_LENGTE_BRIEF_AFDRUKOPDRACHT_VELDEN)
+		{
+			throw new IllegalArgumentException(
+				"CodeAddendum in briefafdrukopdrachtDto is leeg of te lang: " + briefafdrukopdrachtDto.getCodeAddendum() + ", Kenmerk: " + briefafdrukopdrachtDto.getKenmerk());
+		}
+		if (briefafdrukopdrachtDto.getResources().stream().anyMatch(resource -> resource.getPath() == null || resource.getPath().length() > MAX_LENGTE_BRIEF_AFDRUKOPDRACHT_VELDEN))
+		{
+			throw new IllegalArgumentException("Een of meer resources in briefafdrukopdrachtDto leeg of te lang pad: " + briefafdrukopdrachtDto.getResources().stream()
+				.filter(resource -> resource.getPath() == null || resource.getPath().length() > MAX_LENGTE_BRIEF_AFDRUKOPDRACHT_VELDEN).map(
+					BriefafdrukopdrachtDto.Resource::getPath).collect(Collectors.joining(", ")) + ", Kenmerk: " + briefafdrukopdrachtDto.getKenmerk());
+		}
 	}
 
 	@Override

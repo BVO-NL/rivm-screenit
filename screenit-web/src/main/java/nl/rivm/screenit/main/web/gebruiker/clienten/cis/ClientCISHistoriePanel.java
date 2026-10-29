@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import nl.rivm.screenit.main.util.CervixCisHistoryUtil;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.cervix.cis.CervixCISHistorieOngestructureerdRegel;
+import nl.rivm.screenit.util.cervix.CervixCisHistoryUtil;
 import nl.topicuszorg.wicket.hibernate.SimpleListHibernateModel;
 
 import org.apache.wicket.markup.html.basic.Label;

@@ -36,8 +36,9 @@ import {EmailDto} from "../../../datatypes/mail/EmailDto"
 import datadogService from "../../../services/DatadogService"
 import {AnalyticsCategorie} from "../../../datatypes/AnalyticsCategorie"
 import {selectPersoon} from "../../../selectors/ClientSelectors"
+import {FC} from "react"
 
-const EmailWijzigenPage = () => {
+const EmailWijzigenPage: FC = () => {
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
 	const persoon = useSelector(selectPersoon)
@@ -48,13 +49,13 @@ const EmailWijzigenPage = () => {
 
 	const validatieSchema: Yup.AnyObjectSchema = Yup.object().shape(
 		{
-			emailadres: Yup.string().test("emailValidatie", getString(properties.form.invalid_mail_adres), function (value) {
+			emailadres: Yup.string().test("emailValidatie", getString(properties.form.invalid_mail_adres), (value) => {
 				return isEmailadresValidOfLeeg(value)
 			}),
 		},
 	)
 
-	function updateEmailAdres(email: EmailDto) {
+	function updateEmailAdres(email: EmailDto): void {
 		dispatch(saveEmail(email)).then(() => {
 			showToast(getString(properties.toast.title), "")
 			navigate("/profiel")

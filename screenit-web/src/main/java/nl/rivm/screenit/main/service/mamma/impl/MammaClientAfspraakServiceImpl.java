@@ -24,11 +24,12 @@ package nl.rivm.screenit.main.service.mamma.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.EntityNotFoundException;
+
 import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.main.dto.algemeen.AfspraakActie;
 import nl.rivm.screenit.main.dto.algemeen.AfspraakDto;
-import nl.rivm.screenit.main.exception.EntityNietGevondenException;
 import nl.rivm.screenit.main.mappers.mamma.MammaAfspraakMapper;
 import nl.rivm.screenit.main.service.mamma.MammaClientAfspraakService;
 import nl.rivm.screenit.model.Client;
@@ -54,28 +55,28 @@ public class MammaClientAfspraakServiceImpl implements MammaClientAfspraakServic
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<AfspraakDto> getAfspraken(Long clientId)
+	public AfspraakDto getGeplandeAfspraak(Long clientId)
 	{
-		var client = clientService.getClientById(clientId).orElseThrow(() -> new EntityNietGevondenException("Client", clientId));
+		var client = clientService.getClientById(clientId).orElseThrow(() -> new EntityNotFoundException("Client niet gevonden met id: '" + clientId + "'"));
 		var dossier = client.getMammaDossier();
 		if (dossier == null || dossier.getLaatsteScreeningRonde() == null)
 		{
-			return List.of();
+			return null;
 		}
 
 		var afspraak = dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging() != null
 			? dossier.getLaatsteScreeningRonde().getLaatsteUitnodiging().getLaatsteAfspraak()
 			: null;
 		return afspraak != null && afspraak.getStatus() == MammaAfspraakStatus.GEPLAND
-			? List.of(afspraakMapper.afspraakNaarDto(afspraak, baseAfspraakService.getMammaStandplaatsLocatieAfspraak(afspraak)))
-			: List.of();
+			? afspraakMapper.afspraakNaarDto(afspraak, baseAfspraakService.getMammaStandplaatsLocatieAfspraak(afspraak))
+			: null;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<AfspraakActie> getAfspraakActies(Long clientId)
 	{
-		var client = clientService.getClientById(clientId).orElseThrow(() -> new EntityNietGevondenException("Client", clientId));
+		var client = clientService.getClientById(clientId).orElseThrow(() -> new EntityNotFoundException("Client niet gevonden met id: '" + clientId + "'"));
 		return getAfspraakActies(client);
 	}
 

@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.model.enums;
 
 /*-
@@ -22,6 +21,8 @@ package nl.rivm.screenit.model.enums;
  * =========================LICENSE_END==================================
  */
 
+import org.jspecify.annotations.NonNull;
+
 public enum Level
 {
 	INFO,
@@ -30,17 +31,12 @@ public enum Level
 
 	ERROR;
 
-	public final Level geefHoogsteLevelVanTweeLevels(Level level)
+	public final @NonNull Level geefHoogsteLevelVanTweeLevels(Level level)
 	{
-		if (level == null || this.equals(level) || this.ordinal() > level.ordinal())
+		if (level == null || this.ordinal() >= level.ordinal())
 		{
 			return this;
 		}
-
-		if (level.ordinal() > this.ordinal())
-		{
-			return level;
-		}
-		return null;
+		return level;
 	}
 }

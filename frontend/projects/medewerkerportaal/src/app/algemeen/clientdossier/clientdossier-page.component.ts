@@ -31,6 +31,7 @@ import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { afterNextRender, ChangeDetectorRef, Component, computed, inject, Signal } from '@angular/core'
 import { ClientContactService } from '@algemeen/services/client-contact/client-contact.service'
+import { ActiesTabComponent } from '@algemeen/clientdossier/acties-tab/acties-tab.component'
 import { MeldingenTabComponent } from '@algemeen/clientdossier/meldingen-tab/meldingen-tab.component'
 import { CisHistorieTabComponent } from '@algemeen/clientdossier/cis-historie-tab/cis-historie-tab.component'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
@@ -53,6 +54,7 @@ import { StringsService } from '@shared/strings'
     DsTabGroupComponent,
     DsPageHeaderComponent,
     DsTabGroupComponent,
+    ActiesTabComponent,
     MeldingenTabComponent,
     CisHistorieTabComponent,
     AutorisatieDirective,
@@ -98,6 +100,13 @@ export class ClientdossierPageComponent {
       }),
   )
 
+  protected readonly actiesConstraint = {
+    actie: Actie.AANPASSEN,
+    recht: [Recht.MEDEWERKER_CLIENT_CONTACT],
+    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.MAMMA],
+    required: Required.ANY,
+  }
+
   protected readonly meldingenConstraint = {
     actie: Actie.INZIEN,
     recht: [Recht.MEDEWERKER_CLIENT_CONTACT],
@@ -109,6 +118,7 @@ export class ClientdossierPageComponent {
   protected readonly tabLabels = [
     this.strings.algemeen.clientDossier.tabClientgegevens,
     this.strings.algemeen.clientDossier.tabAfspraken,
+    this.strings.algemeen.clientDossier.tabActies,
     this.strings.algemeen.clientDossier.tabMeldingen,
     this.strings.algemeen.clientDossier.tabCisHistorie,
   ]

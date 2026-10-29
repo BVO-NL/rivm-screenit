@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { DsButtonComponent, DsDatepickerComponent, DsIconComponent, DsInputComponent, DsToggleComponent, DsValidators } from '@topicus-rgp-ds/web'
+import { DsButtonComponent, DsDatepickerComponent, DsIconComponent, DsInputComponent, DsToggleComponent, DsValidators, MaxLengthDirective } from '@topicus-rgp-ds/web'
 import { afterNextRender, Component, ElementRef, inject, output, Renderer2, signal, viewChild } from '@angular/core'
 import { FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { faSearch } from '@fortawesome/pro-light-svg-icons'
@@ -40,6 +40,8 @@ import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
 import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
 import { StringsService } from '@shared/strings'
 import { mobieleTelefoonValidator } from '@shared/validators/telefoon-nummer/telefoon-nummer.validators'
+import { MAX_KARAKTERS } from '@shared/constants'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-client-zoeken-filter',
@@ -53,6 +55,7 @@ import { mobieleTelefoonValidator } from '@shared/validators/telefoon-nummer/tel
     FormsModule,
     ReactiveFormsModule,
     DsToggleComponent,
+    MaxLengthDirective,
   ],
   providers: [{ provide: DateAdapter, useClass: ScreenitDateFnsAdapter }],
   templateUrl: './client-zoeken-filter.component.html',
@@ -65,7 +68,8 @@ export class ClientZoekenFilterComponent {
   private readonly notificationService = inject(NotificationService)
   private readonly renderer = inject(Renderer2)
   private readonly geboortedatumPicker = viewChild('geboortedatum', { read: ElementRef })
-  private readonly minimumGeboortedatum = new FormControl(new Date())
+  private readonly minimumGeboortedatum = new FormControl(DateService.nu())
+  protected readonly MAX_KARAKTERS = MAX_KARAKTERS
   zoeken = output<ClientZoekenFilterDto>()
   readonly geavanceerdZoekenActief = signal(false)
   protected readonly geavanceerdZoekenConstraint: SecurityConstraint = {

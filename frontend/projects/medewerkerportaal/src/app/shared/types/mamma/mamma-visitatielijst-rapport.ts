@@ -58,7 +58,7 @@ export class MammaVisitatielijstRapport {
 
   getUitgeslotenMedewerkerIds(): { medewerkercode: string; aantal: number }[] {
     return Object.entries(this.aantalOnderzoekenPerMedewerker)
-      .filter(([_, aantal]) => aantal.aantalBeeldenBinnen4Maanden < this.minimumBeeldenPerMedewerker)
+      .filter(([, aantal]) => aantal.aantalBeeldenBinnen4Maanden < this.minimumBeeldenPerMedewerker)
       .map(([medewerkercode, aantal]) => ({ medewerkercode, aantal: aantal.aantalBeeldenBinnen4Maanden }))
   }
 

@@ -20,7 +20,7 @@
  */
 import {useThunkDispatch} from "../../../index"
 import {useSelectedBvo} from "../../../utils/Hooks"
-import {useEffect, useState} from "react"
+import {FC, useEffect, useState} from "react"
 import ActieBasePage from "../../ActieBasePage"
 import {Bevolkingsonderzoek, BevolkingsonderzoekNaam} from "../../../datatypes/Bevolkingsonderzoek"
 import bvoStyle from "../../../components/BvoStyle.module.scss"
@@ -39,7 +39,7 @@ import {useNavigate} from "react-router"
 import {showToast} from "../../../utils/ToastUtil"
 import properties from "./HeraanmeldenPage.json"
 
-const HeraanmeldenPage = () => {
+const HeraanmeldenPage: FC = () => {
 	const dispatch = useThunkDispatch()
 	const selectedBvo = useSelectedBvo()!
 	const navigate = useNavigate()

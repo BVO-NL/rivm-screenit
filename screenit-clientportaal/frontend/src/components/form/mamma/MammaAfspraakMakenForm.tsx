@@ -29,7 +29,7 @@ import bvoStyle from "../../BvoStyle.module.scss"
 import ScreenitDatePicker from "../../input/ScreenitDatePicker"
 import {ArrowType} from "../../vectors/ArrowIconComponent"
 import Button from "../../input/Button"
-import {useEffect, useRef, useState} from "react"
+import {FC, useEffect, useMemo, useRef, useState} from "react"
 import ScreenitDropdown, {DropdownOption} from "../../input/ScreenitDropdown"
 import styles from "./MammaAfspraakMakenForm.module.scss"
 import AdvancedSearchLinkComponent from "../AdvancedSearchLinkComponent"
@@ -51,7 +51,7 @@ export type MammaAfspraakMakenFormProps = {
 	onZoekenClick?: () => void;
 }
 
-const standplaatsOpties = (laatsteStandplaatsPlaatsZoekFilter: string[]) => {
+const standplaatsOpties = (laatsteStandplaatsPlaatsZoekFilter: string[]): DropdownOption[] => {
 	const standplaatsOpties: Array<DropdownOption> = []
 	for (const standplaats of laatsteStandplaatsPlaatsZoekFilter) {
 		standplaatsOpties.push({value: standplaats, label: standplaats})
@@ -59,7 +59,7 @@ const standplaatsOpties = (laatsteStandplaatsPlaatsZoekFilter: string[]) => {
 	return standplaatsOpties
 }
 
-const afstandOpties = () => {
+const afstandOpties = (): DropdownOption[] => {
 	const afstanden = ["5", "10", "15", "20", "25", "30", "35", "40", "45"]
 	const afstandOpties: Array<DropdownOption> = []
 	for (const afstand of afstanden) {
@@ -68,18 +68,31 @@ const afstandOpties = () => {
 	return afstandOpties
 }
 
-const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
+const MammaAfspraakMakenForm: FC<MammaAfspraakMakenFormProps> = (props) => {
 	const huidigeStandplaats = useSelector((state: State) => state.client.mammaDossier.laatsteStandplaatsPlaats)
-	const [isAdvancedSearch, setAdvancedSearch] = useState<boolean>(false)
-	const [beschikbareDagen, setBeschikbareDagen] = useState<Date[]>([])
-	const [beschikbaarheidOpgehaald, setBeschikbaarheidOpgehaald] = useState<boolean>(false)
-	const [dossierVerverst, setDossierVerverst] = useState<boolean>(false)
+	const [isAdvancedSearch, setIsAdvancedSearch] = useState<boolean>(false)
+	const [beschikbaarheid, setBeschikbaarheid] = useState<{ url: string, dagen: Date[] }>()
 	const [gekozenPlaats, setGekozenPlaats] = useState<string | undefined>(huidigeStandplaats ? huidigeStandplaats : undefined)
 	const [gekozenAfstand, setGekozenAfstand] = useState<string | undefined>(undefined)
+	const [vorigeStandplaats, setVorigeStandplaats] = useState(huidigeStandplaats)
 	const formikRef = useRef<FormikProps<MammaAfspraakFormValues>>(null)
 
+	if (huidigeStandplaats !== vorigeStandplaats) {
+		setVorigeStandplaats(huidigeStandplaats)
+		if (huidigeStandplaats != null) {
+			setGekozenPlaats(huidigeStandplaats)
+		}
+	}
+
+	const dossierVerverst = huidigeStandplaats != null
+	const beschikbaarheidUrl = `mamma/afspraak/beschikbaarheid${gekozenPlaats ? "/plaats" : `/afstand/${gekozenAfstand}`}`
+	const beschikbareDagen = useMemo(() => beschikbaarheid?.dagen ?? [], [beschikbaarheid])
+	const beschikbaarheidOpgehaald = dossierVerverst && beschikbaarheid?.url === beschikbaarheidUrl
+
 	useEffect(() => {
-		beschikbaarheidOpgehaald && props.setDagenBeschikbaar(beschikbareDagen.length !== 0)
+		if (beschikbaarheidOpgehaald) {
+			props.setDagenBeschikbaar(beschikbareDagen.length !== 0)
+		}
 	}, [beschikbaarheidOpgehaald, beschikbareDagen, props])
 
 	useEffect(() => {
@@ -90,28 +103,17 @@ const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
 	}, [beschikbaarheidOpgehaald, beschikbareDagen])
 
 	useEffect(() => {
-		if (huidigeStandplaats != null) {
-			setGekozenPlaats(huidigeStandplaats)
-			setDossierVerverst(true)
-		}
-	}, [huidigeStandplaats])
-
-	useEffect(() => {
 		if (dossierVerverst) {
-			setBeschikbaarheidOpgehaald(false)
-			const url = `mamma/afspraak/beschikbaarheid${gekozenPlaats ? "/plaats" : `/afstand/${gekozenAfstand}`}`
-
-			ScreenitBackend<Date[]>(url, {
+			ScreenitBackend<Date[]>(beschikbaarheidUrl, {
 				method: gekozenPlaats ? "POST" : "GET",
 				json: gekozenPlaats && {plaats: gekozenPlaats},
 			})
 				.json()
 				.then((response: Date[]) => {
-					setBeschikbareDagen(response)
-					setBeschikbaarheidOpgehaald(true)
+					setBeschikbaarheid({url: beschikbaarheidUrl, dagen: response})
 				})
 		}
-	}, [dossierVerverst, gekozenPlaats, gekozenAfstand])
+	}, [dossierVerverst, gekozenPlaats, beschikbaarheidUrl])
 
 	type MammaAfspraakFormValues = {
 		vanaf: Date,
@@ -176,14 +178,16 @@ const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
 																 errorLabel={errors.vanaf}
 																 onChange={async value => {
 																	 await setFieldValue("vanaf", value)
-																	 value && isValid(value) && handleSubmit()
+																	 if (value && isValid(value)) {
+																	 handleSubmit()
+																 }
 																 }}/>}
 				{!beschikbaarheidOpgehaald && <CircularProgress/>}
 
 				<div className={classNames(styles.advancedSearchButton)}
 					 onClick={async () => {
 						 await setFieldValue("afstand", undefined)
-						 setAdvancedSearch(!isAdvancedSearch)
+						 setIsAdvancedSearch(!isAdvancedSearch)
 					 }}>
 					<AdvancedSearchLinkComponent advancedSearch={isAdvancedSearch}
 												 onClickStuurDatadogEvent={() => datadogService.stuurEvent("meerzoekopties", AnalyticsCategorie.MAMMA_AFSPRAAK)}/>
@@ -214,7 +218,7 @@ const MammaAfspraakMakenForm = (props: MammaAfspraakMakenFormProps) => {
 							})
 							if (beschikbaarheidOpgehaald) {
 								handleSubmit()
-								props.onZoekenClick && props.onZoekenClick()
+								props.onZoekenClick?.()
 							}
 						}}
 						testId={"button_zoek_afspraken"}

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useContext} from "react"
+import {FC, use} from "react"
 import {Col, Row} from "react-bootstrap"
 import classNames from "classnames"
 import styles from "./HeaderComponent.module.scss"
@@ -31,8 +31,8 @@ import {KeycloakContext} from "../KeycloakProvider"
 import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
 import {selectPersoon} from "../../selectors/ClientSelectors"
 
-const HeaderComponent = () => {
-	const {keycloak} = useContext(KeycloakContext)
+const HeaderComponent: FC = () => {
+	const {keycloak} = use(KeycloakContext)
 	const persoon = useSelector(selectPersoon)
 	const navigate = useNavigate()
 
@@ -61,11 +61,11 @@ const HeaderComponent = () => {
 
 }
 
-export const getPersoonNaam = (persoon: Persoon) => {
+export const getPersoonNaam = (persoon: Persoon): string => {
 	return `${persoon.voorletters} ${persoon.aanspreekTussenvoegselEnAchternaam}`
 }
 
-export const getLogoutLink = (onClick: () => void) => {
+export const getLogoutLink = (onClick: () => void): React.JSX.Element => {
 	return <span className={styles.logout} onClick={onClick}>
         Uitloggen
     </span>

@@ -18,15 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {Persoon} from "../datatypes/Persoon";
+import {Persoon} from "../datatypes/Persoon"
 
 export type PersoonActions = PersoonAction;
 
-export const PERSOON = 'PERSOON';
+export const PERSOON = "PERSOON"
 
-export type PersoonAction = { type: 'PERSOON', persoon: Persoon }
+export type PersoonAction = { type: "PERSOON", persoon: Persoon }
 
 export const createPersoonAction = (persoon: Persoon): PersoonAction => ({
     type: PERSOON,
     persoon: persoon
-});
+})

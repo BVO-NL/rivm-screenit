@@ -23,6 +23,7 @@ import { NaamGebruik } from '../types/algemeen/enum/naam-gebruik'
 import { ClientPaspoortDto } from '../types/algemeen/dto/client-paspoort.dto'
 import { isStringNullOfLeeg } from '@shared/utils/string-utils'
 import { PersoonDto } from '@shared/types/algemeen/dto/persoon.dto'
+import { Aanspreekvorm, aanspreekvormLabel } from '@shared/types/algemeen/enum/aanspreekvorm'
 
 type NaamData = (PersoonDto & Partial<Pick<ClientDto, 'titel' | 'naamGebruik' | 'partnerAchternaam' | 'partnerTussenvoegsel'>>) | ClientPaspoortDto
 
@@ -102,6 +103,26 @@ export class NaamUtils {
     naam += this.voorlettersTussenvoegselEnAanspreekAchternaam(client)
 
     return naam
+  }
+
+  static getGewensteAanspreekvorm(client: NaamData, aanspreekvorm: Aanspreekvorm): string {
+    if (client == null) {
+      return ''
+    }
+
+    const naam =
+      aanspreekvorm === Aanspreekvorm.GEACHTE ? this.voorlettersTussenvoegselEnAanspreekAchternaam(client) : this.metHoofdletter(this.getAanspreekTussenvoegselEnAchternaam(client))
+
+    return this.normaliseerSpaties(`${aanspreekvormLabel[aanspreekvorm]} ${naam}`)
+  }
+
+  private static metHoofdletter(waarde: string): string {
+    const naam = waarde.trimStart()
+    return naam.charAt(0).toUpperCase() + naam.slice(1)
+  }
+
+  private static normaliseerSpaties(waarde: string): string {
+    return waarde.replace(/\s{2,}/g, ' ').trim()
   }
 
   static voorlettersTussenvoegselEnAanspreekAchternaam(client: NaamData): string {

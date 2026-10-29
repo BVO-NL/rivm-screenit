@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import React from "react"
+import React, { FC } from "react"
 import styles from "./Button.module.scss"
 import classNames from "classnames"
 import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
@@ -32,16 +32,20 @@ export type ButtonProps = {
 	onClick: () => void,
 	lightStyle?: boolean
 	testId?: string
+	id?: string
 }
 
-const Button = (props: ButtonProps): React.JSX.Element => {
+const Button: FC<ButtonProps> = (props) => {
 	return (
 		<button
 			type={"submit"}
+			id={props.id}
 			className={classNames(styles.style, props.className, props.lightStyle ? styles.light : styles.normal)}
 			onClick={(event) => {
 				event.preventDefault()
-				!props.disableButton && props.onClick()
+				if (!props.disableButton) {
+					props.onClick()
+				}
 			}}
 		>
             <span>

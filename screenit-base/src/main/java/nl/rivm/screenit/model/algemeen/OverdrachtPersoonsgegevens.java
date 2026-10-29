@@ -21,6 +21,7 @@ package nl.rivm.screenit.model.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import jakarta.persistence.CascadeType;
@@ -41,9 +42,11 @@ import lombok.Setter;
 import nl.rivm.screenit.model.AanvraagBriefStatus;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.UploadDocument;
+import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 @Entity
 @Table(schema = "algemeen")
@@ -75,6 +78,10 @@ public class OverdrachtPersoonsgegevens extends AbstractHibernateObject
 	@Column(nullable = false)
 	private Boolean dkGegevens;
 
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private OverdrachtType type;
+
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private AlgemeneBrief verstuurdeAanvraagbrief;
 
@@ -83,5 +90,14 @@ public class OverdrachtPersoonsgegevens extends AbstractHibernateObject
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private AlgemeneBrief geenHandtekeningBrief;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	private UploadDocument gegenereerdeDataDump;
+
+	private LocalDateTime dataDumpGegenereerdOp;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@NotAudited
+	private MammaDownloadOnderzoekenVerzoek mammaDownloadOnderzoekenVerzoek;
 
 }

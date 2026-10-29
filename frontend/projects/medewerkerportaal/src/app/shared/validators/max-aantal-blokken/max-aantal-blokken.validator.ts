@@ -21,6 +21,7 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms'
 import { parse } from 'date-fns'
 import { NotificationService } from '@shared/services/notification/notification.service'
+import { DateService } from '@shared/services/date/date.service'
 
 export const createMaxAantalBlokkenValidator = (duurAfspraakInMinuten: number, notificationService?: NotificationService): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -35,8 +36,8 @@ export const createMaxAantalBlokkenValidator = (duurAfspraakInMinuten: number, n
       return null
     }
 
-    const startDate = parse(startTime, 'HH:mm', new Date())
-    const midnight = new Date().setHours(24, 0, 0, 0)
+    const startDate = parse(startTime, 'HH:mm', DateService.nu())
+    const midnight = DateService.nu().setHours(24, 0, 0, 0)
     const minutesTillMidnight = (midnight - startDate.getTime()) / 6e4
 
     let validationError: ValidationErrors | null = null

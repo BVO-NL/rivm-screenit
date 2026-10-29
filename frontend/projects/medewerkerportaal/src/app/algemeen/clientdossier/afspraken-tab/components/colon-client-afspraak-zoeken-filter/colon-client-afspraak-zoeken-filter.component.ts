@@ -49,6 +49,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { DatumTijdPickerComponent } from '@shared/components/datum-tijd-picker/datum-tijd-picker.component'
 import { ColonClientAfspraakDialogMode } from '@algemeen/clientdossier/afspraken-tab/components/colon-client-afspraak-dialog/colon-client-afspraak-dialog.component'
 import { datumTijdInVerledenValidator } from '@shared/validators/datum/datum.validator'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-colon-client-afspraak-zoeken-filter',
@@ -147,7 +148,7 @@ export class ColonClientAfspraakZoekenFilterComponent {
       .pipe(take(1))
       .subscribe((instellingen) => {
         this.instellingen = {
-          geprognosticeerdeVanafDatum: instellingen.geprognosticeerdeVanafDatum,
+          geprognosticeerdeIntakeDatum: instellingen.geprognosticeerdeIntakeDatum,
           nietWijzigbarePeriode: this.getNietWijzigbarePeriode(),
         }
         this.zetFilters(this.typeCtrl.value)
@@ -174,10 +175,10 @@ export class ColonClientAfspraakZoekenFilterComponent {
     }
 
     const nietWijzigbarePeriode = this.instellingen.nietWijzigbarePeriode
-    this.minimumDatum.set(type === ColonIntakeafspraakAanmakenType.STANDAARD ? addBusinessDays(new Date(), nietWijzigbarePeriode).toISOString() : '')
+    this.minimumDatum.set(type === ColonIntakeafspraakAanmakenType.STANDAARD ? addBusinessDays(DateService.nu(), nietWijzigbarePeriode).toISOString() : '')
 
     if (type === ColonIntakeafspraakAanmakenType.SPOED) {
-      const vanaf = startOfDay(new Date())
+      const vanaf = startOfDay(DateService.nu())
 
       this.vanafCtrl.setValue(vanaf)
       this.totEnMetCtrl.setValue(addBusinessDays(vanaf, nietWijzigbarePeriode - 1))
@@ -192,7 +193,7 @@ export class ColonClientAfspraakZoekenFilterComponent {
       this.vanafCtrl.enable()
       this.totEnMetCtrl.enable()
       this.vanafCtrl.setValue(new Date(this.minimumDatum()))
-      this.totEnMetCtrl.setValue(this.instellingen.geprognosticeerdeVanafDatum)
+      this.totEnMetCtrl.setValue(this.instellingen.geprognosticeerdeIntakeDatum)
     }
   }
 

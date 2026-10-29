@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useState} from "react"
+import {FC, useState} from "react"
 import styles from "./BezwaarInformatieBlok.module.scss"
 import ArrowIconComponent, {ArrowType} from "../../components/vectors/ArrowIconComponent"
 import classNames from "classnames"
@@ -30,16 +30,16 @@ export type BezwaarInformatieBlokProps = {
 	standalone?: boolean;
 }
 
-const BezwaarInformatieBlok = (props: BezwaarInformatieBlokProps) => {
+const BezwaarInformatieBlok: FC<BezwaarInformatieBlokProps> = (props) => {
 	const [toonMeerInformatie, setToonMeerInformatie] = useState<boolean>(false)
 
-	function toggleMeerInformatie() {
+	function toggleMeerInformatie(): void {
 		setToonMeerInformatie(!toonMeerInformatie)
 	}
 
 	return (
 		<div className={classNames(styles.informatie, props.standalone ? styles.standalone : "")}>
-			{props.abstract && <div className={styles.abstract} dangerouslySetInnerHTML={{__html: props.abstract}}/>}
+			{props.abstract && <div className={styles.abstract}><SpanWithHtml value={props.abstract}/></div>}
 			{props.meer &&
 				<>
 					{!toonMeerInformatie &&

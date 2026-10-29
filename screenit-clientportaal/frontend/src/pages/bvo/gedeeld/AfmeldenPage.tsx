@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useEffect, useState} from "react"
+import {FC, useEffect, useState} from "react"
 import ActieBasePage from "../../ActieBasePage"
 import styles from "./AfmeldenPage.module.scss"
 import {Bevolkingsonderzoek, BevolkingsonderzoekNaam} from "../../../datatypes/Bevolkingsonderzoek"
@@ -46,7 +46,7 @@ import properties from "./AfmeldenPage.json"
 import datadogService from "../../../services/DatadogService"
 import {AnalyticsCategorie} from "../../../datatypes/AnalyticsCategorie"
 
-const AfmeldenPage = () => {
+const AfmeldenPage: FC = () => {
 	const selectedBvo = useSelectedBvo()!
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
@@ -69,7 +69,7 @@ const AfmeldenPage = () => {
 
 	const validatieSchema: Yup.AnyObjectSchema = Yup.object().shape({
 		afmeldType: Yup.string().required(getString(properties.form.error)),
-		afmeldReden: (() => {
+		afmeldReden: ((): Yup.StringSchema<string | null | undefined, Yup.AnyObject, undefined, ""> => {
 			switch (selectedBvo) {
 				case Bevolkingsonderzoek.COLON:
 					return Yup.string().nullable()
@@ -206,9 +206,9 @@ const AfmeldenPage = () => {
 											onChange={formikProps.handleChange}>
 											<ul>
 												{afmeldOpties.mogelijkeAfmeldJaren
-													.map((jaar: any, index) => {
-														return <li key={index}>
-															<FormControlLabel key={index}
+													.map((jaar: any) => {
+														return <li key={jaar}>
+															<FormControlLabel key={jaar}
 																			  data-testid={`radio_${  jaar}`}
 																			  control={<Radio/>}
 																			  className={styles.afmeldRedenRadioButton}
@@ -231,9 +231,9 @@ const AfmeldenPage = () => {
 											onChange={formikProps.handleChange}>
 											<ul>
 												{getAfmeldRedenen(formikProps.values.afmeldType)
-													.map((reden: string, index) => {
-														return <li key={index}>
-															<FormControlLabel key={index}
+													.map((reden: string) => {
+														return <li key={reden}>
+															<FormControlLabel key={reden}
 																			  data-testid={`radio_${  reden}`}
 																			  control={<Radio/>}
 																			  className={styles.afmeldRedenRadioButton}
@@ -278,11 +278,11 @@ const AfmeldenPage = () => {
 		}
 	}
 
-	function afmeldTypeHeeftAfmeldingRedenen(afmeldType?: AfmeldType) {
+	function afmeldTypeHeeftAfmeldingRedenen(afmeldType?: AfmeldType): boolean {
 		return !(selectedBvo === Bevolkingsonderzoek.CERVIX && afmeldType === AfmeldType.EENMALIG)
 	}
 
-	function getAfmeldRedenen(afmeldType?: AfmeldType) {
+	function getAfmeldRedenen(afmeldType?: AfmeldType): string[] {
 		if (AfmeldType.EENMALIG === afmeldType) {
 			return afmeldOpties.afmeldRedenenEenmalig
 		} else if (AfmeldType.TIJDELIJK === afmeldType) {

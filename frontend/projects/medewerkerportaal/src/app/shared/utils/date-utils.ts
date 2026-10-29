@@ -21,6 +21,7 @@
 import { differenceInYears, endOfISOWeek, format, getISOWeek, isBefore, isValid, parse, parseISO, startOfDay, startOfISOWeek } from 'date-fns'
 import { COMPACT_DATE_FORMAT, DATE_FORMAT, ISO_DATE_FORMAT, LONG_TIME_FORMAT, NL_DATE_FORMAT, TIME_FORMAT } from '@shared/constants'
 import { nl } from 'date-fns/locale'
+import { DateService } from '@shared/services/date/date.service'
 
 export function getDateFormat(date: string): string {
   if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(date)) {
@@ -47,19 +48,19 @@ export function formatNLDate(date: Date): string {
 }
 
 export function convertNLDateStringToDateString(date: string): string {
-  return format(parse(date, NL_DATE_FORMAT, new Date()), DATE_FORMAT)
+  return format(parse(date, NL_DATE_FORMAT, DateService.nu()), DATE_FORMAT)
 }
 
 export function parseDate(date: string): Date {
   const dateFormat = getDateFormat(date)
-  return dateFormat === ISO_DATE_FORMAT ? parseISO(date) : parse(date, dateFormat, new Date())
+  return dateFormat === ISO_DATE_FORMAT ? parseISO(date) : parse(date, dateFormat, DateService.nu())
 }
 
 export function parseDateTime(time: string, date: Date): Date {
   return parse(time, TIME_FORMAT, date)
 }
 
-export function formatTimeAsISO(time: string, date: Date = new Date()): string {
+export function formatTimeAsISO(time: string, date: Date = DateService.nu()): string {
   const timeFormat = /^\d{2}:\d{2}:\d{2}.*/.test(time) ? LONG_TIME_FORMAT : TIME_FORMAT
   return formatDateAsISO(parse(time, timeFormat, date))
 }
@@ -80,7 +81,7 @@ export function convertLocalTimeStringToTimeString(localTimeString: string): str
 }
 
 export function formatDateAsISO(date: Date) {
-  return format(date, "yyyy-MM-dd'T'HH:mm:ss")
+  return format(date, ISO_DATE_FORMAT)
 }
 
 export function formatDateStringAsTime(dateString: string): string {
@@ -179,14 +180,14 @@ export function normaliseerNaarDate(datumWaarde: unknown): Date | null {
 }
 
 export function isEinddatumVerlopen(einddatum: string | null | undefined): boolean {
-  return !!einddatum && isBefore(startOfDay(new Date(einddatum)), startOfDay(new Date()))
+  return !!einddatum && isBefore(startOfDay(new Date(einddatum)), startOfDay(DateService.nu()))
 }
 
 export function berekenLeeftijd(geboortedatum: Date | string | null | undefined): number | undefined {
   if (!geboortedatum) {
     return undefined
   }
-  return differenceInYears(new Date(), new Date(geboortedatum))
+  return differenceInYears(DateService.nu(), new Date(geboortedatum))
 }
 
 export function formatDatumVoorDigitaleAfspraak(value: Date | string | null): string {

@@ -22,6 +22,7 @@ package nl.rivm.screenit.main.dto.algemeen;
  */
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,5 +72,5 @@ public class ClientContactgegevensDto
 
 	private String aanspreekvorm;
 
-	private boolean heeftMammaAfspraak;
+	private LocalDateTime mammaAfspraakDatumTijd;
 }

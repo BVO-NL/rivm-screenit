@@ -30,7 +30,7 @@
       type="button"
       ds-button-quaternary
       class="ds-confirmation-dialog__header__close"
-      (click)="handleNo()"
+      (click)="close()"
     >
       <ds-icon [icon]="faClose" size="1rem"/>
     </button>
@@ -46,16 +46,28 @@
       data-testid="button_confirmation_nee"
       (click)="handleNo()"
     >
-      {{ dialogData.neeButtonTekst ?? strings.algemeen.labels.nee }}
+      {{ neeButtonTekst }}
     </button>
-    <button
-      type="button"
-      ds-button-primary
-      class="ds-confirmation-dialog__actions__button"
-      data-testid="button_confirmation_ja"
-      (click)="handleYes()"
-    >
-      {{ dialogData.jaButtonTekst ?? strings.algemeen.labels.ja }}
-    </button>
+    @if (neutraleKnoppen) {
+      <button
+        type="button"
+        ds-button-secondary
+        class="ds-confirmation-dialog__actions__button"
+        data-testid="button_confirmation_ja"
+        (click)="handleYes()"
+      >
+        {{ jaButtonTekst }}
+      </button>
+    } @else {
+      <button
+        type="button"
+        ds-button-primary
+        class="ds-confirmation-dialog__actions__button"
+        data-testid="button_confirmation_ja"
+        (click)="handleYes()"
+      >
+        {{ jaButtonTekst }}
+      </button>
+    }
   </div>
 </div>

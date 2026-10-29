@@ -69,8 +69,6 @@ public class ConfiguratieServiceImpl implements ConfiguratieService
 			Integer.toString(preferenceService.getInteger(PreferenceKey.INTERNAL_MAMMA_SE_PONG_TIMEOUT.name(), SE_PONG_TIMEOUT_DEFAULT)));
 		seParameters.put(SeConfiguratieKey.TOMOSYNTHESE_MOGELIJK, screeningsEenheid.getTomosyntheseMogelijk().toString());
 		seParameters.put(SeConfiguratieKey.IMS_LAUNCH_URL_PASSWORD, preferenceService.getString(PreferenceKey.MAMMA_IMS_LAUNCH_URL_PASSWORD.name(), ""));
-		seParameters.put(SeConfiguratieKey.MAMMA_IMS_LAUNCH_URL_SHA1_MODE,
-			String.valueOf(preferenceService.getBoolean(PreferenceKey.MAMMA_IMS_LAUNCH_URL_SHA1_MODE.name(), true)));
 
 		result.setSeParameters(seParameters);
 	}

@@ -24,6 +24,7 @@ import bvoStyle from "../BvoStyle.module.scss"
 import classNames from "classnames"
 import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
 import {Col, Row} from "react-bootstrap"
+import {FC} from "react"
 
 export type SearchResultHuisartsProps = {
 	className?: string
@@ -34,7 +35,7 @@ export type SearchResultHuisartsProps = {
 	onClickAction: () => void
 }
 
-const SearchResultHuisarts = (props: SearchResultHuisartsProps) => {
+const SearchResultHuisarts: FC<SearchResultHuisartsProps> = (props) => {
 	return (
 		<div className={classNames(props.className, styles.content)}
 			 onClick={(event) => {

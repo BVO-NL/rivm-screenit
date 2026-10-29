@@ -23,16 +23,19 @@ package nl.rivm.screenit.main.model;
 
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.model.IDetachable;
 import org.apache.wicket.model.IModel;
 
+@Setter
+@Getter
 public class OverdrachtPersoonsgegevensDossierGebeurtenis extends DossierGebeurtenis implements IDetachable
 {
-	private static final long serialVersionUID = 1L;
-
 	private IModel<OverdrachtPersoonsgegevens> overdrachtPersoonsgegevensModel;
 
 	private String omschrijving;
@@ -41,26 +44,6 @@ public class OverdrachtPersoonsgegevensDossierGebeurtenis extends DossierGebeurt
 	{
 		super(statusDatum);
 		this.omschrijving = omschrijving;
-	}
-
-	public String getOmschrijving()
-	{
-		return omschrijving;
-	}
-
-	public void setOmschrijving(String omschrijving)
-	{
-		this.omschrijving = omschrijving;
-	}
-
-	public IModel<OverdrachtPersoonsgegevens> getOverdrachtPersoonsgegevensModel()
-	{
-		return overdrachtPersoonsgegevensModel;
-	}
-
-	public void setOverdrachtPersoonsgegevensModel(IModel<OverdrachtPersoonsgegevens> overdrachtPersoonsgegevensModel)
-	{
-		this.overdrachtPersoonsgegevensModel = overdrachtPersoonsgegevensModel;
 	}
 
 	@Override

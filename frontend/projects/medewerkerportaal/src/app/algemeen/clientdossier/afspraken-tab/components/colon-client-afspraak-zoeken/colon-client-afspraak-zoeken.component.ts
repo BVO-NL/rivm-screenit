@@ -21,9 +21,13 @@
 import { Component, computed, inject, input, model, output, signal, WritableSignal } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { ColonClientAfspraakZoekenFilterComponent } from '@algemeen/clientdossier/afspraken-tab/components/colon-client-afspraak-zoeken-filter/colon-client-afspraak-zoeken-filter.component'
-import { ColonClientAfspraakZoekenTabelComponent } from '@algemeen/clientdossier/afspraken-tab/components/colon-client-afspraak-zoeken-tabel/colon-client-afspraak-zoeken-tabel.component'
-import { DsContextualNotificationsComponent, DsDatetimepickerComponent, provideDsIsoStringDateAdapter } from '@topicus-rgp-ds/web'
+import {
+  ColonClientAfspraakZoekenFilterComponent
+} from '@algemeen/clientdossier/afspraken-tab/components/colon-client-afspraak-zoeken-filter/colon-client-afspraak-zoeken-filter.component'
+import {
+  ColonClientAfspraakZoekenTabelComponent
+} from '@algemeen/clientdossier/afspraken-tab/components/colon-client-afspraak-zoeken-tabel/colon-client-afspraak-zoeken-tabel.component'
+import { DsContextualNotificationsComponent } from '@topicus-rgp-ds/web'
 import { VrijSlotZonderKamerFilter } from '@shared/types/colon/dto/vrij-slot-zonder-kamer-filter'
 import { ColonAfspraakZoekopdracht } from '@shared/types/colon/colon-afspraak-zoekopdracht'
 import { VrijSlotZonderKamerDto } from '@shared/types/colon/dto/vrij-slot-zonder-kamer.dto'
@@ -32,10 +36,11 @@ import { ColonAfspraakSlotKeuze } from '@shared/types/colon/colon-afspraak-slot-
 import { parseISO } from 'date-fns'
 import { ColonClientAfspraakDialogMode } from '@algemeen/clientdossier/afspraken-tab/components/colon-client-afspraak-dialog/colon-client-afspraak-dialog.component'
 import { StringsService } from '@shared/strings'
+import { DatumTijdPickerComponent } from '@shared/components/datum-tijd-picker/datum-tijd-picker.component'
 
 @Component({
   selector: 'app-colon-client-afspraak-zoeken',
-  imports: [ReactiveFormsModule, ColonClientAfspraakZoekenFilterComponent, ColonClientAfspraakZoekenTabelComponent, DsContextualNotificationsComponent, DsDatetimepickerComponent],
+  imports: [ReactiveFormsModule, ColonClientAfspraakZoekenFilterComponent, ColonClientAfspraakZoekenTabelComponent, DsContextualNotificationsComponent, DatumTijdPickerComponent],
   templateUrl: './colon-client-afspraak-zoeken.component.html',
   styles: `
     .datetimepicker {
@@ -44,7 +49,6 @@ import { StringsService } from '@shared/strings'
       max-width: 100%;
     }
   `,
-  providers: [provideDsIsoStringDateAdapter()],
 })
 export class ColonClientAfspraakZoekenComponent {
   afspraakType = model<ColonIntakeafspraakAanmakenType>(ColonIntakeafspraakAanmakenType.STANDAARD)

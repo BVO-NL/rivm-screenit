@@ -23,6 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.ce.werklijst.onderbr
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import nl.rivm.screenit.Constants;
@@ -79,7 +80,6 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.beans.support.PropertyComparator;
 import org.wicketstuff.shiro.ShiroConstraint;
 
 import static nl.rivm.screenit.util.StringUtil.propertyChain;
@@ -133,7 +133,7 @@ public class MammaCeOnderbrokenOnderzoekenWerklijstPage extends AbstractMammaCeW
 				mogelijkeScreeningsEenheden.addAll(screeningsEenheidService.getActieveScreeningsEenhedenVoorBeoordelingsEenheid(be));
 			}
 		}
-		mogelijkeScreeningsEenheden.sort(new PropertyComparator<>("code", true, true));
+		mogelijkeScreeningsEenheden.sort(Comparator.comparing(MammaScreeningsEenheid::getCode, String.CASE_INSENSITIVE_ORDER));
 		return mogelijkeScreeningsEenheden;
 	}
 

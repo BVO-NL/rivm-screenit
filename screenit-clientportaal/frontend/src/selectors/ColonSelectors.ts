@@ -19,15 +19,19 @@
  * =========================LICENSE_END==================================
  */
 import {State} from "../datatypes/State"
+import {VrijSlotZonderKamer} from "../datatypes/VrijSlotZonderKamer"
+import {ColonDossier} from "../datatypes/colon/ColonDossier"
+import {ColonHeeftAsaScoreBovenDrie} from "../datatypes/colon/ColonHeeftAsaScoreBovenDrie"
+import {ColonIntakeafspraakDto} from "../datatypes/colon/ColonIntakeafspraakDto"
 import {ColonIntakeafspraakType} from "../datatypes/colon/ColonIntakeafspraakType"
 
-export const selectIntakeAfspraak = (state: State) => state.client.colonDossier.intakeAfspraak
-export const selectColonDossier = (state: State) => state.client.colonDossier
-export const selectHeraanmelding = (state: State) => {
+export const selectIntakeAfspraak = (state: State): ColonIntakeafspraakDto | undefined => state.client.colonDossier.intakeAfspraak
+export const selectColonDossier = (state: State): ColonDossier => state.client.colonDossier
+export const selectHeraanmelding = (state: State): boolean | undefined => {
 	const huidigeIntakeAfspraak = selectIntakeAfspraak(state)
 	return huidigeIntakeAfspraak?.afspraakAfgezegd || huidigeIntakeAfspraak?.andereIntakelocatieOpVerzoekClient
 }
-export const selectGeselecteerdSlot = (state: State) => state.client.colonDossier.slot
-export const selectIntakeafspraakType = (state: State) => state.client.colonDossier.geselecteerdeIntakeafspraakType
-export const selectHeeftAsaScoreBovenDrie = (state: State) => state.client.colonDossier.heeftAsaScoreBovenDrie
+export const selectGeselecteerdSlot = (state: State): VrijSlotZonderKamer | null => state.client.colonDossier.slot
+export const selectIntakeafspraakType = (state: State): ColonIntakeafspraakType | undefined => state.client.colonDossier.geselecteerdeIntakeafspraakType
+export const selectHeeftAsaScoreBovenDrie = (state: State): ColonHeeftAsaScoreBovenDrie | undefined => state.client.colonDossier.heeftAsaScoreBovenDrie
 export const selectAfspraakTypeDigitaal = (state: State): boolean => state.client.colonDossier.geselecteerdeIntakeafspraakType === ColonIntakeafspraakType.DIGITAAL

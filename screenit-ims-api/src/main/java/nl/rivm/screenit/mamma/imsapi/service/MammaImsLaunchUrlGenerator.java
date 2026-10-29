@@ -23,7 +23,7 @@ package nl.rivm.screenit.mamma.imsapi.service;
 
 public interface MammaImsLaunchUrlGenerator
 {
-	String generateLoginLaunchUrl(String encryptionKey, String username, String role, boolean launchUrlSha1Mode);
+	String generateLoginLaunchUrl(String encryptionKey, String username, String role);
 
-	String generateDesktopSyncLaunchUrl(String encryptionKey, String username, String role, String bsn, String accessionNumber, boolean launchUrlSha1Mode);
+	String generateDesktopSyncLaunchUrl(String encryptionKey, String username, String role, String bsn, String accessionNumber);
 }

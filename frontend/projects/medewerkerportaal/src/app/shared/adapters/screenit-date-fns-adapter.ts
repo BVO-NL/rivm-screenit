@@ -20,26 +20,27 @@
  */
 import { Injectable } from '@angular/core'
 import { DateFnsAdapter } from '@angular/material-date-fns-adapter'
-import { format as formatDate, parse, isValid, subYears } from 'date-fns'
+import { format as formatDate, isValid, parse, subYears } from 'date-fns'
+import { DateService } from '@shared/services/date/date.service'
+import { DateAdapter } from '@angular/material/core'
 
 @Injectable()
 export class ScreenitDateFnsAdapter extends DateFnsAdapter {
-
   override parse(value: unknown, parseFormat: string | string[]): Date | null {
     if (typeof value === 'string') {
       const trimmed = value.trim()
       let kandidaat: Date | null = null
 
       if (/^\d{8}$/.test(trimmed)) {
-        kandidaat = parse(trimmed, 'ddMMyyyy', new Date())
+        kandidaat = parse(trimmed, 'ddMMyyyy', DateService.nu())
       } else if (/^\d{6}$/.test(trimmed)) {
-        kandidaat = parse(trimmed, 'ddMMyy', new Date())
+        kandidaat = parse(trimmed, 'ddMMyy', DateService.nu())
       } else if (/^\d{2}-\d{2}-\d{2}$/.test(trimmed)) {
-        kandidaat = parse(trimmed, 'dd-MM-yy', new Date())
+        kandidaat = parse(trimmed, 'dd-MM-yy', DateService.nu())
       }
 
       if (kandidaat && isValid(kandidaat)) {
-        const cutoffJaar = new Date().getFullYear() + 1
+        const cutoffJaar = DateService.nu().getFullYear() + 1
         if (kandidaat.getFullYear() > cutoffJaar) {
           kandidaat = subYears(kandidaat, 100)
         }
@@ -50,6 +51,10 @@ export class ScreenitDateFnsAdapter extends DateFnsAdapter {
     return superResultaat && isValid(superResultaat) ? this.alsLocalDate(superResultaat) : null
   }
 
+  override today(): Date {
+    return DateService.nu()
+  }
+
   override toIso8601(date: Date): string {
     return formatDate(date, 'yyyy-MM-dd')
   }
@@ -57,5 +62,12 @@ export class ScreenitDateFnsAdapter extends DateFnsAdapter {
   private alsLocalDate(date: Date): Date {
     date.toJSON = () => formatDate(date, 'yyyy-MM-dd')
     return date
+  }
+}
+
+export function provideScreenitDateFnsAdapter() {
+  return {
+    provide: DateAdapter,
+    useClass: ScreenitDateFnsAdapter,
   }
 }

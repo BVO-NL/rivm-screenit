@@ -30,6 +30,7 @@ import {formatDate, getAantalDagenTussenDatums, getBovengrensUitLijst, minDagen,
 import ScreenitDatePicker from "../../../components/input/ScreenitDatePicker"
 import * as Yup from "yup"
 import {CervixUitstelStatus} from "../../../datatypes/cervix/CervixUitstelStatus"
+import {FC} from "react"
 
 export type CervixUitstelAanvragenFormProps = {
 	cervixUitstel: CervixUitstel;
@@ -39,7 +40,7 @@ export type CervixUitstelAanvragenFormProps = {
 
 }
 
-const CervixUitstelAanvragenForm = (props: CervixUitstelAanvragenFormProps) => {
+const CervixUitstelAanvragenForm: FC<CervixUitstelAanvragenFormProps> = (props) => {
 	const geboortedatum = parseIsoDatumNederlandseIso(props.geboortedatumDisplay)
 	const datumVanDertigsteVerjaardag = new Date(geboortedatum.setFullYear(geboortedatum.getFullYear() + 30))
 	const duurZwangerschap = 9
@@ -53,7 +54,7 @@ const CervixUitstelAanvragenForm = (props: CervixUitstelAanvragenFormProps) => {
 	const minDatumAnders = getBovengrensUitLijst([plusDagen(datumVanDertigsteVerjaardag, 1), plusDagen(vandaag(), 1)])
 	const maxDatumAnders = props.uitstelStatus.datumVolgendeRonde != null ? props.uitstelStatus.datumVolgendeRonde : plusMaanden(vandaag(), 60)
 
-	function getInitialValueUitstellenTotDatum() {
+	function getInitialValueUitstellenTotDatum(): Date | null {
 		if (props.cervixUitstel.uitstelType === CervixUitstelType.ZWANGERSCHAP && props.cervixUitstel.uitstellenTotDatum) {
 			return minDagen(props.cervixUitstel.uitstellenTotDatum, minPeriodeTussenZwangerEnOnderzoek)
 		} else {

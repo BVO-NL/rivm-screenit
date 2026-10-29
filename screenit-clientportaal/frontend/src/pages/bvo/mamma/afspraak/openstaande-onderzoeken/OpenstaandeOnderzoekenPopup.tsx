@@ -33,12 +33,13 @@ import Button from "../../../../../components/input/Button"
 import {getString} from "../../../../../utils/TekstPropertyUtil"
 import properties from "./OpenstaandeOnderzoekenPopupProperties.json"
 import {useNavigate} from "react-router"
+import {FC} from "react"
 
 export type OpenstaandeOnderzoekenPopupProps = {
 	openstaandeOnderzoeken?: OpenstaandeUitnodiging[],
 }
 
-export const OpenstaandeOnderzoekenPopup = (props: OpenstaandeOnderzoekenPopupProps) => {
+export const OpenstaandeOnderzoekenPopup: FC<OpenstaandeOnderzoekenPopupProps> = (props) => {
 	const bvo = useSelectedBvo()
 	const navigate = useNavigate()
 

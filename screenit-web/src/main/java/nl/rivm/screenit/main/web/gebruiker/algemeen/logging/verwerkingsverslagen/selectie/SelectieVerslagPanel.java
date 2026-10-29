@@ -47,7 +47,6 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.springframework.beans.support.PropertyComparator;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 import com.google.common.base.Predicate;
@@ -61,7 +60,7 @@ public class SelectieVerslagPanel extends GenericPanel<ColonSelectieRapportage>
 
 		add(DateLabel.forDatePattern("datumVerwerking", "dd-MM-yyyy HH:mm:ss"));
 
-		add(new PropertyListView<ColonSelectieRapportageEntry>("gemaakt", new IModel<List<ColonSelectieRapportageEntry>>()
+		add(new PropertyListView<>("gemaakt", new IModel<List<ColonSelectieRapportageEntry>>()
 		{
 			@Override
 			public List<ColonSelectieRapportageEntry> getObject()
@@ -76,14 +75,7 @@ public class SelectieVerslagPanel extends GenericPanel<ColonSelectieRapportage>
 						return input.getSelectieType() == SelectieType.UITNODIGING_GEMAAKT;
 					}
 				}));
-				Collections.sort(selectieRapportageEntries, new Comparator<ColonSelectieRapportageEntry>()
-				{
-					@Override
-					public int compare(ColonSelectieRapportageEntry o1, ColonSelectieRapportageEntry o2)
-					{
-						return o1.getUitnodigingscategorie().name().compareTo(o2.getUitnodigingscategorie().name());
-					}
-				});
+				selectieRapportageEntries.sort(Comparator.comparing((ColonSelectieRapportageEntry entry) -> entry.getUitnodigingscategorie().name()));
 				return selectieRapportageEntries;
 			}
 		})
@@ -152,7 +144,7 @@ public class SelectieVerslagPanel extends GenericPanel<ColonSelectieRapportage>
 		});
 
 		List<ColonSelectieRapportageGewijzigdGebiedEntry> list = new ArrayList<>(model.getObject().getGewijzigdeGebieden());
-		Collections.sort(list, new PropertyComparator("uitnodigingsGebied.naam", false, true));
+		list.sort(Comparator.comparing((ColonSelectieRapportageGewijzigdGebiedEntry entry) -> entry.getUitnodigingsGebied().getNaam()));
 		add(new ListView<ColonSelectieRapportageGewijzigdGebiedEntry>("gewijzigdeGebieden", ModelUtil.listRModel(list, false))
 		{
 			@Override

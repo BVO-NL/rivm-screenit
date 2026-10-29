@@ -21,7 +21,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.route;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +49,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.beans.support.PropertyComparator;
 
 public abstract class MammaRouteConceptWijzigingMeldingenDialogPanel extends GenericPanel<PlanningConceptMeldingenDto>
 {
@@ -77,9 +76,6 @@ public abstract class MammaRouteConceptWijzigingMeldingenDialogPanel extends Gen
 		listContainer.setOutputMarkupId(true);
 		add(new IndicatingAjaxLink<Void>("doorvoeren")
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
@@ -106,13 +102,9 @@ public abstract class MammaRouteConceptWijzigingMeldingenDialogPanel extends Gen
 	{
 		final var container = new WebMarkupContainer("container");
 		var screeningsEenheden = model.getObject().seMeldingen.keySet().stream().map(seId -> hibernateService.load(MammaScreeningsEenheid.class, seId))
-			.collect(Collectors.toList());
-		Collections.sort(screeningsEenheden, new PropertyComparator<>("code", false, true));
-		container.add(new ListView<MammaScreeningsEenheid>("seMeldingen", ModelUtil.listRModel(screeningsEenheden, false))
+			.sorted(Comparator.comparing(MammaScreeningsEenheid::getCode)).collect(Collectors.toList());
+		container.add(new ListView<>("seMeldingen", ModelUtil.listRModel(screeningsEenheden, false))
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void populateItem(ListItem<MammaScreeningsEenheid> item)
 			{
@@ -122,19 +114,12 @@ public abstract class MammaRouteConceptWijzigingMeldingenDialogPanel extends Gen
 				var collapseLink = new WebMarkupContainer("collapseLink");
 				collapseLink.add(new AttributeAppender("data-parent", "#" + container.getMarkupId()));
 				collapseLink.add(new AttributeAppender("href", "#" + content.getMarkupId()));
-				var iconClass = "green";
-				switch (meldingenPerSeDto.niveau)
+				var iconClass = switch (meldingenPerSeDto.niveau)
 				{
-				case INFO:
-					iconClass = "green";
-					break;
-				case WAARSCHUWING:
-					iconClass = "orange";
-					break;
-				case PROBLEEM:
-					iconClass = "red";
-					break;
-				}
+					case INFO -> "green";
+					case WAARSCHUWING -> "orange";
+					case PROBLEEM -> "red";
+				};
 				var status = new WebMarkupContainer("niveauIcon");
 				status.add(new AttributeAppender("class", " " + iconClass));
 				collapseLink.add(status);
@@ -150,11 +135,8 @@ public abstract class MammaRouteConceptWijzigingMeldingenDialogPanel extends Gen
 	private Component createMeldingenView(List<PlanningMeldingDto> meldingen)
 	{
 		var content = new WebMarkupContainer("content");
-		content.add(new ListView<PlanningMeldingDto>("meldingen", meldingen)
+		content.add(new ListView<>("meldingen", meldingen)
 		{
-
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void populateItem(ListItem<PlanningMeldingDto> item)
 			{

@@ -24,9 +24,13 @@ package nl.rivm.screenit.dvabron.models;
 import lombok.Getter;
 import lombok.Setter;
 
+import nl.rivm.screenit.dvabron.enums.DvaToetsResult;
+
 @Getter
 @Setter
 public class DvaToetsResponse
 {
-	private DvaToetsResultaat[] resultaten;
+	private DvaToetsResult toetsresultaat;
+
+	private DvaGegevensdienstBeschikbaarheid[] resultaten;
 }

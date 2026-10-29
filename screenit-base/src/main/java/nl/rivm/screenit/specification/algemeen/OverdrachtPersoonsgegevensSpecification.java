@@ -21,6 +21,10 @@ package nl.rivm.screenit.specification.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDateTime;
+
+import jakarta.persistence.criteria.JoinType;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -28,7 +32,13 @@ import nl.rivm.screenit.model.AanvraagBriefStatus;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens_;
+import nl.rivm.screenit.model.algemeen.OverdrachtType;
+import nl.rivm.screenit.model.enums.BestandStatus;
+import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek;
+import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek_;
 import nl.rivm.screenit.specification.ExtendedSpecification;
+
+import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OverdrachtPersoonsgegevensSpecification
@@ -36,6 +46,11 @@ public class OverdrachtPersoonsgegevensSpecification
 	public static ExtendedSpecification<OverdrachtPersoonsgegevens> heeftClient(Client client)
 	{
 		return (r, q, cb) -> cb.equal(r.get(OverdrachtPersoonsgegevens_.client), client);
+	}
+
+	public static ExtendedSpecification<OverdrachtPersoonsgegevens> heeftDownloadVerzoek(MammaDownloadOnderzoekenVerzoek verzoek)
+	{
+		return (r, q, cb) -> cb.equal(r.get(OverdrachtPersoonsgegevens_.mammaDownloadOnderzoekenVerzoek), verzoek);
 	}
 
 	public static ExtendedSpecification<OverdrachtPersoonsgegevens> heeftStatus(AanvraagBriefStatus status)
@@ -46,5 +61,40 @@ public class OverdrachtPersoonsgegevensSpecification
 	public static ExtendedSpecification<OverdrachtPersoonsgegevens> heeftOpenstaandVerzoek(Client client)
 	{
 		return heeftClient(client).and(ExtendedSpecification.not(heeftStatus(AanvraagBriefStatus.VERWERKT)));
+	}
+
+	public static ExtendedSpecification<OverdrachtPersoonsgegevens> heeftType(OverdrachtType type)
+	{
+		return (r, q, cb) -> cb.equal(r.get(OverdrachtPersoonsgegevens_.type), type);
+	}
+
+	public static ExtendedSpecification<OverdrachtPersoonsgegevens> heeftGeenDataDump()
+	{
+		return (r, q, cb) -> cb.isNull(r.get(OverdrachtPersoonsgegevens_.dataDumpGegenereerdOp));
+	}
+
+	public static ExtendedSpecification<OverdrachtPersoonsgegevens> heeftDataDump()
+	{
+		return (r, q, cb) -> cb.and(cb.isNotNull(r.get(OverdrachtPersoonsgegevens_.dataDumpGegenereerdOp)),
+			cb.isNotNull(r.get(OverdrachtPersoonsgegevens_.gegenereerdeDataDump)));
+	}
+
+	public static ExtendedSpecification<OverdrachtPersoonsgegevens> heeftNogTeVerwijderenDataDump(LocalDateTime grensDatum)
+	{
+		return (r, q, cb) -> cb.and(
+			cb.isNotNull(r.get(OverdrachtPersoonsgegevens_.gegenereerdeDataDump)),
+			cb.lessThan(r.get(OverdrachtPersoonsgegevens_.dataDumpGegenereerdOp), grensDatum));
+	}
+
+	public static ExtendedSpecification<OverdrachtPersoonsgegevens> moetDataDumpGenereren()
+	{
+		return (r, q, cb) ->
+		{
+			var verzoekJoin = join(r, OverdrachtPersoonsgegevens_.mammaDownloadOnderzoekenVerzoek, JoinType.LEFT);
+			var bkBeelden = r.get(OverdrachtPersoonsgegevens_.bkBeelden);
+			return cb.or(cb.and(
+				cb.isTrue(bkBeelden),
+				cb.equal(verzoekJoin.get(MammaDownloadOnderzoekenVerzoek_.status), BestandStatus.VERWERKT)), cb.isFalse(r.get(OverdrachtPersoonsgegevens_.bkBeelden)));
+		};
 	}
 }

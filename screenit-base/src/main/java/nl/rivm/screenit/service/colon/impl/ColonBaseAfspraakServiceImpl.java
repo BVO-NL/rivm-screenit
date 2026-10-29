@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -103,7 +103,6 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject_;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.support.PropertyComparator;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -830,8 +829,8 @@ public class ColonBaseAfspraakServiceImpl implements ColonBaseAfspraakService
 				{
 
 					fitRegistratie = null;
-					List<ColonScreeningRonde> rondes = new ArrayList<>(dossier.getScreeningRondes());
-					Collections.sort(rondes, new PropertyComparator<>("id", false, true));
+					var rondes = new ArrayList<>(dossier.getScreeningRondes());
+					rondes.sort(Comparator.comparing(ColonScreeningRonde::getId, Comparator.nullsFirst(Comparator.naturalOrder())));
 					for (var ronde : rondes)
 					{
 						if (!ronde.equals(laatsteScreeningRonde))

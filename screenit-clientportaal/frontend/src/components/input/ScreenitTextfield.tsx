@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import styles from "./ScreenitTextfield.module.scss"
-import {ChangeEvent, ReactElement, useEffect, useState} from "react"
+import {ChangeEvent, ReactElement, useState} from "react"
 import classNames from "classnames"
 
 export type TextfieldProps = {
@@ -33,22 +33,15 @@ export type TextfieldProps = {
 }
 
 const ScreenitTextfield = (props: TextfieldProps): ReactElement => {
-	const [active, setActive] = useState<boolean>(false)
-
-	useEffect(() => {
-		if (props.value !== undefined && props.value !== "") {
-			setActive(true)
-		}
-	}, [props.value])
+	const [focused, setFocused] = useState<boolean>(false)
+	const active = focused || (props.value !== undefined && props.value !== "")
 
 	const activateField = (): void => {
-		setActive(true)
+		setFocused(true)
 	}
 
 	const disableField = (): void => {
-		if (props.value === "") {
-			setActive(false)
-		}
+		setFocused(false)
 	}
 
 	const updateInputValue = (e: ChangeEvent<HTMLInputElement>): void => {

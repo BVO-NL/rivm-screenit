@@ -46,6 +46,7 @@ import nl.rivm.screenit.model.TijdelijkGbaAdres;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.GbaStatus;
 import nl.rivm.screenit.repository.algemeen.ClientRepository;
+import nl.rivm.screenit.service.ClientDoelgroepService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.specification.HibernateObjectSpecification;
 import nl.rivm.screenit.util.DateUtil;
@@ -79,6 +80,8 @@ public class ClientZoekenServiceImpl implements ClientZoekenService
 	private final ClientRepository clientRepository;
 
 	private final ClientMapper clientMapper;
+
+	private final ClientDoelgroepService doelgroepService;
 
 	@Override
 	public List<Client> zoekClienten(ClientZoekenFilterDto filter)
@@ -195,6 +198,14 @@ public class ClientZoekenServiceImpl implements ClientZoekenService
 			actieveBvos.add(Bevolkingsonderzoek.MAMMA);
 		}
 		return actieveBvos;
+	}
+
+	@Override
+	public List<Bevolkingsonderzoek> getDoelgroepBvos(Long clientId)
+	{
+		var client = clientService.getClientById(clientId)
+			.orElseThrow();
+		return doelgroepService.totWelkeBevolkingsonderzoekenHoortDezeClient(client);
 	}
 
 	@Override

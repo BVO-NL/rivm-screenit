@@ -30,8 +30,9 @@ import properties from "./CervixHerdrukAanvragenPage.json"
 import SubmitButton from "../../../components/input/SubmitButton"
 import {useNavigate} from "react-router"
 import {showToast} from "../../../utils/ToastUtil"
+import {FC} from "react"
 
-const CervixHerdrukAanvragenPage = () => {
+const CervixHerdrukAanvragenPage: FC = () => {
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()
 

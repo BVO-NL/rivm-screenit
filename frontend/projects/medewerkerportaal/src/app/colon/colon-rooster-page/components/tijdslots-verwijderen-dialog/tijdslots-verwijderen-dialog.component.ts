@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core'
+import { Component, inject, signal } from '@angular/core'
 import { DatePipe, LowerCasePipe } from '@angular/common'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
 import { Dialog, DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
@@ -79,7 +79,6 @@ import { StringsService } from '@shared/strings'
     DsCheckboxComponent,
     LowerCasePipe,
   ],
-  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './tijdslots-verwijderen-dialog.component.html',
 })
 export class TijdslotsVerwijderenDialogComponent extends DsAbstractSelectableTable<ColonTijdslot> {

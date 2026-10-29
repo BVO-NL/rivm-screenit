@@ -22,13 +22,16 @@ package nl.rivm.screenit.service;
  */
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import nl.rivm.screenit.dto.alg.client.contact.DeelnamewensDto;
 import nl.rivm.screenit.dto.mamma.afspraken.IMammaAfspraakWijzigenFilter;
 import nl.rivm.screenit.model.Aanhef;
 import nl.rivm.screenit.model.Account;
+import nl.rivm.screenit.model.Afmelding;
 import nl.rivm.screenit.model.AfmeldingType;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContact;
@@ -37,8 +40,11 @@ import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.ClientContactActieTypeFilter;
 import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.RedenGbaVraag;
+import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.ColonNieuwFitResultaat;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
@@ -46,10 +52,15 @@ import nl.rivm.screenit.model.mamma.MammaAfspraak;
 public interface ClientContactService
 {
 
-	Optional<ClientContact> getClientContactById(Long id);
+	ClientContact getClientContactById(Long id);
 
-	ClientContact maakClientContact(Client client, LocalDateTime datum, List<ClientContactActieType> acties, String opmerking,
+	ClientContact maakClientContact(Client client, LocalDateTime moment, List<ClientContactActieType> acties, String opmerking,
 		OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
+	ClientContact maakClientContact(Client client, LocalDateTime moment, ClientContactActieType actie, String opmerking,
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
+	ClientContact maakClientContact(Client client, ClientContactActieType actie, String opmerking, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	ClientContact updateClientContact(ClientContact contact, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
@@ -68,6 +79,8 @@ public interface ClientContactService
 
 	List<ClientContactActieType> getAvailableActies(Client client, boolean viaClientPortaal);
 
+	List<ClientContactActieType> getAvailableActies(Client client, Collection<ClientContactActieType> teControlerenActieTypes);
+
 	boolean availableActiesBevatBenodigdeActie(Client client, ClientContactActieType benodigdeActie);
 
 	ColonNieuwFitResultaat vraagNieuweFitAan(Client client, Account account);
@@ -77,6 +90,21 @@ public interface ClientContactService
 	void saveTijdelijkAdres(Account account, Client client, TijdelijkAdres tijdelijkAdres);
 
 	void saveAanhef(Account account, Client client, Aanhef aanhef);
+
+	void wijzigAanhef(Client client, Aanhef aanhef, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
+	void registreerDeelnamewensen(Client client, DeelnamewensDto deelnamewensDto, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
+	void vraagClientgegevensOpnieuwAan(Client client, RedenGbaVraag reden, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
+	void vraagKeuzeGebruikGegevensBriefAan(Client client, BriefType briefType, boolean handtekeningVergeten, String notitie,
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
+	void wijzigTijdelijkAdres(Client client, TijdelijkAdres tijdelijkAdres, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
+	void heraanmeldenCervix(Client client, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
+	<A extends Afmelding<?, ?, ?>> Optional<A> zoekAfmeldingOmHeraanTeMelden(Dossier<? extends ScreeningRonde<?, ?, ? extends A, ?>, ? extends A> dossier);
 
 	List<AfmeldingType> getAvailableAfmeldoptiesColon(Client client, boolean viaPortaalGevraagd);
 

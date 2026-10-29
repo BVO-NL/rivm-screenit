@@ -28,8 +28,9 @@ import {useSelectedBvo} from "../../utils/Hooks"
 import {ToastMessageType} from "../../datatypes/toast/ToastMessage"
 import ErrorToast from "./ErrorToast"
 import DefaultToast from "./DefaultToast"
+import {FC} from "react"
 
-const ActiveToastsComponent = () => {
+const ActiveToastsComponent: FC = () => {
 	const toasts = useSelector((state: State) => state.toasts)
 	const dispatch = useDispatch()
 	const selectedBvo = useSelectedBvo()

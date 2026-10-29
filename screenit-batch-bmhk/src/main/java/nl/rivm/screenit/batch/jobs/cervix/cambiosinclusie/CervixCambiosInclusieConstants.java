@@ -24,4 +24,16 @@ package nl.rivm.screenit.batch.jobs.cervix.cambiosinclusie;
 public abstract class CervixCambiosInclusieConstants
 {
 	public static final String LABORATORIUM_IDS = "cambios.laboratorium.ids.key";
+
+	public static final String PROJECT_ID_UITSTRIJKJE = "cambios.project.uitstrijkje.id.key";
+
+	public static final String PROJECT_ID_UITSTRIJKJE_ACTIEF = "cambios.project.uitstrijkje.actief.id.key";
+
+	public static final String PROJECT_GROEP_ID_UITSTRIJKJE = "cambios.project.groep.uitstrijkje.id.key";
+
+	public static final String PROJECT_ID_ZAS = "cambios.project.zas.id.key";
+
+	public static final String PROJECT_ID_ZAS_ACTIEF = "cambios.project.zas.actief.id.key";
+
+	public static final String PROJECT_GROEP_ID_ZAS = "cambios.project.groep.zas.id.key";
 }

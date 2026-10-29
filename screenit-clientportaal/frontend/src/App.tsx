@@ -29,8 +29,9 @@ import ActiveToastsComponent from "./components/toast/ActiveToastsComponent"
 import {useGotoPageTop, useHideAllToasts, useRefreshBvoDossier, useRefreshClient, useRefreshEnvironmentInfo} from "./utils/Hooks"
 import LoadingSpinnerOverlay from "./components/loading/LoadingSpinnerOverlay"
 import UnsupportedBrowserBanner from "./components/banner/unsupportedbrowser/UnsupportedBrowserBanner"
+import {FC} from "react"
 
-const App = () => {
+const App: FC = () => {
 	useRefreshEnvironmentInfo()
 	useRefreshClient()
 	useRefreshBvoDossier()

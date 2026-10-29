@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useEffect} from "react"
+import {FC, useEffect} from "react"
 import {Col, Row} from "react-bootstrap"
 import TopTaakComponent from "../taken/TopTaakComponent"
 import {ClientContactActieType} from "../../datatypes/ClientContactActieType"
@@ -43,7 +43,7 @@ export type ColonTopTakenComponentProps = {
 	beschikbareActies: ClientContactActieType[]
 }
 
-const ColonTopTakenComponent = (props: ColonTopTakenComponentProps) => {
+const ColonTopTakenComponent: FC<ColonTopTakenComponentProps> = (props) => {
 
 	const dispatch = useThunkDispatch()
 	const huisartsVorigeRondeIsBekend = useSelector((state: State) => !!state.client.colonDossier.huisartsVorigeRonde)

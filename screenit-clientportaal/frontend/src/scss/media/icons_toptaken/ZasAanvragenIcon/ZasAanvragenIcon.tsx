@@ -18,9 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import {FC} from "react"
 import styles from "./ZasAanvragenIcon.module.scss"
 
-const ZasAanvragenIcon = () => {
+const ZasAanvragenIcon: FC = () => {
     return (
         <svg version="1.1" id="Laag_1" xmlns="http:
              viewBox="0 0 47.00126 47.00126" xmlSpace="preserve">

@@ -63,7 +63,10 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.validation.validator.StringValidator;
 import org.bouncycastle.util.Strings;
+
+import static nl.rivm.screenit.Constants.MAX_LENGTE_BRIEF_AFDRUKOPDRACHT_VELDEN;
 
 @Slf4j
 public class BriefActieEditPage extends ProjectBasePage
@@ -128,7 +131,7 @@ public class BriefActieEditPage extends ProjectBasePage
 			types.add(ProjectBriefActieType.VERVANGENDEBRIEF);
 		}
 
-		var typeDropDown = new ScreenitDropdown<ProjectBriefActieType>("type", new ListModel<>(types),
+		var typeDropDown = new ScreenitDropdown<>("type", new ListModel<>(types),
 			new EnumChoiceRenderer<>());
 		typeDropDown.add(new AjaxFormComponentUpdatingBehavior("change")
 		{
@@ -146,8 +149,7 @@ public class BriefActieEditPage extends ProjectBasePage
 		});
 		form.add(typeDropDown);
 
-		form.add(new TextField<>("printomschrijving"));
-
+		form.add(new TextField<>("printomschrijving").add(StringValidator.maximumLength(MAX_LENGTE_BRIEF_AFDRUKOPDRACHT_VELDEN)));
 		add(new IndicatingAjaxLink<>("annuleren", model)
 		{
 

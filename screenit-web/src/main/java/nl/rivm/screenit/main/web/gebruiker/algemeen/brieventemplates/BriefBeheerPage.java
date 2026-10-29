@@ -21,6 +21,7 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.brieventemplates;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ import nl.rivm.screenit.model.BriefDefinitiesFilter;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
+import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileType;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.enums.ToegangLevel;
@@ -68,7 +70,6 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.lang.Bytes;
-import org.springframework.beans.support.PropertyComparator;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 import org.wicketstuff.shiro.ShiroConstraint;
 
@@ -242,7 +243,7 @@ public class BriefBeheerPage extends AlgemeenPage
 	{
 		if (briefDefinities == null)
 		{
-			briefDefinities = ModelUtil.listModel(briefService.getBriefDefinities(zoekCriteria.getObject(), new PropertyComparator<>("codeEnNaam", true, true)));
+			briefDefinities = ModelUtil.listModel(briefService.getBriefDefinities(zoekCriteria.getObject(), Comparator.comparing(BriefType::getCodeEnNaam, String.CASE_INSENSITIVE_ORDER)));
 		}
 		return briefDefinities.getObject();
 	}

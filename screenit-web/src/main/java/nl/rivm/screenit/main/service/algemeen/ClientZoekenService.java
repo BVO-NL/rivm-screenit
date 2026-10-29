@@ -36,6 +36,8 @@ public interface ClientZoekenService
 
 	List<Bevolkingsonderzoek> getActieveBvos(Long clientId);
 
+	List<Bevolkingsonderzoek> getDoelgroepBvos(Long clientId);
+
 	BrpGegevensDto getBrpGegevens(Long clientId);
 
 	TijdelijkAdresDto getBrpTijdelijkAdres(Long clientId);

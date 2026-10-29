@@ -67,9 +67,9 @@ export default class HuisartsView extends Component<HuisartsViewStateProps & Hui
 	}
 
 	toggleHuisartsZoekenPopup = (): void => {
-		this.setState({
-			toonHuisartsZoekenPopup: !this.state.toonHuisartsZoekenPopup,
-		})
+		this.setState(vorigeState => ({
+			toonHuisartsZoekenPopup: !vorigeState.toonHuisartsZoekenPopup,
+		}))
 	}
 
 	selecteerHuisarts = (huisarts: Huisarts): void => {

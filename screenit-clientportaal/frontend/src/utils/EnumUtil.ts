@@ -23,5 +23,5 @@ export const splitEnumString = (fullEnum: string): string => {
 }
 
 export function assertUnreachable(_x?: never): never {
-    throw new Error("Didn't expect to get here: " + _x)
+    throw new Error(`Didn't expect to get here: ${  _x}`)
 }

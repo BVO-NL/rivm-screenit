@@ -21,10 +21,10 @@
 import {TelefoonNummerDto} from "../datatypes/telefoonnummer/TelefoonNummerDto"
 import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
-import {createPersoonAction} from "../actions/PersoonAction"
+import {createPersoonAction, PersoonAction} from "../actions/PersoonAction"
 import {Persoon} from "../datatypes/Persoon"
 
-export const saveTelefoonNummers = (telefoonNummers: TelefoonNummerDto) => (dispatch: Dispatch) => {
+export const saveTelefoonNummers = (telefoonNummers: TelefoonNummerDto) => (dispatch: Dispatch): Promise<PersoonAction> => {
 	return ScreenitBackend.put<Persoon>("persoon/telefoonnummer", {json: telefoonNummers}).json()
 		.then(response => dispatch(createPersoonAction(response)))
 }

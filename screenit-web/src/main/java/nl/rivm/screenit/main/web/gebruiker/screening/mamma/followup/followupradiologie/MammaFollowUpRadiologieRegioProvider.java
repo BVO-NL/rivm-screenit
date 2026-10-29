@@ -28,6 +28,7 @@ import nl.rivm.screenit.dto.mamma.MammaFollowUpOrganisatieRadiologieDto;
 import nl.rivm.screenit.main.service.mamma.MammaFollowUpService;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
 import nl.rivm.screenit.model.enums.MammaFollowUpDoorverwezenFilterOptie;
+import nl.rivm.screenit.util.DynamicPropertyComparator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -36,7 +37,6 @@ import org.apache.wicket.injection.Injector;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.beans.support.PropertyComparator;
 
 public class MammaFollowUpRadiologieRegioProvider extends SortableDataProvider<MammaFollowUpOrganisatieRadiologieDto, String>
 {
@@ -66,7 +66,7 @@ public class MammaFollowUpRadiologieRegioProvider extends SortableDataProvider<M
 	{
 		setList();
 
-		return organisatieList.stream().sorted(new PropertyComparator<>(getSort().getProperty(), true, getSort().isAscending())).skip(first).limit(count)
+		return organisatieList.stream().sorted(new DynamicPropertyComparator<>(getSort().getProperty(), true, getSort().isAscending())).skip(first).limit(count)
 			.iterator();
 	}
 

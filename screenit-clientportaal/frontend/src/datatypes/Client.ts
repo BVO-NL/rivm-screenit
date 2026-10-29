@@ -26,6 +26,7 @@ import {CervixDossier} from "./CervixDossier"
 import {OpenstaandeUitnodiging} from "./uitnodiging/OpenstaandeUitnodiging"
 import {ColonDossier} from "./colon/ColonDossier"
 import {MammaAfspraak} from "./mamma/MammaAfspraak"
+import {OverdrachtPersoonsgegevens} from "./OverdrachtPersoonsgegevens"
 
 export type Client = {
 	beschikbareActies: ContactActiesDto,
@@ -36,4 +37,5 @@ export type Client = {
 	persoon: Persoon,
 	mammaAfspraak: MammaAfspraak
 	openstaandeUitnodigingen: OpenstaandeUitnodiging[]
+	overdrachtPersoonsgegevens: OverdrachtPersoonsgegevens,
 }

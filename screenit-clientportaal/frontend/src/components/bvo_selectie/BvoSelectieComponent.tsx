@@ -28,12 +28,13 @@ import {useLocation, useNavigate} from "react-router"
 import {selectBehoortTotCervixDoelgroep, selectBehoortTotColonDoelgroep, selectBehoortTotMammaDoelgroep} from "../../selectors/BvoSelectors"
 import datadogService from "../../services/DatadogService"
 import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
+import {FC} from "react"
 
 type BvoSelectieComponentProps = {
 	className?: string
 }
 
-const BvoSelectieComponent = (props: BvoSelectieComponentProps) => {
+const BvoSelectieComponent: FC<BvoSelectieComponentProps> = (props) => {
 	const navigate = useNavigate()
 	const location = useLocation()
 
@@ -48,7 +49,7 @@ const BvoSelectieComponent = (props: BvoSelectieComponentProps) => {
 		analyticsCategorie = AnalyticsCategorie.MAMMA
 	}
 
-	const stuurDatadogEventEnNavigeer = (bevolkingsonderzoekNaam: string, path: string) => {
+	const stuurDatadogEventEnNavigeer = (bevolkingsonderzoekNaam: string, path: string): void => {
 		if (analyticsCategorie) {
 			datadogService.stuurEvent(bevolkingsonderzoekNaam, analyticsCategorie)
 		}

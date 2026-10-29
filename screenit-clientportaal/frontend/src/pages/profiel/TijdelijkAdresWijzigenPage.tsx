@@ -30,8 +30,9 @@ import {useNavigate} from "react-router"
 import {showToast} from "../../utils/ToastUtil"
 import datadogService from "../../services/DatadogService"
 import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
+import {FC} from "react"
 
-const TijdelijkAdresWijzigenPage = () => {
+const TijdelijkAdresWijzigenPage: FC = () => {
 	const tijdelijkAdres = useSelector((state: State) => state.client.persoon.tijdelijkAdres)
 	const dispatch = useThunkDispatch()
 	const navigate = useNavigate()

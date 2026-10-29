@@ -31,8 +31,8 @@
   [viewRange]="viewRange"
 />
 
-<full-calendar class="aantal-kamers-{{ kamers.length }}" #calendar id="roosterCalendar" [options]="calendarOptions" [resources]="kamers" [events]="tijdsloten()">
-  <ng-template #resourceLabelContent let-arg>
+<full-calendar #calendar id="roosterCalendar" [options]="calendarOptions" [resources]="kamers" [events]="tijdsloten()">
+  <ng-template #resourceDayHeaderContent let-arg>
     <span dsTooltip [content]="arg.resource.title" placement="bottom">{{ arg.resource.extendedProps.order }}</span>
   </ng-template>
   <ng-template #eventContent let-arg>

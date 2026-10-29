@@ -40,7 +40,6 @@ import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.TijdelijkGbaAdres;
 import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.rivm.screenit.model.gba.GbaVraag;
-import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.DateUtil;
@@ -50,7 +49,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 
@@ -99,53 +97,6 @@ public interface ClientMapper
 		@Mapping(target = "gbaStatus", source = "gbaStatus"),
 	})
 	ClientDto clientToClientDto(Client client, @Context ClientService clientService, @Context BezwaarService bezwaarService);
-
-	@Mappings({
-		@Mapping(source = "startDatum", target = "begindatum"),
-		@Mapping(source = "eindDatum", target = "einddatum"),
-		@Mapping(source = "straat", target = "straat"),
-		@Mapping(source = "huisnummerAanduiding", target = "huisnummerAanduiding"),
-		@Mapping(target = "clientId", ignore = true)
-	})
-	TijdelijkAdresDto tijdelijkAdresToDto(TijdelijkAdres tijdelijkAdres);
-
-	@Mappings({
-		@Mapping(source = "begindatum", target = "startDatum"),
-		@Mapping(source = "einddatum", target = "eindDatum"),
-		@Mapping(source = "straat", target = "straat"),
-		@Mapping(source = "huisnummerAanduiding", target = "huisnummerAanduiding"),
-		@Mapping(target = "id", ignore = true),
-		@Mapping(target = "soort", ignore = true),
-		@Mapping(target = "geheimadres", ignore = true),
-		@Mapping(target = "tijdelijk", ignore = true),
-		@Mapping(target = "gemeente", ignore = true),
-		@Mapping(target = "gemeentedeel", ignore = true),
-		@Mapping(target = "land", ignore = true),
-		@Mapping(target = "aanschrijfAdres", ignore = true),
-		@Mapping(target = "gemeenteCode", ignore = true),
-		@Mapping(target = "locatieBeschrijving", ignore = true),
-		@Mapping(target = "postcodeCoordinaten", ignore = true)
-	})
-	TijdelijkAdres dtoToTijdelijkAdres(TijdelijkAdresDto dto);
-
-	@Mappings({
-		@Mapping(source = "begindatum", target = "startDatum"),
-		@Mapping(source = "einddatum", target = "eindDatum"),
-		@Mapping(source = "straat", target = "straat"),
-		@Mapping(source = "huisnummerAanduiding", target = "huisnummerAanduiding"),
-		@Mapping(target = "id", ignore = true),
-		@Mapping(target = "soort", ignore = true),
-		@Mapping(target = "geheimadres", ignore = true),
-		@Mapping(target = "tijdelijk", ignore = true),
-		@Mapping(target = "gemeente", ignore = true),
-		@Mapping(target = "gemeentedeel", ignore = true),
-		@Mapping(target = "land", ignore = true),
-		@Mapping(target = "aanschrijfAdres", ignore = true),
-		@Mapping(target = "gemeenteCode", ignore = true),
-		@Mapping(target = "locatieBeschrijving", ignore = true),
-		@Mapping(target = "postcodeCoordinaten", ignore = true)
-	})
-	void updateTijdelijkAdres(@MappingTarget TijdelijkAdres target, TijdelijkAdresDto dto);
 
 	@Named("isTijdelijkAdres")
 	default boolean isTijdelijkAdres(Client client)
@@ -238,17 +189,11 @@ public interface ClientMapper
 		@Mapping(target = "mobielNummer", source = "persoon.telefoonnummer1"),
 		@Mapping(target = "extraNummer", source = "persoon.telefoonnummer2"),
 		@Mapping(target = "emailAdres", source = "persoon.emailadres"),
-		@Mapping(target = "heeftMammaAfspraak", source = "client", qualifiedByName = "heeftOpenMammaAfspraak"),
+		@Mapping(target = "mammaAfspraakDatumTijd", ignore = true),
 		@Mapping(target = "doelgroepen", ignore = true),
 		@Mapping(target = "dubbeleTijdReden", ignore = true),
 	})
-	ClientContactgegevensDto clientToClientContactgegevensDto(Client client, @Context ClientContactService clientContactService);
-
-	@Named("heeftOpenMammaAfspraak")
-	default boolean heeftOpenMammaAfspraak(Client client, @Context ClientContactService clientContactService)
-	{
-		return clientContactService.heeftOpenMammaAfspraak(client);
-	}
+	ClientContactgegevensDto clientToClientContactgegevensDto(Client client);
 
 	@Mappings({
 		@Mapping(target = "clientId", source = "id"),
@@ -365,6 +310,7 @@ public interface ClientMapper
 		@Mapping(target = "huisnummerAanduiding", source = "persoon.tijdelijkGbaAdres.huisnummerAanduiding"),
 		@Mapping(target = "postcode", source = "persoon.tijdelijkGbaAdres.postcode"),
 		@Mapping(target = "plaats", source = "persoon.tijdelijkGbaAdres.plaats"),
+		@Mapping(target = "id", source = "persoon.tijdelijkGbaAdres.id"),
 		@Mapping(target = "begindatum", ignore = true),
 		@Mapping(target = "einddatum", ignore = true),
 		@Mapping(target = "locatieBeschrijving", ignore = true),

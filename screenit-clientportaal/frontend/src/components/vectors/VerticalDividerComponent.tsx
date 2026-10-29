@@ -19,13 +19,14 @@
  * =========================LICENSE_END==================================
  */
 import classNames from "classnames"
+import {FC} from "react"
 
 export type VerticalDividerProps = {
 	className?: string,
 	heightSubtraction?: number
 }
 
-const VerticalDividerComponent = (props: VerticalDividerProps) => {
+const VerticalDividerComponent: FC<VerticalDividerProps> = (props) => {
 
 	return (
 		<svg className={classNames(props.className)} xmlns="http:

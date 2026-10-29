@@ -88,6 +88,21 @@ export const createEmptyStudyIms = (username: string): FhirUserSession => {
 		},
 	}
 }
+
+export const createConnectionTestWithEmptyMessageStudyIms = (username: string,launchUrl: string): FhirUserSession => {
+	return {
+		resourceType: "UserSession",
+		user: createUser(username),
+		focus: createFocus("", ""),
+		context: {
+			worklist: [],
+			type: "Worklist",
+			value: "UpcomingCases",
+			launchUrl,
+		},
+	}
+}
+
 export const createLogonIms = (username: string, launchUrl: string): FhirUserSession => {
 	return {
 		resourceType: "UserSession",

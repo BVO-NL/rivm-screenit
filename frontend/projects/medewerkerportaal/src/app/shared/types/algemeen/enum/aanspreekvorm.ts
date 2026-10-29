@@ -18,6 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import { Geslacht } from '@shared/types/algemeen/enum/geslacht'
+
 export enum Aanspreekvorm {
   DHR = 'DHR',
   MEVR = 'MEVR',
@@ -35,4 +37,19 @@ export const aanspreekvormLabel: Record<Aanspreekvorm, string> = {
 }
 
 export const clientAanspreekvormen = [Aanspreekvorm.GEACHTE, Aanspreekvorm.GEACHTE_HEER, Aanspreekvorm.GEACHTE_MEVROUW]
+
+export const bepaalJuisteAanspreekvorm = (aanspreekvorm: Aanspreekvorm | undefined, geslacht: Geslacht | undefined): Aanspreekvorm => {
+  if (aanspreekvorm) {
+    return aanspreekvorm
+  }
+  switch (geslacht) {
+    case Geslacht.MAN:
+      return Aanspreekvorm.GEACHTE_HEER
+    case Geslacht.VROUW:
+      return Aanspreekvorm.GEACHTE_MEVROUW
+    default:
+      return Aanspreekvorm.GEACHTE
+  }
+}
+
 export const medewerkerAanspreekvormen = [Aanspreekvorm.DHR, Aanspreekvorm.MEVR]

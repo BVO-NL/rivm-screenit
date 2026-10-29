@@ -24,6 +24,7 @@ import { formatNLDate, isValideTijd, normaliseerNaarDate, parseDate } from '@sha
 import { TIME_FORMAT } from '@shared/constants'
 import { NotificationService } from '@shared/services/notification/notification.service'
 import { ALGEMEEN_STRINGS as algemeen } from '@shared/strings'
+import { DateService } from '@shared/services/date/date.service'
 
 export const datumInVerledenValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   if (!control.dirty) {
@@ -35,7 +36,7 @@ export const datumInVerledenValidator: ValidatorFn = (control: AbstractControl):
     return null
   }
 
-  return startOfDay(datum) < startOfDay(new Date()) ? { datumInVerleden: algemeen.errors.datumInVerleden } : null
+  return startOfDay(datum) < startOfDay(DateService.nu()) ? { datumInVerleden: algemeen.errors.datumInVerleden } : null
 }
 
 export const datumTijdInVerledenValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -44,7 +45,7 @@ export const datumTijdInVerledenValidator: ValidatorFn = (control: AbstractContr
     return null
   }
 
-  return isBefore(datumTijd, new Date()) ? { datumTijdInVerleden: algemeen.errors.datumTijdInVerleden } : null
+  return isBefore(datumTijd, DateService.nu()) ? { datumTijdInVerleden: algemeen.errors.datumTijdInVerleden } : null
 }
 
 export const valideDatumValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -64,7 +65,7 @@ export const createDatumTijdInVerledenValidator =
 
     let datum = control.get(datumVeld)?.value
     const tijd = control.get(tijdVeld)?.value
-    let invalid = true
+    let invalid: boolean
 
     if (!datum) {
       return null
@@ -73,11 +74,11 @@ export const createDatumTijdInVerledenValidator =
     if (typeof datum === 'string') {
       datum = parseDate(datum)
     }
-    invalid = startOfDay(datum) < startOfDay(new Date())
+    invalid = startOfDay(datum) < startOfDay(DateService.nu())
 
     if (tijd) {
       datum = parse(tijd, 'HH:mm', datum)
-      invalid = datum < new Date()
+      invalid = datum < DateService.nu()
     }
 
     const validatieBericht = algemeen.errors.datumEnOfTijdInVerleden
@@ -129,8 +130,8 @@ export const createStartEindTijdValidator = (startVeld: string, eindVeld: string
       return null
     }
 
-    const startDatum = parse(startTijd, TIME_FORMAT, new Date())
-    const eindDatum = parse(eindTijd, TIME_FORMAT, new Date())
+    const startDatum = parse(startTijd, TIME_FORMAT, DateService.nu())
+    const eindDatum = parse(eindTijd, TIME_FORMAT, DateService.nu())
 
     const validatieBericht = algemeen.errors.veldVoorVeld(algemeen.labels.starttijd, algemeen.labels.eindtijd)
     const validatieError = eindDatum <= startDatum ? { startEindTijd: validatieBericht } : null
@@ -162,29 +163,43 @@ export const createStartEindDatumValidator = (
 export const createEinddatumNaBegindatumValidator =
   (maxJaren = 1): ValidatorFn =>
   (group: AbstractControl): ValidationErrors | null => {
-    const begindatum = group.get('begindatum')?.value
+    const begindatumControl = group.get('begindatum')
+    const begindatum = begindatumControl?.value
     const einddatumControl = group.get('einddatum')
     const einddatum = einddatumControl?.value
 
-    const currentErrors = einddatumControl?.errors ?? {}
-    const overigeErrors = { ...currentErrors }
-    delete overigeErrors['einddatumNaBegindatum']
-    delete overigeErrors['einddatumMaxJaren']
+    const einddatumNietNaBegindatum = Boolean(begindatum && einddatum && new Date(einddatum) <= new Date(begindatum))
 
-    if (begindatum && einddatum && new Date(einddatum) <= new Date(begindatum)) {
-      overigeErrors['einddatumNaBegindatum'] = true
+    const einddatumErrors = { ...einddatumControl?.errors }
+    delete einddatumErrors['einddatumNaBegindatum']
+    delete einddatumErrors['einddatumMaxJaren']
+    if (!einddatumNietNaBegindatum) {
+      delete einddatumErrors['lessThanMinDate']
+    }
+
+    const meldingOntbreekt = einddatumNietNaBegindatum && !einddatumErrors['lessThanMinDate']
+    const toonMeldingBijBegindatum = meldingOntbreekt && !!begindatumControl?.dirty
+    if (meldingOntbreekt && !toonMeldingBijBegindatum) {
+      einddatumErrors['einddatumNaBegindatum'] = true
     }
 
     if (einddatum) {
-      const maxDatum = addYears(new Date(), maxJaren)
+      const maxDatum = addYears(DateService.nu(), maxJaren)
       if (new Date(einddatum) > maxDatum) {
-        overigeErrors['einddatumMaxJaren'] = true
+        einddatumErrors['einddatumMaxJaren'] = true
       }
     }
 
-    einddatumControl?.setErrors(Object.keys(overigeErrors).length ? overigeErrors : null)
+    einddatumControl?.setErrors(Object.keys(einddatumErrors).length ? einddatumErrors : null)
 
-    if (overigeErrors['einddatumNaBegindatum'] || overigeErrors['einddatumMaxJaren']) {
+    const begindatumErrors = { ...begindatumControl?.errors }
+    delete begindatumErrors['begindatumVoorEinddatum']
+    if (toonMeldingBijBegindatum) {
+      begindatumErrors['begindatumVoorEinddatum'] = true
+    }
+    begindatumControl?.setErrors(Object.keys(begindatumErrors).length ? begindatumErrors : null)
+
+    if (einddatumNietNaBegindatum || einddatumErrors['einddatumMaxJaren']) {
       return { einddatumOnjuist: true }
     }
 

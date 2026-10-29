@@ -18,15 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {ContactActiesDto} from "../datatypes/ContactActiesDto";
+import {ContactActiesDto} from "../datatypes/ContactActiesDto"
 
 export type ContactActiesAction = ResetBeschikbareContactActies;
 
-export const RESET_BESCHIKBARE_CONTACT_ACTIES = 'RESET_BESCHIKBARE_CONTACT_ACTIES';
+export const RESET_BESCHIKBARE_CONTACT_ACTIES = "RESET_BESCHIKBARE_CONTACT_ACTIES"
 
 export type ResetBeschikbareContactActies = { type: typeof RESET_BESCHIKBARE_CONTACT_ACTIES, beschikbareContactActies: ContactActiesDto }
 
 export const setBeschikbareContactActies = (beschikbareContactActies: ContactActiesDto): ResetBeschikbareContactActies => ({
     type: RESET_BESCHIKBARE_CONTACT_ACTIES,
     beschikbareContactActies: beschikbareContactActies
-});
+})

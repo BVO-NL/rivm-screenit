@@ -21,52 +21,53 @@ package nl.rivm.screenit.batch.jobs.cervix.cambiosinclusie;
  * =========================LICENSE_END==================================
  */
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import nl.rivm.screenit.batch.jobs.cervix.AbstractCervixProjectGroepWriter;
 import nl.rivm.screenit.batch.jobs.helpers.BaseLogListener;
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.OrganisatieParameterKey;
+import nl.rivm.screenit.model.SortState;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Level;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LogEvent;
+import nl.rivm.screenit.model.project.GroepSelectieType;
+import nl.rivm.screenit.model.project.Project;
+import nl.rivm.screenit.model.project.ProjectStatus;
 import nl.rivm.screenit.model.project.ProjectType;
 import nl.rivm.screenit.model.project.Project_;
 import nl.rivm.screenit.repository.algemeen.ProjectGroepRepository;
-import nl.rivm.screenit.repository.algemeen.ProjectRepository;
-import nl.rivm.screenit.service.ICurrentDateSupplier;
+import nl.rivm.screenit.service.BaseProjectService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
 import nl.rivm.screenit.service.OrganisatieService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.NonNull;
 import org.springframework.batch.core.job.JobExecution;
-import org.springframework.data.domain.Sort;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.stereotype.Component;
-
-import static nl.rivm.screenit.specification.algemeen.ProjectSpecification.heeftNaam;
-import static nl.rivm.screenit.specification.algemeen.ProjectSpecification.heeftType;
-import static nl.rivm.screenit.specification.algemeen.ProjectSpecification.isActiefOpDatum;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class CervixCambiosInclusieJobListener extends BaseLogListener
 {
+	private static final String CAMBIOS_INACTIVEREN_STEP_NAAM = "cambiosInactiverenStep";
+
 	private final OrganisatieParameterService organisatieParameterService;
 
 	private final OrganisatieService organisatieService;
 
-	private final ProjectRepository projectRepository;
-
 	private final ProjectGroepRepository projectGroepRepository;
 
-	private final ICurrentDateSupplier currentDateSupplier;
-
-	private String projectNaam;
+	private final BaseProjectService projectService;
 
 	@Override
 	protected Bevolkingsonderzoek getBevolkingsonderzoek()
@@ -80,14 +81,11 @@ public class CervixCambiosInclusieJobListener extends BaseLogListener
 		super.beforeStarting(jobExecution);
 		var context = jobExecution.getExecutionContext();
 
-		projectNaam = organisatieParameterService.getOrganisatieParameter(null, OrganisatieParameterKey.CERVIX_PROJECT_CAMBIOS);
-		if (StringUtils.isNotBlank(projectNaam))
-		{
-			projectRepository.findFirst(
-					heeftNaam(projectNaam).and(heeftType(ProjectType.PROJECT)).and(isActiefOpDatum(currentDateSupplier.getLocalDate())),
-					Sort.by(Sort.Order.asc(Project_.NAAM)))
-				.ifPresent(project -> context.putLong(AbstractCervixProjectGroepWriter.PROJECT_ID, project.getId()));
-		}
+		fillProjectIdInJobContext(OrganisatieParameterKey.CERVIX_PROJECT_CAMBIOS_UITSTRIJKJE, context, CervixCambiosInclusieConstants.PROJECT_ID_UITSTRIJKJE_ACTIEF,
+			CervixCambiosInclusieConstants.PROJECT_ID_UITSTRIJKJE);
+
+		fillProjectIdInJobContext(OrganisatieParameterKey.CERVIX_PROJECT_CAMBIOS_ZAS, context, CervixCambiosInclusieConstants.PROJECT_ID_ZAS_ACTIEF,
+			CervixCambiosInclusieConstants.PROJECT_ID_ZAS);
 
 		var laboratoriumIds = organisatieService.getActieveOrganisaties(BMHKLaboratorium.class).stream()
 			.filter(laboratorium -> Boolean.TRUE.equals(
@@ -97,6 +95,39 @@ public class CervixCambiosInclusieJobListener extends BaseLogListener
 		if (!laboratoriumIds.isEmpty())
 		{
 			context.putString(CervixCambiosInclusieConstants.LABORATORIUM_IDS, laboratoriumIds.stream().map(String::valueOf).collect(Collectors.joining(",")));
+		}
+	}
+
+	private void fillProjectIdInJobContext(OrganisatieParameterKey organisatieParameterKey, ExecutionContext context, String projectIdActiefParameterKey,
+		String projectIdParameterKey)
+	{
+		String projectNaam = organisatieParameterService.getOrganisatieParameter(null, organisatieParameterKey);
+		if (StringUtils.isNotBlank(projectNaam))
+		{
+			var zoekObject = new Project();
+
+			zoekObject.setNaam(projectNaam);
+			zoekObject.setGroepSelectieType(GroepSelectieType.DYNAMISCH);
+			zoekObject.getProjectTypes().add(ProjectType.PROJECT);
+			zoekObject.getBevolkingsonderzoeken().add(Bevolkingsonderzoek.CERVIX);
+			zoekProjectEnZetIdInContext(context, projectIdParameterKey, zoekObject);
+
+			zoekObject.getProjectStatussen().add(ProjectStatus.ACTIEF);
+			zoekProjectEnZetIdInContext(context, projectIdActiefParameterKey, zoekObject);
+		}
+	}
+
+	private void zoekProjectEnZetIdInContext(ExecutionContext context, String projectIdParameterKey, Project zoekObject)
+	{
+		var projecten = projectService.getProjecten(zoekObject, Collections.emptyList(), Collections.emptyList(), -1, -1, new SortState<>(Project_.NAAM, true));
+		Project project = null;
+		if (!projecten.isEmpty())
+		{
+			project = projecten.getFirst();
+		}
+		if (project != null)
+		{
+			context.putLong(projectIdParameterKey, project.getId());
 		}
 	}
 
@@ -130,44 +161,86 @@ public class CervixCambiosInclusieJobListener extends BaseLogListener
 		var event = super.eindLogging(jobExecution);
 		if (event.getLevel() == Level.INFO)
 		{
-			String melding;
 			var context = jobExecution.getExecutionContext();
-			var heeftProject = context.containsKey(AbstractCervixProjectGroepWriter.PROJECT_ID);
-			var heeftLaboratorium = context.containsKey(CervixCambiosInclusieConstants.LABORATORIUM_IDS);
-			if (heeftProject && heeftLaboratorium)
+			var meldingen = new ArrayList<String>();
+			var niveau = rapporteerInclusieJob(context, meldingen);
+
+			niveau = niveau.geefHoogsteLevelVanTweeLevels(
+				rapporteerInclusieStap(context, meldingen,
+					CervixCambiosInclusieConstants.PROJECT_ID_UITSTRIJKJE_ACTIEF,
+					CervixCambiosInclusieConstants.PROJECT_GROEP_ID_UITSTRIJKJE,
+					OrganisatieParameterKey.CERVIX_PROJECT_CAMBIOS_UITSTRIJKJE));
+			niveau = niveau.geefHoogsteLevelVanTweeLevels(
+				rapporteerInclusieStap(context, meldingen,
+					CervixCambiosInclusieConstants.PROJECT_ID_ZAS_ACTIEF,
+					CervixCambiosInclusieConstants.PROJECT_GROEP_ID_ZAS,
+					OrganisatieParameterKey.CERVIX_PROJECT_CAMBIOS_ZAS));
+
+			rapporteerInactiveerStap(jobExecution, meldingen);
+
+			event.setLevel(niveau);
+			event.setMelding(String.join(" ", meldingen));
+		}
+		return event;
+	}
+
+	private static @NonNull Level rapporteerInclusieJob(ExecutionContext context, List<String> meldingen)
+	{
+		var heeftGeenProjecten =
+			!context.containsKey(CervixCambiosInclusieConstants.PROJECT_ID_UITSTRIJKJE_ACTIEF) && !context.containsKey(CervixCambiosInclusieConstants.PROJECT_ID_ZAS_ACTIEF);
+		var heeftGeenLaboratorium = !context.containsKey(CervixCambiosInclusieConstants.LABORATORIUM_IDS);
+		if (heeftGeenLaboratorium)
+		{
+			meldingen.add("Geen enkel BMHK-laboratorium is aangevinkt voor de Cambiosstudie.");
+		}
+		return heeftGeenProjecten || heeftGeenLaboratorium ? Level.ERROR : Level.INFO;
+	}
+
+	private Level rapporteerInclusieStap(ExecutionContext context, List<String> meldingen, String projectIdKey, String projectGroepIdKey,
+		OrganisatieParameterKey organisatieParameterKey)
+	{
+		String projectNaam = organisatieParameterService.getOrganisatieParameter(null, organisatieParameterKey);
+		if (!context.containsKey(projectIdKey))
+		{
+			meldingen.add("Project '" + projectNaam + "' niet bekend, niet (meer) actief of niet de juiste configuratie.");
+			return Level.INFO;
+		}
+		if (context.containsKey(projectGroepIdKey))
+		{
+			var groepId = context.getLong(projectGroepIdKey);
+			var groep = projectGroepRepository.findById(groepId).orElse(null);
+			if (groep != null)
 			{
-				melding = "Geen clienten gevonden voor project '" + projectNaam + "'";
-				event.setLevel(Level.WARNING);
-				if (context.containsKey(AbstractCervixProjectGroepWriter.PROJECT_GROEP_ID))
+				if (groep.getPopulatie() > 0)
 				{
-					var groepId = context.getLong(AbstractCervixProjectGroepWriter.PROJECT_GROEP_ID);
-					var groep = projectGroepRepository.findById(groepId).orElse(null);
-					if (groep != null)
-					{
-						if (groep.getPopulatie() > 0)
-						{
-							melding = groep.getPopulatie() + " client(en) toegevoegd aan project '" + projectNaam + "' in groep '" + groep.getNaam() + "'.";
-							event.setLevel(Level.INFO);
-						}
-					}
-					else
-					{
-						LOG.error("geen entiteit voor groep met id " + groepId + " gevonden");
-					}
+					meldingen.add(groep.getPopulatie() + " client(en) toegevoegd aan project '" + projectNaam + "' in groep '" + groep.getNaam() + "'.");
+					return Level.INFO;
 				}
-			}
-			else if (!heeftProject)
-			{
-				melding = "Project '" + StringUtils.defaultIfEmpty(projectNaam, "<leeg>") + "' is niet bekend, niet actief of niet van het type PROJECT.";
-				event.setLevel(Level.ERROR);
+				LOG.error("0 populatie in groep met id '{}' mag niet voorkomen", groepId);
 			}
 			else
 			{
-				melding = "Geen enkel BMHK-laboratorium is aangevinkt voor de Cambiosstudie.";
-				event.setLevel(Level.ERROR);
+				LOG.error("geen entiteit voor groep met id '{}' gevonden", groepId);
 			}
-			event.setMelding(melding);
+			meldingen.add("Fout bij bij toevoegen van client(en) aan project '" + projectNaam + "'.");
+			return Level.ERROR;
 		}
-		return event;
+		else
+		{
+			meldingen.add("Geen clienten gevonden voor project '" + projectNaam + "'.");
+		}
+		return Level.INFO;
+	}
+
+	private static void rapporteerInactiveerStap(JobExecution jobExecution, List<String> meldingen)
+	{
+		var geinactiveerd = jobExecution.getStepExecutions().stream()
+			.filter(stepExecution -> CAMBIOS_INACTIVEREN_STEP_NAAM.equals(stepExecution.getStepName()))
+			.mapToLong(StepExecution::getWriteCount)
+			.sum();
+		if (geinactiveerd > 0)
+		{
+			meldingen.add(geinactiveerd + " client(en) geïnactiveerd na ontvangst van de vervangende brief.");
+		}
 	}
 }

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useCallback, useContext} from "react"
+import {FC, useCallback, use} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Col, Row} from "react-bootstrap"
 import authenticationStyle from "./AuthenticationPage.module.scss"
@@ -36,8 +36,8 @@ import properties from "./LoginPage.json"
 import {Navigate} from "react-router"
 import {KeycloakContext} from "../../components/KeycloakProvider"
 
-const LoginPage = () => {
-	const {initialized: keycloakInitialized, keycloak} = useContext(KeycloakContext)
+const LoginPage: FC = () => {
+	const {initialized: keycloakInitialized, keycloak} = use(KeycloakContext)
 	const dispatch = useDispatch()
 	const authenticatie = useSelector((state: State) => state.authenticatie)
 

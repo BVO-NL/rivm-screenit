@@ -30,7 +30,7 @@ import lombok.Setter;
 @Setter
 public class ColonRoosterInstellingenDto
 {
-	LocalDate geprognosticeerdeVanafDatum;
+	LocalDate geprognosticeerdeIntakeDatum;
 
 	Integer duurAfspraakInMinuten;
 }

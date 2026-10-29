@@ -19,7 +19,7 @@
  * =========================LICENSE_END==================================
  */
 import {Link, useLocation} from "react-router"
-import {MouseEvent} from "react"
+import {FC, MouseEvent} from "react"
 import classNames from "classnames"
 import styles from "./NavigationLinkComponent.module.scss"
 import bvoStyle from "../BvoStyle.module.scss"
@@ -34,7 +34,7 @@ export type NavigationLinkComponentProps = {
 	onClick?: (event: MouseEvent) => void;
 }
 
-const NavigationLinkComponent = (props: NavigationLinkComponentProps) => {
+const NavigationLinkComponent: FC<NavigationLinkComponentProps> = (props) => {
 
 	const location = useLocation()
 	const selectedBvo = useSelectedBvo()

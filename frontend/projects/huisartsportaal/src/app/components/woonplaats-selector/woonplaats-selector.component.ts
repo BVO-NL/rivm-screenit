@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Component, effect, forwardRef, inject, Injector, input, model, runInInjectionContext, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core'
+import { Component, effect, forwardRef, inject, Injector, input, model, runInInjectionContext, signal, WritableSignal } from '@angular/core'
 import { WoonplaatsDto } from '../../models/WoonplaatsDto'
 import { WoonplaatsenService } from '../../services/woonplaatsen/woonplaatsen.service'
 import { DropdownValueModel, DsDropdownComponent } from '@topicus-rgp-ds/web'
@@ -30,7 +30,7 @@ import { take } from 'rxjs'
   imports: [DsDropdownComponent, FormsModule],
   template: `<div class="dropdown-wrapper">
     <ds-dropdown
-      [disabled]="isDisabled"
+      [disabled]="isDisabled()"
       [items]="woonplaatsen()"
       [(ngModel)]="selectedWoonplaats"
       [ngModelOptions]="{standalone: true}"
@@ -40,7 +40,6 @@ import { take } from 'rxjs'
       appendTo=".ds-modal"
     />
   </div>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -59,7 +58,7 @@ export class WoonplaatsSelectorComponent implements ControlValueAccessor {
 
   private onChange: ((value: WoonplaatsDto | undefined) => void) | undefined
   private onTouched: (() => void) | undefined
-  isDisabled = false
+  isDisabled = signal(false)
 
   constructor() {
     effect(() => {
@@ -100,6 +99,6 @@ export class WoonplaatsSelectorComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.isDisabled = isDisabled
+    this.isDisabled.set(isDisabled)
   }
 }

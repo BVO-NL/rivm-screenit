@@ -160,7 +160,6 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void saveOrUpdateOrganisatieParameters(List<OrganisatieParameter> parameters, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
-		Set<Organisatie> instellingenToSave = new HashSet<>();
 		Set<Bevolkingsonderzoek> bvos = new HashSet<>();
 		List<String> nieuweValues = new ArrayList<>();
 		for (var parameter : parameters)
@@ -168,7 +167,7 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 			var value = parameter.getValue();
 			if (parameter.getId() == null)
 			{
-				value = nieuwValue(instellingenToSave, parameter, value);
+				value = nieuwValue(parameter, value);
 			}
 			else
 			{
@@ -181,8 +180,6 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 			bvos.addAll(Arrays.asList(parameter.getKey().getBevolkingsonderzoeken()));
 
 		}
-		hibernateService.saveOrUpdateAll(parameters);
-		hibernateService.saveOrUpdateAll(instellingenToSave);
 		if (!nieuweValues.isEmpty())
 		{
 			logService.logGebeurtenis(LogGebeurtenis.PARAMETERISATIE_WIJZIG, ingelogdeOrganisatieMedewerker, "Nieuwe waarde(n): " + StringUtils.join(nieuweValues, ", "),
@@ -235,10 +232,9 @@ public class OrganisatieParameterServiceImpl implements OrganisatieParameterServ
 		return value;
 	}
 
-	private String nieuwValue(Set<Organisatie> instellingenToSave, OrganisatieParameter parameter, String value)
+	private String nieuwValue(OrganisatieParameter parameter, String value)
 	{
-		parameter.getOrganisatie().getParameters().add(parameter);
-		instellingenToSave.add(parameter.getOrganisatie());
+		organisatieParameterRepository.persist(parameter);
 		if (StringUtils.isBlank(value))
 		{
 			value = GEEN_WAARDE;

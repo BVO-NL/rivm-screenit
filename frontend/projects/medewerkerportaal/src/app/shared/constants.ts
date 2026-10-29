@@ -70,3 +70,13 @@ export const TDS_DAGEN: WeekdagOptie[] = [
   },
 ]
 export const COLON_ROOSTER_MAX_HERHALING_IN_MAANDEN = 18
+export const MAX_KARAKTERS = {
+  plaats: 200,
+  straat: 56,
+  huisnummer: 10,
+  huisletter: 1,
+  huisnummerToevoeging: 26,
+  huisnummerAanduiding: 2,
+  bestandsnaam: 50,
+  dubbeleTijdReden: 255,
+}

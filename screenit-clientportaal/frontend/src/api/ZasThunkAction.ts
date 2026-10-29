@@ -31,12 +31,12 @@ import {showToast} from "../utils/ToastUtil"
 import {ZasStatus} from "../datatypes/cervix/ZasStatus"
 import {KyResponse} from "ky"
 
-export const getHuidigeZasStatus = () => async (dispatch: Dispatch<ResetZasStatusAction>) => {
+export const getHuidigeZasStatus = () => async (dispatch: Dispatch<ResetZasStatusAction>): Promise<ResetZasStatusAction> => {
 	return ScreenitBackend.get<ZasStatus>("cervix/zas/status").json()
 		.then(response => dispatch(setHuidigeZasStatusAction(response)))
 }
 
-export const saveZasAanvraag = () => (dispatch: Dispatch) => {
+export const saveZasAanvraag = () => (dispatch: Dispatch): Promise<void> => {
 	const verzendenUitstellen = false
 	return ScreenitBackend.post(`cervix/zas/aanvragen/${verzendenUitstellen}`)
 		.then(() => {
@@ -49,7 +49,7 @@ export const saveZasAanvraag = () => (dispatch: Dispatch) => {
 		})
 }
 
-export const saveZasAanvraagMetUitstel = (verzendenUitstellen: boolean, uitstellenTotDatum: Date | null) => (dispatch: Dispatch) => {
+export const saveZasAanvraagMetUitstel = (verzendenUitstellen: boolean, uitstellenTotDatum: Date | null) => (dispatch: Dispatch): Promise<void> => {
 	return ScreenitBackend.post(`cervix/zas/aanvragen/${verzendenUitstellen}`)
 		.then(() => {
 			showToast(getString(properties.toast.title),

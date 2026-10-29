@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.service.algemeen;
  */
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
@@ -39,6 +38,4 @@ public interface OverdrachtPersoonsgegevensService
 	void verstuurGeenHandtekeningBrief(OverdrachtPersoonsgegevens overdracht, Account ingelogdAccount);
 
 	void afronden(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens);
-
-	void createDataDump(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens, OutputStream outputStream, Account account);
 }

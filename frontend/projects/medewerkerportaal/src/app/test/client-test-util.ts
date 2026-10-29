@@ -77,7 +77,7 @@ export const maakClientContactgegevens = (overrides: Partial<ClientContactgegeve
     doelgroepen: [],
     dubbeleTijdReden: '',
     aanspreekvorm: Aanspreekvorm.GEACHTE_HEER,
-    heeftMammaAfspraak: false,
+    mammaAfspraakDatumTijd: undefined,
     ...overrides,
   }
 }

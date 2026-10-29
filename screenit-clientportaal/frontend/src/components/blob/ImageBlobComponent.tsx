@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import {FC} from "react"
 import styles from "./ImageBlobComponent.module.scss"
 import classNames from "classnames"
 
@@ -26,7 +27,7 @@ export type ImageBlobComponentProps = {
 	image: string
 }
 
-const ImageBlobComponent = (props: ImageBlobComponentProps) => {
+const ImageBlobComponent: FC<ImageBlobComponentProps> = (props) => {
 	return (
 		<svg className={classNames(styles.style, props.className)}
 			 xmlns="http:

@@ -21,13 +21,11 @@
 import "@testing-library/jest-dom"
 import {TextDecoder, TextEncoder} from "util"
 
-let isReactActEnvironment = true
 Object.defineProperty(window, "IS_REACT_ACT_ENVIRONMENT", {
 	get() {
 		return true
 	},
-	set(value: boolean) {
-		isReactActEnvironment = value
+	set(): void {
 	},
 })
 jest.mock("keycloak-js", () => jest.fn().mockImplementation(() => {

@@ -295,17 +295,13 @@ public class MammaImsServiceImpl implements MammaImsService
 	private String logonLaunchUrl(Medewerker medewerker, MammobridgeRole role)
 	{
 		var launchUrlPassword = preferenceService.getString(PreferenceKey.MAMMA_IMS_LAUNCH_URL_PASSWORD.name());
-		boolean launchUrlSha1Mode = preferenceService.getBoolean(PreferenceKey.MAMMA_IMS_LAUNCH_URL_SHA1_MODE.name(), true);
-
-		return launchUrlGenerator.generateLoginLaunchUrl(launchUrlPassword, medewerker.getGebruikersnaam(), role.getIds7Role(), launchUrlSha1Mode);
+		return launchUrlGenerator.generateLoginLaunchUrl(launchUrlPassword, medewerker.getGebruikersnaam(), role.getIds7Role());
 	}
 
 	private String desktopSyncLaunchUrl(Medewerker medewerker, MammobridgeRole role, String bsn, String accessionNumber)
 	{
 		var launchUrlPassword = preferenceService.getString(PreferenceKey.MAMMA_IMS_LAUNCH_URL_PASSWORD.name());
-		boolean launchUrlSha1Mode = preferenceService.getBoolean(PreferenceKey.MAMMA_IMS_LAUNCH_URL_SHA1_MODE.name(), true);
-
-		return launchUrlGenerator.generateDesktopSyncLaunchUrl(launchUrlPassword, medewerker.getGebruikersnaam(), role.getIds7Role(), bsn, accessionNumber, launchUrlSha1Mode);
+		return launchUrlGenerator.generateDesktopSyncLaunchUrl(launchUrlPassword, medewerker.getGebruikersnaam(), role.getIds7Role(), bsn, accessionNumber);
 	}
 
 	private String toJsonString(FhirUserSession userSession)

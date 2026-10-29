@@ -31,6 +31,7 @@ import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
 import { subMonths } from 'date-fns'
 import { DsButtonComponent, DsDropdownComponent } from '@topicus-rgp-ds/web'
 import { StringsService } from '@shared/strings'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-mamma-visitatie-filter',
@@ -57,7 +58,7 @@ export class MammaVisitatieFilterComponent {
     centraleEenheidIds: [],
     screeningseenheidIds: [],
     statussen: [],
-    vanaf: this.isKwaliteitsplatform ? subMonths(new Date(), 3) : null,
+    vanaf: this.isKwaliteitsplatform ? subMonths(DateService.nu(), 3) : null,
   })
 
   filter = output<MammaVisitatieWerklijstFilter>()

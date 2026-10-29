@@ -1,0 +1,49 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog [titel]="strings.algemeen.clientDossier.acties.keuzeGebruikGegevensBrief.dialogTitle">
+  <div body>
+    <form [formGroup]="briefForm" class="form-in-modal" novalidate>
+      <ds-dropdown
+        formControlName="briefType"
+        [label]="strings.algemeen.labels.kiesEenBrief"
+        [placeholder]="strings.algemeen.labels.kiesEenBrief"
+        [items]="briefOpties"
+        bindLabel="omschrijving"
+        bindValue="briefType"
+        appendTo=".ds-modal"
+        [required]="true"
+        [clearable]="false"
+        [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.clientDossier.acties.keuzeGebruikGegevensBrief.briefkeuze) }"
+        data-testid="brief_dropdown"
+      />
+      <ds-checkbox formControlName="handtekeningVergeten" data-testid="checkbox_handtekening_vergeten">
+        {{ strings.algemeen.clientDossier.acties.keuzeGebruikGegevensBrief.handtekeningVergeten }}
+      </ds-checkbox>
+      <app-notitie-aanmaken-veld formControlName="notitie" [label]="strings.algemeen.labels.notitie" data-testid="notitie_veld"/>
+    </form>
+  </div>
+  <ng-container buttons>
+    <button (click)="annuleren()" data-testid="btn_annuleren" ds-button-tertiary type="button">{{ strings.algemeen.buttons.annuleren }}</button>
+    <button (click)="aanvragen()" [disabled]="briefForm.invalid" data-testid="btn_aanvragen" ds-button-primary type="button">
+      {{ strings.algemeen.buttons.aanvragen }}
+    </button>
+  </ng-container>
+</app-base-dialog>

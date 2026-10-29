@@ -20,11 +20,11 @@
  */
 import {Dispatch} from "redux"
 import ScreenitBackend from "../utils/Backend"
-import {createPersoonAction} from "../actions/PersoonAction"
+import {createPersoonAction, PersoonAction} from "../actions/PersoonAction"
 import {TijdelijkAdres} from "../datatypes/adres/TijdelijkAdres"
 import {Persoon} from "../datatypes/Persoon"
 
-export const saveTijdelijkAdres = (tijdelijkAdres: TijdelijkAdres) => (dispatch: Dispatch) => {
+export const saveTijdelijkAdres = (tijdelijkAdres: TijdelijkAdres) => (dispatch: Dispatch): Promise<PersoonAction> => {
 	return ScreenitBackend.put<Persoon>("persoon/tijdelijk-adres", {json: tijdelijkAdres}).json()
 		.then(response => dispatch(createPersoonAction(response)))
 }

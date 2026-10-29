@@ -30,4 +30,6 @@ import nl.rivm.screenit.repository.BaseJpaRepository;
 public interface CervixBaseMonsterRepository extends BaseJpaRepository<CervixMonster>
 {
 	List<CervixMonster> findAllByOntvangstScreeningRondeAndBriefNotNull(CervixScreeningRonde ronde);
+
+	List<CervixMonster> findAllByOntvangstScreeningRonde(CervixScreeningRonde ronde);
 }

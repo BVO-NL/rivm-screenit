@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {ReactNode} from "react"
+import {FC, ReactNode} from "react"
 import {Container} from "react-bootstrap"
 import styles from "./BasePage.module.scss"
 import bvoStyle from "../components/BvoStyle.module.scss"
@@ -43,7 +43,7 @@ export type ActieBasePageProps = {
 	hintEindeClassName?: string,
 }
 
-const ActieBasePage = (props: ActieBasePageProps) => {
+const ActieBasePage: FC<ActieBasePageProps> = (props) => {
 
 	const selectedBvo = useSelectedBvo()
 

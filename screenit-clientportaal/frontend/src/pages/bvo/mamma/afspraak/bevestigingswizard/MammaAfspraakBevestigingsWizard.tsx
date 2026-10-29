@@ -22,7 +22,7 @@ import BasePage from "../../../../BasePage"
 import {BevolkingsonderzoekNaam} from "../../../../../datatypes/Bevolkingsonderzoek"
 import properties from "./MammaAfspraakBevestigingsWizard.json"
 import {getString} from "../../../../../utils/TekstPropertyUtil"
-import React, {ReactNode, useEffect, useState} from "react"
+import React, {FC, ReactNode, useMemo} from "react"
 import WizardIndicator from "../../../../../components/wizard_indicator/WizardIndicator"
 import styles from "./MammaAfspraakBevestigingsWizard.module.scss"
 import {WizardIndicatorProvider} from "../../../../../components/wizard_indicator/WizardIndicatorContext"
@@ -33,25 +33,20 @@ export type AfspraakMakenBasePageProps = {
 	children: ReactNode,
 }
 
-const MammaAfspraakBevestigingsWizard = (props: AfspraakMakenBasePageProps): React.JSX.Element => {
-	const alleStappen = [
-		{url: "bevestigen", label: "Uw afspraak"},
-		{url: "bevestiging-selectie", label: "Bevestiging"},
-		{url: "herinnering", label: "Herinnering"},
-		{url: "uw-huisarts", label: "Uw huisarts"},
-		{url: "overzicht", label: "Overzicht"},
-	]
+const alleStappen = [
+	{url: "bevestigen", label: "Uw afspraak"},
+	{url: "bevestiging-selectie", label: "Bevestiging"},
+	{url: "herinnering", label: "Herinnering"},
+	{url: "uw-huisarts", label: "Uw huisarts"},
+	{url: "overzicht", label: "Overzicht"},
+]
 
-	const [wizardStappen, setWizardStappen] = useState(alleStappen)
-
+const MammaAfspraakBevestigingsWizard: FC<AfspraakMakenBasePageProps> = (props) => {
 	const afspraakOptie = useSelector(selectMammaAfspraakOptie)
-	useEffect(() => {
-		if (!afspraakOptie?.toonSmsHerinneringOptie) {
-			setWizardStappen(alleStappen.filter(stap => stap.url !== "herinnering"))
-		} else {
-			setWizardStappen(alleStappen)
-		}
-	}, [afspraakOptie])
+	const wizardStappen = useMemo(
+		() => afspraakOptie?.toonSmsHerinneringOptie ? alleStappen : alleStappen.filter(stap => stap.url !== "herinnering"),
+		[afspraakOptie?.toonSmsHerinneringOptie],
+	)
 
 	return (
 		<BasePage bvoName={BevolkingsonderzoekNaam.MAMMA}

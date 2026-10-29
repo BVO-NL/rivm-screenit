@@ -49,5 +49,5 @@ const isInformatieNlNummer = (telefoonnummer: string): boolean => {
 }
 
 const isBuitenlandsNummer = (telefoonnummer: string): boolean => {
-	return exactMatch(telefoonnummer, /^(\+|00)[0-9 -]{4,15}$/);
+	return exactMatch(telefoonnummer, /^(\+|00)[0-9 -]{4,15}$/)
 }

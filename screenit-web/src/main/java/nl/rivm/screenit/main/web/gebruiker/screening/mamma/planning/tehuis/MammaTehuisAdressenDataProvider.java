@@ -23,17 +23,16 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.tehuis;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import nl.rivm.screenit.model.mamma.MammaTehuis;
 import nl.rivm.screenit.model.mamma.MammaTehuisAdres;
+import nl.rivm.screenit.util.DynamicPropertyComparator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.injection.Injector;
 import org.apache.wicket.model.IModel;
-import org.springframework.beans.support.PropertyComparator;
 
 public class MammaTehuisAdressenDataProvider extends SortableDataProvider<MammaTehuisAdres, String>
 {
@@ -60,7 +59,7 @@ public class MammaTehuisAdressenDataProvider extends SortableDataProvider<MammaT
 		var sortParam = getSort();
 		if (sortParam != null && sortParam.getProperty() != null)
 		{
-			tehuisAdressen = tehuisAdressen.stream().sorted(new PropertyComparator<>(sortParam.getProperty(), true, sortParam.isAscending())).collect(Collectors.toList());
+			tehuisAdressen = tehuisAdressen.stream().sorted(new DynamicPropertyComparator<>(sortParam.getProperty(), true, sortParam.isAscending())).toList();
 		}
 		return tehuisAdressen;
 	}

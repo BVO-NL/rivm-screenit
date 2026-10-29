@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useEffect} from "react"
+import {FC, useEffect} from "react"
 import {Col, Container, Row} from "react-bootstrap"
 import styles from "./LandingPage.module.scss"
 import {useSelector} from "react-redux"
@@ -41,7 +41,7 @@ import datadogService from "../../services/DatadogService"
 import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
 import {selectPersoon} from "../../selectors/ClientSelectors"
 
-const LandingPage = () => {
+const LandingPage: FC = () => {
 	const dispatch = useThunkDispatch()
 	const persoon = useSelector(selectPersoon)
 

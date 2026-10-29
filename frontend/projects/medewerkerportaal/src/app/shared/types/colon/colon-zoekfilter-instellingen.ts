@@ -19,6 +19,6 @@
  * =========================LICENSE_END==================================
  */
 export interface ColonZoekfilterInstellingen {
-  geprognosticeerdeVanafDatum: Date
+  geprognosticeerdeIntakeDatum: Date
   nietWijzigbarePeriode: number
 }

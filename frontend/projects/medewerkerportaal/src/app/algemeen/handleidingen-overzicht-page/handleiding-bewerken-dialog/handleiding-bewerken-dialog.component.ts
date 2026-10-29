@@ -22,7 +22,7 @@ import { Component, inject } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
-import { DsButtonComponent, DsFileModel, DsInputComponent } from '@topicus-rgp-ds/web'
+import { DsButtonComponent, DsFileModel, DsInputComponent, MaxLengthDirective } from '@topicus-rgp-ds/web'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { HandleidingenService } from '@/algemeen/handleidingen-overzicht-page/services/handleidingen.service'
@@ -33,10 +33,21 @@ import { haalBestandsnaamZonderExtensie, maakDSFileModel } from '@/algemeen/hand
 import { NotificationService } from '@shared/services/notification/notification.service'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { StringsService } from '@shared/strings'
+import { MAX_KARAKTERS } from '@shared/constants'
 
 @Component({
   selector: 'app-handleiding-bewerken-dialog',
-  imports: [FormsModule, ReactiveFormsModule, BaseDialogComponent, DsInputComponent, DsButtonComponent, MatFormFieldModule, MatInputModule, SingleFileSelectorComponent],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    BaseDialogComponent,
+    DsInputComponent,
+    DsButtonComponent,
+    MatFormFieldModule,
+    MatInputModule,
+    SingleFileSelectorComponent,
+    MaxLengthDirective,
+  ],
   templateUrl: './handleiding-bewerken-dialog.component.html',
 })
 export class HandleidingBewerkenDialogComponent {
@@ -47,6 +58,7 @@ export class HandleidingBewerkenDialogComponent {
   private readonly notificationService = inject(NotificationService)
   protected readonly strings = inject(StringsService).getStrings()
   private geselecteerdBestand: File | null = null
+  protected readonly MAX_KARAKTERS = MAX_KARAKTERS
 
   geselecteerdBestandFileModel: DsFileModel | null = null
   handleidingForm: FormGroup = this.formBuilder.group({

@@ -22,7 +22,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.planning.tehuis;
  */
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import nl.rivm.screenit.main.service.mamma.MammaTehuisService;
@@ -50,7 +50,6 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.beans.support.PropertyComparator;
 import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 public class MammaTehuisOpmerkingenPanel extends GenericPanel<MammaTehuis>
@@ -86,9 +85,9 @@ public class MammaTehuisOpmerkingenPanel extends GenericPanel<MammaTehuis>
 			@Override
 			public List<MammaTehuisOpmerking> getObject()
 			{
-				List<MammaTehuisOpmerking> list = new ArrayList<>(getModelObject().getOpmerkingen());
-				Collections.sort(list, new PropertyComparator<>("creatieDatum", false, false));
-				return list;
+				var opmerkingenLijst = new ArrayList<>(getModelObject().getOpmerkingen());
+				opmerkingenLijst.sort(Comparator.comparing(MammaTehuisOpmerking::getCreatieDatum).reversed());
+				return opmerkingenLijst;
 			}
 		};
 		var list = new ListView<>("list", listModel)

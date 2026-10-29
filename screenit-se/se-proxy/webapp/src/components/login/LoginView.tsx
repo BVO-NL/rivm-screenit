@@ -78,11 +78,9 @@ export default class LoginView extends Component<LoginProps, any> {
 	}
 
 	handleTogglePasswordVisible = (): void => {
-		this.setState({
-				...this.state,
-				passwordVisible: !this.state.passwordVisible,
-			},
-		)
+		this.setState((vorigeState: {passwordVisible: boolean}) => ({
+			passwordVisible: !vorigeState.passwordVisible,
+		}))
 	}
 
 	render(): JSX.Element {

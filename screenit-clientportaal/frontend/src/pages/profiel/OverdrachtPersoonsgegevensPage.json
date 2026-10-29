@@ -1,0 +1,8 @@
+{
+  "page": {
+    "title": "Dossier opslaan",
+    "description": "Klik hieronder om uw dossier op te slaan op uw apparaat. U kunt uw dossier opslaan tot %s, daarna moet u weer een nieuwe aanvraag doen bij de Cliëntservice van Bevolkingsonderzoek Nederland."
+  },
+  "download_button": "Sla dossier op",
+  "beelden_ophalen_mislukt": "Het is helaas niet gelukt om uw gegevens op te halen. Wij verzoeken u het de eerstvolgende werkdag opnieuw te proberen. Lukt het dan nog steeds niet? Neem dan contact op met onze informatielijn."
+}

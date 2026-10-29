@@ -54,7 +54,7 @@ public class ImsLaunchUrlProxyController
 	{
 		if (geldigeCredentials(yubikeyIdentificatie, context.gebruikersnaam()))
 		{
-			var launchUrl = launchUrlGenerator.generateLoginLaunchUrl(getEncryptieKey(), context.gebruikersnaam(), "Mbb", getSha1Mode());
+			var launchUrl = launchUrlGenerator.generateLoginLaunchUrl(getEncryptieKey(), context.gebruikersnaam(), "Mbb");
 			return ResponseEntity.ok(launchUrl);
 		}
 
@@ -67,7 +67,7 @@ public class ImsLaunchUrlProxyController
 		if (geldigeCredentials(yubikeyIdentificatie, context.gebruikersnaam()))
 		{
 			var launchUrl = launchUrlGenerator.generateDesktopSyncLaunchUrl(getEncryptieKey(), context.gebruikersnaam(), "Mbb",
-				context.bsn(), context.uitnodigingsNr(), getSha1Mode());
+				context.bsn(), context.uitnodigingsNr());
 			return ResponseEntity.ok(launchUrl);
 		}
 
@@ -92,10 +92,5 @@ public class ImsLaunchUrlProxyController
 	private String getEncryptieKey()
 	{
 		return configuratieService.getConfiguratieValue(SeConfiguratieKey.IMS_LAUNCH_URL_PASSWORD);
-	}
-
-	private Boolean getSha1Mode()
-	{
-		return configuratieService.getConfiguratieBooleanValue(SeConfiguratieKey.MAMMA_IMS_LAUNCH_URL_SHA1_MODE, true);
 	}
 }

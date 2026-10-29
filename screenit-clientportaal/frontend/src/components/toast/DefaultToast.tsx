@@ -22,6 +22,7 @@ import styles from "./ActiveToastsComponent.module.scss"
 import {Col, Row} from "react-bootstrap"
 import VerticalDividerComponent from "../vectors/VerticalDividerComponent"
 import SpanWithHtml from "../span/SpanWithHtml"
+import {FC} from "react"
 
 interface DefaultToastProps {
 	index: number
@@ -31,11 +32,11 @@ interface DefaultToastProps {
 	ariaLive: "off" | "assertive" | "polite" | undefined
 }
 
-const DefaultToast = (props: DefaultToastProps) => {
+const DefaultToast: FC<DefaultToastProps> = (props) => {
 
 	const {index, title, description, clickClearButton, ariaLive} = props
 	return (
-		<Row className={styles.toast} key={"toast_" + index} role="alert" aria-live={ariaLive}>
+		<Row className={styles.toast} key={`toast_${  index}`} role="alert" aria-live={ariaLive}>
 			<VerticalDividerComponent className={styles.verticalRectangle} heightSubtraction={34}/>
 			<Col xs={10} className={styles.toastText}>
 				<SpanWithHtml className={styles.title} value={title!}/>

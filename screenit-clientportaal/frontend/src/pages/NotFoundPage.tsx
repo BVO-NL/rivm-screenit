@@ -18,14 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useContext} from "react"
+import {FC, use} from "react"
 import {Link} from "react-router"
 import properties from "./NotFoundPage.json"
 import SpanWithHtml from "../components/span/SpanWithHtml"
 import {KeycloakContext} from "../components/KeycloakProvider"
 
-const NotFoundPage = () => {
-	const {keycloak} = useContext(KeycloakContext)
+const NotFoundPage: FC = () => {
+	const {keycloak} = use(KeycloakContext)
 
 	return keycloak.authenticated ?
 		(

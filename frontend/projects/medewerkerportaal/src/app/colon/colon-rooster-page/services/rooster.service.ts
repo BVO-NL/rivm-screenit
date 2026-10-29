@@ -29,10 +29,10 @@ import { ColonBlokkade } from '@shared/types/colon/colon-blokkade'
 import { ColonRoosterBeperkingenDto } from '@shared/types/colon/colon-rooster-beperkingen-dto'
 import { ColonRoosterInstellingen, ColonRoosterInstellingenDto } from '@shared/types/colon/colon-rooster-instellingen'
 import { BaseService } from '@shared/services/base/base.service'
-import { EventInput, EventSourceInput } from '@fullcalendar/core'
+import { EventInput, EventSourceInput } from '@fullcalendar/angular'
 import { NotPersisted } from '@shared/types/not-presisted'
 import { Signaleringstermijn } from '@shared/types/colon/signaleringstermijn'
-import { addDays, differenceInDays, endOfDay, startOfDay } from 'date-fns'
+import { addDays, differenceInDays, endOfDay, startOfDay, startOfWeek } from 'date-fns'
 import { ColonFeestdagDto } from '@shared/types/colon/colon-feestdag'
 import { ColonTijdslotStatus } from '@shared/types/colon/colon-tijdslot-status'
 import { ColonTijdslotFilter } from '@shared/types/colon/colon-tijdslot-filter'
@@ -239,10 +239,14 @@ export class RoosterService extends BaseService<RoosterState> {
   getInstellingen(): Observable<ColonRoosterInstellingen> {
     return this.api.get<ColonRoosterInstellingenDto>(`/api/colon/rooster/instellingen`).pipe(
       take(1),
-      map<ColonRoosterInstellingenDto, ColonRoosterInstellingen>((response) => ({
-        geprognosticeerdeVanafDatum: new Date(response.geprognosticeerdeVanafDatum),
-        duurAfspraakInMinuten: response.duurAfspraakInMinuten,
-      })),
+      map<ColonRoosterInstellingenDto, ColonRoosterInstellingen>((response) => {
+        const geprognosticeerdeIntakeDatum = new Date(response.geprognosticeerdeIntakeDatum)
+        return {
+          geprognosticeerdeVanafDatum: startOfWeek(geprognosticeerdeIntakeDatum, { weekStartsOn: 1 }),
+          geprognosticeerdeIntakeDatum,
+          duurAfspraakInMinuten: response.duurAfspraakInMinuten,
+        }
+      }),
       tap((instellingen) => this.set('instellingen', instellingen)),
     )
   }

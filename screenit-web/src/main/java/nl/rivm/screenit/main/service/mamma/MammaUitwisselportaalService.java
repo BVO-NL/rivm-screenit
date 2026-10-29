@@ -21,7 +21,6 @@ package nl.rivm.screenit.main.service.mamma;
  * =========================LICENSE_END==================================
  */
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,23 +30,14 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaDownloadOnderzoekenVerzoek;
 import nl.rivm.screenit.model.mamma.MammaFollowUpRadiologieVerslag;
-import nl.rivm.screenit.model.mamma.MammaOnderzoek;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 
 public interface MammaUitwisselportaalService
 {
 
-	void maakDownloadVerzoek(List<MammaOnderzoek> onderzoeken, OrganisatieMedewerker ingelogdeOrganisatieMedewerker) throws IOException;
-
-	void startDownloading();
-
-	void resetDownloadVerzoek(MammaDownloadOnderzoekenVerzoek object) throws IOException;
-
 	Optional<MammaDownloadOnderzoekenVerzoek> geldigDownloadVerzoekVoorIngelogdeOrganisatieMedewerker(long downloadVerzoekid, OrganisatieMedewerker organisatieMedewerker);
 
 	MammaDownloadOnderzoekenVerzoek maakDownloadVerzoekFilter(OrganisatieMedewerker organisatieMedewerker);
-
-	boolean zipKanGedownloadWorden(MammaDownloadOnderzoekenVerzoek downloadOnderzoekenVerzoek);
 
 	void updateDownloadVerzoekInformatie(MammaDownloadOnderzoekenVerzoek verzoek, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 

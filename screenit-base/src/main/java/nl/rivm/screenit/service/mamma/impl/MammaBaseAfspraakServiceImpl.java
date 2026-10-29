@@ -367,6 +367,18 @@ public class MammaBaseAfspraakServiceImpl implements MammaBaseAfspraakService
 	}
 
 	@Override
+	public Optional<MammaAfspraak> findOpenAfspraak(Client client)
+	{
+		return Optional.ofNullable(client)
+			.map(Client::getMammaDossier)
+			.map(MammaDossier::getLaatsteScreeningRonde)
+			.map(MammaScreeningRonde::getLaatsteUitnodiging)
+			.map(MammaUitnodiging::getLaatsteAfspraak)
+			.filter(laatsteAfspraak -> laatsteAfspraak.getStatus() == MammaAfspraakStatus.GEPLAND)
+			.filter(laatsteAfspraak -> laatsteAfspraak.getVanaf().compareTo(currentDateSupplier.getDate()) >= 0);
+	}
+
+	@Override
 	public LocalDate laatstMogelijkeAfspraakDatum(MammaDossier dossier)
 	{
 		if (dossier.getLaatsteScreeningRonde() != null)

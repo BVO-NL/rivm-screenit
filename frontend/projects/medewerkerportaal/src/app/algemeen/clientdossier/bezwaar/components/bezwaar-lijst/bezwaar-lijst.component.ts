@@ -20,13 +20,18 @@
  */
 import { BezwaarService } from '@/algemeen/services/bezwaar/bezwaar.service'
 import { BezwaarGroupViewWrapper } from '@/shared/types/algemeen/bezwaar-group-view-wrapper'
+import { BezwaarViewWrapper } from '@/shared/types/algemeen/bezwaar-view-wrapper'
 import { BezwaarMomentDto } from '@/shared/types/algemeen/dto/bezwaar-moment.dto'
+import { BezwaarKeuze } from '@/shared/types/algemeen/dto/bezwaar-verwerken.dto'
 import { Bevolkingsonderzoek, bevolkingsonderzoekLabels } from '@/shared/types/bevolkingsonderzoek'
 import { EmptyStatePanelComponent } from '@shared/components/empty-state-panel/empty-state-panel.component'
 import { NgClass } from '@angular/common'
-import { Component, computed, inject, input } from '@angular/core'
+import { Component, computed, forwardRef, inject, input, linkedSignal, signal } from '@angular/core'
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { faFile } from '@fortawesome/pro-solid-svg-icons'
+import { DsCheckboxComponent } from '@topicus-rgp-ds/web'
 import { StringsService } from '@shared/strings'
+import { bevatBezwaar, isZelfdeBezwaar } from '@shared/utils/bezwaar-utils'
 
 const GROEP_VOLGORDE: Record<string, number> = {
   ALGEMEEN: 0,
@@ -36,8 +41,15 @@ const GROEP_VOLGORDE: Record<string, number> = {
 
 @Component({
   selector: 'app-bezwaar-lijst',
-  imports: [NgClass, EmptyStatePanelComponent],
+  imports: [NgClass, EmptyStatePanelComponent, DsCheckboxComponent, FormsModule],
   templateUrl: './bezwaar-lijst.component.html',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => BezwaarLijstComponent),
+      multi: true,
+    },
+  ],
   styles: `
     .groep-label {
       font-weight: 600;
@@ -49,7 +61,7 @@ const GROEP_VOLGORDE: Record<string, number> = {
     }
   `,
 })
-export class BezwaarLijstComponent {
+export class BezwaarLijstComponent implements ControlValueAccessor {
   private readonly bezwaarService = inject(BezwaarService)
   protected readonly faFile = faFile
   protected readonly strings = inject(StringsService).getStrings()
@@ -57,11 +69,20 @@ export class BezwaarLijstComponent {
   horizontaal = input<boolean>(false)
   bezwaarMoment = input<BezwaarMomentDto | undefined>()
   subtekst = input<string>('')
-  bezwaarGroupViewWrappers = computed(() =>
-    [...this.bezwaarService.getBezwaarGroupViewWrappers(this.bezwaarMoment(), true)].sort(
+  bewerkbaar = input<boolean>(false)
+  bezwaarOpties = input<BezwaarKeuze[]>([])
+
+  bezwaarGroupViewWrappers = computed(() => {
+    const groepen = this.bewerkbaar() ? this.bezwaarService.groepeerBezwaren(this.bezwaarOpties()) : this.bezwaarService.getBezwaarGroupViewWrappers(this.bezwaarMoment(), true)
+    return [...groepen].sort(
       (a: BezwaarGroupViewWrapper, b: BezwaarGroupViewWrapper) => (GROEP_VOLGORDE[a.key] ?? Number.MAX_SAFE_INTEGER) - (GROEP_VOLGORDE[b.key] ?? Number.MAX_SAFE_INTEGER),
-    ),
-  )
+    )
+  })
+
+  private readonly geselecteerdeBezwaren = linkedSignal<BezwaarKeuze[]>(() => this.bezwaarMoment()?.bezwaren ?? [])
+  protected readonly isDisabled = signal(false)
+  private onChange: ((bezwaren: BezwaarKeuze[]) => void) | undefined
+  private onTouched: (() => void) | undefined
 
   protected getGroepLabel(groep: { key: string; bevolkingsonderzoek?: Bevolkingsonderzoek }) {
     if (!groep.bevolkingsonderzoek) {
@@ -69,5 +90,36 @@ export class BezwaarLijstComponent {
     }
 
     return bevolkingsonderzoekLabels[groep.bevolkingsonderzoek] ?? groep.key
+  }
+
+  protected isGeselecteerd(bezwaar: BezwaarViewWrapper) {
+    return bevatBezwaar(this.geselecteerdeBezwaren(), bezwaar)
+  }
+
+  protected wisselBezwaar(bezwaar: BezwaarViewWrapper, geselecteerd: boolean) {
+    const zonderBezwaar = this.geselecteerdeBezwaren().filter((huidig) => !isZelfdeBezwaar(huidig, bezwaar))
+    const bezwaarKeuze: BezwaarKeuze = { type: bezwaar.type, bevolkingsonderzoek: bezwaar.bevolkingsonderzoek }
+    const nieuweSelectie = geselecteerd ? [...zonderBezwaar, bezwaarKeuze] : zonderBezwaar
+    this.geselecteerdeBezwaren.set(nieuweSelectie)
+    this.onChange?.(nieuweSelectie)
+    this.onTouched?.()
+  }
+
+  writeValue(bezwaren: BezwaarKeuze[] | null): void {
+    if (bezwaren) {
+      this.geselecteerdeBezwaren.set(bezwaren)
+    }
+  }
+
+  registerOnChange(fn: (bezwaren: BezwaarKeuze[]) => void): void {
+    this.onChange = fn
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.isDisabled.set(isDisabled)
   }
 }

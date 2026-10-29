@@ -39,14 +39,12 @@ import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamer;
 import nl.rivm.screenit.model.colon.dto.VrijSlotZonderKamerFilter;
 import nl.rivm.screenit.model.colon.enums.ColonAfspraakStatus;
 import nl.rivm.screenit.model.colon.planning.ColonIntakekamer;
-import nl.rivm.screenit.preference.service.SimplePreferenceService;
 import nl.rivm.screenit.service.colon.ColonBaseAfspraakService;
 import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
-import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -62,37 +60,36 @@ public class RoosterDaoImpl implements RoosterDao
 	private EntityManager entityManager;
 
 	@Autowired
-	private SimplePreferenceService preferenceService;
-
-	@Autowired
 	private ColonBaseAfspraakService afspraakService;
 
 	@Override
 	public List<ColonAfspraakslotListViewWrapper> getAlleAfspraakslotsInPeriode(String sortProperty, boolean asc, RoosterListViewFilter filter,
 		ColonIntakelocatie intakeLocatie)
 	{
-		var criteria = createAfspraakslotsCriteria(filter, intakeLocatie, sortProperty, asc);
-		return criteria.list();
+		var query = createAfspraakslotsQuery(filter, intakeLocatie, sortProperty, asc)
+			.setTupleTransformer(this::maakAfspraakslotListViewWrapper);
+		return query.list();
 	}
 
 	@Override
 	public List<ColonAfspraakslotListViewWrapper> getAfspraakslots(String sortProperty, boolean asc, long first, long count, RoosterListViewFilter filter,
 		ColonIntakelocatie intakeLocatie)
 	{
-		var criteria = createAfspraakslotsCriteria(filter, intakeLocatie, sortProperty, asc);
+		var query = createAfspraakslotsQuery(filter, intakeLocatie, sortProperty, asc)
+			.setTupleTransformer(this::maakAfspraakslotListViewWrapper);
 		if (first >= 0)
 		{
-			criteria.setFirstResult(Ints.checkedCast(first));
+			query.setFirstResult(Ints.checkedCast(first));
 		}
 		if (count >= 0)
 		{
-			criteria.setMaxResults(Ints.checkedCast(count));
+			query.setMaxResults(Ints.checkedCast(count));
 		}
 
-		return criteria.getResultList();
+		return query.getResultList();
 	}
 
-	private NativeQuery createAfspraakslotsCriteria(RoosterListViewFilter filter, ColonIntakelocatie intakeLocatie, String sortProperty, boolean asc)
+	private NativeQuery<?> createAfspraakslotsQuery(RoosterListViewFilter filter, ColonIntakelocatie intakeLocatie, String sortProperty, boolean asc)
 	{
 		entityManager.flush();
 		var selectFromQueryString = "select ";
@@ -182,28 +179,64 @@ public class RoosterDaoImpl implements RoosterDao
 			}
 		}
 
-		var criteria = entityManager.unwrap(Session.class).createNativeQuery(selectFromQueryString + whereQueryString + orderByQueryString);
-		criteria
+		var nativeQuery = entityManager.createNativeQuery(selectFromQueryString + whereQueryString + orderByQueryString).unwrap(NativeQuery.class);
+		nativeQuery
 			.setParameter("tot", filter.getEindDatum())
 			.setParameter("vanaf", filter.getStartDatum())
 			.setParameter("intakelocatie", intakeLocatie.getId());
 
 		for (var param : params.entrySet())
 		{
-			criteria.setParameter(param.getKey(), param.getValue());
-		}
-		if (sortProperty != null)
-		{
-			criteria.setResultTransformer(Transformers.aliasToBean(ColonAfspraakslotListViewWrapper.class));
+			nativeQuery.setParameter(param.getKey(), param.getValue());
 		}
 
-		return criteria;
+		return nativeQuery;
+	}
+
+	private ColonAfspraakslotListViewWrapper maakAfspraakslotListViewWrapper(Object[] tuple, String[] aliases)
+	{
+		var wrapper = new ColonAfspraakslotListViewWrapper();
+		for (var index = 0; index < aliases.length; index++)
+		{
+			var waarde = tuple[index];
+			switch (aliases[index])
+			{
+			case "startDatum" -> wrapper.setStartDatum(waarde);
+			case "eindDatum" -> wrapper.setEindDatum(waarde);
+			case "kamer" -> wrapper.setKamer((String) waarde);
+			case "kamerId" -> wrapper.setKamerId(((Number) waarde).longValue());
+			case "afspraakslotId" -> wrapper.setAfspraakslotId(((Number) waarde).longValue());
+			case "capaciteitMeeBepaald" -> wrapper.setCapaciteitMeeBepaald((Boolean) waarde);
+			default -> throw new IllegalStateException("Onbekende alias " + aliases[index] + " voor afspraakslot");
+			}
+		}
+		return wrapper;
+	}
+
+	private VrijSlotZonderKamer maakVrijSlotZonderKamer(Object[] tuple, String[] aliases)
+	{
+		var vrijSlot = new VrijSlotZonderKamer();
+		for (var index = 0; index < aliases.length; index++)
+		{
+			var waarde = tuple[index];
+			switch (aliases[index])
+			{
+			case "startTijd" -> vrijSlot.setStartTijd(waarde);
+			case "eindTijd" -> vrijSlot.setEindTijd(waarde);
+			case "intakelocatieId" -> vrijSlot.setIntakelocatieId(((Number) waarde).longValue());
+			case "plaats" -> vrijSlot.setPlaats((String) waarde);
+			case "naam" -> vrijSlot.setNaam((String) waarde);
+			default -> throw new IllegalStateException("Onbekende alias " + aliases[index] + " voor vrij slot");
+			}
+		}
+		return vrijSlot;
 	}
 
 	@Override
 	public List<VrijSlotZonderKamer> getVrijeSlotenZonderKamer(String sortProperty, boolean asc, long first, long count, VrijSlotZonderKamerFilter filter)
 	{
-		var query = createVrijSlotZonderKamerQuery(filter, sortProperty, asc);
+		var query = createVrijSlotZonderKamerQuery(filter, sortProperty, asc)
+			.setTupleTransformer(this::maakVrijSlotZonderKamer);
 		if (first >= 0)
 		{
 			query.setFirstResult(Ints.checkedCast(first));
@@ -218,14 +251,16 @@ public class RoosterDaoImpl implements RoosterDao
 	@Override
 	public List<VrijSlotZonderKamer> getVrijeSlotenZonderKamer(String sortProperty, boolean asc, VrijSlotZonderKamerFilter filter)
 	{
-		var query = createVrijSlotZonderKamerQuery(filter, sortProperty, asc);
+		var query = createVrijSlotZonderKamerQuery(filter, sortProperty, asc)
+			.setTupleTransformer(this::maakVrijSlotZonderKamer);
 		return query.getResultList();
 	}
 
 	@Override
 	public List<VrijSlotZonderKamer> getVrijeSlotenZonderKamer(VrijSlotZonderKamerFilter filter)
 	{
-		var query = createVrijSlotZonderKamerQuery(filter, "niet", true);
+		var query = createVrijSlotZonderKamerQuery(filter, "niet", true)
+			.setTupleTransformer(this::maakVrijSlotZonderKamer);
 		return query.getResultList();
 	}
 
@@ -236,7 +271,7 @@ public class RoosterDaoImpl implements RoosterDao
 		return ((Number) query.uniqueResult()).longValue();
 	}
 
-	private NativeQuery createVrijSlotZonderKamerQuery(VrijSlotZonderKamerFilter filter, String sortProperty, boolean asc)
+	private NativeQuery<?> createVrijSlotZonderKamerQuery(VrijSlotZonderKamerFilter filter, String sortProperty, boolean asc)
 	{
 		entityManager.flush();
 
@@ -402,14 +437,10 @@ public class RoosterDaoImpl implements RoosterDao
 			}
 		}
 
-		var query = entityManager.unwrap(Session.class).createNativeQuery(querySB.toString());
+		var query = entityManager.createNativeQuery(querySB.toString()).unwrap(NativeQuery.class);
 		for (var param : params.entrySet())
 		{
 			query.setParameter(param.getKey(), param.getValue());
-		}
-		if (sortProperty != null)
-		{
-			query.setResultTransformer(Transformers.aliasToBean(VrijSlotZonderKamer.class));
 		}
 		return query;
 	}
@@ -441,12 +472,12 @@ public class RoosterDaoImpl implements RoosterDao
 
 		querySB.append("select {k.*}");
 
-//85b5a7a8-59ff-49df-8965-f436ee015213
+//fc342e9d-beb4-47c3-8871-ed20adc415a2
 		querySB.append(" from colon.afspraakslot afs");
 		querySB.append(" join colon.tijdslot ts on afs.id=ts.id");
 		querySB.append(" join colon.intakekamer k on ts.kamer=k.id");
 
-//85b5a7a8-59ff-49df-8965-f436ee015213
+//fc342e9d-beb4-47c3-8871-ed20adc415a2
 		var params = new HashMap<String, Object>();
 		querySB.append(" and k.actief = true");
 		querySB.append(" and not exists(select id from colon.intakeafspraak ia where ia.afspraakslot = afs.id and (ia.status=:status1 or ia.status=:status2)")
@@ -474,8 +505,8 @@ public class RoosterDaoImpl implements RoosterDao
 	@Override
 	public long getAfspraakslotsCount(RoosterListViewFilter filter, ColonIntakelocatie intakeLocatie)
 	{
-		var criteria = createAfspraakslotsCriteria(filter, intakeLocatie, null, true);
+		var query = createAfspraakslotsQuery(filter, intakeLocatie, null, true);
 
-		return ((Number) criteria.uniqueResult()).longValue();
+		return ((Number) query.uniqueResult()).longValue();
 	}
 }

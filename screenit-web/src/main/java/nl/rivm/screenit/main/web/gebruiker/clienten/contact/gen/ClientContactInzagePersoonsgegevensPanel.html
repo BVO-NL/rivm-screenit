@@ -20,11 +20,51 @@
   -->
 <html xmlns:wicket="http://wicket.apache.org">
 <wicket:panel>
-    <h2>Inzage/overdracht persoonsgegevens</h2>
-    <div class="form-horizontal">
-        <div class="control-group">
-            <label>Aanvraagbrief voor inzage/overdracht persoonsgegevens</label>
-        </div>
-    </div>
+	<h2>Inzage/overdracht persoonsgegevens</h2>
+	<div class="form-horizontal" wicket:id="container">
+		<div class="control-group">
+			<label>Aanvraagbrief voor inzage/overdracht persoonsgegevens</label>
+		</div>
+
+		<div class="control-group">
+			<label class="control-label">Type aanvraag</label>
+			<div class="controls">
+				<select wicket:id="type">
+					<option>Aanvraagformulier</option>
+					<option>Clientportaal</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="control-group" wicket:id="keuzesContainer">
+			<label class="control-label">Persoonsgegevens per BVO <i class="icon-asterisk icon-purple"></i></label>
+			<div class="controls row">
+				<div class="span3">
+					<label class="checkbox">
+						<input type="checkbox" wicket:id="bkGegevens">
+						Borstkanker - Dossier
+					</label>
+				</div>
+				<div class="span3">
+					<label class="checkbox">
+						<input type="checkbox" wicket:id="bkBeelden">
+						Borstkanker - Beelden
+					</label>
+				</div>
+				<div class="span3">
+					<label class="checkbox">
+						<input type="checkbox" wicket:id="bmhkGegevens">
+						Baarmoederhalskanker - Dossier
+					</label>
+				</div>
+				<div class="span3">
+					<label class="checkbox">
+						<input type="checkbox" wicket:id="dkGegevens">
+						Darmkanker - Dossier
+					</label>
+				</div>
+			</div>
+		</div>
+	</div>
 </wicket:panel>
 </html>

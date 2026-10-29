@@ -61,8 +61,8 @@ function ScreenitDropdown(props: ScreenitDropdownProps): ReactNode {
 					<MenuItem disabled value="">
 						{props.placeholder}
 					</MenuItem>
-					{props.options.map((option, key) =>
-						<MenuItem key={key} value={option.value}>{option.label}</MenuItem>,
+					{props.options.map((option) =>
+						<MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>,
 					)}
 				</Select>
 			</FormControl>

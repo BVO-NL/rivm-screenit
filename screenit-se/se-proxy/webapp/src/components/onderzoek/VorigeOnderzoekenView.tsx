@@ -86,7 +86,7 @@ export default class VorigeOnderzoekenView extends Component<VorigeOnderzoekenVi
 						</Paneel>
 					</Row>}
 					{this.props.client.vorigeOnderzoeken.map((vorigOnderzoek: VorigOnderzoek, index: number) => {
-						return <div className="row" key={index}>
+						return <div className="row" key={vorigOnderzoek.uitnodigingsNr}>
 							<VorigOnderzoekContainer vorigOnderzoek={vorigOnderzoek} meestRecent={index === 0}
 													 client={this.props.client} gebruikersnaam={this.props.gebruikersnaam}
 													 setHeeftOudeBeeldenOpgevraagd={this.props.setHeeftOudeBeeldenOpgevraagd}/>

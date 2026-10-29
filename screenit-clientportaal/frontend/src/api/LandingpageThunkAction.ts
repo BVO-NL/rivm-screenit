@@ -23,7 +23,7 @@ import ScreenitBackend from "../utils/Backend"
 import {createLandingOverzichtAction, LandingOverzichtAction} from "../actions/LandingOverzichtAction"
 import {LandingOverzicht} from "../datatypes/landing/LandingOverzicht"
 
-export const getLandingOverzicht = () => async (dispatch: Dispatch<LandingOverzichtAction>) => {
+export const getLandingOverzicht = () => async (dispatch: Dispatch<LandingOverzichtAction>): Promise<LandingOverzichtAction> => {
 	return ScreenitBackend.get<LandingOverzicht>("landing-overzicht").json()
 		.then(response => dispatch(createLandingOverzichtAction(response)))
 }

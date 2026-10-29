@@ -31,7 +31,7 @@ import HttpStatusCode from "../datatypes/HttpStatus"
 
 export const saveHeraanmeldVerzoekEnGeefBeschikbareActies = (bvo: Bevolkingsonderzoek, wilNieuweUitnodigingOntvangen: boolean, dispatch: Dispatch<ResetBeschikbareContactActies>) => (): Promise<ContactActiesDto> => {
 	return ScreenitBackend.post(`heraanmelden/${bvo}/${wilNieuweUitnodigingOntvangen}`)
-		.then(() => ScreenitBackend.get<ContactActiesDto>(`acties/beschikbaar`).json())
+		.then(() => ScreenitBackend.get<ContactActiesDto>("acties/beschikbaar").json())
 		.then(response => {
 			dispatch(setBeschikbareContactActies(response))
 			return response

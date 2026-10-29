@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useEffect} from "react"
+import {FC, useEffect} from "react"
 import {useSelectedBvo} from "../../../utils/Hooks"
 import {useSelector} from "react-redux"
 import {Bevolkingsonderzoek} from "../../../datatypes/Bevolkingsonderzoek"
@@ -29,7 +29,7 @@ import {assertUnreachable} from "../../../utils/EnumUtil"
 import LadenComponent from "../../../components/laden/LadenComponent"
 import {selectClient} from "../../../selectors/ClientSelectors"
 
-const BvoLandingPageController = () => {
+const BvoLandingPageController: FC = () => {
 	const bvo = useSelectedBvo()
 	const client = useSelector(selectClient)
 	const beschikbareActies = client.beschikbareActies.beschikbareActies

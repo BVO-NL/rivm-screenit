@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -60,10 +61,12 @@ import nl.rivm.screenit.model.Dossier;
 import nl.rivm.screenit.model.DossierStatus;
 import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
+import nl.rivm.screenit.model.RedenGbaVraag;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
+import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixUitstel;
@@ -93,9 +96,7 @@ import nl.rivm.screenit.model.logging.colon.ColonNieuwFitAanvraagLogEvent;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaAfspraakReservering;
 import nl.rivm.screenit.model.mamma.MammaCapaciteitBlok;
-import nl.rivm.screenit.model.mamma.MammaDossier;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
-import nl.rivm.screenit.model.mamma.MammaUitnodiging;
 import nl.rivm.screenit.model.mamma.MammaUitstel;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
 import nl.rivm.screenit.model.mamma.enums.MammaBeoordelingOpschortenReden;
@@ -149,6 +150,7 @@ import nl.rivm.screenit.util.colon.ColonFitRegistratieUtil;
 import nl.rivm.screenit.util.colon.ColonScreeningRondeUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.exception.GenericJDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -284,20 +286,20 @@ public class ClientContactServiceImpl implements ClientContactService
 	private ClientContactActieRepository clientContactActieRepository;
 
 	@Override
-	public Optional<ClientContact> getClientContactById(Long id)
+	public ClientContact getClientContactById(Long id)
 	{
-		return clientContactRepository.findById(id);
+		return clientContactRepository.getReferenceById(id);
 	}
 
 	@Override
 	@Transactional
-	public ClientContact maakClientContact(Client client, LocalDateTime datum, List<ClientContactActieType> acties, String opmerking,
+	public ClientContact maakClientContact(Client client, LocalDateTime moment, List<ClientContactActieType> acties, String opmerking,
 		OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var contact = new ClientContact();
-		contact.setOpmerking(opmerking);
+		contact.setOpmerking(StringUtils.trimToNull(opmerking));
 		contact.setClient(client);
-		contact.setDatum(DateUtil.toUtilDate(datum));
+		contact.setDatum(DateUtil.toUtilDate(moment));
 		contact.setOrganisatieMedewerker(ingelogdeOrganisatieMedewerker);
 		if (acties != null)
 		{
@@ -313,6 +315,21 @@ public class ClientContactServiceImpl implements ClientContactService
 		clientContactActieRepository.persistAll(contact.getActies());
 		logClientContact(contact, ingelogdeOrganisatieMedewerker);
 		return contact;
+	}
+
+	@Override
+	@Transactional
+	public ClientContact maakClientContact(Client client, LocalDateTime moment, ClientContactActieType actie, String opmerking,
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		return maakClientContact(client, moment, List.of(actie), opmerking, ingelogdeOrganisatieMedewerker);
+	}
+
+	@Override
+	@Transactional
+	public ClientContact maakClientContact(Client client, ClientContactActieType actie, String opmerking, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		return maakClientContact(client, currentDateSupplier.getLocalDateTime(), actie, opmerking, ingelogdeOrganisatieMedewerker);
 	}
 
 	@Override
@@ -376,7 +393,7 @@ public class ClientContactServiceImpl implements ClientContactService
 				actie = bezwaarViaClientContact(actiesToDelete, actie, client, extraOpslaanParams, account);
 				break;
 			case INZAGE_PERSOONSGEGEVENS:
-				overdrachtPersoonsgegevensService.maakOverdrachtVerzoek(client);
+				actie = maakOverdrachtVerzoek(actiesToDelete, actie, client, extraOpslaanParams, contact.getOrganisatieMedewerker());
 				break;
 			case DEELNAMEWENSEN:
 				actie = deelnamewensenRegistreren(actie, client, extraOpslaanParams, account);
@@ -975,6 +992,86 @@ public class ClientContactServiceImpl implements ClientContactService
 		logService.logGebeurtenis(LogGebeurtenis.WIJZIG_AANHEF, account, client, String.format("Aanhef gewijzigd naar: %s", aanhef.getNaam()));
 	}
 
+	@Override
+	@Transactional
+	public void wijzigAanhef(Client client, Aanhef aanhef, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		registreerContactActie(client, ClientContactActieType.AANPASSEN_AANHEF, notitie, ingelogdeOrganisatieMedewerker);
+		saveAanhef(ingelogdeOrganisatieMedewerker, client, aanhef);
+	}
+
+	@Override
+	@Transactional
+	public void registreerDeelnamewensen(Client client, DeelnamewensDto deelnamewensDto, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		registreerContactActie(client, ClientContactActieType.DEELNAMEWENSEN, notitie, ingelogdeOrganisatieMedewerker);
+		deelnamemodusDossierService.pasDeelnamewensToe(client, deelnamewensDto, ingelogdeOrganisatieMedewerker);
+	}
+
+	@Override
+	@Transactional
+	public void vraagKeuzeGebruikGegevensBriefAan(Client client, BriefType briefType, boolean handtekeningVergeten, String notitie,
+		OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		maakClientContact(client, currentDateSupplier.getLocalDateTime(), List.of(ClientContactActieType.BEZWAAR), notitie, ingelogdeOrganisatieMedewerker);
+		bezwaarService.maakBezwaarAanvraag(client, handtekeningVergeten, briefType);
+	}
+
+	private void registreerContactActie(Client client, ClientContactActieType actieType, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		maakClientContact(client, actieType, notitie, ingelogdeOrganisatieMedewerker);
+	}
+
+	@Override
+	@Transactional
+	public void vraagClientgegevensOpnieuwAan(Client client, RedenGbaVraag reden, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		var contact = maakClientContact(client, ClientContactActieType.OPNIEUW_AANVRAGEN_CLIENTGEGEVENS, notitie, ingelogdeOrganisatieMedewerker);
+		contact.getActies().getFirst().setOpnieuwAanvragenClientgegevensReden(reden);
+		baseGbaVraagService.vraagGbaGegevensOpnieuwAan(client, ingelogdeOrganisatieMedewerker, reden);
+	}
+
+	@Override
+	@Transactional
+	public void wijzigTijdelijkAdres(Client client, TijdelijkAdres tijdelijkAdres, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		registreerContactActie(client, ClientContactActieType.TIJDELIJK_ADRES, notitie, ingelogdeOrganisatieMedewerker);
+		saveTijdelijkAdres(ingelogdeOrganisatieMedewerker, client, tijdelijkAdres);
+	}
+
+	@Override
+	@Transactional
+	public void heraanmeldenCervix(Client client, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		var dossier = client.getCervixDossier();
+		var heraanTeMeldenAfmelding = zoekAfmeldingOmHeraanTeMelden(dossier)
+			.orElseThrow(() -> new IllegalStateException("Geen afmelding gevonden om client (id: " + client.getId() + ") heraan te melden voor BMHK"));
+		maakClientContact(client, ClientContactActieType.CERVIX_HERAANMELDEN, notitie, ingelogdeOrganisatieMedewerker);
+		heraanTeMeldenAfmelding.setClientWilNieuweUitnodiging(defaultNieuweUitnodigingAanvragen(dossier));
+		baseAfmeldService.heraanmelden(heraanTeMeldenAfmelding, ingelogdeOrganisatieMedewerker);
+	}
+
+	@Override
+	public <A extends Afmelding<?, ?, ?>> Optional<A> zoekAfmeldingOmHeraanTeMelden(Dossier<? extends ScreeningRonde<?, ?, ? extends A, ?>, ? extends A> dossier)
+	{
+		var verwerkteAfmelding = dossier.getAfmeldingen().stream()
+			.filter(afmelding -> afmelding.getAfmeldingStatus() == AanvraagBriefStatus.VERWERKT && afmelding.getHeraanmeldStatus() == null)
+			.findFirst();
+		if (verwerkteAfmelding.isPresent() || dossier.getLaatsteScreeningRonde() == null)
+		{
+			return verwerkteAfmelding.map(afmelding -> (A) afmelding);
+		}
+
+		var afmeldingenLaatsteRonde = dossier.getLaatsteScreeningRonde().getAfmeldingen().stream()
+			.filter(afmelding -> afmelding.getHeraanmeldStatus() == null)
+			.filter(afmelding -> afmelding.getAfmeldingStatus() == AanvraagBriefStatus.VERWERKT
+				|| afmelding.getAfmeldingStatus() == AanvraagBriefStatus.BRIEF && afmelding.getType() == AfmeldingType.TIJDELIJK)
+			.map(afmelding -> (A) afmelding)
+			.toList();
+		return afmeldingenLaatsteRonde.stream().filter(afmelding -> afmelding.getType() == AfmeldingType.TIJDELIJK).findFirst()
+			.or(() -> afmeldingenLaatsteRonde.stream().reduce((eerste, laatste) -> laatste));
+	}
+
 	private ClientContactActie nieuweAfspraakMaken(Account account, Client client, List<ClientContactActie> actiesToDelete, ClientContactActie actie,
 		Map<ExtraOpslaanKey, Object> extraOpslaanParams)
 	{
@@ -1069,6 +1166,32 @@ public class ClientContactServiceImpl implements ClientContactService
 		return actie;
 	}
 
+	private ClientContactActie maakOverdrachtVerzoek(List<ClientContactActie> actiesToDelete, ClientContactActie actie, Client client,
+		Map<ExtraOpslaanKey, Object> extraOpslaanParams, OrganisatieMedewerker organisatieMedewerker)
+	{
+		var overdrachtPersoonsgegevens = (OverdrachtPersoonsgegevens) extraOpslaanParams.get(ExtraOpslaanKey.OVERDRACHT_PERSOONSGEGEVENS);
+		if (overdrachtPersoonsgegevens != null)
+		{
+			try
+			{
+				overdrachtPersoonsgegevensService.maakOverdrachtVerzoek(client, overdrachtPersoonsgegevens, organisatieMedewerker);
+			}
+			catch (Exception e)
+			{
+				LOG.error("Fout bij het aanmaken van een overdracht verzoek", e);
+				actiesToDelete.add(actie);
+				actie = null;
+			}
+		}
+		else
+		{
+			actiesToDelete.add(actie);
+			actie = null;
+		}
+
+		return actie;
+	}
+
 	private ClientContactActie afmelden(List<ClientContactActie> actiesToDelete, ClientContactActie actie, Client client, Map<ExtraOpslaanKey, Object> extraOpslaanParams,
 		Account account)
 	{
@@ -1124,6 +1247,17 @@ public class ClientContactServiceImpl implements ClientContactService
 	@Override
 	public List<ClientContactActieType> getAvailableActies(Client client, boolean viaClientportaal)
 	{
+		return getAvailableActies(client, viaClientportaal, List.of());
+	}
+
+	@Override
+	public List<ClientContactActieType> getAvailableActies(Client client, Collection<ClientContactActieType> teControlerenActieTypes)
+	{
+		return getAvailableActies(client, false, teControlerenActieTypes);
+	}
+
+	private List<ClientContactActieType> getAvailableActies(Client client, boolean viaClientportaal, Collection<ClientContactActieType> teControlerenActieTypes)
+	{
 		List<ClientContactActieType> availableActies = new ArrayList<>();
 		var clientOverleden = clientService.isClientOverleden(client);
 		var clientInBuitenland = clientService.clientInBuitenland(client);
@@ -1155,6 +1289,11 @@ public class ClientContactServiceImpl implements ClientContactService
 		else
 		{
 			clientContactActieTypes.addAll(Arrays.asList(ClientContactActieType.values()));
+		}
+
+		if (!teControlerenActieTypes.isEmpty())
+		{
+			clientContactActieTypes.retainAll(teControlerenActieTypes);
 		}
 
 		for (var actieType : clientContactActieTypes)
@@ -1793,14 +1932,7 @@ public class ClientContactServiceImpl implements ClientContactService
 	@Override
 	public boolean heeftOpenMammaAfspraak(Client client)
 	{
-		return Optional.ofNullable(client)
-			.map(Client::getMammaDossier)
-			.map(MammaDossier::getLaatsteScreeningRonde)
-			.map(MammaScreeningRonde::getLaatsteUitnodiging)
-			.map(MammaUitnodiging::getLaatsteAfspraak)
-			.filter(laatsteAfspraak -> laatsteAfspraak.getStatus() == MammaAfspraakStatus.GEPLAND)
-			.map(laatsteAfspraak -> laatsteAfspraak.getVanaf().compareTo(currentDateSupplier.getDate()) >= 0)
-			.orElse(false);
+		return mammaBaseAfspraakService.findOpenAfspraak(client).isPresent();
 	}
 
 	@Override

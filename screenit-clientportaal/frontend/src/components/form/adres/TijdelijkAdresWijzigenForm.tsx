@@ -32,13 +32,15 @@ import {REGEX_HUISLETTER, REGEX_HUISNUMMER, REGEX_POSTCODE_EXACT} from "../../..
 import classNames from "classnames"
 import ScreenitDatePicker from "../../input/ScreenitDatePicker"
 import DOMPurify from "dompurify"
+import {addYears} from "date-fns"
+import {FC} from "react"
 
 export type TijdelijkAdresWijzigenFormProps = {
 	huidigTijdelijkAdres?: TijdelijkAdres
 	onSubmitSucces: (value: TijdelijkAdres) => void
 }
 
-const TijdelijkAdresWijzigenForm = (props: TijdelijkAdresWijzigenFormProps) => {
+const TijdelijkAdresWijzigenForm: FC<TijdelijkAdresWijzigenFormProps> = (props) => {
 	const initialValues = props.huidigTijdelijkAdres && (!props.huidigTijdelijkAdres.eindDatum || isDatumVandaagOfLater(props.huidigTijdelijkAdres.eindDatum)) ? props.huidigTijdelijkAdres : {
 		straat: "",
 		huisnummer: "" as any,
@@ -94,6 +96,17 @@ const TijdelijkAdresWijzigenForm = (props: TijdelijkAdresWijzigenFormProps) => {
 			})
 			.nullable()
 			.min(plusDagen(vandaag(), 1), getString(properties.form.error.datum.minimum, [formatDate(plusDagen(vandaag(), 1))]))
+			.test("maxTest", function (value) {
+				const startDatum = this.parent.startDatum
+				if (value == null || !startDatum) {
+					return true
+				}
+				const maxEindDatum = addYears(startDatum, 1)
+				return value <= maxEindDatum
+					|| this.createError({
+						message: getString(properties.form.error.datum.maximum, [formatDate(maxEindDatum)]),
+					})
+			})
 			.typeError(getString(properties.form.error.datum.ongeldig)),
 	})
 

@@ -59,6 +59,7 @@ import ColonAfspraakIntakePage from "../pages/bvo/colon/afspraak/ColonAfspraakIn
 import ColonAfspraakGezondheidPage from "../pages/bvo/colon/afspraak/ColonAfspraakGezondheidPage"
 import ColonAfspraakMakenWizardPage from "../pages/bvo/colon/afspraak/ColonAfspraakMakenWizardPage"
 import ColonAfspraakContactPage from "../pages/bvo/colon/afspraak/ColonAfspraakContactPage"
+import OverdrachtPersoonsgegevensPage from "../pages/profiel/OverdrachtPersoonsgegevensPage"
 
 export type RoutePath =
 	"/"
@@ -110,6 +111,7 @@ export type RoutePath =
 	| "/profiel/aanspreekvorm/"
 	| "/profiel/email/"
 	| "/profiel/gebruikgegevens/"
+	| "/profiel/overdracht-persoonsgegevens/"
 
 export type RouteDef = RouteProps & {
 	name: string
@@ -352,6 +354,14 @@ const routes: RouteDef[] = [
 		name: "Gebruik gegevens",
 		component: BezwaarWijzigenPage,
 		requiredContactActions: [ClientContactActieType.BEZWAAR],
+		redirectPage: "/profiel/",
+	},
+	{
+		private: true,
+		path: "/profiel/overdracht-persoonsgegevens/",
+		name: "Dossier opslaan",
+		component: OverdrachtPersoonsgegevensPage,
+		requiredContactActions: [ClientContactActieType.INZAGE_PERSOONSGEGEVENS],
 		redirectPage: "/profiel/",
 	},
 	{

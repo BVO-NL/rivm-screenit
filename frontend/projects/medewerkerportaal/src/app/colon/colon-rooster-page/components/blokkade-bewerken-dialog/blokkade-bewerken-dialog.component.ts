@@ -52,6 +52,7 @@ import { bepaalFoutmeldingBijOpslaanTijdslot } from '@/colon/utils/colon-utils'
 import { ColonTijdslotType } from '@shared/types/colon/colon-tijdslot-type'
 import { TimepickerComponent } from '@shared/components/timepicker/timepicker.component'
 import { StringsService } from '@shared/strings'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-blokkade-bewerken-dialog',
@@ -70,7 +71,7 @@ import { StringsService } from '@shared/strings'
   styleUrls: ['./blokkade-bewerken-dialog.component.scss'],
 })
 export class BlokkadeBewerkenDialogComponent {
-  minDatum = format(new Date(), DATE_FORMAT)
+  minDatum = format(DateService.nu(), DATE_FORMAT)
   verwijderenToegestaan = false
   bewerkenToegestaan = false
   private readonly formBuilder: FormBuilder = inject(FormBuilder)
@@ -147,7 +148,7 @@ export class BlokkadeBewerkenDialogComponent {
         kamer: this.blokkade.kamerId,
         alleKamers: false,
       })
-      isVerleden = new Date(this.blokkade.vanaf) < new Date()
+      isVerleden = new Date(this.blokkade.vanaf) < DateService.nu()
     }
 
     if (this.heleDagCtrl.value) {
@@ -273,7 +274,7 @@ export class BlokkadeBewerkenDialogComponent {
   }
 
   private berekenEindTijd(): void {
-    const startDate: Date = parse(this.startTijdCtrl.value, TIME_FORMAT, new Date())
+    const startDate: Date = parse(this.startTijdCtrl.value, TIME_FORMAT, DateService.nu())
     if (!isValid(startDate)) {
       return
     }

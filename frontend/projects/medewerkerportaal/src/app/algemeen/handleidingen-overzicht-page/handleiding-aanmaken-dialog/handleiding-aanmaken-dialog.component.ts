@@ -21,7 +21,15 @@
 import { FormArray, FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms'
 import { DialogRef } from '@angular/cdk/dialog'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
-import { DsButtonComponent, DsFileModel, DsFileUploaderComponent, DsFileUploaderFileComponent, DsFileUploaderOptionsModel, DsInputComponent } from '@topicus-rgp-ds/web'
+import {
+  DsButtonComponent,
+  DsFileModel,
+  DsFileUploaderComponent,
+  DsFileUploaderFileComponent,
+  DsFileUploaderOptionsModel,
+  DsInputComponent,
+  MaxLengthDirective,
+} from '@topicus-rgp-ds/web'
 import { HandleidingenService } from '@/algemeen/handleidingen-overzicht-page/services/handleidingen.service'
 import { NotificationService } from '@shared/services/notification/notification.service'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
@@ -30,10 +38,11 @@ import { haalBestandsnaamZonderExtensie, maakDSFileModel } from '@/algemeen/hand
 import { HandleidingUpload } from '@shared/utils/file-utils'
 import { Component, inject } from '@angular/core'
 import { StringsService } from '@shared/strings'
+import { MAX_KARAKTERS } from '@shared/constants'
 
 @Component({
   selector: 'app-handleiding-aanmaken-dialog',
-  imports: [ReactiveFormsModule, BaseDialogComponent, DsButtonComponent, DsFileUploaderComponent, DsFileUploaderFileComponent, DsInputComponent],
+  imports: [ReactiveFormsModule, BaseDialogComponent, DsButtonComponent, DsFileUploaderComponent, DsFileUploaderFileComponent, DsInputComponent, MaxLengthDirective],
   templateUrl: './handleiding-aanmaken-dialog.component.html',
 })
 export class HandleidingAanmakenDialogComponent {
@@ -42,6 +51,7 @@ export class HandleidingAanmakenDialogComponent {
   private readonly notificationService = inject(NotificationService)
   private readonly formBuilder: FormBuilder = inject(FormBuilder)
   protected readonly strings = inject(StringsService).getStrings()
+  protected readonly MAX_KARAKTERS = MAX_KARAKTERS
 
   readonly handleidingForm = this.formBuilder.group({
     handleidingenUpload: this.formBuilder.control<File[]>([], { nonNullable: true }),

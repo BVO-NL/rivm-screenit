@@ -27,6 +27,7 @@ import java.util.List;
 import nl.rivm.screenit.dto.mamma.MammaUploadBeeldenVerzoekDto;
 import nl.rivm.screenit.main.service.mamma.MammaUploadBeeldenService;
 import nl.rivm.screenit.model.ScreeningOrganisatie;
+import nl.rivm.screenit.util.DynamicPropertyComparator;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -35,7 +36,6 @@ import org.apache.wicket.injection.Injector;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.beans.support.PropertyComparator;
 
 public class MammaCeUploadBeeldenVerzoekDataProvider extends SortableDataProvider<MammaUploadBeeldenVerzoekDto, String>
 {
@@ -57,7 +57,7 @@ public class MammaCeUploadBeeldenVerzoekDataProvider extends SortableDataProvide
 	public Iterator<? extends MammaUploadBeeldenVerzoekDto> iterator(long first, long count)
 	{
 		setList();
-		return organisatieList.stream().sorted(new PropertyComparator<>(getSort().getProperty(), true, getSort().isAscending())).skip(first).limit(count)
+		return organisatieList.stream().sorted(new DynamicPropertyComparator<>(getSort().getProperty(), true, getSort().isAscending())).skip(first).limit(count)
 			.iterator();
 	}
 

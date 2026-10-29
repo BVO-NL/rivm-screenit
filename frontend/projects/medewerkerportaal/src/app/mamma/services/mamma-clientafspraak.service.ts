@@ -30,8 +30,8 @@ export class MammaClientafspraakService {
   private readonly apiService = inject(ApiService)
   private readonly baseUrl = '/api/mamma/afspraak'
 
-  getAfspraken(clientId: number) {
-    return this.apiService.get<MammaAfspraakDto[]>(`${this.baseUrl}?clientId=${clientId}`)
+  getGeplandeAfspraak(clientId: number) {
+    return this.apiService.get<MammaAfspraakDto>(`${this.baseUrl}/gepland?clientId=${clientId}`)
   }
 
   getAfspraakActies(clientId: number) {

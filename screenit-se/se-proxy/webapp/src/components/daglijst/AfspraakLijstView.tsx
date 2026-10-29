@@ -63,7 +63,7 @@ export default class AfspraakLijstView extends Component<AfspraakLijstViewProps>
 				</tr>
 				</thead>
 				<tbody>
-				{this.props.afspraken.map((tijdslot: Tijdslot, index: number) => {
+				{this.props.afspraken.map((tijdslot: Tijdslot) => {
 					if (tijdslot instanceof Afspraak) {
 						return <AfspraakRijContainer key={afspraakHash(tijdslot)} afspraak={tijdslot}
 													 client={getMandatory(this.props.clienten, tijdslot.clientId)}/>
@@ -73,7 +73,7 @@ export default class AfspraakLijstView extends Component<AfspraakLijstViewProps>
 						return <GeenScreeningBlokView key={tijdslot.vanafDatum + tijdslot.vanafTijd}
 													  geenScreeningBlok={tijdslot}/>
 					}
-					return <div key={index}/>
+					return <div key={tijdslot.vanafDatum + tijdslot.vanafTijd}/>
 				})}
 				</tbody>
 			</Table> : <p>{this.props.emptyText}</p>

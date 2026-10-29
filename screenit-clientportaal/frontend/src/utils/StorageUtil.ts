@@ -33,12 +33,12 @@ export const loadState = (): State => {
 			...parsedState,
 			requestMinusResponseCounter: 0,
 		}
-	} catch (err) {
+	} catch {
 		return legeState
 	}
 }
 
-export const saveState = () => {
+export const saveState = (): void => {
 	try {
 		const cpState = JSON.stringify(cpStore.getState())
 		sessionStorage.setItem("cpState", cpState)
@@ -46,7 +46,7 @@ export const saveState = () => {
 	}
 }
 
-export const removeStateFromStorage = () => {
+export const removeStateFromStorage = (): void => {
 	try {
 		sessionStorage.removeItem("cpState")
 	} catch {

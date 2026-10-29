@@ -30,6 +30,7 @@ import properties from "./InleidingComponent.json"
 import {getString} from "../../utils/TekstPropertyUtil"
 import datadogService from "../../services/DatadogService"
 import {AnalyticsCategorie} from "../../datatypes/AnalyticsCategorie"
+import {FC} from "react"
 
 export type InleidingComponentProps = {
 	bvoNaam: string,
@@ -42,7 +43,7 @@ export type InleidingComponentProps = {
 	volgendeUitnodigingTekst?: string,
 }
 
-const InleidingComponent = (props: InleidingComponentProps) => {
+const InleidingComponent: FC<InleidingComponentProps> = (props) => {
 
 	const selectedBvo = useSelectedBvo()
 

@@ -19,16 +19,16 @@
  * =========================LICENSE_END==================================
  */
 import { AfterViewInit, Component, ElementRef, inject, signal, viewChild, WritableSignal } from '@angular/core'
-import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid'
-import { CalendarApi, CalendarOptions, DateSelectArg, EventSourceInput, ViewApi } from '@fullcalendar/core'
-import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular'
-import interactionPlugin from '@fullcalendar/interaction'
-import nlLocale from '@fullcalendar/core/locales/nl'
+import resourceTimeGridPlugin from '@fullcalendar/angular-scheduler/resource-timegrid'
+import { CalendarApi, CalendarOptions, DateSelectInfo, EventSourceInput, FullCalendarComponent, FullCalendarModule, ViewApi } from '@fullcalendar/angular'
+import interactionPlugin from '@fullcalendar/angular/interaction'
+import classicThemePlugin from '@fullcalendar/angular/themes/classic'
+import nlLocale from 'fullcalendar/locales/nl'
 import { filter, identity, switchMap, take, tap } from 'rxjs'
 import { RoosterService } from '@/colon/colon-rooster-page/services/rooster.service'
 import { RoosterControlsComponent } from '@/colon/colon-rooster-page/components/rooster-controls/rooster-controls.component'
 import { CalendarView } from '@shared/types/calendar-view'
-import { Duration, isValid } from 'date-fns'
+import { Duration, format, isValid } from 'date-fns'
 import { CalendarKamer } from '@shared/types/calendar-kamer'
 import { WINDOW } from '@shared/tokens/window.token'
 import { ColonKamer } from '@shared/types/colon/colon-kamer'
@@ -41,16 +41,18 @@ import { ColonTijdslot } from '@shared/types/colon/colon-tijdslot'
 import { isColonAfspraakslot, isColonBlokkade } from '@shared/type-guards'
 import { BlokkadeBewerkenDialogComponent } from '@/colon/colon-rooster-page/components/blokkade-bewerken-dialog/blokkade-bewerken-dialog.component'
 import { NotPersisted } from '@shared/types/not-presisted'
-import { TIME_FORMAT } from '@shared/constants'
+import { ISO_DATE_FORMAT, TIME_FORMAT } from '@shared/constants'
 import { environment } from '../../../../../environments/environment'
 import { formatDate } from '@shared/utils/date-utils'
 import { DatePipe } from '@angular/common'
 import { DsTooltipDirective } from '@topicus-rgp-ds/web'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-rooster',
   templateUrl: './rooster.component.html',
   imports: [FullCalendarModule, RoosterControlsComponent, DatePipe, DsTooltipDirective],
+  host: { '(window:resize)': 'updateCalendarHeight()' },
 })
 export class RoosterComponent implements AfterViewInit {
   selectedDate: Date | undefined
@@ -65,6 +67,7 @@ export class RoosterComponent implements AfterViewInit {
     initialView: 'werkweek',
     datesAboveResources: true,
     headerToolbar: false,
+    dayHeaderFormat: { weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true },
     nowIndicator: true,
     selectable: true,
     dateAlignment: 'week',
@@ -87,10 +90,10 @@ export class RoosterComponent implements AfterViewInit {
     slotDuration: { minutes: 60 },
     expandRows: true,
     allDaySlot: false,
-    plugins: [resourceTimeGridPlugin, interactionPlugin],
+    plugins: [classicThemePlugin, resourceTimeGridPlugin, interactionPlugin],
     schedulerLicenseKey: environment.schedulerLicenseKey,
-    stickyHeaderDates: true,
-    slotLabelFormat: {
+    tableHeaderSticky: true,
+    slotHeaderFormat: {
       hour: 'numeric',
       minute: '2-digit',
       omitZeroMinute: false,
@@ -99,12 +102,19 @@ export class RoosterComponent implements AfterViewInit {
     scrollTime: { hours: 8 },
     resourceOrder: 'order',
     datesSet: ({ view }) => this.handleDatesSet(view),
-    eventClassNames: ({ event }) => this.getEventClasses(event.extendedProps as ColonAfspraakslot),
-    windowResize: () => this.updateCalendarHeight(),
+    columnEventClass: 'rooster-kolom-event',
+    dayLaneClass: ({ isToday }) => (isToday ? '' : 'rooster-dag-kolom'),
+    dayHeaderInnerClass: 'rooster-header-tekst',
+    resourceDayHeaderInnerClass: 'kamer-header-tekst',
+    weekNumberHeaderInnerClass: 'rooster-header-tekst',
+    dayHeaderClass: ({ isToday }) => (isToday ? 'rooster-dag-header-vandaag' : ''),
+    backgroundEventClass: ({ event }) => this.getEventClasses(event.extendedProps as ColonAfspraakslot),
+    eventClass: ({ event }) => this.getEventClasses(event.extendedProps as ColonAfspraakslot),
     eventClick: ({ event }) => this.editTijdslot(event.extendedProps as ColonAfspraakslot),
-    select: (event: DateSelectArg) => this.handleSelect(event.startStr, event.endStr, event.resource?.extendedProps?.['kamerId']),
+    select: (event: DateSelectInfo) => this.handleSelect(event.startStr, event.endStr, event.resource?.extendedProps?.['kamerId']),
     navLinks: true,
     navLinkDayClick: (date) => this.handleNavLinkDayClick(date),
+    now: () => format(DateService.nu(), ISO_DATE_FORMAT),
   }
   protected readonly ColonTijdslotStatus = ColonTijdslotStatus
   protected readonly TIME_FORMAT = TIME_FORMAT

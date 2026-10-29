@@ -23,20 +23,21 @@ import BvoHistorieCard from "./BvoHistorieCard"
 import landingPageStyle from "../../pages/landing/LandingPage.module.scss"
 import {isEmptyOrUndefined} from "../../utils/EmptyUtil"
 import {ClientGebeurtenis} from "../../datatypes/ClientGebeurtenis"
+import {FC} from "react"
 
 type Props = {
     gebeurtenissen: ClientGebeurtenis[]
 }
 
-const BvoHistorieComponent = (props: Props) => {
+const BvoHistorieComponent: FC<Props> = (props) => {
     return (
         <div>
             {!isEmptyOrUndefined(props.gebeurtenissen) &&
             <h5 className={landingPageStyle.sectieHeader}>Mijn historie</h5>}
             <Container fluid>
-				{props.gebeurtenissen.map((gebeurtenis, count) =>
+				{props.gebeurtenissen.map((gebeurtenis) =>
 					<BvoHistorieCard
-						key={count} tekstKey={gebeurtenis.tekstKey} datumTijd={gebeurtenis.datumTijd}
+						key={`${gebeurtenis.tekstKey}_${gebeurtenis.datumTijd}`} tekstKey={gebeurtenis.tekstKey} datumTijd={gebeurtenis.datumTijd}
 						extraParameters={gebeurtenis.extraParameters}/>)
 				}
 			</Container>

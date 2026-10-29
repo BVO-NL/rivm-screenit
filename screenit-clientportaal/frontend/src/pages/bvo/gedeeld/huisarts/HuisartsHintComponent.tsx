@@ -23,6 +23,7 @@ import classNames from "classnames"
 import hintComponentStyles from "../../../../components/hint/HintComponent.module.scss"
 import {concatWithSpace} from "../../../../utils/StringUtil"
 import properties from "./HuisartsHintComponent.json"
+import {FC} from "react"
 
 export type HuisartsHintComponentProps = {
     className?: string
@@ -31,7 +32,7 @@ export type HuisartsHintComponentProps = {
     geenHuisartsOptie?: string
 }
 
-const HuisartsHintComponent = (props: HuisartsHintComponentProps) => {
+const HuisartsHintComponent: FC<HuisartsHintComponentProps> = (props) => {
 
     return (
         <div className={classNames(props.className, hintComponentStyles.hintContainer)} style={{fontWeight: props.isBold ? "bold" : "normal"}}>

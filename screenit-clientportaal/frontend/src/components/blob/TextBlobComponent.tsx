@@ -27,6 +27,7 @@ import {NavLink} from "react-bootstrap"
 import SpanWithHtml from "../span/SpanWithHtml"
 import ArrowIconComponent, {ArrowType} from "../vectors/ArrowIconComponent"
 import BlobComponent from "./BlobComponent"
+import {FC} from "react"
 
 export type TextBlobComponentProps = {
 	titel: string,
@@ -37,7 +38,7 @@ export type TextBlobComponentProps = {
 	linkTekst?: string
 }
 
-const TextBlobComponent = (props: TextBlobComponentProps) => {
+const TextBlobComponent: FC<TextBlobComponentProps> = (props) => {
 	const selectedBvo = useSelectedBvo()
 	return (
 		<BlobComponent>

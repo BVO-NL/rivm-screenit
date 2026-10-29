@@ -31,6 +31,7 @@ import { WeekdagOptie } from '@shared/types/weekdag-optie'
 import { TimepickerComponent } from '@shared/components/timepicker/timepicker.component'
 import { filter } from 'rxjs'
 import { StringsService } from '@shared/strings'
+import { DateService } from '@shared/services/date/date.service'
 
 @Component({
   selector: 'app-tijdslots-verwijderen-filter',
@@ -44,7 +45,7 @@ export class TijdslotsVerwijderenFilterComponent {
   protected readonly strings = inject(StringsService).getStrings()
   filter = output<ColonTijdslotFilter>()
 
-  minDatum = new Date().toISOString()
+  minDatum = DateService.nu().toISOString()
   filterForm = this.formBuilder.group(
     {
       startDatum: this.formBuilder.control<Date | null>(null, [Validators.required]),

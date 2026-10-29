@@ -22,10 +22,10 @@ import { MedewerkerDto } from './medewerker.dto'
 import { Bevolkingsonderzoek } from '../../bevolkingsonderzoek'
 import { EntityDto } from './entity.dto'
 import { ClientContactActieDto } from '@shared/types/algemeen/dto/client-contact-actie.dto'
+import { BaseClientContactDto } from '@shared/types/algemeen/dto/base-client-contact.dto'
 
-export interface ClientContactDto extends EntityDto {
+export interface ClientContactDto extends EntityDto, BaseClientContactDto {
   datumTijd: Date
-  notitie: string
   medewerker?: MedewerkerDto
   bevolkingsonderzoeken?: Bevolkingsonderzoek[]
   clientId: number

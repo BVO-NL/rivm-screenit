@@ -33,19 +33,19 @@ export function getBezwaarUrl(bvo: Bevolkingsonderzoek): RoutePath {
 	return `/${bvo.toLowerCase()}/bezwaar` as RoutePath
 }
 
-export function getContactUrl() {
+export function getContactUrl(): string {
 	return `${getBevolkingsonderzoekNederlandUrl()}/contact/`
 }
 
-export function getBevolkingsonderzoekNederlandUrl() {
+export function getBevolkingsonderzoekNederlandUrl(): string {
 	return `https:
 }
 
-export function getBevolkingsonderzoekNederlandUrlNaam() {
+export function getBevolkingsonderzoekNederlandUrlNaam(): string {
 	return "bevolkingsonderzoeknederland.nl"
 }
 
-export function isExternalUrl(link: string) {
+export function isExternalUrl(link: string): RegExpMatchArray | null {
 	const str = "https:
 	return link.match(str)
 

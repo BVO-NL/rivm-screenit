@@ -40,5 +40,5 @@ export interface ClientContactgegevensDto extends PersoonDto {
   doelgroepen: Doelgroep[]
   dubbeleTijdReden: string
   aanspreekvorm: Aanspreekvorm
-  heeftMammaAfspraak: boolean
+  mammaAfspraakDatumTijd?: Date
 }

@@ -31,18 +31,15 @@ import {FormControl, FormControlLabel, Radio, RadioGroup} from "@mui/material"
 import * as Yup from "yup"
 import {ColonIntakeafspraakType} from "../../../../datatypes/colon/ColonIntakeafspraakType"
 import {useThunkDispatch} from "../../../../index"
-import {setColonIntakeafspraakAction, setColonIntakeafspraakTypeAction} from "../../../../actions/ColonDossierAction"
+import {setColonIntakeafspraakTypeAction} from "../../../../actions/ColonDossierAction"
 import datadogService from "../../../../services/DatadogService"
 import {AnalyticsCategorie} from "../../../../datatypes/AnalyticsCategorie"
 import {NavLink} from "react-bootstrap"
-import {selectIntakeAfspraak} from "../../../../selectors/ColonSelectors"
-import {useSelector} from "react-redux"
 
 const ColonAfspraakIntakePage: FC = () => {
 	const navigate = useNavigate()
 	const dispatch = useThunkDispatch()
 	const {openAfsluitenPopup} = useAfspraakWizardContext()
-	const intakeAfspraak = useSelector(selectIntakeAfspraak)
 
 	type IntakeFormulierWaarden = {
 		intake: ColonIntakeafspraakType | undefined

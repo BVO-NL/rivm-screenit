@@ -30,14 +30,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.comparator.BriefCreatieDatumComparator;
-import nl.rivm.screenit.main.exception.EntityNietGevondenException;
 import nl.rivm.screenit.main.model.BriefActie;
 import nl.rivm.screenit.main.service.BriefService;
 import nl.rivm.screenit.main.service.algemeen.BezwaarService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.model.Account;
+import nl.rivm.screenit.model.Bezwaar;
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.ClientContactManier;
 import nl.rivm.screenit.model.Client_;
 import nl.rivm.screenit.model.OnderzoeksresultatenActie;
@@ -47,6 +48,7 @@ import nl.rivm.screenit.model.algemeen.BezwaarBrief;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
+import nl.rivm.screenit.model.enums.FileType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.repository.algemeen.BezwaarMomentRepository;
@@ -55,6 +57,8 @@ import nl.rivm.screenit.repository.algemeen.OnderzoeksresultatenActieRepository;
 import nl.rivm.screenit.service.BaseBezwaarService;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BriefHerdrukkenService;
+import nl.rivm.screenit.service.ClientContactService;
+import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.util.BezwaarUtil;
@@ -91,6 +95,10 @@ public class BezwaarServiceImpl implements BezwaarService
 
 	private final BaseBriefService baseBriefService;
 
+	private final ClientContactService clientContactService;
+
+	private final ICurrentDateSupplier currentDateSupplier;
+
 	@Override
 	@Transactional
 	public void bezwaarBRPIntrekken(OrganisatieMedewerker organisatieMedewerker, Client client, MultipartFile briefBestand) throws IOException, IllegalStateException
@@ -118,6 +126,117 @@ public class BezwaarServiceImpl implements BezwaarService
 		{
 			LOG.error("Er is een fout opgetreden bij het intrekken van het Bezwaar BRP.", e);
 			throw e;
+		}
+	}
+
+	@Override
+	public List<Bezwaar> getBewerkbareBezwaren(Client client)
+	{
+		return baseBezwaarService.getBewerkbareBezwaren(client, client.getLaatstVoltooideBezwaarMoment(), BezwaarType.ALGEMENE_BEZWAAR_TYPES);
+	}
+
+	@Override
+	@Transactional(rollbackFor = IOException.class)
+	public void bezwaarDirectVerwerken(Client client, List<Bezwaar> gekozenBezwaren, MultipartFile briefBestand, String notitie,
+		OrganisatieMedewerker organisatieMedewerker) throws IOException
+	{
+		valideerPdfBestand(briefBestand);
+		var bewerkbareBezwaren = getBewerkbareBezwaren(client);
+		valideerGekozenBezwarenToegestaan(gekozenBezwaren, bewerkbareBezwaren);
+
+		var laatstVoltooideBezwaarMoment = client.getLaatstVoltooideBezwaarMoment();
+		var nieuweBezwaren = baseBezwaarService.bepaalNieuweBezwaren(laatstVoltooideBezwaarMoment, bewerkbareBezwaren, gekozenBezwaren);
+		if (!baseBezwaarService.zijnBezwarenGewijzigd(laatstVoltooideBezwaarMoment, nieuweBezwaren))
+		{
+			throw new IllegalStateException("error.bezwaar.niet.gewijzigd");
+		}
+
+		var uploadDocument = legClientContactEnFormulierVast(client, briefBestand, notitie, organisatieMedewerker);
+		rondBezwaarMomentAf(client, ClientContactManier.DIRECT, uploadDocument, nieuweBezwaren, organisatieMedewerker);
+	}
+
+	private static void valideerGekozenBezwarenToegestaan(List<Bezwaar> gekozenBezwaren, List<Bezwaar> bewerkbareBezwaren)
+	{
+		if (!gekozenBezwaren.stream().allMatch(bezwaar -> BezwaarUtil.bevatBezwaar(bewerkbareBezwaren, bezwaar)))
+		{
+			throw new IllegalStateException("error.bezwaar.niet.toegestaan");
+		}
+	}
+
+	private UploadDocument legClientContactEnFormulierVast(Client client, MultipartFile briefBestand, String notitie, OrganisatieMedewerker organisatieMedewerker)
+		throws IOException
+	{
+		clientContactService.maakClientContact(client, currentDateSupplier.getLocalDateTime(), List.of(ClientContactActieType.BEZWAAR), notitie,
+			organisatieMedewerker);
+
+		var uploadDocument = uploadDocumentService.multipartToUploadDocument(briefBestand);
+		uploadDocumentService.saveOrUpdate(uploadDocument, FileStoreLocation.BEZWAAR, client.getId());
+		return uploadDocument;
+	}
+
+	private void rondBezwaarMomentAf(Client client, ClientContactManier manier, UploadDocument uploadDocument, List<Bezwaar> nieuweBezwaren,
+		OrganisatieMedewerker organisatieMedewerker)
+	{
+		var nieuwBezwaarMoment = new BezwaarMoment();
+		nieuwBezwaarMoment.setClient(client);
+		nieuwBezwaarMoment.setManier(manier);
+		nieuwBezwaarMoment.setBezwaarBrief(uploadDocument);
+		nieuweBezwaren.forEach(bezwaar -> bezwaar.setBezwaarMoment(nieuwBezwaarMoment));
+		nieuwBezwaarMoment.getBezwaren().addAll(nieuweBezwaren);
+
+		baseBezwaarService.bezwaarAfronden(nieuwBezwaarMoment, organisatieMedewerker);
+	}
+
+	@Override
+	@Transactional
+	public void gegevensVerwijderen(Client client, List<Bezwaar> gekozenBezwaren, List<BezwaarType> toegestaneBezwaarTypes, MultipartFile briefBestand, String notitie,
+		OrganisatieMedewerker organisatieMedewerker) throws IOException
+	{
+		valideerPdfBestand(briefBestand);
+		var laatstVoltooideBezwaarMoment = client.getLaatstVoltooideBezwaarMoment();
+		var bewerkbareBezwaren = baseBezwaarService.getBewerkbareBezwaren(client, laatstVoltooideBezwaarMoment, toegestaneBezwaarTypes);
+		valideerGekozenBezwarenToegestaan(gekozenBezwaren, bewerkbareBezwaren);
+
+		var bezwaarBrpGekozen = gekozenBezwaren.stream().anyMatch(bezwaar -> BezwaarType.GEEN_OPNAME_UIT_BPR == bezwaar.getType());
+		var teVerwijderenDossiers = gekozenBezwaren.stream()
+			.filter(bezwaar -> BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER == bezwaar.getType())
+			.map(Bezwaar::getBevolkingsonderzoek)
+			.distinct()
+			.toList();
+		var bezwaarBrpNieuw = bezwaarBrpGekozen && !BezwaarUtil.isBezwaarActiefVoor(laatstVoltooideBezwaarMoment, BezwaarType.GEEN_OPNAME_UIT_BPR, null, true);
+		if (!bezwaarBrpNieuw && teVerwijderenDossiers.isEmpty())
+		{
+			throw new IllegalStateException("error.bezwaar.niet.gewijzigd");
+		}
+
+		var uploadDocument = legClientContactEnFormulierVast(client, briefBestand, notitie, organisatieMedewerker);
+		if (bezwaarBrpGekozen)
+		{
+
+			var nieuweBezwaren = baseBezwaarService.bepaalNieuweBezwaren(laatstVoltooideBezwaarMoment, zonderDossierVerzoeken(bewerkbareBezwaren),
+				zonderDossierVerzoeken(gekozenBezwaren));
+			rondBezwaarMomentAf(client, ClientContactManier.GEGEVENS_VERWIJDEREN, uploadDocument, nieuweBezwaren, organisatieMedewerker);
+		}
+		else
+		{
+			baseBezwaarService.onderzoeksresultatenVerwijderen(client, uploadDocument, teVerwijderenDossiers, organisatieMedewerker);
+		}
+	}
+
+	private static List<Bezwaar> zonderDossierVerzoeken(List<Bezwaar> bezwaren)
+	{
+		return bezwaren.stream().filter(bezwaar -> BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER != bezwaar.getType()).toList();
+	}
+
+	private static void valideerPdfBestand(MultipartFile briefBestand)
+	{
+		if (briefBestand == null || briefBestand.isEmpty())
+		{
+			throw new IllegalStateException("error.bestand.verplicht");
+		}
+		if (!FileType.PDF.getAllowedContentTypes().contains(briefBestand.getContentType()))
+		{
+			throw new IllegalStateException("error.bestandtype.niet.toegestaan");
 		}
 	}
 
@@ -188,8 +307,7 @@ public class BezwaarServiceImpl implements BezwaarService
 	@Transactional
 	public void briefNietMeerTegenhouden(Long briefId, String briefType, Account account)
 	{
-		var brief = briefService.getBriefById(briefId, briefType)
-			.orElseThrow(() -> new EntityNietGevondenException("Brief", briefId));
+		var brief = briefService.getBriefById(briefId, briefType);
 
 		if (!BriefUtil.isTegengehouden(brief))
 		{

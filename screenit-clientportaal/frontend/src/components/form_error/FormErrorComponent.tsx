@@ -19,13 +19,14 @@
  * =========================LICENSE_END==================================
  */
 import styles from "./FormErrorComponent.module.scss"
-import SpanWithHtml from "../span/SpanWithHtml";
+import SpanWithHtml from "../span/SpanWithHtml"
+import {FC} from "react"
 
 export type FormErrorComponentProps = {
     text: string;
 }
 
-export const FormErrorComponent = (props: FormErrorComponentProps) => {
+export const FormErrorComponent: FC<FormErrorComponentProps> = (props) => {
     return (
         <div className={styles.container}>
             <i className="material-icons">error_outline</i>

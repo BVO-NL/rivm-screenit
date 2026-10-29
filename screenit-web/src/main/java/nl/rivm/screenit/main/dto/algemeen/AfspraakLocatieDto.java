@@ -21,9 +21,18 @@ package nl.rivm.screenit.main.dto.algemeen;
  * =========================LICENSE_END==================================
  */
 
-public record AfspraakLocatieDto(
-	Long id,
-	String naam,
-	AdresDto adres)
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import nl.rivm.screenit.dto.EntityDto;
+
+@NoArgsConstructor
+@Setter
+@Getter
+public class AfspraakLocatieDto extends EntityDto
 {
+	String naam;
+
+	AdresDto adres;
 }

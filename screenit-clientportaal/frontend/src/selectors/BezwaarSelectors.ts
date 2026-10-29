@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
+import {BezwaarMoment} from "../datatypes/Bezwaar"
 import {State} from "../datatypes/State"
 
-export const selectBezwaren = (state: State) => state.client.laatsteBezwaarMoment
+export const selectBezwaren = (state: State): BezwaarMoment => state.client.laatsteBezwaarMoment

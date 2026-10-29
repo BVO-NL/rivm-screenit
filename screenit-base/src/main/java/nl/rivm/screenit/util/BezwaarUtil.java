@@ -27,6 +27,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import nl.rivm.screenit.model.Bezwaar;
 import nl.rivm.screenit.model.BezwaarMoment;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -97,5 +98,15 @@ public class BezwaarUtil
 			}
 		}
 		return true;
+	}
+
+	public static boolean bevatBezwaar(List<Bezwaar> bezwaren, BezwaarType type, Bevolkingsonderzoek bevolkingsonderzoek)
+	{
+		return bezwaren.stream().anyMatch(bezwaar -> bezwaar.getType() == type && bezwaar.getBevolkingsonderzoek() == bevolkingsonderzoek);
+	}
+
+	public static boolean bevatBezwaar(List<Bezwaar> bezwaren, Bezwaar gezochtBezwaar)
+	{
+		return bevatBezwaar(bezwaren, gezochtBezwaar.getType(), gezochtBezwaar.getBevolkingsonderzoek());
 	}
 }

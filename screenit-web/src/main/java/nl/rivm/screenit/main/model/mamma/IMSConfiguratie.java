@@ -47,6 +47,4 @@ public class IMSConfiguratie implements Serializable
 	private int imsQueueSizeWarningThreshold;
 
 	private String launchUrlPassword;
-
-	private boolean launchUrlSha1Mode;
 }

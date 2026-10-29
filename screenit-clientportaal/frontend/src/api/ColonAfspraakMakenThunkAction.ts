@@ -29,11 +29,11 @@ import {showToast} from "../utils/ToastUtil"
 import {VrijSlotZonderKamer} from "../datatypes/VrijSlotZonderKamer"
 import {ColonIntakeafspraakType} from "../datatypes/colon/ColonIntakeafspraakType"
 
-export const afspraakVerplaatsen = (nieuweAfspraak: VrijSlotZonderKamer, onError?: () => void) => () => {
+export const afspraakVerplaatsen = (nieuweAfspraak: VrijSlotZonderKamer, onError?: () => void) => (): Promise<void> => {
 	return voerActieUit("colon/afspraak/verplaatsen", nieuweAfspraak, onError)
 }
 
-export const nieuweAfspraak = (nieuweAfspraak: VrijSlotZonderKamer, onError?: () => void) => () => {
+export const nieuweAfspraak = (nieuweAfspraak: VrijSlotZonderKamer, onError?: () => void) => (): Promise<void> => {
 	return voerActieUit("colon/afspraak/maken", nieuweAfspraak, onError)
 }
 
@@ -53,7 +53,7 @@ function voerActieUit(backendUrl: string, nieuweAfspraak: VrijSlotZonderKamer, o
 		})
 }
 
-function getToastTitel(nieuweAfspraakType: string) {
+function getToastTitel(nieuweAfspraakType: string): string {
 	return nieuweAfspraakType === ColonIntakeafspraakType.OP_LOCATIE ? properties.toast.bevestiging.title.op_locatie : properties.toast.bevestiging.title.digitaal
 }
 

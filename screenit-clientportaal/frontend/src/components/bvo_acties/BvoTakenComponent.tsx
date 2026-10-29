@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import {useEffect, useState} from "react"
+import {FC, useEffect, useState} from "react"
 import {Col, Row} from "react-bootstrap"
 import styles from "./BvoTakenComponent.module.scss"
 import TaakComponent from "../taken/TaakComponent"
@@ -42,7 +42,7 @@ export type BvoTakenComponentProps = {
 	toonVervangendeTekst: boolean;
 }
 
-const BvoTakenComponent = (props: BvoTakenComponentProps) => {
+const BvoTakenComponent: FC<BvoTakenComponentProps> = (props) => {
 	const bvo = useSelectedBvo()!
 	const persoon = useSelector(selectPersoon)
 	const beschikbareActies = props.beschikbareActies

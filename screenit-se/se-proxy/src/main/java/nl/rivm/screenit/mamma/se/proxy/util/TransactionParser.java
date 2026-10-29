@@ -103,8 +103,7 @@ public class TransactionParser
 
 	public Long getOrganisatieMedewerkerId()
 	{
-		var organisatieMedewerkerId = getLongOfPath("organisatieMedewerkerId");
-		return organisatieMedewerkerId != null ? organisatieMedewerkerId : getLongOfPath("instellingGebruikerId");
+		return getLongOfPath("organisatieMedewerkerId");
 	}
 
 	private Long getLongOfPath(String path)

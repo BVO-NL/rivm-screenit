@@ -31,5 +31,3 @@ declare global {
     [WicketNamespace.MAMMA_VISITATIE_OVERZICHT]: () => string
   }
 }
-
-declare namespace Wicket {}
