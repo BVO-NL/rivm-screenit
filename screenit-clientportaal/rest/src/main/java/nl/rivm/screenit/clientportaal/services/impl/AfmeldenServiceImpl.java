@@ -65,7 +65,7 @@ public class AfmeldenServiceImpl implements AfmeldenService
 	@Override
 	public AfmeldOptiesDto getAfmeldOpties(Client client, Bevolkingsonderzoek bvo)
 	{
-		List<AfmeldingType> afmeldOpties = new ArrayList<>();
+		var afmeldOpties = clientContactService.getAvailableAfmeldopties(client, bvo, true);
 		List<String> afmeldRedenenEenmalig = new ArrayList<>();
 		List<String> afmeldRedenenTijdelijk = new ArrayList<>();
 		List<String> afmeldRedenenDefinitief = new ArrayList<>();
@@ -75,11 +75,9 @@ public class AfmeldenServiceImpl implements AfmeldenService
 		switch (bvo)
 		{
 		case CERVIX:
-			afmeldOpties = clientContactService.getAvailableAfmeldoptiesCervix(client, true);
 			Arrays.stream(CervixAfmeldingReden.values()).forEach(afmeldingReden -> afmeldRedenenDefinitief.add(EnumStringUtil.getPropertyString(afmeldingReden)));
 			break;
 		case COLON:
-			afmeldOpties = clientContactService.getAvailableAfmeldoptiesColon(client, true);
 			var gefilterdeColonAfmeldingRedenen = Arrays.stream(ColonAfmeldingReden.values())
 				.filter(afmeldingReden -> !afmeldingReden.equals(ColonAfmeldingReden.ONTERECHT)
 					&& !afmeldingReden.equals(ColonAfmeldingReden.PROEF_BEVOLKINGSONDERZOEK))
@@ -93,7 +91,6 @@ public class AfmeldenServiceImpl implements AfmeldenService
 			heeftOpenIntakeAfspraak = clientContactService.heeftOpenIntakeAfspraak(client);
 			break;
 		case MAMMA:
-			afmeldOpties = clientContactService.getAvailableAfmeldoptiesMamma(client, true);
 			MammaAfmeldingReden.eenmaligeRedenen().forEach(afmeldingReden -> afmeldRedenenEenmalig.add(EnumStringUtil.getPropertyString(afmeldingReden)));
 			MammaAfmeldingReden.definitieveRedenen().forEach(afmeldingReden -> afmeldRedenenDefinitief.add(EnumStringUtil.getPropertyString(afmeldingReden)));
 			break;
@@ -104,14 +101,7 @@ public class AfmeldenServiceImpl implements AfmeldenService
 	@Override
 	public CervixAfmelding valideerEnGetCervixAfmelding(AfmeldingDto<CervixAfmeldingReden> afmeldingDto, Client client)
 	{
-		if (afmeldingDto.getAfmeldType() == null)
-		{
-			throw new IllegalStateException("Niet alle verplichte velden zijn gevuld");
-		}
-		else if (!clientContactService.getAvailableAfmeldoptiesCervix(client, true).contains(afmeldingDto.getAfmeldType()))
-		{
-			throw new IllegalStateException("Afmeldtype " + afmeldingDto.getAfmeldType().name() + " is ongeldig");
-		}
+		valideerAfmeldType(afmeldingDto, client, Bevolkingsonderzoek.CERVIX);
 
 		var cervixAfmelding = vulAfmelding(afmeldingDto, new CervixAfmelding(), client.getCervixDossier());
 
@@ -126,18 +116,16 @@ public class AfmeldenServiceImpl implements AfmeldenService
 		return cervixAfmelding;
 	}
 
+	private void valideerAfmeldType(AfmeldingDto<?> afmeldingDto, Client client, Bevolkingsonderzoek bevolkingsonderzoek)
+	{
+		AfmeldingUtil.valideerAfmeldType(afmeldingDto.getAfmeldType(), clientContactService.getAvailableAfmeldopties(client, bevolkingsonderzoek, true));
+	}
+
 	@Override
 	public ColonAfmelding valideerEnGetColonAfmelding(AfmeldingDto<ColonAfmeldingReden> afmeldingDto, Client client)
 	{
-		if (afmeldingDto.getAfmeldType() == null)
-		{
-			throw new IllegalStateException("Niet alle verplichte velden zijn gevuld");
-		}
-		else if (!clientContactService.getAvailableAfmeldoptiesColon(client, true).contains(afmeldingDto.getAfmeldType()))
-		{
-			throw new IllegalStateException("Afmeldtype " + afmeldingDto.getAfmeldType().name() + " is ongeldig");
-		}
-		else if (AfmeldingType.TIJDELIJK.equals(afmeldingDto.getAfmeldType()) && afmeldingDto.getAfmeldenTotJaartal() == null)
+		valideerAfmeldType(afmeldingDto, client, Bevolkingsonderzoek.COLON);
+		if (AfmeldingType.TIJDELIJK.equals(afmeldingDto.getAfmeldType()) && afmeldingDto.getAfmeldenTotJaartal() == null)
 		{
 			throw new IllegalStateException("Tijdelijke afmelding zonder jaartal tot wanneer er afgemeld moet worden!");
 		}
@@ -189,14 +177,11 @@ public class AfmeldenServiceImpl implements AfmeldenService
 	@Override
 	public MammaAfmelding valideerEnGetMammaAfmelding(AfmeldingDto<MammaAfmeldingReden> afmeldingDto, Client client)
 	{
-		if (afmeldingDto.getAfmeldReden() == null || afmeldingDto.getAfmeldType() == null)
+		if (afmeldingDto.getAfmeldReden() == null)
 		{
 			throw new IllegalStateException("Niet alle verplichte velden zijn gevuld");
 		}
-		else if (!clientContactService.getAvailableAfmeldoptiesMamma(client, true).contains(afmeldingDto.getAfmeldType()))
-		{
-			throw new IllegalStateException("Afmeldtype " + afmeldingDto.getAfmeldType().name() + " is ongeldig");
-		}
+		valideerAfmeldType(afmeldingDto, client, Bevolkingsonderzoek.MAMMA);
 
 		var mammaAfmelding = vulAfmelding(afmeldingDto, new MammaAfmelding(), client.getMammaDossier());
 

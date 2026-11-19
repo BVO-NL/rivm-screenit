@@ -28,18 +28,27 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import jakarta.persistence.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
 import nl.rivm.screenit.dto.mamma.planning.PlanningVerzetClientenDto;
+import nl.rivm.screenit.main.dto.algemeen.AfspraakActie;
+import nl.rivm.screenit.main.dto.mamma.MammaAfspraakDto;
+import nl.rivm.screenit.main.exception.ValidatieException;
+import nl.rivm.screenit.main.mappers.mamma.MammaAfspraakMapper;
 import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
 import nl.rivm.screenit.main.transformer.MammaScreeningsEenheidMetDatumDto;
 import nl.rivm.screenit.model.Account;
+import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.ClientContactActieType;
 import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.enums.BriefType;
@@ -59,12 +68,14 @@ import nl.rivm.screenit.repository.mamma.MammaBaseAfspraakRepository;
 import nl.rivm.screenit.repository.mamma.MammaUitnodigingRepository;
 import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.BerichtToSeRestBkService;
+import nl.rivm.screenit.service.ClientContactService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseConceptPlanningsApplicatie;
 import nl.rivm.screenit.service.mamma.MammaBaseStandplaatsService;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.EmailUtil;
 import nl.rivm.screenit.util.hibernate.OpenEntityManagerInThread;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 
@@ -110,7 +121,16 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 
 	private final MammaBaseAfspraakRepository afspraakRepository;
 
+	private final ClientContactService clientContactService;
+
+	private final MammaAfspraakMapper afspraakMapper;
+
 	private static final int STREEF_INTERVAL = 2;
+
+	private static final Map<ClientContactActieType, AfspraakActie> AFSPRAAK_ACTIE_PER_CONTACT_ACTIE = Map.of(
+		ClientContactActieType.MAMMA_AFSPRAAK_MAKEN, AfspraakActie.MAKEN,
+		ClientContactActieType.MAMMA_AFSPRAAK_WIJZIGEN, AfspraakActie.VERPLAATSEN,
+		ClientContactActieType.MAMMA_UITSTELLEN, AfspraakActie.UITSTELLEN);
 
 	private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
@@ -281,19 +301,47 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public boolean magBevestigingsbriefAanmaken(MammaAfspraak afspraak)
 	{
-		var brieven = afspraak.getUitnodiging().getScreeningRonde().getBrieven();
-		for (var brief : brieven)
+		return findBevestigingsbriefNaAfspraak(afspraak).isEmpty();
+	}
+
+	private Optional<MammaBrief> findBevestigingsbriefNaAfspraak(MammaAfspraak afspraak)
+	{
+		return afspraak.getUitnodiging().getScreeningRonde().getBrieven().stream()
+			.filter(brief -> !DateUtil.compareBefore(brief.getCreatieDatum(), afspraak.getCreatiedatum()) && BriefType.isMammaUitnodigingBrief(brief.getBriefType()))
+			.findFirst();
+	}
+
+	@Override
+	public MammaAfspraak getOpenAfspraak(Client client, Long afspraakId)
+	{
+		return afspraakRepository.findByIdAndUitnodigingScreeningRondeDossierClient(afspraakId, client)
+			.filter(afspraak -> afspraak.getStatus() == MammaAfspraakStatus.GEPLAND)
+			.filter(afspraak -> afspraak.getVanaf().compareTo(dateSupplier.getDate()) >= 0)
+			.orElseThrow(() -> new EntityNotFoundException("Geen geplande mamma-afspraak gevonden met id: '" + afspraakId + "' voor client met id: '" + client.getId() + "'"));
+	}
+
+	@Override
+	@Transactional
+	public void maakBevestigingsbrief(MammaAfspraak afspraak) throws ValidatieException
+	{
+		if (!magBevestigingsbriefAanmaken(afspraak))
 		{
-			var briefType = brief.getBriefType();
-			if (!DateUtil.compareBefore(brief.getCreatieDatum(), afspraak.getCreatiedatum()) && BriefType.isMammaUitnodigingBrief(briefType))
-			{
-				return false;
-			}
+			throw new ValidatieException("error.mamma.afspraakbevestiging.brief.al.aangevraagd");
 		}
-		return true;
+		baseBriefService.maakBvoBrief(afspraak.getUitnodiging().getScreeningRonde(), BriefType.MAMMA_AFSPRAAK_VERZET);
+	}
+
+	@Override
+	@Transactional
+	public void verstuurBevestigingsmail(MammaAfspraak afspraak, String emailadres, Account account) throws ValidatieException
+	{
+		if (!EmailUtil.isCorrectEmailadres(emailadres))
+		{
+			throw new ValidatieException("error.mamma.afspraakbevestiging.ongeldig.emailadres");
+		}
+		clientContactService.verstuurBevestigingsmail(afspraak, account, emailadres);
 	}
 
 	@Override
@@ -350,5 +398,38 @@ public class MammaAfspraakServiceImpl implements MammaAfspraakService
 			}
 		}
 
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public MammaAfspraakDto getGeplandeAfspraak(Client client)
+	{
+		return baseAfspraakService.findOpenAfspraak(client)
+			.map(this::maakGeplandeAfspraakDto)
+			.orElse(null);
+	}
+
+	private MammaAfspraakDto maakGeplandeAfspraakDto(MammaAfspraak afspraak)
+	{
+		var afspraakDto = afspraakMapper.afspraakNaarDto(afspraak, baseAfspraakService.getMammaStandplaatsLocatieAfspraak(afspraak));
+		findBevestigingsbriefNaAfspraak(afspraak)
+			.ifPresent(brief -> afspraakDto.setBevestigingsbriefAangevraagdOp(DateUtil.toLocalDate(brief.getCreatieDatum())));
+		return afspraakDto;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<AfspraakActie> getAfspraakActies(Client client)
+	{
+		List<AfspraakActie> acties = new ArrayList<>();
+		if (baseAfspraakService.findOpenAfspraak(client).isPresent())
+		{
+			acties.add(AfspraakActie.AFSPRAAKBEVESTIGING_STUREN);
+		}
+
+		clientContactService.getAvailableActies(client, AFSPRAAK_ACTIE_PER_CONTACT_ACTIE.keySet()).stream()
+			.map(AFSPRAAK_ACTIE_PER_CONTACT_ACTIE::get)
+			.forEach(acties::add);
+		return acties;
 	}
 }

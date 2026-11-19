@@ -35,6 +35,8 @@ public interface BaseOverdrachtPersoonsgegevensService
 
 	void maakPdf(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens, OutputStream outputStream, Account account);
 
+	void maakExcel(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens, OutputStream outputStream, Account account);
+
 	void genereerEnPersisteerDataDump(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens);
 
 	void verwijderDataDump(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens);

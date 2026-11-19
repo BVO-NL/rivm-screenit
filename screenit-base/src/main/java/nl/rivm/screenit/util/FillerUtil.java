@@ -60,8 +60,6 @@ import nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider;
 import org.apache.commons.io.FileUtils;
 import org.springframework.util.Assert;
 
-import au.com.bytecode.opencsv.CSVWriter;
-
 import static nl.topicuszorg.hibernate.spring.util.ApplicationContextProvider.getApplicationContext;
 
 @Slf4j
@@ -171,7 +169,7 @@ public class FillerUtil
 		var file = new File(filePath);
 		verwijderBestandIndienAanwezig(file);
 
-		try (var csvOutput = new CSVWriter(new FileWriter(filePath, true), ','))
+		try (var csvOutput = CsvUtil.maakWriter(new FileWriter(filePath, true), ','))
 		{
 			csvOutput.writeNext(getHeaders(attributen));
 			for (var client : clienten)

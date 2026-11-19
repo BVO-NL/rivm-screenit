@@ -27,6 +27,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.dao.mamma.MammaBaseTehuisClientenDao;
@@ -44,7 +45,6 @@ import nl.topicuszorg.organisatie.model.Adres;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
-import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -67,9 +67,10 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 	@Autowired
 	private MammaBaseTehuisService tehuisService;
 
-	private NativeQuery createQuery(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, boolean strictMatchOpToevoeging, boolean count, String sortProperty,
-		Boolean isAscending)
+	private <T> TypedQuery<T> createQuery(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, boolean strictMatchOpToevoeging, Class<T> resultClass,
+		String sortProperty, Boolean isAscending)
 	{
+		var count = resultClass == Long.class;
 		var vandaag = dateSupplier.getLocalDate();
 
 		var maximaleLeeftijd = preferenceService.getInteger(PreferenceKey.MAMMA_MAXIMALE_LEEFTIJD.name());
@@ -232,7 +233,7 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 
 		orderString = voegAltijdSorteringOpPersoonIdToeBijSelect(sortProperty, orderString, count);
 
-		var query = entityManager.unwrap(Session.class).createNativeQuery(selectString + fromString + whereString + orderString);
+		var query = entityManager.createNativeQuery(selectString + fromString + whereString + orderString, resultClass).unwrap(TypedQuery.class);
 
 		query.setParameter("vanafGeboortedatum", DateUtil.toUtilDate(LocalDate.of(vanafGeboortejaar, 1, 1)));
 		query.setParameter("totGeboortedatum", DateUtil.toUtilDate(LocalDate.of(totGeboortejaar, 1, 1)));
@@ -300,7 +301,7 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 	@Override
 	public long countClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, boolean strictMatchOpToevoeging)
 	{
-		NativeQuery<Long> query = createQuery(tehuis, tehuisSelectie, zoekAdres, strictMatchOpToevoeging, true, null, null);
+		var query = createQuery(tehuis, tehuisSelectie, zoekAdres, strictMatchOpToevoeging, Long.class, null, null);
 		if (query == null)
 		{
 			return 0;
@@ -311,26 +312,23 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 	@Override
 	public List<Client> getClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres)
 	{
-		var query = createQuery(tehuis, tehuisSelectie, zoekAdres, false, false, null, null);
+		var query = createQuery(tehuis, tehuisSelectie, zoekAdres, false, Client.class, null, null);
 		if (query == null)
 		{
 			return new ArrayList<>();
 		}
-		query.addEntity(Client.class);
-		return query.list();
+		return query.getResultList();
 	}
 
 	@Override
 	public List<Client> getClienten(MammaTehuis tehuis, MammaTehuisSelectie tehuisSelectie, Adres zoekAdres, int first, int count, String sortProperty,
 		boolean isAscending)
 	{
-		var query = createQuery(tehuis, tehuisSelectie, zoekAdres, false, false, sortProperty, isAscending);
+		var query = createQuery(tehuis, tehuisSelectie, zoekAdres, false, Client.class, sortProperty, isAscending);
 		if (query == null)
 		{
 			return new ArrayList<>();
 		}
-		query.addEntity(Client.class);
-
 		query.setFirstResult(Math.max(first, 0));
 		if (count < 0)
 		{
@@ -340,6 +338,6 @@ public class MammaBaseTehuisClientenDaoImpl implements MammaBaseTehuisClientenDa
 		{
 			query.setMaxResults(count);
 		}
-		return query.list();
+		return query.getResultList();
 	}
 }

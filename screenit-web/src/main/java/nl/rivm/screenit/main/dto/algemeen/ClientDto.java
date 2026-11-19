@@ -83,6 +83,8 @@ public class ClientDto extends EntityDto
 		+ "Null indien geen adres beschikbaar is.")
 	private String postadres;
 
+	private String emailadres;
+
 	private LocalDate overlijdensdatum;
 
 	private String screeningsorganisatie;

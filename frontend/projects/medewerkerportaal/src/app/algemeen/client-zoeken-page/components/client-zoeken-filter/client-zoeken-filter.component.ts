@@ -33,7 +33,7 @@ import { AlleenCijfersDirective } from '@shared/directives/alleen-cijfers/alleen
 import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.directive'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
-import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { alleBevolkingsonderzoeken } from '@shared/types/bevolkingsonderzoek'
 import { Required } from '@shared/types/autorisatie/required'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
@@ -78,7 +78,7 @@ export class ClientZoekenFilterComponent {
     required: Required.ANY,
     level: ToegangLevel.LANDELIJK,
     organisatieTypeScopes: [OrganisatieType.RIVM],
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+    bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
   }
 
   protected geavanceerdZoekenControl = new FormControl<boolean>(false, { nonNullable: true })

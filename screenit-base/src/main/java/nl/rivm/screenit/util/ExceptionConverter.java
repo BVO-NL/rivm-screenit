@@ -21,80 +21,26 @@ package nl.rivm.screenit.util;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.Constants;
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.model.ExceptieOmschrijving;
 
-import org.hibernate.AssertionFailure;
-import org.hibernate.exception.GenericJDBCException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-public final class ExceptionConverter
+@Component
+@RequiredArgsConstructor
+public class ExceptionConverter
 {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionConverter.class);
+	private final ScreenitObjectMapper objectMapper;
 
-	private static ObjectMapper OBJECTMAPPER = new ObjectMapper();
-
-	private ExceptionConverter()
+	public String convertExceptionToJson(RuntimeException e, String keyValue)
 	{
-	}
-
-	public static String getMedewerkerMeldingUitTriggerMessage(RuntimeException e)
-	{
-		String uiMessage = null;
-		Throwable cause = null;
-		GenericJDBCException jdbException = null;
-		if (e instanceof DataAccessException exception)
-		{
-			cause = exception.getCause();
-		}
-		else if (e instanceof AssertionFailure failure)
-		{
-
-			cause = failure.getCause();
-			cause = cause != null ? cause.getCause() : null;
-		}
-		else
-		{
-			cause = e;
-		}
-		if (cause instanceof GenericJDBCException exception)
-		{
-			jdbException = exception;
-			if (jdbException.getSQLException() != null)
-			{
-				var message = jdbException.getSQLException().getMessage();
-				var startTriggerMessage = message.indexOf("[" + Constants.EXCEPTION_GEBRUIKERMELDING_MARKER);
-				var endTriggerMessage = message.indexOf(Constants.EXCEPTION_GEBRUIKERMELDING_MARKER + "]");
-				if (startTriggerMessage > 0 && endTriggerMessage > startTriggerMessage)
-				{
-					uiMessage = " "
-						+ message.substring(startTriggerMessage + Constants.EXCEPTION_GEBRUIKERMELDING_MARKER.length() + 1, endTriggerMessage).trim();
-				}
-			}
-		}
-		else if (cause instanceof IllegalStateException)
-		{
-			uiMessage = " " + e.getMessage();
-		}
-		if (uiMessage == null)
-		{
-			uiMessage = " Onbekende fout.";
-			LOGGER.error("Onverwachte jdbc fout.", e);
-		}
-		return uiMessage;
-	}
-
-	public static String convertExceptionToJson(RuntimeException e, String keyValue)
-	{
-		var exceptieOmschrijving = new ExceptieOmschrijving(keyValue, ExceptionConverter.getMedewerkerMeldingUitTriggerMessage(e));
+		var exceptieOmschrijving = new ExceptieOmschrijving(keyValue, ExceptionUtil.getMedewerkerMeldingUitTriggerMessage(e));
 		try
 		{
-			return OBJECTMAPPER.writeValueAsString(exceptieOmschrijving);
+			return objectMapper.writeValueAsString(exceptieOmschrijving);
 		}
 		catch (JsonProcessingException x)
 		{

@@ -21,6 +21,7 @@ package nl.rivm.screenit.main.service.cervix.impl;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.util.CsvUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -70,7 +71,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 @Slf4j
 @Service
@@ -133,10 +134,10 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 				logging(LogGebeurtenis.BULK_HUISARTSEN_VERWERKING_GESTART, null);
 
 				char character = getMostUsefullReader(file);
-				try (var reader = new CSVReader(new InputStreamReader(fileInputStream), character))
+				try (var reader = CsvUtil.maakReader(new InputStreamReader(fileInputStream), character))
 				{
 					var regel = 0;
-					for (var line : reader.readAll())
+					for (var line : CsvUtil.leesAlleRegels(reader))
 					{
 						regel++;
 						var informatie = "Bulk huisartsen(" + bulkUpload.getId() + ") - Regel " + regel + " - ";
@@ -349,8 +350,8 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 		String[] huidigeLine = null;
 		try
 		{
-			testReader = new CSVReader(new FileReader(file), ',');
-			huidigeLine = testReader.readNext();
+			testReader = CsvUtil.maakReader(new FileReader(file), ',');
+			huidigeLine = CsvUtil.leesRegel(testReader);
 			testReader.close();
 			if (huidigeLine != null && Arrays.asList(huidigeLine).size() > 2)
 			{
@@ -359,8 +360,8 @@ public class CervixBulkHuisartsenServiceImpl implements CervixBulkHuisartsenServ
 			else
 			{
 				huidigeLine = null;
-				testReader = new CSVReader(new FileReader(file), ';');
-				huidigeLine = testReader.readNext();
+				testReader = CsvUtil.maakReader(new FileReader(file), ';');
+				huidigeLine = CsvUtil.leesRegel(testReader);
 				testReader.close();
 				if (huidigeLine != null && Arrays.asList(huidigeLine).size() > 2)
 				{

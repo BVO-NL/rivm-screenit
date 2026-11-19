@@ -22,6 +22,7 @@ import logging
 from datetime import date, datetime
 
 from pandas import DataFrame
+from pandas.api.types import is_numeric_dtype
 
 _na_value = 0.0
 
@@ -149,12 +150,14 @@ def _fill_na(events: DataFrame, column):
     Werkt alleen voor numerieke waarden. (Meer is op dit moment niet nodig)
     """
     if column in events.columns:
-        events[column].fillna(_na_value, inplace=True)
+        kolom = events[column]
+        if not is_numeric_dtype(kolom):
+            kolom = kolom.astype(object)
+        events[column] = kolom.fillna(_na_value)
 
 
 def _bool_to_numeric(events: DataFrame, column):
-    events[column].fillna(0.5, inplace=True)
-    events[column] = events[column].astype(float)
+    events[column] = events[column].fillna(0.5).astype(float)
 
 
 def _map_categories(events: DataFrame, column, mapping, fill_na, exception_when_no_mapping):

@@ -50,8 +50,6 @@ import nl.rivm.screenit.model.enums.Deelnamemodus;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 @Entity
 @Table(
 	schema = "cervix",
@@ -64,7 +62,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 public class CervixDossier extends Dossier<CervixScreeningRonde, CervixAfmelding> implements DeelnamemodusDossier
 {
 	@OneToOne(mappedBy = "cervixDossier", optional = false)
-	@JsonBackReference
 	private Client client;
 
 	@OneToOne(fetch = FetchType.LAZY)

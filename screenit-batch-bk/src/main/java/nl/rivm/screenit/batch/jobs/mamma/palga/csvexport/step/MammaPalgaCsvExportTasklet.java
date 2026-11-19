@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.Constants;
@@ -43,6 +44,7 @@ import nl.rivm.screenit.service.mamma.MammaPalgaService;
 import nl.rivm.screenit.util.CsvUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.rivm.screenit.util.NaamUtil;
+import nl.rivm.screenit.util.ScreenitObjectMapper;
 import nl.rivm.screenit.util.StringUtil;
 import nl.rivm.screenit.util.ZipUtil;
 
@@ -52,32 +54,26 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.StepContribution;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.infrastructure.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import au.com.bytecode.opencsv.CSVWriter;
+import com.opencsv.CSVWriter;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class MammaPalgaCsvExportTasklet implements Tasklet
 {
 
-	@Autowired
-	private String locatieFilestore;
+	private final String locatieFilestore;
 
-	@Autowired
-	private ICurrentDateSupplier currentDateSupplier;
+	private final ICurrentDateSupplier currentDateSupplier;
 
-	@Autowired
-	private MammaPalgaService palgaService;
+	private final MammaPalgaService palgaService;
 
-	@Autowired
-	private UploadDocumentService uploadDocumentService;
+	private final UploadDocumentService uploadDocumentService;
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final ScreenitObjectMapper objectMapper;
 
 	@Override
 	public RepeatStatus execute(@Nullable StepContribution contribution, ChunkContext chunkContext) throws IOException
@@ -133,7 +129,7 @@ public class MammaPalgaCsvExportTasklet implements Tasklet
 		var document = new UploadDocument();
 		var fileName = getFileName(prefix, fileNummer) + ".csv";
 		file = new File(path + fileName);
-		try (var csvOutput = new CSVWriter(new FileWriter(file, false), ';', CSVWriter.NO_QUOTE_CHARACTER))
+		try (var csvOutput = CsvUtil.maakWriter(new FileWriter(file, false), ';', CSVWriter.NO_QUOTE_CHARACTER))
 		{
 			var aantalClienten = verwerkHuidigeBatch(exportGegevens, aantalClientenPerFile,
 				clientProjectie -> csvOutput.writeNext(getCsvGegevens(clientProjectie).toArray(new String[] {})));

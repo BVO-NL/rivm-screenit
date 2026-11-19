@@ -87,7 +87,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import com.opencsv.CSVWriter;
 
 import static nl.rivm.screenit.specification.SpecificationUtil.join;
 
@@ -225,7 +225,7 @@ public class MammaBaseDense2ServiceImpl implements MammaBaseDense2Service
 
 	private void schrijfClientenInCsv(List<Client> clienten, String exportBestandPad, File tijdelijkeExportBestand, boolean aanvullen) throws IOException
 	{
-		try (var csvOutput = new CSVWriter(new FileWriter(tijdelijkeExportBestand, aanvullen), ';', CSVWriter.NO_QUOTE_CHARACTER))
+		try (var csvOutput = CsvUtil.maakWriter(new FileWriter(tijdelijkeExportBestand, aanvullen), ';', CSVWriter.NO_QUOTE_CHARACTER))
 		{
 			if (aanvullen)
 			{

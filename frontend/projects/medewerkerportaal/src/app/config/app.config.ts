@@ -27,6 +27,7 @@ import { WINDOW } from '@shared/tokens/window.token'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { GlobalErrorHandler } from '@shared/services/global-error-handler/global-error-handler'
 import { httpInterceptor } from '@shared/interceptors/http.interceptor'
+import { dateSerialisatieInterceptor } from '@shared/interceptors/date-serialisatie.interceptor'
 import { ParameterService } from '@/algemeen/services/parameter/parameter.service'
 import { DateService } from '@shared/services/date/date.service'
 import { forkJoin } from 'rxjs'
@@ -47,7 +48,7 @@ setDefaultOptions({ locale: nl })
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(withFetch(), withInterceptors([httpInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([httpInterceptor, dateSerialisatieInterceptor])),
     provideAnimations(),
     provideRouter(routes),
     importProvidersFrom(DialogModule),

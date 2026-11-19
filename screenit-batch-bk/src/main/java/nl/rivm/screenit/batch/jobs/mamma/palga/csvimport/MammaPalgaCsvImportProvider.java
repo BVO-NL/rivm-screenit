@@ -21,6 +21,7 @@ package nl.rivm.screenit.batch.jobs.mamma.palga.csvimport;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.util.CsvUtil;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ import nl.rivm.screenit.service.mamma.MammaPalgaService;
 
 import org.springframework.stereotype.Component;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 @Component
 @AllArgsConstructor
@@ -49,7 +50,7 @@ public class MammaPalgaCsvImportProvider implements CsvFileProvider
 	public Iterator<CSVReader> getReaders() throws FileNotFoundException
 	{
 		List<CSVReader> readers = new ArrayList<>();
-		readers.add(new CSVReader(new FileReader(uploadDocumentService.load(palgaService.getImport())), ','));
+		readers.add(CsvUtil.maakReader(new FileReader(uploadDocumentService.load(palgaService.getImport())), ','));
 		return new CSVReaderIterator(readers.iterator());
 	}
 }

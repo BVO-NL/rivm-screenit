@@ -38,8 +38,7 @@ import nl.rivm.screenit.util.DateUtil;
 
 import org.apache.wicket.Application;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Getter
@@ -48,8 +47,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class BulkAanmakenException extends Exception
 {
 	private final List<BulkAanmakenInnerException> innerExceptions = new ArrayList<>();
-
-	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	public void addException(ColonTijdslot tijdslot, Exception exception)
 	{
@@ -67,7 +64,7 @@ public class BulkAanmakenException extends Exception
 
 	public String toJson()
 	{
-		var exceptions = new ArrayList<ObjectNode>();
+		var exceptions = JsonNodeFactory.instance.arrayNode();
 		String message;
 		ColonRoosterBeperking type;
 		ObjectNode node;
@@ -94,23 +91,15 @@ public class BulkAanmakenException extends Exception
 				exceptions.add(node);
 			}
 		}
-		var messagesArrayNode = objectMapper.valueToTree(exceptions);
-		var messagesNode = objectMapper.createObjectNode();
-		messagesNode.set("exceptions", messagesArrayNode);
+		var messagesNode = JsonNodeFactory.instance.objectNode();
+		messagesNode.set("exceptions", exceptions);
 		messagesNode.put("type", "bulk");
-		try
-		{
-			return objectMapper.writeValueAsString(messagesNode);
-		}
-		catch (JsonProcessingException e)
-		{
-			throw new RuntimeException(e);
-		}
+		return messagesNode.toString();
 	}
 
 	private ObjectNode createNode(ColonRoosterBeperking type, String exception, ColonTijdslot tijdslot)
 	{
-		var node = objectMapper.createObjectNode();
+		var node = JsonNodeFactory.instance.objectNode();
 		node.put("type", type.name());
 		node.put("exception", exception);
 		node.set("tijdslot", tijdslotToJson(tijdslot));
@@ -119,7 +108,7 @@ public class BulkAanmakenException extends Exception
 
 	private ObjectNode tijdslotToJson(ColonTijdslot tijdslot)
 	{
-		var node = objectMapper.createObjectNode();
+		var node = JsonNodeFactory.instance.objectNode();
 		node.put("id", tijdslot.getId());
 		node.put("vanaf", DateUtil.formatLocalTime(tijdslot.getVanaf()));
 		node.put("tot", DateUtil.formatLocalTime(tijdslot.getTot()));

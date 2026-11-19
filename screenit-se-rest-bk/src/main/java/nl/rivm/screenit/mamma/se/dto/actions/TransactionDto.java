@@ -27,9 +27,6 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-
 @Getter
 @Setter
 public class TransactionDto
@@ -44,7 +41,6 @@ public class TransactionDto
 
 	private String uitnodigingsNr;
 
-	@JsonDeserialize(using = LocalDateDeserializer.class)
 	private LocalDate afspraakVanafDatum;
 
 	private Long organisatieMedewerkerId;

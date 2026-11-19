@@ -103,7 +103,7 @@ public enum FileType
 		Collections.singletonList(".xml"),
 		Collections.singletonList("text/xml"),
 		null),
-		;
+	;
 
 	private final String naamFileType;
 
@@ -152,5 +152,24 @@ public enum FileType
 	public int getOffset()
 	{
 		return offset;
+	}
+
+	public boolean isGeldigBestand(String bestandsnaam, String contentType, byte[] inhoud)
+	{
+		if (bestandsnaam == null || !allowedContentTypes.contains(contentType) || fileExtensies.stream()
+			.noneMatch(extensie -> bestandsnaam.toLowerCase().endsWith(extensie.toLowerCase())))
+		{
+			return false;
+		}
+		return magicNumber == null || heeftMagicNumber(inhoud);
+	}
+
+	private boolean heeftMagicNumber(byte[] inhoud)
+	{
+		if (inhoud.length < offset + magicNumber.length)
+		{
+			return false;
+		}
+		return Arrays.equals(Arrays.copyOfRange(inhoud, offset, offset + magicNumber.length), magicNumber);
 	}
 }

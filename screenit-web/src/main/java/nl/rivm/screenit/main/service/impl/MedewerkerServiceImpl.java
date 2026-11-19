@@ -21,6 +21,7 @@ package nl.rivm.screenit.main.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -73,6 +74,7 @@ import static nl.rivm.screenit.specification.SpecificationUtil.join;
 import static nl.rivm.screenit.specification.algemeen.MedewerkerSpecification.heeftHandtekening;
 import static nl.rivm.screenit.specification.algemeen.OrganisatieMedewerkerSpecification.filterActief;
 import static nl.rivm.screenit.specification.algemeen.PermissieSpecification.heeftRecht;
+import static nl.rivm.screenit.util.DateUtil.LOCAL_DATE_FORMAT;
 
 @Service
 @AllArgsConstructor
@@ -202,11 +204,11 @@ public class MedewerkerServiceImpl implements MedewerkerService
 		{
 			wijzigingen.add(String.format("Bevolkingsonderzoeken: %s -> %s", initieleBevolkingsonderzoeken, huidigeBevolkingsonderzoeken));
 		}
-		if (!Objects.equals(rol.getBeginDatum(), initieleRol.getBeginDatum()))
+		if (!Objects.equals(DateUtil.toLocalDate(rol.getBeginDatum()), initieleRol.getBeginDatum()))
 		{
 			wijzigingen.add(String.format("Begindatum: %s -> %s", maakRolDatumString(initieleRol.getBeginDatum()), maakRolDatumString(rol.getBeginDatum())));
 		}
-		if (!Objects.equals(rol.getEindDatum(), initieleRol.getEindDatum()))
+		if (!Objects.equals(DateUtil.toLocalDate(rol.getEindDatum()), initieleRol.getEindDatum()))
 		{
 			wijzigingen.add(String.format("Einddatum: %s -> %s", maakRolDatumString(initieleRol.getEindDatum()), maakRolDatumString(rol.getEindDatum())));
 		}
@@ -220,13 +222,18 @@ public class MedewerkerServiceImpl implements MedewerkerService
 
 	private boolean isRolGewijzigd(OrganisatieMedewerkerRolDto initieleRol, String initieleBevolkingsonderzoeken, OrganisatieMedewerkerRol rol, String huidigeBevolkingsonderzoeken)
 	{
-		return !huidigeBevolkingsonderzoeken.equals(initieleBevolkingsonderzoeken) || !Objects.equals(rol.getBeginDatum(), initieleRol.getBeginDatum())
-			|| !Objects.equals(rol.getEindDatum(), initieleRol.getEindDatum()) || rol.getActief() != initieleRol.getActief();
+		return !huidigeBevolkingsonderzoeken.equals(initieleBevolkingsonderzoeken) || !Objects.equals(DateUtil.toLocalDate(rol.getBeginDatum()), initieleRol.getBeginDatum())
+			|| !Objects.equals(DateUtil.toLocalDate(rol.getEindDatum()), initieleRol.getEindDatum()) || rol.getActief() != initieleRol.getActief();
 	}
 
 	private String maakRolDatumString(Date date)
 	{
 		return date == null ? "(leeg)" : DateUtil.formatShortDate(date);
+	}
+
+	private String maakRolDatumString(LocalDate date)
+	{
+		return date == null ? "(leeg)" : date.format(LOCAL_DATE_FORMAT);
 	}
 
 	@Override

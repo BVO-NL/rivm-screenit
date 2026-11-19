@@ -1005,6 +1005,12 @@ public enum BriefType
 		false, "3_40_104 - Geen uitslag cliënt niet beoordeeld",
 		Bevolkingsonderzoek.MAMMA),
 
+	MAMMA_GEEN_ONDERZOEK_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "3_40_104_P - Geen uitslag cliënt niet beoordeeld",
+		Bevolkingsonderzoek.MAMMA),
+
 	MAMMA_MINDERVALIDE_ONDERZOEK_ZIEKENHUIS(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY, ProjectBriefActieType.XMETY },
@@ -1029,6 +1035,12 @@ public enum BriefType
 		false, "3_40_106 - Uitslag cliënt negatief beperkt beoordeelbaar prothese > 0.8",
 		Bevolkingsonderzoek.MAMMA),
 
+	MAMMA_BEPERKT_BEOORDEELBAAR_PROTHESE_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "3_40_106_P - Uitslag cliënt negatief beperkt beoordeelbaar prothese > 0.8",
+		Bevolkingsonderzoek.MAMMA),
+
 	MAMMA_VERWIJSVERSLAG(
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY, ProjectBriefActieType.XMETY },
@@ -1045,6 +1057,12 @@ public enum BriefType
 		OrganisatieType.SCREENINGSORGANISATIE,
 		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF, ProjectBriefActieType.XDAGENNAY, ProjectBriefActieType.XMETY },
 		false, "3_40_112 - Uitslag cliënt geen beoordeling mogelijk",
+		Bevolkingsonderzoek.MAMMA),
+
+	MAMMA_GEEN_BEOORDELING_MOGELIJK_PGO(
+		null,
+		new ProjectBriefActieType[] { ProjectBriefActieType.VERVANGENDEBRIEF },
+		false, "3_40_112_P - Uitslag cliënt geen beoordeling mogelijk",
 		Bevolkingsonderzoek.MAMMA),
 
 	MAMMA_INFOBRIEF_PROTHESEN(

@@ -79,4 +79,5 @@ export const MAX_KARAKTERS = {
   huisnummerAanduiding: 2,
   bestandsnaam: 50,
   dubbeleTijdReden: 255,
+  emailadres: 100,
 }

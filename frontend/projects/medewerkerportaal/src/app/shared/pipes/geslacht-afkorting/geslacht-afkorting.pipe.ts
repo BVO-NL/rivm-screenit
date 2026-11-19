@@ -23,7 +23,7 @@ import { Geslacht, geslachtAfkorting } from '../../types/algemeen/enum/geslacht'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
-import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { alleBevolkingsonderzoeken } from '@shared/types/bevolkingsonderzoek'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { Required } from '@shared/types/autorisatie/required'
 
@@ -38,7 +38,7 @@ export class GeslachtAfkortingPipe implements PipeTransform {
       !this.autorisatieService.isToegestaan({
         recht: [Recht.MEDEWERKER_TOON_GENDERINDETITEIT],
         actie: Actie.INZIEN,
-        bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+        bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
         level: ToegangLevel.LANDELIJK,
         required: Required.ANY,
       })

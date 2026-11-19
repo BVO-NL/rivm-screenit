@@ -31,9 +31,10 @@ import nl.rivm.screenit.mamma.se.proxy.util.DateUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 @Service
 public class MedewerkerStoreServiceImpl implements MedewerkerStoreService
@@ -41,8 +42,6 @@ public class MedewerkerStoreServiceImpl implements MedewerkerStoreService
 	private static final Logger LOG = LoggerFactory.getLogger(MedewerkerStoreServiceImpl.class);
 
 	private Map<Long, OrganisatieMedewerkerEntry> seOrganisatieMedewerkers = new ConcurrentHashMap<>();
-
-	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Override
 	public String addOrganisatieMedewerker(long organisatieMedewerkerId, String displayName)
@@ -68,10 +67,10 @@ public class MedewerkerStoreServiceImpl implements MedewerkerStoreService
 
 	private String maakAddTransactie(long organisatieMedewerkerId, String displayName)
 	{
-		var transactieNode = objectMapper.createObjectNode();
+		var transactieNode = JsonNodeFactory.instance.objectNode();
 		var actieNodes = transactieNode.putArray("actions");
 
-		var actieNode = objectMapper.createObjectNode();
+		var actieNode = JsonNodeFactory.instance.objectNode();
 		actieNode.put("type", "ADD_SE_MEDEWERKER");
 		actieNode.put("organisatieMedewerkerId", organisatieMedewerkerId);
 		actieNode.put("displayName", displayName);

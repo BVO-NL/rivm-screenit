@@ -23,6 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.clienten.agenda;
 
 import java.util.Date;
 
+import nl.rivm.screenit.main.exception.ValidatieException;
 import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.modal.BootstrapDialog;
@@ -30,13 +31,11 @@ import nl.rivm.screenit.main.web.component.modal.IDialog;
 import nl.rivm.screenit.main.web.gebruiker.clienten.contact.mamma.MammaEmailAfspraakBevestigingPanel;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.Actie;
-import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.Deelnamemodus;
 import nl.rivm.screenit.model.enums.Recht;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
-import nl.rivm.screenit.service.BaseBriefService;
 import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -55,9 +54,6 @@ import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 {
 	private final BootstrapDialog dialog;
-
-	@SpringBean
-	private BaseBriefService baseBriefService;
 
 	@SpringBean
 	private MammaAfspraakService afspraakService;
@@ -171,8 +167,15 @@ public abstract class MammaAfspraakPanel extends GenericPanel<MammaAfspraak>
 
 	public void maakBrief(MammaAfspraak afspraak)
 	{
-		baseBriefService.maakBvoBrief(afspraak.getUitnodiging().getScreeningRonde(), BriefType.MAMMA_AFSPRAAK_VERZET);
-		info(getString("brief.aangemaakt"));
+		try
+		{
+			afspraakService.maakBevestigingsbrief(afspraak);
+			info(getString("brief.aangemaakt"));
+		}
+		catch (ValidatieException e)
+		{
+			error(e.getFormattedMessage(this::getString));
+		}
 	}
 
 	public abstract void verzetten(AjaxRequestTarget target, MammaAfspraak afspraak);

@@ -20,7 +20,7 @@
   -->
 <app-base-dialog [titel]="strings.algemeen.clientDossier.acties.opnieuwAanvragenClientgegevens.dialogTitle">
   <div body>
-    <form [formGroup]="aanvraagForm" class="form-in-modal" novalidate>
+    <form [formGroup]="aanvraagForm" novalidate>
       <ds-dropdown
         formControlName="reden"
         [label]="strings.algemeen.labels.reden"

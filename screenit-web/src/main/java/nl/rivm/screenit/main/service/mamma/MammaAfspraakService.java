@@ -27,7 +27,11 @@ import java.util.List;
 import java.util.Map;
 
 import nl.rivm.screenit.dto.mamma.afspraken.MammaAfspraakOptieMetAfstandDto;
+import nl.rivm.screenit.main.dto.algemeen.AfspraakActie;
+import nl.rivm.screenit.main.dto.mamma.MammaAfspraakDto;
+import nl.rivm.screenit.main.exception.ValidatieException;
 import nl.rivm.screenit.model.Account;
+import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaBlokkade;
 import nl.rivm.screenit.model.mamma.MammaDossier;
@@ -48,4 +52,14 @@ public interface MammaAfspraakService
 	String controleerAfspraakInAndereLocatie(MammaAfspraakOptieMetAfstandDto afspraakOptieDto, MammaDossier dossier);
 
 	boolean magBevestigingsbriefAanmaken(MammaAfspraak afspraak);
+
+	MammaAfspraak getOpenAfspraak(Client client, Long afspraakId);
+
+	void maakBevestigingsbrief(MammaAfspraak afspraak) throws ValidatieException;
+
+	void verstuurBevestigingsmail(MammaAfspraak afspraak, String emailadres, Account account) throws ValidatieException;
+
+	MammaAfspraakDto getGeplandeAfspraak(Client client);
+
+	List<AfspraakActie> getAfspraakActies(Client client);
 }

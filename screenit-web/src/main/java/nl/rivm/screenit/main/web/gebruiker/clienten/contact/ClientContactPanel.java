@@ -64,7 +64,7 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.mamma.MammaAfspraakReserveringService;
 import nl.rivm.screenit.service.mamma.MammaBaseDossierService;
 import nl.rivm.screenit.util.EnumStringUtil;
-import nl.rivm.screenit.util.ExceptionConverter;
+import nl.rivm.screenit.util.ExceptionUtil;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 import nl.topicuszorg.wicket.search.column.DateTimePropertyColumn;
 
@@ -750,7 +750,7 @@ public class ClientContactPanel extends GenericPanel<Client>
 			}
 			catch (RuntimeException e)
 			{
-				ScreenitSession.get().error(getString("contact.afronden.niet.gelukt") + ExceptionConverter.getMedewerkerMeldingUitTriggerMessage(e));
+				ScreenitSession.get().error(getString("contact.afronden.niet.gelukt") + ExceptionUtil.getMedewerkerMeldingUitTriggerMessage(e));
 				handleContactAfrondenFout(target, contact);
 			}
 		}

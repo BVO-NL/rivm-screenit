@@ -1,0 +1,54 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog [titel]="nieuweUitnodigingStrings.dialogTitle" size="xl">
+  <div body>
+    <ds-summary-panel [headertitle]="nieuweUitnodigingStrings.gegevensTitel" class="display-block mb-3" data-testid="laatste_uitnodiging_gegevens">
+      <div class="row">
+        <ds-description class="col" [label]="strings.algemeen.labels.bevolkingsonderzoek" [value]="bevolkingsonderzoekLabels[Bevolkingsonderzoek.CERVIX]" data-testid="bevolkingsonderzoek"/>
+        <ds-description class="col" [label]="strings.algemeen.labels.ronde" value="{{ laatsteUitnodiging?.rondeNummer | legeWaarde }}" data-testid="ronde"/>
+        <ds-description
+          class="col"
+          [label]="strings.algemeen.labels.datumTijd"
+          value="{{ laatsteUitnodiging?.datum ?? null | datumTijd: NL_DATE_FORMAT : LONG_TIME_FORMAT : strings.algemeen.labels.uur | legeWaarde }}"
+          data-testid="datum"
+        />
+      </div>
+      <div class="row">
+        <ds-description
+          class="col"
+          [label]="strings.algemeen.labels.gebeurtenis"
+          value="{{ laatsteUitnodiging?.gebeurtenis | enumLabel: typeGebeurtenisLabels : '-' }}"
+          data-testid="gebeurtenis"
+        />
+        <ds-description class="col" [label]="strings.algemeen.labels.monsterId" value="{{ laatsteUitnodiging?.monsterId | legeWaarde }}" data-testid="monster_id"/>
+        <ds-description class="col" [label]="strings.algemeen.labels.uitnodigingId" value="{{ laatsteUitnodiging?.uitnodigingsId | legeWaarde }}" data-testid="uitnodiging_id"/>
+      </div>
+    </ds-summary-panel>
+    @if (laatsteUitnodiging?.wachtOpBrpGegevens) {
+      <p data-testid="wacht_op_brp_melding">{{ nieuweUitnodigingStrings.wachtOpBrpGegevens }}</p>
+    }
+    <app-notitie-aanmaken-veld [formControl]="notitie" data-testid="notitie_veld"/>
+  </div>
+  <ng-container buttons>
+    <button (click)="annuleren()" data-testid="btn_annuleren" ds-button-tertiary type="button">{{ strings.algemeen.buttons.annuleren }}</button>
+    <button (click)="aanvragen()" data-testid="btn_aanvragen" ds-button-primary type="button">{{ strings.algemeen.buttons.aanvragen }}</button>
+  </ng-container>
+</app-base-dialog>

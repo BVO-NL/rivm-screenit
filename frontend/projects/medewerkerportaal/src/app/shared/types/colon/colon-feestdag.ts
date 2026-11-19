@@ -23,14 +23,6 @@ import { EntityDto } from '@shared/types/algemeen/dto/entity.dto'
 
 export interface ColonFeestdagDto extends EntityDto {
   naam: string
-  datum: string
-  beperking: ColonRoosterBeperking
-  actief: boolean
-}
-
-export interface ColonFeestdag {
-  id?: number
-  naam: string
   datum: Date
   beperking: ColonRoosterBeperking
   actief: boolean

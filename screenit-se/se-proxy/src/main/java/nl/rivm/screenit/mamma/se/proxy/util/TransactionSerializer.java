@@ -21,17 +21,17 @@ package nl.rivm.screenit.mamma.se.proxy.util;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.mamma.se.proxy.configuration.SeProxyObjectMapper;
 import nl.rivm.screenit.mamma.se.proxy.model.TransactieDto;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TransactionSerializer
 {
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final SeProxyObjectMapper objectMapper = new SeProxyObjectMapper();
 
 	private static final Logger LOG = LoggerFactory.getLogger(TransactionSerializer.class);
 
@@ -44,7 +44,7 @@ public class TransactionSerializer
 		}
 		catch (JsonProcessingException e)
 		{
-			LOG.warn("Fout bij schrijven naar string voor transactie met clientId: " + transactieDto.getClientId());
+			LOG.warn("Fout bij schrijven naar string voor transactie met clientId: {}", transactieDto.getClientId());
 		}
 		return json;
 	}

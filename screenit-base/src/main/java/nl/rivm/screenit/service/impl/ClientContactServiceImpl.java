@@ -21,6 +21,8 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -67,6 +69,7 @@ import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.TijdelijkAdres;
 import nl.rivm.screenit.model.algemeen.BezwaarGroupViewWrapper;
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
+import nl.rivm.screenit.model.algemeen.OverdrachtType;
 import nl.rivm.screenit.model.cervix.CervixBrief;
 import nl.rivm.screenit.model.cervix.CervixDossier;
 import nl.rivm.screenit.model.cervix.CervixUitstel;
@@ -913,9 +916,14 @@ public class ClientContactServiceImpl implements ClientContactService
 		Account account)
 	{
 		var cervixBrief = (CervixBrief) extraOpslaanParams.get(ExtraOpslaanKey.CERVIX_HERDRUK_BRIEF);
+		maakHerdrukVanCervixUitnodiging(cervixBrief, account);
+		return actie;
+	}
+
+	private void maakHerdrukVanCervixUitnodiging(CervixBrief cervixBrief, Account account)
+	{
 		cervixBrief.setAangevraagdeHerdruk(true);
 		briefHerdrukkenService.opnieuwAanmaken(cervixBrief, account);
-		return actie;
 	}
 
 	private ClientContactActie zasAanvragen(ClientContactActie actie, Client client, Map<ExtraOpslaanKey, Object> extraOpslaanParams,
@@ -1017,6 +1025,23 @@ public class ClientContactServiceImpl implements ClientContactService
 		bezwaarService.maakBezwaarAanvraag(client, handtekeningVergeten, briefType);
 	}
 
+	@Override
+	@Transactional
+	public void vraagInzageAanvraagformulierAan(Client client, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		maakClientContact(client, ClientContactActieType.INZAGE_PERSOONSGEGEVENS, notitie, ingelogdeOrganisatieMedewerker);
+		var aanvraag = new OverdrachtPersoonsgegevens();
+		aanvraag.setType(OverdrachtType.AANVRAAGFORMULIER);
+		try
+		{
+			overdrachtPersoonsgegevensService.maakOverdrachtVerzoek(client, aanvraag, ingelogdeOrganisatieMedewerker);
+		}
+		catch (IOException e)
+		{
+			throw new UncheckedIOException(e);
+		}
+	}
+
 	private void registreerContactActie(Client client, ClientContactActieType actieType, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		maakClientContact(client, actieType, notitie, ingelogdeOrganisatieMedewerker);
@@ -1041,6 +1066,24 @@ public class ClientContactServiceImpl implements ClientContactService
 
 	@Override
 	@Transactional
+	public void afmelden(Client client, Afmelding<?, ?, ?> afmelding, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		registreerContactActie(client, bepaalAfmeldenActieType(afmelding.getBevolkingsonderzoek()), notitie, ingelogdeOrganisatieMedewerker);
+		afmeldenEnLog(client, afmelding, ingelogdeOrganisatieMedewerker);
+	}
+
+	private static ClientContactActieType bepaalAfmeldenActieType(Bevolkingsonderzoek bevolkingsonderzoek)
+	{
+		return switch (bevolkingsonderzoek)
+		{
+			case COLON -> ClientContactActieType.COLON_AFMELDEN;
+			case CERVIX -> ClientContactActieType.CERVIX_AFMELDEN;
+			case MAMMA -> ClientContactActieType.MAMMA_AFMELDEN;
+		};
+	}
+
+	@Override
+	@Transactional
 	public void heraanmeldenCervix(Client client, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var dossier = client.getCervixDossier();
@@ -1049,6 +1092,24 @@ public class ClientContactServiceImpl implements ClientContactService
 		maakClientContact(client, ClientContactActieType.CERVIX_HERAANMELDEN, notitie, ingelogdeOrganisatieMedewerker);
 		heraanTeMeldenAfmelding.setClientWilNieuweUitnodiging(defaultNieuweUitnodigingAanvragen(dossier));
 		baseAfmeldService.heraanmelden(heraanTeMeldenAfmelding, ingelogdeOrganisatieMedewerker);
+	}
+
+	@Override
+	@Transactional
+	public void uitstelAanvragenCervix(Client client, CervixUitstel uitstel, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		maakClientContact(client, ClientContactActieType.CERVIX_UITSTEL, notitie, ingelogdeOrganisatieMedewerker);
+		cervixBaseScreeningrondeService.uitstelAanvragen(client, uitstel, ingelogdeOrganisatieMedewerker);
+	}
+
+	@Override
+	@Transactional
+	public void nieuweUitnodigingAanvragenCervix(Client client, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
+	{
+		var laatsteScreeningRonde = client.getCervixDossier().getLaatsteScreeningRonde();
+		var laatstVerstuurdeUitnodiging = clientService.getLaatstVerstuurdeUitnodiging(laatsteScreeningRonde, false);
+		maakClientContact(client, ClientContactActieType.CERVIX_HERDRUK, notitie, ingelogdeOrganisatieMedewerker);
+		maakHerdrukVanCervixUitnodiging(laatstVerstuurdeUitnodiging.getBrief(), ingelogdeOrganisatieMedewerker);
 	}
 
 	@Override
@@ -1203,10 +1264,15 @@ public class ClientContactServiceImpl implements ClientContactService
 		}
 		else
 		{
-			baseAfmeldService.afmelden(client, afmelding, account);
-			logService.logGebeurtenis(LogGebeurtenis.AFMELDEN, account, client, "Type: " + afmelding.getType().name().toLowerCase(), afmelding.getBevolkingsonderzoek());
+			afmeldenEnLog(client, afmelding, account);
 			return actie;
 		}
+	}
+
+	private void afmeldenEnLog(Client client, Afmelding<?, ?, ?> afmelding, Account account)
+	{
+		baseAfmeldService.afmelden(client, afmelding, account);
+		logService.logGebeurtenis(LogGebeurtenis.AFMELDEN, account, client, "Type: " + afmelding.getType().name().toLowerCase(), afmelding.getBevolkingsonderzoek());
 	}
 
 	private ClientContactActie afspraakWijzigenAfzeggen(Account account, List<ClientContactActie> actiesToDelete, ClientContactActie actie,
@@ -1697,7 +1763,17 @@ public class ClientContactServiceImpl implements ClientContactService
 	}
 
 	@Override
-	public List<AfmeldingType> getAvailableAfmeldoptiesColon(Client client, boolean viaClientenportaalGevraagd)
+	public List<AfmeldingType> getAvailableAfmeldopties(Client client, Bevolkingsonderzoek bevolkingsonderzoek, boolean viaPortaalGevraagd)
+	{
+		return switch (bevolkingsonderzoek)
+		{
+			case COLON -> getAvailableAfmeldoptiesColon(client, viaPortaalGevraagd);
+			case CERVIX -> getAvailableAfmeldoptiesCervix(client, viaPortaalGevraagd);
+			case MAMMA -> getAvailableAfmeldoptiesMamma(client, viaPortaalGevraagd);
+		};
+	}
+
+	private List<AfmeldingType> getAvailableAfmeldoptiesColon(Client client, boolean viaClientenportaalGevraagd)
 	{
 		var afmeldTypes = new ArrayList<AfmeldingType>();
 		var colonDossier = client.getColonDossier();
@@ -1770,8 +1846,7 @@ public class ClientContactServiceImpl implements ClientContactService
 		}
 	}
 
-	@Override
-	public List<AfmeldingType> getAvailableAfmeldoptiesCervix(Client client, boolean viaPortaalGevraagd)
+	private List<AfmeldingType> getAvailableAfmeldoptiesCervix(Client client, boolean viaPortaalGevraagd)
 	{
 		List<AfmeldingType> afmeldingTypes = new ArrayList<>();
 		if (cervixIsEenmaligAfmeldenMogelijk(client))
@@ -1923,8 +1998,7 @@ public class ClientContactServiceImpl implements ClientContactService
 		logService.logGebeurtenis(LogGebeurtenis.CLIENTCONTACT_REGISTREREN, ingelogdeOrganisatieMedewerker, client, melding);
 	}
 
-	@Override
-	public List<AfmeldingType> getAvailableAfmeldoptiesMamma(Client client, boolean viaPortaalGevraagd)
+	private List<AfmeldingType> getAvailableAfmeldoptiesMamma(Client client, boolean viaPortaalGevraagd)
 	{
 		return mammaAfmeldService.getBeschikbareAfmeldopties(client, viaPortaalGevraagd);
 	}

@@ -54,8 +54,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.v24.datatype.FT;
@@ -119,8 +117,6 @@ public class CervixOrderBerichtServiceImpl implements CervixOrderBerichtService
 	private final HibernateService hibernateService;
 
 	private final HL7BaseSendMessageService sendMessageService;
-
-	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	private static void vulHuisartsRedords(CervixLabformulier labformulier, XCN berichtHuisarts) throws DataTypeException
 	{

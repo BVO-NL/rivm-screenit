@@ -25,16 +25,23 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
+import nl.rivm.screenit.main.controller.BaseController;
 import nl.rivm.screenit.main.dto.algemeen.AfspraakActie;
-import nl.rivm.screenit.main.dto.algemeen.AfspraakDto;
-import nl.rivm.screenit.main.service.mamma.MammaClientAfspraakService;
+import nl.rivm.screenit.main.dto.mamma.MammaAfspraakDto;
+import nl.rivm.screenit.main.exception.ValidatieException;
+import nl.rivm.screenit.main.service.mamma.MammaAfspraakService;
+import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.Recht;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,9 +56,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/mamma/afspraak")
 @Tag(name = "Mamma afspraken", description = "Beheer van mammaafspraken")
-public class MammaClientAfspraakController
+public class MammaClientAfspraakController extends BaseController
 {
-	private final MammaClientAfspraakService mammaClientAfspraakService;
+	private final MammaAfspraakService afspraakService;
 
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAKEN,
 		bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
@@ -61,9 +68,10 @@ public class MammaClientAfspraakController
 		@ApiResponse(responseCode = "404", description = "Client niet gevonden")
 	})
 	@GetMapping("/gepland")
-	public ResponseEntity<AfspraakDto> getGeplandeAfspraak(@RequestParam Long clientId)
+	public ResponseEntity<MammaAfspraakDto> getGeplandeAfspraak(@RequestParam Long clientId)
 	{
-		return ResponseEntity.ok(mammaClientAfspraakService.getGeplandeAfspraak(clientId));
+		var client = getClientOfGooiNotFoundException(clientId);
+		return ResponseEntity.ok(afspraakService.getGeplandeAfspraak(client));
 	}
 
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAKEN,
@@ -76,6 +84,55 @@ public class MammaClientAfspraakController
 	@GetMapping("/acties")
 	public ResponseEntity<List<AfspraakActie>> getAfspraakActies(@RequestParam Long clientId)
 	{
-		return ResponseEntity.ok(mammaClientAfspraakService.getAfspraakActies(clientId));
+		var client = getClientOfGooiNotFoundException(clientId);
+		return ResponseEntity.ok(afspraakService.getAfspraakActies(client));
+	}
+
+	@SecurityConstraint(actie = Actie.TOEVOEGEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAAK_MAKEN,
+		bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
+	@Operation(summary = "Maak bevestigingsbrief aan", description = "Maakt een bevestigingsbrief aan voor de geplande mamma-afspraak.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Bevestigingsbrief aangemaakt"),
+		@ApiResponse(responseCode = "403", description = "Geen recht om de afspraak te wijzigen"),
+		@ApiResponse(responseCode = "404", description = "Client of geplande afspraak niet gevonden"),
+		@ApiResponse(responseCode = "422", description = "Er is al een bevestigingsbrief aangevraagd voor deze afspraak")
+	})
+	@PostMapping("/{afspraakId}/bevestiging/brief")
+	public ResponseEntity<Void> maakBevestigingsbrief(@PathVariable Long afspraakId, @RequestParam Long clientId) throws ValidatieException
+	{
+		if (!magAfspraakWijzigen())
+		{
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+		var afspraak = afspraakService.getOpenAfspraak(getClientOfGooiNotFoundException(clientId), afspraakId);
+		afspraakService.maakBevestigingsbrief(afspraak);
+		return ResponseEntity.ok().build();
+	}
+
+	@SecurityConstraint(actie = Actie.TOEVOEGEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAAK_MAKEN,
+		bevolkingsonderzoekScopes = { Bevolkingsonderzoek.MAMMA })
+	@Operation(summary = "Verstuur bevestigingsmail", description = "Verstuurt een bevestigingsmail voor de geplande mamma-afspraak naar het opgegeven e-mailadres.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Bevestigingsmail verstuurd"),
+		@ApiResponse(responseCode = "403", description = "Geen recht om de afspraak te wijzigen"),
+		@ApiResponse(responseCode = "404", description = "Client of geplande afspraak niet gevonden"),
+		@ApiResponse(responseCode = "422", description = "Het e-mailadres is ongeldig")
+	})
+	@PostMapping("/{afspraakId}/bevestiging/email")
+	public ResponseEntity<Void> verstuurBevestigingsmail(@PathVariable Long afspraakId, @RequestParam Long clientId, @RequestBody String emailadres)
+		throws ValidatieException
+	{
+		if (!magAfspraakWijzigen())
+		{
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+		var afspraak = afspraakService.getOpenAfspraak(getClientOfGooiNotFoundException(clientId), afspraakId);
+		afspraakService.verstuurBevestigingsmail(afspraak, emailadres, getIngelogdeGebruiker());
+		return ResponseEntity.ok().build();
+	}
+
+	private boolean magAfspraakWijzigen()
+	{
+		return ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAAK_WIJZIGEN, Actie.INZIEN);
 	}
 }

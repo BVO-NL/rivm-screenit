@@ -20,7 +20,7 @@
   -->
 <app-base-dialog [titel]="strings.algemeen.clientDossier.acties.deelnamewensen.dialogTitle">
   <div body>
-    <form [formGroup]="deelnamewensenForm" class="form-in-modal" novalidate>
+    <form [formGroup]="deelnamewensenForm" novalidate>
       <ds-checkbox-array
         formControlName="deelnamewensen"
         [label]="strings.algemeen.clientDossier.acties.deelnamewensen.deelnamewensenPerBvo"

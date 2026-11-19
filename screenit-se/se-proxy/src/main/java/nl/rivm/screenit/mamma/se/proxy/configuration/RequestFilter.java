@@ -53,7 +53,7 @@ public class RequestFilter implements Filter
 		{
 			var request = (HttpServletRequest) servletRequest;
 			var response = (HttpServletResponse) servletResponse;
-			if (!request.getRequestURI().equals("/api/authenticatie/identificeren"))
+			if (!request.getRequestURI().equals("/api/authenticatie/identificeren") && !request.getRequestURI().contains("/health/ready"))
 			{
 				var duration = System.currentTimeMillis() - startTime;
 				LOG.info(String.format("duration=%d, %s <= %s[%s]%s", duration, response.getStatus(), request.getRemoteAddr(), request.getMethod(), request.getRequestURI()));

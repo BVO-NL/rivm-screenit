@@ -23,6 +23,7 @@ package nl.rivm.screenit.huisartsenportaal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.huisartsenportaal.config.HuisartsenportaalObjectMapper;
 import nl.rivm.screenit.huisartsenportaal.dto.AdresDto;
 import nl.rivm.screenit.huisartsenportaal.model.Adres;
 import nl.rivm.screenit.huisartsenportaal.repository.AdresRepository;
@@ -34,7 +35,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Slf4j
 @Service
@@ -47,7 +47,8 @@ public class AdresServiceImpl implements AdresService
 	@Autowired
 	private AdresRepository adresRepository;
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	@Autowired
+	private HuisartsenportaalObjectMapper objectMapper;
 
 	@Override
 	@Transactional

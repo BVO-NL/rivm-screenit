@@ -106,7 +106,7 @@ import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification
 import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification.heeftOpschortReden;
 import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification.heeftStatus;
 import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification.heeftStatusIn;
-import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification.isDoorgevoerdDoorMedewerker;
+import static nl.rivm.screenit.specification.mamma.MammaBeoordelingSpecification.isDoorgevoerdDoorMedewerkers;
 import static nl.rivm.screenit.specification.mamma.MammaMammografieBaseSpecification.heeftAfgerondOpInRange;
 
 @Slf4j
@@ -673,9 +673,9 @@ public class MammaBeoordelingServiceImpl implements MammaBeoordelingService
 	}
 
 	@Override
-	public List<Long> getBeoordelingIdsVanMedewerker(OrganisatieMedewerker medewerker, Range<LocalDate> datumRange)
+	public List<Long> getBeoordelingIdsVanMedewerkers(List<OrganisatieMedewerker> organisatieMedewerkers, Range<LocalDate> datumRange)
 	{
-		var spec = isDoorgevoerdDoorMedewerker(medewerker)
+		var spec = isDoorgevoerdDoorMedewerkers(organisatieMedewerkers)
 			.and(heeftOnderzoekType(MammaOnderzoekType.MAMMOGRAFIE))
 			.and(heeftStatusIn(MammaBeoordelingStatus.uitslagStatussen()))
 			.and(heeftAfgerondOpInRange(datumRange).with(r ->

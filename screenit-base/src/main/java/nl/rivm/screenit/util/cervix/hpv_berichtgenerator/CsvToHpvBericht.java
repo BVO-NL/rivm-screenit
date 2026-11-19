@@ -21,6 +21,7 @@ package nl.rivm.screenit.util.cervix.hpv_berichtgenerator;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.util.CsvUtil;
 import java.io.File;
 import java.io.FileReader;
 import java.text.ParseException;
@@ -37,7 +38,6 @@ import nl.rivm.screenit.model.cervix.berichten.CervixHpvResultCode;
 import nl.rivm.screenit.model.cervix.berichten.CervixHpvResultValue;
 import nl.rivm.screenit.model.cervix.enums.CervixHpvResultaatBerichtBron;
 
-import au.com.bytecode.opencsv.CSVReader;
 import ca.uhn.hl7v2.model.Message;
 
 @Slf4j
@@ -57,9 +57,9 @@ public class CsvToHpvBericht
 		CervixHpvBerichtGeneratorWrapper wrapper = null;
 		List<CervixHpvBerichtGeneratorWrapper> wrappers = new ArrayList<>();
 		List<Message> hpvBerichten = new ArrayList<>();
-		try (var csvReader = new CSVReader(new FileReader(file), seperator))
+		try (var csvReader = CsvUtil.maakReader(new FileReader(file), seperator))
 		{
-			for (var line : csvReader.readAll())
+			for (var line : CsvUtil.leesAlleRegels(csvReader))
 			{
 				if ("messageId".equals(line[0]))
 				{

@@ -55,6 +55,7 @@ import nl.rivm.screenit.service.BerichtToBatchService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.ScreenitObjectMapper;
 
 import org.apache.activemq.command.ActiveMQMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
@@ -128,7 +128,8 @@ public class BerichtToBatchServiceImpl implements BerichtToBatchService
 	@Autowired
 	private SimplePreferenceService preferenceService;
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	@Autowired
+	private ScreenitObjectMapper objectMapper;
 
 	private final String bsnMarkerPattern = "(\\|mammaClientBSNGewijzigd:([0-9]+),([0-9]+)\\|)";
 

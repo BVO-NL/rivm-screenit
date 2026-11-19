@@ -45,12 +45,12 @@ public class PlanningStandplaatsPeriodeDto extends PlanningConceptEntiteitDto
 
 	public Integer afspraakDrempel;
 
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonSerialize(using = LocalDateSerializer.class)
+	@JsonDeserialize(using = PlanningLocalDateDeserializer.class)
+	@JsonSerialize(using = PlanningLocalDateSerializer.class)
 	public LocalDate vanaf;
 
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonSerialize(using = LocalDateSerializer.class)
+	@JsonDeserialize(using = PlanningLocalDateDeserializer.class)
+	@JsonSerialize(using = PlanningLocalDateSerializer.class)
 	public LocalDate totEnMet;
 
 	public BigDecimal initieelIntervalMaanden;
@@ -65,7 +65,7 @@ public class PlanningStandplaatsPeriodeDto extends PlanningConceptEntiteitDto
 
 	public Boolean gesplitst;
 
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonSerialize(using = LocalDateSerializer.class)
+	@JsonDeserialize(using = PlanningLocalDateDeserializer.class)
+	@JsonSerialize(using = PlanningLocalDateSerializer.class)
 	public LocalDate mindervalideUitnodigenVanaf;
 }

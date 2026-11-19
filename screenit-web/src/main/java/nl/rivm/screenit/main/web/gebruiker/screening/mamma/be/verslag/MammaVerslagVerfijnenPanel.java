@@ -67,6 +67,9 @@ public class MammaVerslagVerfijnenPanel extends GenericPanel<MammaLezing>
 	private MammaBaseBeoordelingService baseBeoordelingService;
 
 	@SpringBean
+	private LaesieDtoMapper laesieDtoMapper;
+
+	@SpringBean
 	private MammaBaseLezingService baseLezingService;
 
 	private final WebMarkupContainer laesiesContainer;
@@ -85,8 +88,7 @@ public class MammaVerslagVerfijnenPanel extends GenericPanel<MammaLezing>
 		add(form);
 		renderAfkeurRedenen(form);
 
-		var mapper = new LaesieDtoMapper();
-		laesieDtos = new ListModel<>(mapper.lezingToLaesieDtos(model.getObject()));
+		laesieDtos = new ListModel<>(laesieDtoMapper.lezingToLaesieDtos(model.getObject()));
 		var afbeelding = new MammaLaesiesAfbeeldingPanel("verfijnVerslagAfbeelding", laesieDtos, false, model.getObject().getId(), true, amputatie);
 		afbeelding.setOnAfbeeldingGewijzigd((Consumer<AjaxRequestTarget> & Serializable) this::onAfbeeldingGewijzigd);
 		form.add(afbeelding);

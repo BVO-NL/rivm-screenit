@@ -80,12 +80,18 @@ export class ClientdossierPageComponent {
   protected readonly isAfsprakenTabZichtbaar = computed(
     () =>
       this.clientService.isClientActief() &&
-      this.autorisatieService.isToegestaan({
+      (this.autorisatieService.isToegestaan({
         recht: [Recht.MEDEWERKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT],
         actie: Actie.INZIEN,
         bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON],
         required: Required.ANY,
-      }),
+      }) ||
+        this.autorisatieService.isToegestaan({
+          recht: [Recht.MEDEWERKER_CLIENT_MAMMA_AFSPRAKEN],
+          actie: Actie.INZIEN,
+          bevolkingsonderzoekScopes: [Bevolkingsonderzoek.MAMMA],
+          required: Required.ANY,
+        })),
   )
 
   protected readonly isCisHistorieTabZichtbaar = computed(

@@ -76,6 +76,8 @@ public class ColonAfspraakController extends AbstractController
 
 	private final ColonIntakeAfspraakMapper intakeAfspraakMapper;
 
+	private final ExceptionConverter exceptionConverter;
+
 	private static final int MAX_RESULTS_PER_SEARCH_ITERATION = 100;
 
 	private static final int DEFAULT_RESULTS_PER_SEARCH_ITERATION = 10;
@@ -232,7 +234,7 @@ public class ColonAfspraakController extends AbstractController
 			}
 			catch (RuntimeException e)
 			{
-				return ResponseEntity.status(HttpStatus.CONFLICT).body(ExceptionConverter.convertExceptionToJson(e, "afspraak.niet.gemaakt"));
+				return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionConverter.convertExceptionToJson(e, "afspraak.niet.gemaakt"));
 			}
 		}
 		return createForbiddenResponse();

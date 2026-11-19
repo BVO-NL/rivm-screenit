@@ -21,12 +21,14 @@ package nl.rivm.screenit.main.util;
  * =========================LICENSE_END==================================
  */
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
+import nl.rivm.screenit.util.ScreenitObjectMapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 
 public class DatadogRumUtil
 {
+	private static final ScreenitObjectMapper OBJECT_MAPPER = new ScreenitObjectMapper();
+
 	public static void pushEvent(AjaxRequestTarget target, String eventName, Object eventData)
 	{
 		var jsObject = convertToJsObject(eventData);
@@ -42,8 +44,7 @@ public class DatadogRumUtil
 		}
 		try
 		{
-			var objectMapper = new ObjectMapper();
-			return objectMapper.writeValueAsString(data);
+			return OBJECT_MAPPER.writeValueAsString(data);
 		}
 		catch (Exception e)
 		{

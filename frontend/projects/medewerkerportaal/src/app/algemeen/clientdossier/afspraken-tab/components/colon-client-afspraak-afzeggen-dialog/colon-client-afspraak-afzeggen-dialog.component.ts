@@ -90,7 +90,6 @@ export class ColonClientAfspraakAfzeggenDialogComponent {
         data: {
           title: this.strings.algemeen.dialogs.bevestiging.titel,
           body: briefTegenhouden ? this.strings.algemeen.afspraken.afzeggen.briefTegenhouden : this.strings.algemeen.afspraken.afzeggen.briefVersturen,
-          neeButtonTekst: this.strings.algemeen.dialogs.bevestiging.neeButtonTekst,
           jaButtonTekst: this.strings.algemeen.dialogs.bevestiging.jaButtonTekst,
         },
         hasBackdrop: true,

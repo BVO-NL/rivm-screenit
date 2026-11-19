@@ -22,10 +22,14 @@ package nl.rivm.screenit.mamma.se.repository;
  */
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jakarta.persistence.Tuple;
+
+import nl.rivm.screenit.mamma.se.dto.ClientIdentificatie;
 import nl.rivm.screenit.mamma.se.dto.DagStatistiekAfspraakStatussen;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.enums.MammaAfspraakStatus;
@@ -33,8 +37,6 @@ import nl.rivm.screenit.repository.BaseJpaRepository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import jakarta.persistence.Tuple;
 
 public interface MammaAfspraakRepository extends BaseJpaRepository<MammaAfspraak>
 {
@@ -72,6 +74,22 @@ public interface MammaAfspraakRepository extends BaseJpaRepository<MammaAfspraak
 	Stream<Tuple> findInschrijvingenVanSeInRange(Date beginDatum,
 		Date eindDatum,
 		String seCode);
+
+	@Query(nativeQuery = true, value = """
+		select d.client_id as "clientId", d.identificatiesoort as "soort", d.identificatienummer as "nummer"
+		from (
+			select c.id as client_id, afs.identificatiesoort, afs.identificatienummer,
+				row_number() over (partition by c.id order by afs.vanaf desc) as volgnr
+			from mamma.afspraak afs
+			join mamma.uitnodiging uit on afs.uitnodiging = uit.id
+			join mamma.screening_ronde sr on uit.screening_ronde = sr.id
+			join mamma.dossier dos on sr.dossier = dos.id
+			join gedeeld.client c on dos.id = c.mamma_dossier
+			where afs.identificatienummer is not null
+			and c.id in (:clientIds)
+		) d
+		where d.volgnr = 1""")
+	List<ClientIdentificatie> findLaatsteIdentificatieVanClienten(List<Long> clientIds);
 
 	default Map<Long, Integer> findInschrijvingenVanSeInRangeToMap(Date beginDatum, Date eindDatum, String seCode)
 	{

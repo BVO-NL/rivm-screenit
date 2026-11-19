@@ -21,16 +21,17 @@
 <app-client-paspoort/>
 
 <div class="afspraken-panels">
-  <app-afspraak-panel data-testid="afspraak_panel_mamma" [afspraakEnActies]="mammaAfspraakEnActies()" [bvo]="Bevolkingsonderzoek.MAMMA"
-                      (tijdstipWijzigen)="openAfspraakDialog('tijdstip_wijzigen', $event)" (locatieWijzigen)="openAfspraakDialog('locatie_wijzigen', $event)"
-                      (afspraakAfgezegd)="getMammaAfspraak()"
-                      (afspraakMaken)="openAfspraakDialog('aanmaken', null)"
-  />
-  <app-afspraak-panel data-testid="afspraak_panel_colon" [afspraakEnActies]="colonAfspraakEnActies()" [bvo]="Bevolkingsonderzoek.COLON"
-                      (tijdstipWijzigen)="openAfspraakDialog('tijdstip_wijzigen', $event)" (locatieWijzigen)="openAfspraakDialog('locatie_wijzigen', $event)"
-                      (afspraakAfgezegd)="getColonAfspraak()"
-                      (afspraakMaken)="openAfspraakDialog('aanmaken', null)"
-  />
+  @if (magMammaAfsprakenInzien && mammaAfspraakGegevens(); as gegevens) {
+    <app-mamma-afspraak-panel data-testid="afspraak_panel_mamma" [afspraak]="gegevens.afspraak" [uitstel]="gegevens.uitstel" [acties]="gegevens.acties"
+                            (bevestigingsbriefAangevraagd)="bevestigingsbriefAangevraagd()"/>
+  }
+  @if (magColonAfsprakenInzien) {
+    <app-afspraak-panel data-testid="afspraak_panel_colon" [afspraakEnActies]="colonAfspraakEnActies()" [bvo]="Bevolkingsonderzoek.COLON"
+                        (tijdstipWijzigen)="openAfspraakDialog('tijdstip_wijzigen', $event)" (locatieWijzigen)="openAfspraakDialog('locatie_wijzigen', $event)"
+                        (afspraakAfgezegd)="getColonAfspraak()"
+                        (afspraakMaken)="openAfspraakDialog('aanmaken', null)"
+    />
+  }
 </div>
 
 @if (afspraakDialogMode() !== null) {

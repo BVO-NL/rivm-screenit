@@ -44,11 +44,11 @@ export class ScreenitDateFnsAdapter extends DateFnsAdapter {
         if (kandidaat.getFullYear() > cutoffJaar) {
           kandidaat = subYears(kandidaat, 100)
         }
-        return this.alsLocalDate(kandidaat)
+        return kandidaat
       }
     }
     const superResultaat = super.parse(value, parseFormat)
-    return superResultaat && isValid(superResultaat) ? this.alsLocalDate(superResultaat) : null
+    return superResultaat && isValid(superResultaat) ? superResultaat : null
   }
 
   override today(): Date {
@@ -57,11 +57,6 @@ export class ScreenitDateFnsAdapter extends DateFnsAdapter {
 
   override toIso8601(date: Date): string {
     return formatDate(date, 'yyyy-MM-dd')
-  }
-
-  private alsLocalDate(date: Date): Date {
-    date.toJSON = () => formatDate(date, 'yyyy-MM-dd')
-    return date
   }
 }
 

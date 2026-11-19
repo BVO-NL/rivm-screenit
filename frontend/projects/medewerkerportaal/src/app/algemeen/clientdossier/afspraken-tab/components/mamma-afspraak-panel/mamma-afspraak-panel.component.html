@@ -1,0 +1,54 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<ds-card [cardTitle]="titel">
+  @if (toonAfspraakbevestigingSturen()) {
+    <ng-template ds-card-header-content>
+      <button (click)="openAfspraakbevestigingDialog()" data-testid="afspraakbevestiging_sturen" ds-button-secondary type="button">
+        {{ afspraakStrings.mamma.buttons.afspraakbevestigingSturen }}
+        <ds-icon [icon]="faPaperPlane"/>
+      </button>
+    </ng-template>
+  }
+  @if (afspraak(); as afspraak) {
+    <app-afspraak-gegevens [afspraak]="afspraak">
+      @if (tijdelijkeLocatieTekst(); as tijdelijkeLocatieTekst) {
+        <span afspraakLocatieToelichting data-testid="tijdelijke_locatie">{{ tijdelijkeLocatieTekst }}</span>
+      }
+    </app-afspraak-gegevens>
+  } @else if (uitstelIngediendState(); as uitstelIngediendState) {
+    <ds-empty-state class="empty-state" data-testid="uitstel_ingediend" [emptyStateModel]="uitstelIngediendState"/>
+  } @else {
+    <ds-empty-state class="empty-state" data-testid="geen_afspraak" [emptyStateModel]="geenAfspraakState"/>
+  }
+  @if (toonUitstellen() || toonVerzetten() || toonAfspraakMaken()) {
+    <ng-template ds-footer-actions-right>
+      @if (toonUitstellen()) {
+        <button data-testid="uitstellen" ds-button-tertiary type="button">{{ strings.algemeen.buttons.uitstellen }}</button>
+      }
+      @if (toonVerzetten()) {
+        <button data-testid="verzetten" ds-button-secondary type="button">{{ strings.algemeen.buttons.verzetten }}</button>
+      }
+      @if (toonAfspraakMaken()) {
+        <button data-testid="afspraak_maken" ds-button-secondary type="button">{{ afspraakStrings.mamma.buttons.afspraakMaken }}</button>
+      }
+    </ng-template>
+  }
+</ds-card>

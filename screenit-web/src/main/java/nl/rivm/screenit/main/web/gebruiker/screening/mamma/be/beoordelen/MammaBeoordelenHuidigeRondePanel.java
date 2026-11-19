@@ -57,6 +57,9 @@ public class MammaBeoordelenHuidigeRondePanel extends AbstractMammaRondePanel
 	private MammaBaseBeoordelingService baseBeoordelingService;
 
 	@SpringBean
+	private LaesieDtoMapper laesieDtoMapper;
+
+	@SpringBean
 	private MammaBeoordelingService beoordelingService;
 
 	private MammaMBBBeoordelingPanel mammaMBBBeoordelingPanel;
@@ -111,8 +114,7 @@ public class MammaBeoordelenHuidigeRondePanel extends AbstractMammaRondePanel
 
 	private void koppelNieuweLaesiesAanLezing(IModel<MammaLezing> lezingModel, List<LaesieDto> laesieDtos)
 	{
-		var mapper = new LaesieDtoMapper();
-		mapper.koppelNieuweLaesiesAanLezing(mapper.laesieDtosToMammaLaesies(laesieDtos), lezingModel.getObject());
+		laesieDtoMapper.koppelNieuweLaesiesAanLezing(laesieDtoMapper.laesieDtosToMammaLaesies(laesieDtos), lezingModel.getObject());
 	}
 
 	public boolean isOpslaanPopupGezien()

@@ -21,7 +21,8 @@
 import { Component, inject } from '@angular/core'
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
-import { ColonFeestdag } from '@shared/types/colon/colon-feestdag'
+import { ColonFeestdagDto } from '@shared/types/colon/colon-feestdag'
+import { NotPersisted } from '@shared/types/not-presisted'
 import { ColonRoosterBeperking } from '@shared/types/colon/colon-rooster-beperking'
 import { ColonRoosterBeperkingComponent } from '@/colon/components/colon-rooster-beperking/colon-rooster-beperking.component'
 import { BaseDialogComponent } from '@shared/components/base-dialog/base-dialog.component'
@@ -36,8 +37,8 @@ import { DateService } from '@shared/services/date/date.service'
   templateUrl: './feestdag-bewerken-dialog.component.html',
 })
 export class FeestdagBewerkenDialogComponent {
-  private readonly dialogData: ColonFeestdag = inject(DIALOG_DATA)
-  private readonly feestdag: ColonFeestdag = this.getFeestdag()
+  private readonly dialogData: ColonFeestdagDto | undefined = inject(DIALOG_DATA)
+  private readonly feestdag: NotPersisted<ColonFeestdagDto> = this.getFeestdag()
   private readonly dialogRef: DialogRef = inject(DialogRef)
   private readonly formBuilder: FormBuilder = inject(FormBuilder)
   protected readonly strings = inject(StringsService).getStrings()
@@ -78,7 +79,7 @@ export class FeestdagBewerkenDialogComponent {
     this.dialogRef.close(feestdag)
   }
 
-  private getFeestdag(): ColonFeestdag {
+  private getFeestdag(): NotPersisted<ColonFeestdagDto> {
     return this.dialogData
       ? { ...this.dialogData }
       : {

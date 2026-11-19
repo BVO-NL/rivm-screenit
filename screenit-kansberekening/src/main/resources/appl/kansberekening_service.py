@@ -74,6 +74,11 @@ if _file_handler is not None:
 logging.basicConfig(level=logging.INFO, format=_format, datefmt=_datefmt, handlers=_handlers)
 
 
+class HealthAccessLogFilter(logging.Filter):
+    def filter(self, record):
+        return '/health/ready' not in record.getMessage()
+
+
 def _handle_exception(exc_type, exc_value, exc_traceback):
     logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 
@@ -81,7 +86,15 @@ def _handle_exception(exc_type, exc_value, exc_traceback):
 sys.excepthook = _handle_exception
 
 
+class HealthEndpoint(object):
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def ready(self):
+        return {'status': 'ok'}
+
+
 class KansberekeningService(object):
+    health = HealthEndpoint()
 
     @cherrypy.expose
     def fit_dossier_classifier(self):
@@ -114,6 +127,9 @@ logging.getLogger('cherrypy.access').handlers = _handlers
 logging.getLogger('cherrypy.access').propagate = False
 logging.getLogger('cherrypy.error').handlers = _handlers
 logging.getLogger('cherrypy.error').propagate = False
+_health_access_log_filter = HealthAccessLogFilter()
+for _handler in logging.getLogger('cherrypy.access').handlers:
+    _handler.addFilter(_health_access_log_filter)
 
 
 class StartServerPlugin(plugins.SimplePlugin):

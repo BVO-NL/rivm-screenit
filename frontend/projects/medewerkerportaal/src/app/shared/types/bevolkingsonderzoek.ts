@@ -26,6 +26,8 @@ export enum Bevolkingsonderzoek {
   MAMMA = 'MAMMA',
 }
 
+export const alleBevolkingsonderzoeken: Bevolkingsonderzoek[] = [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA]
+
 export const bevolkingsonderzoekLijst: EnumOptie<Bevolkingsonderzoek>[] = [
   { waarde: Bevolkingsonderzoek.COLON, naam: 'Darmkanker' },
   { waarde: Bevolkingsonderzoek.CERVIX, naam: 'Baarmoederhalskanker' },

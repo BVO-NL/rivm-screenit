@@ -21,9 +21,12 @@ package nl.rivm.screenit.main.dto.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import java.time.LocalDate;
+
 import lombok.Getter;
 import lombok.Setter;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,9 +38,9 @@ public class BezwaarHerstellenDto
 {
 	private String bsn;
 
-	@Schema(description = "Geboortedatum van de client als tekst in kort formaat")
-	private String geboortedatum;
+	@Schema(description = "Geboortedatum van de client (ISO-formaat, yyyy-MM-dd)")
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+	private LocalDate geboortedatum;
 
-	@Schema(description = "PDF-bestand waarmee het bezwaar hersteld wordt")
 	private MultipartFile bestand;
 }

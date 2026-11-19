@@ -33,13 +33,12 @@ import nl.rivm.screenit.mamma.se.proxy.util.DateUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 @Service
 @Slf4j
@@ -81,11 +80,15 @@ public class WebSocketProxyServiceImpl implements WebSocketProxyService
 			var authHeader = "Basic " + encodedAuth;
 			headers.add("Authorization", authHeader);
 
-			var restTemplate = new RestTemplate();
-			var request = new HttpEntity<>(headers);
+			var restClient = RestClient.create();
 			try
 			{
-				restTemplate.postForObject(mammograafStubUrl + "/wijzigDatumTijd/" + DateUtil.getCurrentDateTime().format(DateTimeFormatter.ISO_DATE_TIME), request, String.class);
+				restClient
+					.post()
+					.uri(mammograafStubUrl + "/wijzigDatumTijd/" + DateUtil.getCurrentDateTime().format(DateTimeFormatter.ISO_DATE_TIME))
+					.headers(httpHeaders -> httpHeaders.addAll(headers))
+					.retrieve()
+					.body(String.class);
 			}
 			catch (Exception e)
 			{

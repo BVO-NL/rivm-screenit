@@ -21,6 +21,7 @@ package nl.rivm.screenit.main.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.util.CsvUtil;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -38,7 +39,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 public class KoppelresultatenKankerregistratieVerwerkingContext implements AutoCloseable
 {
@@ -148,8 +149,8 @@ public class KoppelresultatenKankerregistratieVerwerkingContext implements AutoC
 		CSVReader testReader = null;
 		try
 		{
-			testReader = new CSVReader(new FileReader(file), ',');
-			huidigeLine = testReader.readNext();
+			testReader = CsvUtil.maakReader(new FileReader(file), ',');
+			huidigeLine = CsvUtil.leesRegel(testReader);
 			if (huidigeLine != null && Arrays.asList(huidigeLine).size() >= 17)
 			{
 				reader = testReader;
@@ -158,8 +159,8 @@ public class KoppelresultatenKankerregistratieVerwerkingContext implements AutoC
 			{
 				testReader.close();
 				huidigeLine = null;
-				testReader = new CSVReader(new FileReader(file), ';');
-				huidigeLine = testReader.readNext();
+				testReader = CsvUtil.maakReader(new FileReader(file), ';');
+				huidigeLine = CsvUtil.leesRegel(testReader);
 				if (huidigeLine != null && Arrays.asList(huidigeLine).size() >= 17)
 				{
 					reader = testReader;
@@ -228,7 +229,7 @@ public class KoppelresultatenKankerregistratieVerwerkingContext implements AutoC
 
 	public boolean isErEenNieuweRegel() throws IOException
 	{
-		huidigeLine = reader.readNext();
+		huidigeLine = CsvUtil.leesRegel(reader);
 		if (huidigeLine != null)
 		{
 			regelnummer++;

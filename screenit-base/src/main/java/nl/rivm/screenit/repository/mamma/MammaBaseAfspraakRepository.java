@@ -35,6 +35,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface MammaBaseAfspraakRepository extends BaseJpaRepository<MammaAfspraak>
 {
+	Optional<MammaAfspraak> findByIdAndUitnodigingScreeningRondeDossierClient(Long id, Client client);
+
 	@Query(nativeQuery = true, value = "select a.id from mamma.afspraak a" +
 		" join mamma.uitnodiging u on a.id = u.laatste_afspraak" +
 		" join mamma.screening_ronde s on u.id = s.laatste_uitnodiging" +

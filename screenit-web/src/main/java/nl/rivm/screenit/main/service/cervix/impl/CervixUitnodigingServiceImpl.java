@@ -25,12 +25,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.UnaryOperator;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.main.dto.cervix.CervixLaatsteUitnodigingDto;
 import nl.rivm.screenit.main.exception.CervixMonsterZoekenExceptie;
+import nl.rivm.screenit.main.mappers.cervix.CervixLaatsteUitnodigingMapper;
 import nl.rivm.screenit.main.repository.cervix.CervixMonsterRepository;
 import nl.rivm.screenit.main.service.cervix.CervixUitnodigingService;
 import nl.rivm.screenit.model.Client;
@@ -42,6 +45,7 @@ import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.model.cervix.enums.CervixMonsterType;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.OrganisatieParameterService;
+import nl.rivm.screenit.service.RondeNummerService;
 import nl.rivm.screenit.service.cervix.Cervix2023StartBepalingService;
 import nl.rivm.screenit.service.cervix.CervixBaseMonsterService;
 import nl.rivm.screenit.specification.cervix.CervixMonsterSpecification;
@@ -65,6 +69,10 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 	private final OrganisatieParameterService organisatieParameterService;
 
 	private final CervixMonsterRepository monsterRepository;
+
+	private final RondeNummerService rondeNummerService;
+
+	private final CervixLaatsteUitnodigingMapper laatsteUitnodigingMapper;
 
 	@Override
 	public List<CervixUitnodiging> zoekMonsters(Organisatie ingelogdNamensOrganisatie, String monsterId, String bsn, Date geboortedatum, UnaryOperator<String> getString)
@@ -210,5 +218,18 @@ public class CervixUitnodigingServiceImpl implements CervixUitnodigingService
 	public boolean magRedenUitnodigingKiezen(CervixScreeningRonde laatsteScreeningRonde)
 	{
 		return monsterRepository.exists(CervixMonsterSpecification.geefNietIngestuurdeOudeZAS(laatsteScreeningRonde.getDossier()));
+	}
+
+	@Override
+	public Optional<CervixLaatsteUitnodigingDto> getLaatstVerstuurdeUitnodiging(Client client)
+	{
+		var dossier = client.getCervixDossier();
+		if (dossier == null || dossier.getLaatsteScreeningRonde() == null)
+		{
+			return Optional.empty();
+		}
+		var laatsteScreeningRonde = dossier.getLaatsteScreeningRonde();
+		return Optional.ofNullable(clientService.getLaatstVerstuurdeUitnodiging(laatsteScreeningRonde, false))
+			.map(uitnodiging -> laatsteUitnodigingMapper.naarDto(uitnodiging, client, rondeNummerService.geefRondeNummer(laatsteScreeningRonde)));
 	}
 }

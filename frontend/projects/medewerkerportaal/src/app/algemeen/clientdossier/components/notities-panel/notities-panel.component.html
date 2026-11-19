@@ -18,7 +18,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<ds-card [cardTitle]="strings.algemeen.notities.cardTitle" class="no-padding">
+<ds-card [cardTitle]="strings.algemeen.notities.cardTitle" [config]="cardConfig">
   <ng-template ds-card-header-content>
     <button ds-button-tertiary data-testid="notitie_toevoegen_btn" (click)="openNotitie()" *appAutorisatie="toevoegenConstraint">
       <ds-icon [icon]="addIcon"/>

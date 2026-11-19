@@ -23,6 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.screening.mamma.be;
 
 import java.util.List;
 
+import nl.rivm.screenit.util.ScreenitObjectMapper;
 import nl.rivm.screenit.main.service.mamma.MammaBeoordelingService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.component.ComponentHelper;
@@ -58,7 +59,6 @@ import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static nl.rivm.screenit.main.web.gebruiker.screening.mamma.be.afbeelding.MammaLaesiesAfbeeldingPanel.UNSAVED_DEFAULT_LEZING_ID;
 
@@ -71,7 +71,11 @@ public class MammaLezingPanel extends GenericPanel<MammaLezing>
 	@SpringBean
 	private MammaBeoordelingService beoordelingService;
 
-	private final LaesieDtoMapper laesieDtoMapper = new LaesieDtoMapper();
+	@SpringBean
+	private ScreenitObjectMapper objectMapper;
+
+	@SpringBean
+	private LaesieDtoMapper laesieDtoMapper;
 
 	private IndicatingAjaxButton arbitrageBtn;
 
@@ -173,7 +177,6 @@ public class MammaLezingPanel extends GenericPanel<MammaLezing>
 	{
 		try
 		{
-			var objectMapper = new ObjectMapper();
 			return objectMapper.writeValueAsString(opmerking);
 		}
 		catch (JsonProcessingException e)
@@ -271,8 +274,7 @@ public class MammaLezingPanel extends GenericPanel<MammaLezing>
 
 	private void addLaesiesAfbeelding(IModel<MammaLezing> lezingModel, boolean alleenLezen, boolean metAfbeelding, MammaAmputatie amputatie)
 	{
-		var mapper = new LaesieDtoMapper();
-		IModel<List<LaesieDto>> result = new ListModel<>(mapper.lezingToLaesieDtos(lezingModel.getObject()));
+		IModel<List<LaesieDto>> result = new ListModel<>(laesieDtoMapper.lezingToLaesieDtos(lezingModel.getObject()));
 
 		mammaAfbeeldingPanel = new MammaLaesiesAfbeeldingPanel("afbeelding", result, alleenLezen, lezingModel.getObject().getId(), false, amputatie);
 		add(mammaAfbeeldingPanel.setVisible(metAfbeelding));

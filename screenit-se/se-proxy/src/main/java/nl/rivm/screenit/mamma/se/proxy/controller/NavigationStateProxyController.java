@@ -21,8 +21,6 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
  * =========================LICENSE_END==================================
  */
 
-import java.io.IOException;
-
 import nl.rivm.screenit.mamma.se.proxy.model.NavigatieDto;
 import nl.rivm.screenit.mamma.se.proxy.services.LogischeSessieService;
 
@@ -37,26 +35,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @RestController
 @RequestMapping("/api/navigationState")
 public class NavigationStateProxyController
 {
-	private final ObjectMapper objectMapper = new ObjectMapper();
-
 	private static final Logger LOG = LoggerFactory.getLogger(NavigationStateProxyController.class);
 
 	@Autowired
 	private LogischeSessieService logischeSessieService;
 
 	@RequestMapping(method = RequestMethod.PUT, value = "/{yubikeyIdentificatie}")
-	public ResponseEntity<String> wijzigNavigationState(@PathVariable String yubikeyIdentificatie, @RequestBody String navigationAction)
-		throws IOException
+	public ResponseEntity<String> wijzigNavigationState(@PathVariable String yubikeyIdentificatie, @RequestBody NavigatieDto navigatie)
 	{
-		navigationAction = navigationAction.replace("type", "navigatieType");
-		var navigatie = objectMapper.readValue(navigationAction, NavigatieDto.class);
-
 		var logischeSessie = logischeSessieService.getLogischeSessieMetIdentificatie(yubikeyIdentificatie);
 
 		if (logischeSessie == null)

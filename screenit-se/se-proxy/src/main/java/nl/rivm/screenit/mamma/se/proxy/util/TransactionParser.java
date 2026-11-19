@@ -24,15 +24,16 @@ package nl.rivm.screenit.mamma.se.proxy.util;
 import java.io.IOException;
 import java.time.LocalDate;
 
+import nl.rivm.screenit.mamma.se.proxy.configuration.SeProxyObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TransactionParser
 {
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final SeProxyObjectMapper objectMapper = new SeProxyObjectMapper();
 
 	private static final Logger LOG = LoggerFactory.getLogger(TransactionParser.class);
 

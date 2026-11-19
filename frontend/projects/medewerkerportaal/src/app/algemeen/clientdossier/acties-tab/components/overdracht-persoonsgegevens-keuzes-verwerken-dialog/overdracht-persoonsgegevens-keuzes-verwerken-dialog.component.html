@@ -1,0 +1,98 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog [titel]="titel" size="xl">
+  <div body>
+    <form [formGroup]="form" novalidate>
+      @if (gegevens.verstuurdeBrieven.length) {
+        <div class="ds-form-element"><span class="ds-form-element__label">{{ inzageStrings.verstuurdeBrieven }}</span></div>
+        <ul class="verstuurde-brieven" data-testid="verstuurde_brieven">
+          @for (brief of gegevens.verstuurdeBrieven; track brief.id) {
+            <li>{{ briefTypeLabels[brief.briefType] }}</li>
+          }
+        </ul>
+      }
+      <ds-dropdown
+        formControlName="overdrachtVia"
+        [items]="overdrachtViaOpties"
+        [label]="inzageStrings.overdrachtVia"
+        [placeholder]="inzageStrings.overdrachtVia"
+        [clearable]="false"
+        bindLabel="label"
+        bindValue="value"
+        appendTo=".ds-modal"
+        class="zonder-validatie mb-3 display-block"
+        data-testid="overdracht_via_dropdown"
+      />
+      <ds-checkbox-array formControlName="keuzes" [label]="inzageStrings.keuzes" [columnCount]="1" class="zonder-validatie mb-3 display-block" data-testid="keuzes_checkbox_array"/>
+      @if (!alleenLezen && isMedewerker()) {
+        <app-single-file-selector formControlName="bestand" acceptedExtensie="pdf" [label]="inzageStrings.aanvraagformulier" [required]="true" data-testid="bestand_input"/>
+        @if (magGeenHandtekeningBriefAanvragen && !ontvangen) {
+          <button (click)="geenHandtekening()" class="mt-2" data-testid="btn_geen_handtekening" ds-button-tertiary type="button">
+            <ds-icon [icon]="faPaperPlane"/>
+            {{ inzageStrings.geenHandtekening }}
+          </button>
+        }
+      }
+      @if (kanFormulierVervangen && vervangenZichtbaar()) {
+        <div class="mt-4" data-testid="vervangen_sectie">
+          <app-single-file-selector [formControl]="vervangBestand" acceptedExtensie="pdf" [label]="inzageStrings.vervangenFormulier" [required]="true"
+                                    data-testid="vervang_bestand_input"/>
+        </div>
+      }
+    </form>
+  </div>
+  <ng-container buttons>
+    @if (!aanvraagVerwerkt) {
+      <button (click)="annuleren()" data-testid="btn_annuleren" ds-button-tertiary
+              type="button">{{ alleenLezen ? strings.algemeen.buttons.sluiten : strings.algemeen.buttons.annuleren }}
+      </button>
+    }
+    @if (formulierInzienBeschikbaar) {
+      <button (click)="formulierInzien()" data-testid="btn_formulier_inzien" ds-button-secondary type="button">{{ strings.algemeen.buttons.formulierInzien }}</button>
+    }
+
+    @if (kanFormulierVervangen) {
+      <button (click)="toonFormulierVervangen()" data-testid="btn_formulier_vervangen" ds-button-secondary type="button">
+        {{ strings.algemeen.buttons.formulierVervangen }}
+      </button>
+    }
+
+    @if (ontvangen && magDownloadenEnAfronden) {
+      <button (click)="rondAf()" data-testid="btn_afronden" ds-button-secondary type="button">{{ strings.algemeen.buttons.afronden }}</button>
+    }
+    @if (!alleenLezen && ontvangen) {
+      <button (click)="verwerk()" [disabled]="!kanVerwerken()" data-testid="btn_verwerken" ds-button-secondary type="button">{{ strings.algemeen.buttons.opslaan }}</button>
+    }
+    @if (!alleenLezen && !ontvangen) {
+      <button (click)="verwerk()" [disabled]="!kanVerwerken()" data-testid="btn_verwerken" ds-button-primary type="button">{{ strings.algemeen.buttons.verwerken }}</button>
+    }
+
+    @if (ontvangen && magDownloadenEnAfronden) {
+      <button (click)="gegevensOphalen()" data-testid="btn_gegevens_ophalen" ds-button-primary type="button">
+        {{ strings.algemeen.buttons.downloaden }}
+      </button>
+    }
+
+    @if (aanvraagVerwerkt) {
+      <button (click)="annuleren()" data-testid="btn_annuleren" ds-button-primary type="button">{{ strings.algemeen.buttons.sluiten }}</button>
+    }
+  </ng-container>
+</app-base-dialog>

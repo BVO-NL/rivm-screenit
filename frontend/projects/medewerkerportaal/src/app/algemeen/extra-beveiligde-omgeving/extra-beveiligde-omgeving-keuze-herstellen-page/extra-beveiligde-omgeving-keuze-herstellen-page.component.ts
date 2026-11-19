@@ -20,7 +20,7 @@
  */
 import { Component, inject } from '@angular/core'
 import { FormControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
-import { formatDate, formatNLDate } from '@shared/utils/date-utils'
+import { formatDate } from '@shared/utils/date-utils'
 import { bsnValidator } from '@shared/validators/bsn/bsn.validator'
 import { NotificationService } from '@shared/services/notification/notification.service'
 import { ExtraBeveiligdeOmgevingService } from '@/algemeen/extra-beveiligde-omgeving/services/extra-beveiligde-omgeving/extra-beveiligde-omgeving.service'
@@ -73,7 +73,7 @@ export class ExtraBeveiligdeOmgevingKeuzeHerstellenPageComponent {
     }
     const formValue = this.formGroup.getRawValue()
     this.extraBeveiligdeOmgevingService
-      .bezwaarHerstellen(formValue.bsn, formatNLDate(formValue.geboortedatum!), formValue.bestand!)
+      .bezwaarHerstellen(formValue.bsn, formatDate(formValue.geboortedatum!), formValue.bestand!)
       .pipe(take(1))
       .subscribe(() => {
         this.notificationService.success(this.strings.algemeen.ebo.notifications.keuzeHersteld)

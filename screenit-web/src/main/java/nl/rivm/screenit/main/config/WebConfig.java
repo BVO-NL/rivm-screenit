@@ -21,19 +21,33 @@ package nl.rivm.screenit.main.config;
  * =========================LICENSE_END==================================
  */
 
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.main.web.security.SecurityConstraintInterceptor;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverters;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer
 {
+
+	private final Jackson2ObjectMapperBuilder jacksonBuilder;
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry)
 	{
 		registry.addInterceptor(new SecurityConstraintInterceptor());
+	}
+
+	@Override
+	public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder)
+	{
+		builder.withJsonConverter(new MappingJackson2HttpMessageConverter(jacksonBuilder.build()));
 	}
 }

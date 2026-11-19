@@ -32,7 +32,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.csrf.InvalidCsrfTokenException;
 import org.springframework.security.web.csrf.MissingCsrfTokenException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public class CsrfCustomAccessDeniedHandler implements AccessDeniedHandler
 {
@@ -45,14 +45,13 @@ public class CsrfCustomAccessDeniedHandler implements AccessDeniedHandler
 		var message = "Onbekende fout";
 		if (accessDeniedException instanceof InvalidCsrfTokenException)
 		{
-			message = "Het CSRF token mist in het request.";
+			message = "De gebruikte CSRF token kon niet worden vergeleken met de verwachte waarde.";
 		}
 		else if (accessDeniedException instanceof MissingCsrfTokenException)
 		{
-			message = "De gebruikte CSRF token kon niet worden vergeleken met de verwachte waarde.";
+			message = "Het CSRF token mist in het request.";
 		}
-		var objectMapper = new ObjectMapper();
-		var node = objectMapper.createObjectNode();
+		var node = JsonNodeFactory.instance.objectNode();
 		node.put("message", message);
 		node.put("exception", accessDeniedException.getClass().getSimpleName());
 		response.getWriter().write(node.toString());

@@ -38,6 +38,7 @@ import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.ClientContactManier;
 import nl.rivm.screenit.model.colon.ColonAfmelding;
 import nl.rivm.screenit.model.colon.enums.ColonAfmeldingReden;
+import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.rivm.screenit.service.colon.ColonTijdelijkAfmeldenJaartallenService;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -144,7 +145,7 @@ public class ColonClientContactAfmeldenPanel extends AbstractClientContactAfmeld
 	@Override
 	protected List<AfmeldingType> getAvailableAfmeldopties(IModel<Client> client)
 	{
-		return clientContactService.getAvailableAfmeldoptiesColon(client.getObject(), false);
+		return clientContactService.getAvailableAfmeldopties(client.getObject(), Bevolkingsonderzoek.COLON, false);
 	}
 
 	@Override

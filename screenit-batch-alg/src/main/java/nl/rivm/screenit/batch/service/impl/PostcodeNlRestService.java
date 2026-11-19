@@ -41,9 +41,7 @@ import nl.rivm.screenit.util.rest.RestApiFactory;
 
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -74,7 +72,12 @@ public class PostcodeNlRestService
 			currentTarget);
 		var restApi = RestApiFactory.create();
 		LOG.info("Calling {}", uri);
-		var response = restApi.exchange(uri, HttpMethod.GET, getPostcodeNlRequest(), PostcodeNlDto[].class);
+		var response = restApi
+			.get()
+			.uri(uri)
+			.headers(this::voegPostcodeNlHeadersToe)
+			.retrieve()
+			.toEntity(PostcodeNlDto[].class);
 
 		if (response.getStatusCode() == HttpStatus.OK)
 		{
@@ -154,11 +157,9 @@ public class PostcodeNlRestService
 		return authorization;
 	}
 
-	private HttpEntity<String> getPostcodeNlRequest()
+	private void voegPostcodeNlHeadersToe(HttpHeaders headers)
 	{
-		var headers = new HttpHeaders();
 		headers.add("Authorization", "Basic " + getAuthorization());
 		headers.add("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
-		return new HttpEntity<>(headers);
 	}
 }

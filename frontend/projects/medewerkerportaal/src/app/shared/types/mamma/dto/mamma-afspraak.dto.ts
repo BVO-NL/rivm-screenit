@@ -20,4 +20,8 @@
  */
 import { ClientAfspraakDto } from '@shared/types/algemeen/dto/client-afspraak.dto'
 
-export interface MammaAfspraakDto extends ClientAfspraakDto {}
+export interface MammaAfspraakDto extends ClientAfspraakDto {
+  tijdelijkeLocatieVanaf: string | null
+  tijdelijkeLocatieTotEnMet: string | null
+  bevestigingsbriefAangevraagdOp: string | null
+}

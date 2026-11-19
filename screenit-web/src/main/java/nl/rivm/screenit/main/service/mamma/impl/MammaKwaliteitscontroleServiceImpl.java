@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -626,46 +627,53 @@ public class MammaKwaliteitscontroleServiceImpl implements MammaKwaliteitscontro
 		var alleBeoordelingIds = new HashMap<Integer, List<Long>>();
 		var peilDatum = dateSuppier.getLocalDate().minusWeeks(2);
 
-		for (var organisatieMedewerker : organisatieMedewerkers)
+		var organisatieMedewerkersPerMedewerkercode = organisatieMedewerkers.stream()
+			.collect(Collectors.groupingBy(organisatieMedewerker -> organisatieMedewerker.getMedewerker().getMedewerkercode(), LinkedHashMap::new, Collectors.toList()));
+
+		for (var entry : organisatieMedewerkersPerMedewerkercode.entrySet())
 		{
-			var beoordelingIds = zoekVoldoendeUniekeBeoordelingen(organisatieMedewerker, peilDatum, response, beoordelingIdToClientId);
+			var beoordelingIds = zoekVoldoendeUniekeBeoordelingen(entry.getKey(), entry.getValue(), peilDatum, response, beoordelingIdToClientId);
 			if (beoordelingIds.size() >= MIN_AANTAL_BEOORDELINGEN_PER_MEDEWERKER)
 			{
-				alleBeoordelingIds.put(organisatieMedewerker.getMedewerker().getMedewerkercode(), beoordelingIds);
+				alleBeoordelingIds.put(entry.getKey(), beoordelingIds);
 			}
 		}
 		return alleBeoordelingIds;
 	}
 
-	private List<Long> zoekVoldoendeUniekeBeoordelingen(OrganisatieMedewerker organisatieMedewerker, LocalDate peilDatum,
+	private List<Long> zoekVoldoendeUniekeBeoordelingen(Integer medewerkercode, List<OrganisatieMedewerker> organisatieMedewerkers, LocalDate peilDatum,
 		MammaVisitatielijstResponseDto response, Map<Long, Long> beoordelingIdToClientId)
 	{
-		var range = Range.closed(peilDatum.minusMonths(2), peilDatum);
-		var beoordelingIds = beoordelingService.getBeoordelingIdsVanMedewerker(organisatieMedewerker, range);
 		var clientIdToBeoordelingId = new HashMap<Long, Long>();
-		var onderzoekenIn2Maanden = beoordelingIds.size();
-		voegUniekeBeoordelingenToe(clientIdToBeoordelingId, beoordelingIdToClientId, beoordelingIds);
 
+		var range = Range.closed(peilDatum.minusMonths(2), peilDatum);
+		var onderzoekenIn2Maanden = voegBeoordelingenToe(organisatieMedewerkers, range, clientIdToBeoordelingId, beoordelingIdToClientId);
 		var onderzoekenIn4Maanden = onderzoekenIn2Maanden;
 
 		if (onderzoekenIn2Maanden < MIN_AANTAL_BEOORDELINGEN_PER_MEDEWERKER)
 		{
 			range = Range.closed(peilDatum.minusMonths(4), peilDatum);
-			beoordelingIds = beoordelingService.getBeoordelingIdsVanMedewerker(organisatieMedewerker, range);
-			onderzoekenIn4Maanden = beoordelingIds.size();
-			voegUniekeBeoordelingenToe(clientIdToBeoordelingId, beoordelingIdToClientId, beoordelingIds);
+			onderzoekenIn4Maanden = voegBeoordelingenToe(organisatieMedewerkers, range, clientIdToBeoordelingId, beoordelingIdToClientId);
 		}
-		updateRapport(response, organisatieMedewerker, onderzoekenIn2Maanden, onderzoekenIn4Maanden);
+		updateRapport(response, medewerkercode, onderzoekenIn2Maanden, onderzoekenIn4Maanden);
 
 		var uniekeBeoordelingIds = new ArrayList<>(clientIdToBeoordelingId.values());
 		shuffle(uniekeBeoordelingIds);
 		return uniekeBeoordelingIds.stream().limit(MIN_AANTAL_BEOORDELINGEN_PER_MEDEWERKER).toList();
 	}
 
-	private void updateRapport(MammaVisitatielijstResponseDto response, OrganisatieMedewerker organisatieMedewerker, int onderzoekenIn2Maanden, int onderzoekenIn4Maanden)
+	private int voegBeoordelingenToe(List<OrganisatieMedewerker> organisatieMedewerkers, Range<LocalDate> range, Map<Long, Long> clientIdToBeoordelingId,
+		Map<Long, Long> beoordelingIdToClientId)
+	{
+		var beoordelingIds = beoordelingService.getBeoordelingIdsVanMedewerkers(organisatieMedewerkers, range);
+		voegUniekeBeoordelingenToe(clientIdToBeoordelingId, beoordelingIdToClientId, beoordelingIds);
+		return beoordelingIds.size();
+	}
+
+	private void updateRapport(MammaVisitatielijstResponseDto response, Integer medewerkercode, int onderzoekenIn2Maanden, int onderzoekenIn4Maanden)
 	{
 		var onderzoekPerMedewerkerDto = response.getRapport()
-			.computeIfAbsent(organisatieMedewerker.getMedewerker().getMedewerkercode(), id -> new MammaVisitatieOnderzoekPerMedewerkerDto());
+			.computeIfAbsent(medewerkercode, id -> new MammaVisitatieOnderzoekPerMedewerkerDto());
 		onderzoekPerMedewerkerDto.setAantalBeeldenBinnen2Maanden(onderzoekPerMedewerkerDto.getAantalBeeldenBinnen2Maanden() + onderzoekenIn2Maanden);
 		onderzoekPerMedewerkerDto.setAantalBeeldenBinnen4Maanden(onderzoekPerMedewerkerDto.getAantalBeeldenBinnen4Maanden() + onderzoekenIn4Maanden);
 	}

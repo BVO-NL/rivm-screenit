@@ -27,8 +27,10 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Optional;
 
 import nl.rivm.screenit.model.Account;
+import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
@@ -47,6 +49,7 @@ import nl.rivm.screenit.service.mamma.MammaBaseAfspraakService;
 import nl.rivm.screenit.service.mamma.MammaBaseFactory;
 import nl.rivm.screenit.service.mamma.MammaBaseUitstelService;
 import nl.rivm.screenit.util.DateUtil;
+import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -173,5 +176,24 @@ public class MammaBaseUitstelServiceImpl implements MammaBaseUitstelService
 			}
 		}
 		return null;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public Optional<MammaUitstel> findActiefUitstel(Client client)
+	{
+		var dossier = client.getMammaDossier();
+		var ronde = dossier != null ? dossier.getLaatsteScreeningRonde() : null;
+		if (ronde == null || !MammaScreeningRondeUtil.heeftActiefUitstel(ronde))
+		{
+			return Optional.empty();
+		}
+
+		var laatsteAfspraak = MammaScreeningRondeUtil.getLaatsteAfspraak(ronde);
+		if (laatsteAfspraak != null && laatsteAfspraak.getStatus() != MammaAfspraakStatus.UITGESTELD)
+		{
+			return Optional.empty();
+		}
+		return Optional.of(ronde.getLaatsteUitstel());
 	}
 }

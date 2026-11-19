@@ -20,7 +20,7 @@
   -->
 <app-base-dialog [titel]="strings.algemeen.clientDossier.acties.aanhefWijzigen.dialogTitle">
   <div body>
-    <form [formGroup]="aanhefForm" class="form-in-modal" novalidate>
+    <form [formGroup]="aanhefForm" novalidate>
       <ds-dropdown
         formControlName="aanhef"
         [label]="strings.algemeen.labels.aanspreekvorm"

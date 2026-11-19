@@ -26,14 +26,12 @@ import lombok.Setter;
 
 import nl.rivm.screenit.model.colon.enums.ColonTijdslotType;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 @Getter
 @Setter
 public class BulkVerwijderenException extends Exception
 {
-	private final ObjectMapper objectMapper = new ObjectMapper();
-
 	private final ColonTijdslotType typeTijdslot;
 
 	private int aantalVerwijderen;
@@ -72,7 +70,7 @@ public class BulkVerwijderenException extends Exception
 
 	public String toJson()
 	{
-		var node = objectMapper.createObjectNode();
+		var node = JsonNodeFactory.instance.objectNode();
 		node.put("aantalVerwijderen", aantalVerwijderen);
 		if (typeTijdslot == ColonTijdslotType.AFSPRAAKSLOT)
 		{

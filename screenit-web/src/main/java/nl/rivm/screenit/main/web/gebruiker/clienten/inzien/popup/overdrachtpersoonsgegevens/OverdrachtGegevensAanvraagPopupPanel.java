@@ -176,10 +176,9 @@ public abstract class OverdrachtGegevensAanvraagPopupPanel extends GenericPanel<
 	{
 		uploadContainer = new WebMarkupContainer("uploadContainer");
 		uploadContainer.add(new FileUploadField("fileUpload", files).add(new FileValidator(FileType.PDF)).setRequired(true));
-		uploadContainer.setVisible(!briefOntvangen());
+		uploadContainer.setVisible(!briefOntvangen() && editable);
 		uploadContainer.setOutputMarkupId(true);
 		uploadContainer.setOutputMarkupPlaceholderTag(true);
-		uploadContainer.setVisible(editable);
 		form.add(uploadContainer);
 	}
 

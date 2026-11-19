@@ -95,6 +95,9 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 	@SpringBean
 	private MammaImsService imsService;
 
+	@SpringBean
+	private LaesieDtoMapper laesieDtoMapper;
+
 	private AbstractDefaultAjaxBehavior opslaanCallback;
 
 	private MammaBeoordelenPreLezingOpslaanDialoog beoordelenPreLezingOpslaanDialoog;
@@ -165,8 +168,7 @@ public class MammaBeoordelenLezingPanel extends AbstractBEAccordionPanel<MammaLe
 
 		createOpslaanCallbackAjaxBehavior();
 
-		var mapper = new LaesieDtoMapper();
-		laesieDtos = new ListModel<>(mapper.lezingToLaesieDtos(lezingModel.getObject()));
+		laesieDtos = new ListModel<>(laesieDtoMapper.lezingToLaesieDtos(lezingModel.getObject()));
 		var amputatie = beoordelingPanel.getModelObject().getOnderzoek().getAmputatie();
 		form.add(new MammaLaesiesAfbeeldingPanel("afbeelding", laesieDtos, false, lezingModel.getObject().getId(), amputatie));
 

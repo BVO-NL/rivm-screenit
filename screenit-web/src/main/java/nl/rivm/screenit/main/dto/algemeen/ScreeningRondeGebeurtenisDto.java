@@ -36,7 +36,7 @@ public class ScreeningRondeGebeurtenisDto
 {
 	private String documentNaam;
 
-	private LocalDateTime datum;
+	private LocalDateTime datumTijd;
 
 	private Long briefId;
 

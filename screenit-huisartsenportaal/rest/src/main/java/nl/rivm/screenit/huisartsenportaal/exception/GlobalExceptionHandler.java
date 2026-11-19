@@ -21,7 +21,6 @@ package nl.rivm.screenit.huisartsenportaal.exception;
  * =========================LICENSE_END==================================
  */
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.core.Ordered;
@@ -35,19 +34,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.jsonwebtoken.ExpiredJwtException;
 
 @Slf4j
-@AllArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice
 public class GlobalExceptionHandler
 {
-	private static final ObjectMapper objectMapper = new ObjectMapper();
-
 	@ExceptionHandler(UserNotFoundException.class)
 	public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex)
 	{
@@ -128,7 +124,7 @@ public class GlobalExceptionHandler
 	{
 		var message = ex.getMessage();
 		LOG.error(message);
-		var node = objectMapper.createObjectNode();
+		var node = JsonNodeFactory.instance.objectNode();
 		node.put("message", message);
 		node.put("exception", ex.getClass().getSimpleName());
 		return node;

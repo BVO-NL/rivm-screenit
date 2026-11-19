@@ -26,4 +26,5 @@ import nl.rivm.screenit.repository.BaseJpaRepository;
 
 public interface MammaVisitatieRepository extends BaseJpaRepository<MammaVisitatie>
 {
+	boolean existsByRapportageBijlageIdOrVragenlijstBijlageId(Long rapportageBijlageId, Long vragenlijstBijlageId);
 }

@@ -23,6 +23,7 @@ package nl.rivm.screenit.main.web.gebruiker.base.angular;
 
 import java.io.IOException;
 
+import nl.rivm.screenit.util.ScreenitObjectMapper;
 import nl.rivm.screenit.main.web.ScreenitApplication;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.filter.SecurityHeadersFilter;
@@ -46,11 +47,10 @@ import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.wiquery.core.javascript.JsStatement;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public abstract class AngularBasePage extends MedewerkerBasePage
 {
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	@SpringBean
+	private ScreenitObjectMapper objectMapper;
 
 	@SpringBean(name = "medewerkerPortaalResourceUrl")
 	private String medewerkerPortaalResourceUrl;

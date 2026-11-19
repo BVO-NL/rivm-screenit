@@ -275,11 +275,7 @@ public class ZasUitnodigingenVersturenTasklet extends AbstractUitnodigingenVerst
 	@Override
 	protected void setUitnodigingVersturenTijd(List<Long> uitnodigingIds)
 	{
-		var uitnodigingUpdate = "UPDATE cervix.uitnodiging SET verstuurd_datum = :datum WHERE id in ( :uitnodigingIds )";
-		hibernateService.getHibernateSession().createNativeQuery(uitnodigingUpdate)
-			.setParameter("datum", currentDateSupplier.getDate())
-			.setParameter("uitnodigingIds", uitnodigingIds)
-			.executeUpdate();
+		uitnodigingRepository.updateVerstuurdDatum(uitnodigingIds, currentDateSupplier.getDate());
 	}
 
 	@Override

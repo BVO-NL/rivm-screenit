@@ -21,9 +21,18 @@ package nl.rivm.screenit.repository.cervix;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Date;
+import java.util.List;
+
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+
 public interface CervixUitnodigingRepository extends BaseJpaRepository<CervixUitnodiging>
 {
+	@Modifying
+	@Query("update CervixUitnodiging set verstuurdDatum = :verstuurdDatum where id in :ids")
+	void updateVerstuurdDatum(List<Long> ids, Date verstuurdDatum);
 }

@@ -25,23 +25,26 @@ import java.io.Serializable;
 
 import jakarta.jms.JMSException;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import nl.rivm.screenit.util.ScreenitObjectMapper;
 
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.apache.activemq.command.ActiveMQTextMessage;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ActiveMQHelper
 {
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final ObjectWriter OBJECT_WRITER = new ScreenitObjectMapper().writer();
 
-	private ActiveMQHelper()
-	{
-	}
+	private static final ObjectWriter TRACE_WRITER = OBJECT_WRITER.without(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
 	public static <T extends Serializable> ActiveMQObjectMessage getActiveMqObjectMessage(T object) throws JMSException
 	{
@@ -49,9 +52,7 @@ public class ActiveMQHelper
 		{
 			try
 			{
-				objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-				var writer = objectMapper.writer();
-				LOG.trace(object.getClass().getSimpleName() + ": " + writer.writeValueAsString(object));
+				LOG.trace("{}: {}", object.getClass().getSimpleName(), TRACE_WRITER.writeValueAsString(object));
 			}
 			catch (JsonProcessingException e)
 			{
@@ -65,20 +66,18 @@ public class ActiveMQHelper
 
 	public static <T extends Serializable> ActiveMQTextMessage getActiveMqTextMessage(T object) throws JMSException
 	{
-		var writer = objectMapper.writer();
-		String text = null;
 		try
 		{
 			var textMessage = new ActiveMQTextMessage();
-			text = writer.writeValueAsString(object);
-			textMessage.setText(text);
+			textMessage.setText(OBJECT_WRITER.writeValueAsString(object));
 			return textMessage;
 		}
 		catch (JsonProcessingException e)
 		{
-			LOG.error("Fout bij maken JSON voor activemq text bericht", e);
-			return null;
+			var jmsException = new JMSException("Fout bij maken JSON voor activemq text bericht van " + object.getClass().getSimpleName());
+			jmsException.setLinkedException(e);
+			jmsException.initCause(e);
+			throw jmsException;
 		}
-
 	}
 }

@@ -23,9 +23,12 @@ package nl.rivm.screenit.main.service.cervix;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.UnaryOperator;
 
+import nl.rivm.screenit.main.dto.cervix.CervixLaatsteUitnodigingDto;
 import nl.rivm.screenit.main.exception.CervixMonsterZoekenExceptie;
+import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.Organisatie;
 import nl.rivm.screenit.model.cervix.CervixScreeningRonde;
 import nl.rivm.screenit.model.cervix.CervixUitnodiging;
@@ -42,4 +45,6 @@ public interface CervixUitnodigingService
 	boolean uitnodigingHeeftZasMetNieuweBarcode(CervixUitnodiging uitnodiging);
 
 	boolean magRedenUitnodigingKiezen(CervixScreeningRonde laatsteScreeningRonde);
+
+	Optional<CervixLaatsteUitnodigingDto> getLaatstVerstuurdeUitnodiging(Client client);
 }

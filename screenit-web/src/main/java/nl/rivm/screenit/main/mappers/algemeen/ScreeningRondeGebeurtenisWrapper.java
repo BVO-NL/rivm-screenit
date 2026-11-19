@@ -39,7 +39,8 @@ public interface ScreeningRondeGebeurtenisWrapper
 		@Mapping(target = "briefType", source = "brief.briefType"),
 		@Mapping(target = "documentNaam", source = "brief", qualifiedByName = "documentNaam"),
 		@Mapping(target = "bron", source = "bron"),
-		@Mapping(target = "gebeurtenis", source = "gebeurtenis")
+		@Mapping(target = "gebeurtenis", source = "gebeurtenis"),
+		@Mapping(target = "datumTijd", source = "datum")
 	})
 	ScreeningRondeGebeurtenisDto screeningRondeGebeurtenisNaarDto(ScreeningRondeGebeurtenis gebeurtenis);
 

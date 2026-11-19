@@ -39,6 +39,7 @@ import nl.rivm.screenit.service.cervix.Cervix2023StartBepalingService;
 import nl.rivm.screenit.service.cervix.CervixBaseBetalingService;
 import nl.rivm.screenit.service.cervix.CervixBaseVerrichtingService;
 import nl.rivm.screenit.util.cervix.CervixHuisartsToDtoUtil;
+import nl.rivm.screenit.util.ScreenitObjectMapper;
 
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -49,7 +50,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
@@ -75,7 +75,8 @@ public class CervixHerindexeerVerrichtingenServiceImpl implements CervixHerindex
 	@Autowired
 	private CervixBaseBetalingService baseBetalingService;
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	@Autowired
+	private ScreenitObjectMapper objectMapper;
 
 	@Override
 	public int verrichtingenHerindexeren(CervixHerindexatieDto herindexatieDto)

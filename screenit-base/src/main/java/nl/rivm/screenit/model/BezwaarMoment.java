@@ -47,9 +47,6 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 @Entity
 @Getter
 @Setter
@@ -58,7 +55,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 public class BezwaarMoment extends AbstractHibernateObject
 {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JsonBackReference
 	private Client client;
 
 	@Enumerated(EnumType.STRING)
@@ -81,7 +77,6 @@ public class BezwaarMoment extends AbstractHibernateObject
 
 	@NotAudited
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "bezwaarMoment", fetch = FetchType.LAZY)
-	@JsonManagedReference
 	private List<Bezwaar> bezwaren = new ArrayList<Bezwaar>();
 
 	@Transient

@@ -36,8 +36,6 @@ import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 @Setter
 @Getter
 @Entity
@@ -53,6 +51,5 @@ public class Bezwaar extends AbstractHibernateObject
 	private Bevolkingsonderzoek bevolkingsonderzoek;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JsonBackReference
 	private BezwaarMoment bezwaarMoment;
 }

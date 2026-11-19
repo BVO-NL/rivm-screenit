@@ -31,7 +31,7 @@ import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
 import { Required } from '@shared/types/autorisatie/required'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
-import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { alleBevolkingsonderzoeken } from '@shared/types/bevolkingsonderzoek'
 import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.directive'
 import { DocumentService } from '@algemeen/services/document/document.service'
 import { BezwaarService } from '@algemeen/services/bezwaar/bezwaar.service'
@@ -62,7 +62,7 @@ export class VerwijderdeOnderzoeksresultatenDialogComponent {
     actie: Actie.AANPASSEN,
     required: Required.ANY,
     level: ToegangLevel.REGIO,
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+    bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
   }
   readonly uploadDocumentCtrl = new FormControl<File | null>(null)
   protected readonly toonDocumentVervangen = signal(false)

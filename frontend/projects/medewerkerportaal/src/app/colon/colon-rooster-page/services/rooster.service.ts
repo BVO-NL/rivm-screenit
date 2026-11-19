@@ -24,7 +24,7 @@ import { forkJoin, map, Observable, of, Subject, switchMap, take, tap } from 'rx
 import { ApiService } from '@shared/services/api/api.service'
 import { ColonAfspraakslot } from '@shared/types/colon/colon-afspraakslot'
 import { ColonKamer } from '@shared/types/colon/colon-kamer'
-import { formatDate, formatDateAsISO, formatNLDate, formatTimeAsISO, parseDate } from '@shared/utils/date-utils'
+import { formatDate, formatDateAsISO, formatNLDate, formatTimeAsISO, normaliseerNaarDate, parseDate } from '@shared/utils/date-utils'
 import { ColonBlokkade } from '@shared/types/colon/colon-blokkade'
 import { ColonRoosterBeperkingenDto } from '@shared/types/colon/colon-rooster-beperkingen-dto'
 import { ColonRoosterInstellingen, ColonRoosterInstellingenDto } from '@shared/types/colon/colon-rooster-instellingen'
@@ -224,6 +224,7 @@ export class RoosterService extends BaseService<RoosterState> {
         eindDatum: formatNLDate(eindDatum),
       })
       .pipe(
+        map((feestdagen: ColonFeestdagDto[]) => feestdagen.map((feestdag) => ({ ...feestdag, datum: normaliseerNaarDate(feestdag.datum)! }))),
         map((feestdagen: ColonFeestdagDto[]) => {
           const feestdagSlots: EventInput[] = []
           this.kamers().forEach((kamer) => feestdagen.forEach((feestdag: ColonFeestdagDto) => feestdagSlots.push(this.feestdagToTijdslot(feestdag, kamer.id.toString()))))
@@ -333,8 +334,8 @@ export class RoosterService extends BaseService<RoosterState> {
     return {
       extendedProps: item,
       id: `${resourceId}_${item.id}`,
-      start: formatDateAsISO(startOfDay(new Date(item.datum))),
-      end: formatDateAsISO(endOfDay(new Date(item.datum))),
+      start: formatDateAsISO(startOfDay(item.datum)),
+      end: formatDateAsISO(endOfDay(item.datum)),
       status: ColonTijdslotStatus.FEESTDAG,
       resourceId,
       display: 'background',

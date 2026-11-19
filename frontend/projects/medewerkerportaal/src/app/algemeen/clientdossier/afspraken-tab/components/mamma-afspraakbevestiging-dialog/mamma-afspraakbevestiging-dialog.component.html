@@ -1,0 +1,41 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog [titel]="strings.algemeen.afspraken.mamma.afspraakbevestigingDialog.titel" size="lg">
+  <div body>
+    @if (briefAlVerstuurd) {
+      <ds-contextual-notifications [context]="context" class="display-block mb-3" data-testid="afspraakbevestiging_melding"/>
+    } @else if (keuze() === 'BRIEF') {
+      <app-brief-adres-informatiebalk [postadres]="postadres" class="display-block mb-3"/>
+    }
+    <form [formGroup]="form" novalidate>
+      <ds-radiobutton class="zonder-validatie" [columnCount]="1" [items]="keuzeOpties" formControlName="keuze" [required]="true"
+                      [label]="strings.algemeen.afspraken.mamma.afspraakbevestigingDialog.keuze" data-testid="bevestiging_keuze"/>
+      @if (keuze() === 'EMAIL') {
+        <ds-input class="display-block mt-3" formControlName="emailadres" type="email" [label]="strings.algemeen.labels.emailadres"
+                  [errorMessage]="emailadresFouten" data-testid="emailadres"/>
+      }
+    </form>
+  </div>
+  <ng-container buttons>
+    <button (click)="annuleren()" data-testid="btn_annuleren" ds-button-tertiary type="button">{{ strings.algemeen.buttons.annuleren }}</button>
+    <button (click)="versturen()" data-testid="btn_versturen" ds-button-primary type="button">{{ strings.algemeen.buttons.versturen }}</button>
+  </ng-container>
+</app-base-dialog>

@@ -21,9 +21,18 @@ package nl.rivm.screenit.repository.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
+
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
+import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
 import nl.rivm.screenit.repository.BaseJpaRepository;
+
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 public interface OntvangenCdaBerichtRepository extends BaseJpaRepository<OntvangenCdaBericht>
 {
+	@Modifying
+	@Query("update OntvangenCdaBericht set status = :status where id in :ids")
+	void updateStatus(List<Long> ids, BerichtStatus status);
 }

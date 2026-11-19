@@ -23,7 +23,7 @@ import { DsButtonComponent, DsCardComponent, DsCardHeaderContentDirective, DsIco
 import { faArrowRight } from '@fortawesome/pro-solid-svg-icons'
 import { ClientService } from '@algemeen/services/client/client.service'
 import { AanvraagBriefStatus } from '@shared/types/algemeen/enum/aanvraag-brief-status'
-import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { alleBevolkingsonderzoeken } from '@shared/types/bevolkingsonderzoek'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
@@ -54,7 +54,7 @@ export class BezwaarPanelComponent {
       this.autorisatieService.isToegestaan({
         recht: [Recht.MEDEWERKER_CLIENT_BEZWAAR],
         level: ToegangLevel.LANDELIJK,
-        bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+        bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
         actie: Actie.INZIEN,
         required: Required.ALL,
       }),

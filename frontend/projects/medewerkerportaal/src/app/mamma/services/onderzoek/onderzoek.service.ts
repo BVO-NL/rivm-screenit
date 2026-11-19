@@ -25,7 +25,6 @@ import { SorteerParameterDto } from '@shared/types/sort-param'
 import { PagineringDto } from '@shared/types/paginering'
 import { MammaFotobesprekingOnderzoekDto } from '@shared/types/mamma/dto/fotobespreking/mamma-fotobespreking-onderzoek.dto'
 import { PagedResponse } from '@shared/types/paged-response'
-import { formatDate } from '@/shared/utils/date-utils'
 
 @Injectable({
   providedIn: 'root',
@@ -38,10 +37,7 @@ export class OnderzoekService {
     return this.http.post<PagedResponse<MammaFotobesprekingOnderzoekDto[]>>(`${this.baseUrl}/zoeken`, {
       sortering,
       paginering,
-      data: {
-        ...filter,
-        geboortedatum: formatDate(filter.geboortedatum),
-      },
+      data: filter,
     })
   }
 }

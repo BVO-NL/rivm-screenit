@@ -71,14 +71,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -97,7 +98,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 				requestDtos.add(verzetClientenDto);
 				if (requestDtos.size() > 100) 
 				{
-					requestDtos.remove(0);
+					requestDtos.removeFirst();
 				}
 			}
 		}
@@ -117,7 +118,7 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 							currentRequestDto = null;
 							if (!requestDtos.isEmpty())
 							{
-								currentRequestDto = requestDtos.get(0);
+								currentRequestDto = requestDtos.getFirst();
 							}
 						}
 						if (currentRequestDto != null)
@@ -203,23 +204,25 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 		Duration readTimeout)
 	{
 		var restApi = RestApiFactory.create(readTimeout);
-		if (isNieuw)
+		var request = (isNieuw ? restApi.post() : restApi.put()).uri(planningBkRestUrl + context);
+		if (dto != null)
 		{
-			restApi.postForEntity(planningBkRestUrl + context, dto, String.class);
+			request.body(dto);
 		}
-		else
-		{
-			restApi.put(planningBkRestUrl + context, dto, String.class);
-		}
+		request.retrieve().toBodilessEntity();
 		sendGewijzigdDoor(ingelogdeOrganisatieMedewerker, restApi);
 	}
 
-	private void sendGewijzigdDoor(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, RestTemplate restApi)
+	private void sendGewijzigdDoor(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, RestClient restApi)
 	{
 		if (ingelogdeOrganisatieMedewerker != null)
 		{
-			restApi.postForEntity(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptGewijzigdDoor/" + ingelogdeOrganisatieMedewerker.getId() + "/"
-				+ ingelogdeOrganisatieMedewerker.getOrganisatie().getId(), null, String.class);
+			restApi
+				.post()
+				.uri(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptGewijzigdDoor/" + ingelogdeOrganisatieMedewerker.getId() + "/"
+				+ ingelogdeOrganisatieMedewerker.getOrganisatie().getId())
+				.retrieve()
+				.toBodilessEntity();
 		}
 	}
 
@@ -227,10 +230,11 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	public Long[] getConceptGewijzigdDoor(ScreeningOrganisatie screeningOrganisatie)
 	{
 		var restApi = RestApiFactory.create();
-		var result = restApi.getForEntity(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptGewijzigdDoor/" + screeningOrganisatie.getId(),
-			Long[].class);
-
-		return result.getBody();
+		return restApi
+			.get()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptGewijzigdDoor/" + screeningOrganisatie.getId())
+			.retrieve()
+			.body(Long[].class);
 	}
 
 	@Override
@@ -242,9 +246,13 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 		{
 			screeningOrganisatieId = screeningOrganisatie.getId();
 		}
-		var result = restApi.getForEntity(planningBkRestUrl + PlanningRestConstants.C_UNCOVEREDPOSTCODES + "/" + screeningOrganisatieId,
-			NavigableSet.class);
-		var resultSet = result.getBody();
+		var resultSet = restApi
+			.get()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_UNCOVEREDPOSTCODES + "/" + screeningOrganisatieId)
+			.retrieve()
+			.body(new ParameterizedTypeReference<NavigableSet<String>>()
+			{
+			});
 		if (resultSet == null)
 		{
 			resultSet = new TreeSet<>();
@@ -265,7 +273,10 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	private void sendDeleteToPlanningApplicatie(String payload, OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var restApi = RestApiFactory.create();
-		restApi.delete(planningBkRestUrl + payload);
+		restApi
+			.delete()
+			.uri(planningBkRestUrl + payload).retrieve()
+			.toBodilessEntity();
 		sendGewijzigdDoor(ingelogdeOrganisatieMedewerker, restApi);
 	}
 
@@ -308,35 +319,44 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	public PlanningWeekDto getWeek(MammaScreeningsEenheid screeningsEenheid, Date start)
 	{
 		var restApi = RestApiFactory.create();
-		var responseEntity = restApi.getForEntity(
-			planningBkRestUrl + PlanningRestConstants.C_WEEK + "/" + screeningsEenheid.getId() + "/" + start.getTime(),
-			PlanningWeekDto.class);
-		return responseEntity.getBody();
+		return restApi
+			.get()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_WEEK + "/" + screeningsEenheid.getId() + "/" + start.getTime())
+			.retrieve()
+			.body(PlanningWeekDto.class);
 	}
 
 	@Override
 	public String getAfspraakDrempelOverzichtStandplaats(long standplaatsId)
 	{
 		var restApi = RestApiFactory.create();
-		return restApi.getForObject(planningBkRestUrl + PlanningRestConstants.C_STANDPLAATS + "/" + "getAfspraakDrempelOverzicht/" + standplaatsId, String.class);
+		return restApi
+			.get()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_STANDPLAATS + "/" + "getAfspraakDrempelOverzicht/" + standplaatsId)
+			.retrieve()
+			.body(String.class);
 	}
 
 	@Override
 	public String getAfspraakDrempelOverzichtScreeningsOrganisatie(long screeningsOrganisatieId)
 	{
 		var restApi = RestApiFactory.create();
-		return restApi.getForObject(planningBkRestUrl + PlanningRestConstants.C_SCREENINGS_ORGANISATIE + "/" + "getAfspraakDrempelOverzicht/" + screeningsOrganisatieId,
-			String.class);
+		return restApi
+			.get()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_SCREENINGS_ORGANISATIE + "/" + "getAfspraakDrempelOverzicht/" + screeningsOrganisatieId)
+			.retrieve()
+			.body(String.class);
 	}
 
 	@Override
 	public PlanningScreeningsEenheidMetaDataDto getScreeningsEenheidMetaData(MammaScreeningsEenheid screeningEenheid)
 	{
 		var restApi = RestApiFactory.create();
-		var responseEntity = restApi
-			.getForEntity(planningBkRestUrl + PlanningRestConstants.C_SCREENINGSEENHEID + "/metaData/" + screeningEenheid.getId(),
-				PlanningScreeningsEenheidMetaDataDto.class);
-		return responseEntity.getBody();
+		return restApi
+			.get()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_SCREENINGSEENHEID + "/metaData/" + screeningEenheid.getId())
+			.retrieve()
+			.body(PlanningScreeningsEenheidMetaDataDto.class);
 	}
 
 	@Override
@@ -367,9 +387,11 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	public PlanningStandplaatsPeriodeDto[] getStandplaatsPeriodesSorted(MammaScreeningsEenheid screeningsEenheid)
 	{
 		var restApi = RestApiFactory.create();
-		var responseEntity = restApi.getForEntity(
-			planningBkRestUrl + PlanningRestConstants.C_ROUTE + "/" + screeningsEenheid.getId(), PlanningStandplaatsPeriodeDto[].class);
-		return responseEntity.getBody();
+		return restApi
+			.get()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_ROUTE + "/" + screeningsEenheid.getId())
+			.retrieve()
+			.body(PlanningStandplaatsPeriodeDto[].class);
 	}
 
 	@Override
@@ -399,40 +421,49 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	public Long[] getStandplaatsenZonderRoute(ScreeningOrganisatie screeningOrganisatie)
 	{
 		var restApi = RestApiFactory.create();
-		var result = restApi.getForEntity(planningBkRestUrl + PlanningRestConstants.C_STANDPLAATS + "/zonderRoute/" + screeningOrganisatie.getId(),
-			Long[].class);
-		return result.getBody();
+		return restApi
+			.get()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_STANDPLAATS + "/zonderRoute/" + screeningOrganisatie.getId())
+			.retrieve()
+			.body(Long[].class);
 	}
 
 	@Override
 	public Long[] getStandplaatsenMetRoute(ScreeningOrganisatie screeningOrganisatie)
 	{
 		var restApi = RestApiFactory.create();
-		var result = restApi.getForEntity(planningBkRestUrl + PlanningRestConstants.C_STANDPLAATS + "/metRoute/" + screeningOrganisatie.getId(),
-			Long[].class);
-		return result.getBody();
+		return restApi
+			.get()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_STANDPLAATS + "/metRoute/" + screeningOrganisatie.getId())
+			.retrieve()
+			.body(Long[].class);
 	}
 
 	@Override
 	public PlanningConceptMeldingenDto saveConcept(OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean runDry)
 	{
 		var restApi = RestApiFactory.create();
-		var result = restApi.getForEntity(
-			planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptOpslaan/" + ingelogdeOrganisatieMedewerker.getOrganisatie().getId() + "/" + runDry,
-			PlanningConceptMeldingenDto.class);
+		var result = restApi
+			.get()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptOpslaan/" + ingelogdeOrganisatieMedewerker.getOrganisatie().getId() + "/" + runDry)
+			.retrieve()
+			.body(PlanningConceptMeldingenDto.class);
 		if (!runDry)
 		{
 			logService.logGebeurtenis(LogGebeurtenis.MAMMA_PLANNING_CONCEPT_OPGESLAGEN, ingelogdeOrganisatieMedewerker, Bevolkingsonderzoek.MAMMA);
 		}
-		return result.getBody();
+		return result;
 	}
 
 	@Override
 	public void conceptAnnuleren(OrganisatieMedewerker ingelogdeOrganisatieMedewerker)
 	{
 		var restApi = RestApiFactory.create();
-		restApi.postForEntity(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptAnnuleren/" + ingelogdeOrganisatieMedewerker.getOrganisatie().getId(), null,
-			String.class);
+		restApi
+			.post()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/conceptAnnuleren/" + ingelogdeOrganisatieMedewerker.getOrganisatie().getId())
+			.retrieve()
+			.toBodilessEntity();
 	}
 
 	@Override
@@ -469,12 +500,12 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	public int getAantalAfsprakenOpBlok(PlanningCapaciteitBlokDto blokDto, boolean toDelete)
 	{
 		var restApi = RestApiFactory.create();
-		var responseEntity = restApi.getForEntity(
-			planningBkRestUrl + PlanningRestConstants.C_CAPACITEITBLOK + "/aantalAfsprakenOpBlok/" + (blokDto.conceptId != null ? blokDto.conceptId : UUID.randomUUID())
+		return restApi
+			.get()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_CAPACITEITBLOK + "/aantalAfsprakenOpBlok/" + (blokDto.conceptId != null ? blokDto.conceptId : UUID.randomUUID())
 				+ "/" + blokDto.blokType + "/" + blokDto.vanaf.getTime()
-				+ "/" + blokDto.tot.getTime() + "/" + toDelete,
-			Integer.class);
-		return responseEntity.getBody();
+				+ "/" + blokDto.tot.getTime() + "/" + toDelete)
+			.retrieve().body(Integer.class);
 	}
 
 	@Override
@@ -510,9 +541,11 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 	public Date getPlannenTotEnMetDatum()
 	{
 		var restApi = RestApiFactory.create();
-		var responseEntity = restApi.getForEntity(
-			planningBkRestUrl + PlanningRestConstants.C_WEEK + "/plannenTotEnMetDatum", Date.class);
-		return responseEntity.getBody();
+		return restApi
+			.get()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_WEEK + "/plannenTotEnMetDatum")
+			.retrieve()
+			.body(Date.class);
 	}
 
 	@Override
@@ -527,9 +560,11 @@ public class MammaBaseConceptPlanningsApplicatieImpl implements MammaBaseConcept
 		var restApi = RestApiFactory.create();
 		try
 		{
-			var responseEntity = restApi.getForEntity(
-				planningBkRestUrl + PlanningRestConstants.C_STATUS, PlanningStatusDto.class);
-			return responseEntity.getBody();
+			return restApi
+				.get()
+				.uri(planningBkRestUrl + PlanningRestConstants.C_STATUS)
+				.retrieve()
+				.body(PlanningStatusDto.class);
 		}
 		catch (ResourceAccessException e)
 		{

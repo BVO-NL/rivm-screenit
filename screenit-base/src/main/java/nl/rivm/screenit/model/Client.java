@@ -58,8 +58,6 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @Getter
@@ -72,17 +70,14 @@ public class Client extends AbstractHibernateObject implements Account
 {
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@Audited(targetAuditMode = NOT_AUDITED)
-	@JsonManagedReference
 	private ColonDossier colonDossier;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@Audited(targetAuditMode = NOT_AUDITED)
-	@JsonManagedReference
 	private CervixDossier cervixDossier;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@Audited(targetAuditMode = NOT_AUDITED)
-	@JsonManagedReference
 	private MammaDossier mammaDossier;
 
 	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
@@ -110,7 +105,6 @@ public class Client extends AbstractHibernateObject implements Account
 
 	@OneToMany(mappedBy = "client")
 	@OrderBy("bezwaarDatum DESC")
-	@JsonManagedReference
 	private List<BezwaarMoment> bezwaarMomenten = new ArrayList<>();
 
 	@OneToMany(mappedBy = "client")
@@ -118,7 +112,6 @@ public class Client extends AbstractHibernateObject implements Account
 	private List<OnderzoeksresultatenActie> onderzoeksresultatenActies = new ArrayList<>();
 
 	@OneToOne(fetch = FetchType.LAZY, optional = true)
-	@JsonManagedReference
 	private BezwaarMoment laatstVoltooideBezwaarMoment;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "client")

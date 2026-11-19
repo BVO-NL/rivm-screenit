@@ -54,8 +54,6 @@ import nl.rivm.screenit.util.SkipFieldForDiff;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @Entity
@@ -77,7 +75,6 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 public class MammaDossier extends Dossier<MammaScreeningRonde, MammaAfmelding> implements DeelnamemodusDossier
 {
 	@OneToOne(mappedBy = "mammaDossier", optional = false, fetch = FetchType.LAZY)
-	@JsonBackReference
 	private Client client;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "dossier")

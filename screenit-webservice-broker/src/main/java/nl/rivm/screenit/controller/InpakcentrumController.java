@@ -21,11 +21,10 @@ package nl.rivm.screenit.controller;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Base64;
-
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.exceptions.OngeldigeKoppelDataException;
 import nl.rivm.screenit.model.algemeen.KoppelData;
 import nl.rivm.screenit.model.batch.BatchJob;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -39,22 +38,19 @@ import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.JobService;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.service.inpakcentrum.InpakcentrumKoppelDataParser;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 @Slf4j
 @RestController
-@AllArgsConstructor
 @RequestMapping("api/inpakcentrum/v2")
+@RequiredArgsConstructor
 public class InpakcentrumController
 {
 	private final JobService jobService;
@@ -64,6 +60,8 @@ public class InpakcentrumController
 	private final HibernateService hibernateService;
 
 	private final LogService logService;
+
+	private final InpakcentrumKoppelDataParser koppelDataParser;
 
 	@PostMapping("/dk/mappingdata")
 	public InpakcentrumKoppelDataResponseDto verwerktDKKoppelData(@RequestBody InpakcentrumKoppelDataRequestDto inpakcentrumKoppelDataRequestDto)
@@ -126,34 +124,17 @@ public class InpakcentrumController
 			return "Bestandsnaam mag maximaal 100 tekens bevatten.";
 		}
 
-		if (!isValidBase64Json(inpakcentrumKoppelDataRequestDto.getMappingData()))
+		try
 		{
+			koppelDataParser.leesKoppelData(inpakcentrumKoppelDataRequestDto.getMappingData());
+		}
+		catch (OngeldigeKoppelDataException e)
+		{
+			LOG.error("Fout bij decoderen of verwerken van Base64 JSON: {}", ExceptionUtils.getRootCauseMessage(e));
 			return "Mapping data is geen geldige Base64 gecodeerde JSON string.";
 		}
 
 		return null;
-	}
-
-	private boolean isValidBase64Json(String input)
-	{
-		if (StringUtils.isBlank(input))
-		{
-			return false;
-		}
-
-		try
-		{
-			var decodedBytes = Base64.getDecoder().decode(input);
-			var json = new String(decodedBytes, UTF_8);
-			var mapper = new ObjectMapper();
-			mapper.readTree(json);
-			return true;
-		}
-		catch (IllegalArgumentException | JsonProcessingException e)
-		{
-			LOG.error("Fout bij decoderen of verwerken van Base64 JSON: {}", e.getMessage());
-			return false;
-		}
 	}
 
 	private void stuurNaarBatch(Bevolkingsonderzoek bevolkingsonderzoek, Long koppelDataId)

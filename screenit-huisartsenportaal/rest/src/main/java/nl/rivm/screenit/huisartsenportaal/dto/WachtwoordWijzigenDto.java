@@ -21,14 +21,11 @@ package nl.rivm.screenit.huisartsenportaal.dto;
  * =========================LICENSE_END==================================
  */
 
+import jakarta.validation.constraints.NotEmpty;
+
 import lombok.Getter;
 import lombok.Setter;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import jakarta.validation.constraints.NotEmpty;
-
-@JsonSerialize
 @Getter
 @Setter
 public class WachtwoordWijzigenDto

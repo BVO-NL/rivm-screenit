@@ -40,7 +40,7 @@ import { ClientService } from '@/algemeen/services/client/client.service'
 import { take } from 'rxjs'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
-import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { alleBevolkingsonderzoeken } from '@shared/types/bevolkingsonderzoek'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'
@@ -85,7 +85,7 @@ export class ClientInfoBewerkenDialogComponent {
   protected readonly aanspreekvormOpties = enumNaarOpties(aanspreekvormLabel).filter((optie) => clientAanspreekvormen.includes(optie.waarde))
   protected readonly geslachtLabel = geslachtLabel
   private readonly baseConstraint = {
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+    bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
     level: ToegangLevel.LANDELIJK,
     organisatieTypeScopes: [OrganisatieType.RIVM],
     required: Required.ANY,
@@ -103,7 +103,7 @@ export class ClientInfoBewerkenDialogComponent {
   protected readonly genderIdentiteitConstraint: SecurityConstraint = {
     recht: [Recht.MEDEWERKER_TOON_GENDERINDETITEIT],
     actie: Actie.INZIEN,
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+    bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
     level: ToegangLevel.LANDELIJK,
     required: Required.ANY,
   }

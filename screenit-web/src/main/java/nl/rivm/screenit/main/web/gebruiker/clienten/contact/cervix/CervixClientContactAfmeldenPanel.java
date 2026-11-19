@@ -34,6 +34,7 @@ import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.ClientContactManier;
 import nl.rivm.screenit.model.cervix.CervixAfmelding;
 import nl.rivm.screenit.model.cervix.enums.CervixAfmeldingReden;
+import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
 
@@ -72,7 +73,7 @@ public class CervixClientContactAfmeldenPanel extends AbstractClientContactAfmel
 	{
 		var client = clientModel.getObject();
 
-		return clientContactService.getAvailableAfmeldoptiesCervix(client, false);
+		return clientContactService.getAvailableAfmeldopties(client, Bevolkingsonderzoek.CERVIX, false);
 	}
 
 	@Override

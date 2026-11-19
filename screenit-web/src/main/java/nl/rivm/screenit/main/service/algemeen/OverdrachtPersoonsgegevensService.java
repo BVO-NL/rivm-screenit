@@ -22,20 +22,41 @@ package nl.rivm.screenit.main.service.algemeen;
  */
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Optional;
 
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
+
+import org.springframework.web.multipart.MultipartFile;
 
 public interface OverdrachtPersoonsgegevensService
 {
 
 	boolean heeftOpenstaandVerzoek(Client client);
 
+	Optional<OverdrachtPersoonsgegevens> findOpenstaandVerzoek(Client client);
+
+	Optional<OverdrachtPersoonsgegevens> findOverdracht(Client client, Long overdrachtId);
+
+	List<OverdrachtPersoonsgegevens> findOverdrachten(Client client);
+
+	void verwerkKeuzesViaClientportaal(Client client, OverdrachtPersoonsgegevens keuzes, OrganisatieMedewerker medewerker) throws IOException;
+
+	void verwerkKeuzesViaMedewerker(OverdrachtPersoonsgegevens openstaandVerzoek, OverdrachtPersoonsgegevens keuzes, MultipartFile bestand, OrganisatieMedewerker medewerker)
+		throws IOException;
+
 	void slaOntvangenFormulierOp(OverdrachtPersoonsgegevens overdracht, UploadDocument uploadDocument, Account account) throws IOException;
 
 	void verstuurGeenHandtekeningBrief(OverdrachtPersoonsgegevens overdracht, Account ingelogdAccount);
 
 	void afronden(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens);
+
+	void vervangFormulier(OverdrachtPersoonsgegevens overdracht, MultipartFile bestand, Account account) throws IOException;
+
+	void maakExcel(OverdrachtPersoonsgegevens overdracht, OutputStream outputStream, Account account);
 }

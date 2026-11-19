@@ -42,8 +42,8 @@ import nl.topicuszorg.hibernate.object.model.AbstractHibernateObject;
 
 @Setter
 @Getter
-@Entity(name = "cda_ontvangenbericht")
-@Table(schema = "gedeeld", indexes = { @Index(name = "idx_ontvangenbericht_status", columnList = "status") })
+@Entity
+@Table(schema = "gedeeld", name = "cda_ontvangenbericht", indexes = { @Index(name = "idx_ontvangenbericht_status", columnList = "status") })
 public class OntvangenCdaBericht extends AbstractHibernateObject
 {
 	@Serial

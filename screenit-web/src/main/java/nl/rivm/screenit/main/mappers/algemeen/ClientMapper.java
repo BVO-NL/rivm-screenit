@@ -23,6 +23,7 @@ package nl.rivm.screenit.main.mappers.algemeen;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import nl.rivm.screenit.main.dto.algemeen.ClientContactgegevensDto;
 import nl.rivm.screenit.main.dto.algemeen.ClientDto;
 import nl.rivm.screenit.main.dto.algemeen.ClientPaspoortDto;
 import nl.rivm.screenit.main.dto.algemeen.TijdelijkAdresDto;
+import nl.rivm.screenit.main.service.DossierService;
 import nl.rivm.screenit.main.service.algemeen.BezwaarService;
 import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
 import nl.rivm.screenit.model.BagAdres;
@@ -41,9 +43,11 @@ import nl.rivm.screenit.model.TijdelijkGbaAdres;
 import nl.rivm.screenit.model.enums.BezwaarType;
 import nl.rivm.screenit.model.gba.GbaVraag;
 import nl.rivm.screenit.service.ClientService;
+import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.util.AdresUtil;
 import nl.rivm.screenit.util.DateUtil;
 import nl.topicuszorg.organisatie.model.Adres;
+import nl.topicuszorg.util.postcode.PostcodeFormatter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Context;
@@ -90,13 +94,15 @@ public interface ClientMapper
 		@Mapping(target = "tijdelijkAdres", source = "client", qualifiedByName = "isTijdelijkAdres"),
 		@Mapping(target = "tijdelijkAdresVolledig", source = "client", qualifiedByName = "getTijdelijkAdresVolledig"),
 		@Mapping(target = "postadres", source = "client", qualifiedByName = "getPostadres"),
+		@Mapping(target = "emailadres", source = "persoon.emailadres"),
 		@Mapping(target = "screeningsorganisatie", source = "persoon.gbaAdres.gbaGemeente.screeningOrganisatie.naam"),
 		@Mapping(target = "actief", source = "client", qualifiedByName = "isActief"),
 		@Mapping(target = "onderzoeksresultatenActies", source = "onderzoeksresultatenActies"),
 		@Mapping(target = "bezwaarMomenten", source = "bezwaarMomenten"),
 		@Mapping(target = "gbaStatus", source = "gbaStatus"),
 	})
-	ClientDto clientToClientDto(Client client, @Context ClientService clientService, @Context BezwaarService bezwaarService);
+	ClientDto clientToClientDto(Client client, @Context ClientService clientService, @Context BezwaarService bezwaarService, @Context DossierService dossierService,
+		@Context ICurrentDateSupplier currentDateSupplier);
 
 	@Named("isTijdelijkAdres")
 	default boolean isTijdelijkAdres(Client client)
@@ -105,14 +111,14 @@ public interface ClientMapper
 	}
 
 	@Named("getTijdelijkAdresVolledig")
-	default String getTijdelijkAdresVolledig(Client client)
+	default String getTijdelijkAdresVolledig(Client client, @Context ICurrentDateSupplier currentDateSupplier)
 	{
 		var tijdelijkAdres = client.getPersoon().getTijdelijkAdres();
 		if (tijdelijkAdres == null)
 		{
 			return null;
 		}
-		var vandaag = LocalDate.now();
+		var vandaag = currentDateSupplier.getLocalDate();
 		var startDatum = tijdelijkAdres.getStartDatum();
 		if (startDatum != null && DateUtil.toLocalDate(startDatum).isAfter(vandaag))
 		{
@@ -127,9 +133,9 @@ public interface ClientMapper
 	}
 
 	@Named("getPostadres")
-	default String getPostadres(Client client)
+	default String getPostadres(Client client, @Context ICurrentDateSupplier currentDateSupplier)
 	{
-		var adres = AdresUtil.getAdres(client.getPersoon(), LocalDate.now());
+		var adres = AdresUtil.getAdres(client.getPersoon(), currentDateSupplier.getLocalDate());
 		if (adres == null)
 		{
 			return null;
@@ -139,7 +145,7 @@ public interface ClientMapper
 
 	private String formatAdres(Adres adres)
 	{
-		var parts = new java.util.ArrayList<String>();
+		var parts = new ArrayList<String>();
 		if (StringUtils.isNotBlank(adres.getStraat()))
 		{
 			var straatHuisnummer = adres.getStraat();
@@ -152,7 +158,7 @@ public interface ClientMapper
 		}
 		if (StringUtils.isNotBlank(adres.getPostcode()))
 		{
-			parts.add(adres.getPostcode());
+			parts.add(PostcodeFormatter.formatPostcode(adres.getPostcode(), true));
 		}
 		if (StringUtils.isNotBlank(adres.getPlaats()))
 		{

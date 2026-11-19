@@ -56,7 +56,11 @@ public class MammaConceptModelResettenTasklet implements Tasklet
 	public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext)
 	{
 		var restApi = RestApiFactory.create();
-		restApi.postForEntity(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/" + PlanningRestConstants.C_READMODEL, null, String.class);
+		restApi
+			.post()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_ACTIE + "/" + PlanningRestConstants.C_READMODEL)
+			.retrieve()
+			.toBodilessEntity();
 
 		return RepeatStatus.FINISHED;
 	}

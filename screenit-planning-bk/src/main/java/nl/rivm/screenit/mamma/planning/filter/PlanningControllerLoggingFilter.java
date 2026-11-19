@@ -67,6 +67,13 @@ public class PlanningControllerLoggingFilter implements Filter
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 		throws IOException, ServletException
 	{
+		var httpServletRequestUri = ((HttpServletRequest) request).getRequestURI();
+		if (httpServletRequestUri != null && httpServletRequestUri.contains("/health/ready"))
+		{
+			chain.doFilter(request, response);
+			return;
+		}
+
 		if (LOG.isDebugEnabled())
 		{
 			var httpServletRequest = (HttpServletRequest) request;

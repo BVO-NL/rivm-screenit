@@ -36,7 +36,6 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.ScreeningRondeStatus;
 import nl.rivm.screenit.model.berichten.Verslag;
 import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht;
-import nl.rivm.screenit.model.berichten.cda.OntvangenCdaBericht_;
 import nl.rivm.screenit.model.berichten.enums.BerichtStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagStatus;
 import nl.rivm.screenit.model.berichten.enums.VerslagType;
@@ -51,6 +50,7 @@ import nl.rivm.screenit.model.colon.verslag.pa.PaVerslagContent;
 import nl.rivm.screenit.model.mamma.MammaFollowUpVerslag;
 import nl.rivm.screenit.model.verslag.DSValue;
 import nl.rivm.screenit.repository.algemeen.DSValueRepository;
+import nl.rivm.screenit.repository.algemeen.OntvangenCdaBerichtRepository;
 import nl.rivm.screenit.repository.colon.ColonMdlVerslagRepository;
 import nl.rivm.screenit.repository.colon.ColonPaVerslagRepository;
 import nl.rivm.screenit.service.BaseVerslagService;
@@ -111,6 +111,9 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 
 	@Autowired
 	private ColonMdlVerslagRepository mdlVerslagRepository;
+
+	@Autowired
+	private OntvangenCdaBerichtRepository ontvangenCdaBerichtRepository;
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
@@ -352,11 +355,7 @@ public class BaseVerslagServiceImpl implements BaseVerslagService
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void setBerichtenOpnieuwVerwerken(List<Long> ids)
 	{
-		hibernateService.getHibernateSession().createQuery(
-				"update " + OntvangenCdaBericht.class.getName() + " set " + OntvangenCdaBericht_.STATUS + " = :status where id in (:ids)")
-			.setParameter("status", BerichtStatus.VERWERKING)
-			.setParameterList("ids", ids)
-			.executeUpdate();
+		ontvangenCdaBerichtRepository.updateStatus(ids, BerichtStatus.VERWERKING);
 	}
 
 	@Override

@@ -21,6 +21,7 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.util.CsvUtil;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -30,7 +31,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 @Slf4j
 public abstract class BaseBestandVerwerkingContext implements AutoCloseable
@@ -53,8 +54,8 @@ public abstract class BaseBestandVerwerkingContext implements AutoCloseable
 		CSVReader testReader = null;
 		try
 		{
-			testReader = new CSVReader(new FileReader(file), ',');
-			huidigeLine = testReader.readNext();
+			testReader = CsvUtil.maakReader(new FileReader(file), ',');
+			huidigeLine = CsvUtil.leesRegel(testReader);
 			if (huidigeLine != null && Arrays.asList(huidigeLine).size() >= aantalKolommen)
 			{
 				reader = testReader;
@@ -63,8 +64,8 @@ public abstract class BaseBestandVerwerkingContext implements AutoCloseable
 			{
 				testReader.close();
 				huidigeLine = null;
-				testReader = new CSVReader(new FileReader(file), ';');
-				huidigeLine = testReader.readNext();
+				testReader = CsvUtil.maakReader(new FileReader(file), ';');
+				huidigeLine = CsvUtil.leesRegel(testReader);
 				if (huidigeLine != null && Arrays.asList(huidigeLine).size() >= aantalKolommen)
 				{
 					reader = testReader;
@@ -102,7 +103,7 @@ public abstract class BaseBestandVerwerkingContext implements AutoCloseable
 
 	public boolean isErEenNieuweRegel() throws IOException
 	{
-		huidigeLine = reader.readNext();
+		huidigeLine = CsvUtil.leesRegel(reader);
 		if (huidigeLine != null)
 		{
 			regelnummer++;

@@ -32,14 +32,18 @@ import nl.rivm.screenit.dto.alg.client.contact.DeelnamewensDto;
 import nl.rivm.screenit.main.controller.BaseController;
 import nl.rivm.screenit.main.dto.algemeen.AanhefWijzigenDto;
 import nl.rivm.screenit.main.dto.algemeen.BaseClientContactDto;
+import nl.rivm.screenit.main.dto.algemeen.CervixUitstelAanvragenDto;
+import nl.rivm.screenit.main.dto.algemeen.CervixUitstelDto;
 import nl.rivm.screenit.main.dto.algemeen.ContactActieDto;
 import nl.rivm.screenit.main.dto.algemeen.DeelnamewensenRegistrerenDto;
 import nl.rivm.screenit.main.dto.algemeen.KeuzeGebruikGegevensBriefDto;
 import nl.rivm.screenit.main.dto.algemeen.OpnieuwAanvragenClientgegevensDto;
 import nl.rivm.screenit.main.dto.algemeen.TijdelijkAdresWijzigenDto;
+import nl.rivm.screenit.main.exception.ValidatieException;
 import nl.rivm.screenit.main.mappers.algemeen.ContactActieMapper;
 import nl.rivm.screenit.main.mappers.algemeen.TijdelijkAdresMapper;
 import nl.rivm.screenit.main.service.algemeen.DeelnamemodusService;
+import nl.rivm.screenit.main.service.cervix.CervixUitstelService;
 import nl.rivm.screenit.main.web.ScreenitSession;
 import nl.rivm.screenit.main.web.gebruiker.clienten.ClientContactActieTypeWrapper;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
@@ -85,6 +89,8 @@ public class ContactActiesController extends BaseController
 
 	private final DeelnamemodusService deelnamemodusService;
 
+	private final CervixUitstelService cervixUitstelService;
+
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
 		Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA })
 	@Operation(summary = "Haal contact acties op", description = "Haalt de contact acties op die de ingelogde medewerker voor deze client mag uitvoeren.")
@@ -111,10 +117,14 @@ public class ContactActiesController extends BaseController
 		{
 			case BEZWAAR -> ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_BEZWAAR, Actie.AANPASSEN);
 			case DEELNAMEWENSEN -> heeftNogTeRegistrerenDeelnamewens(client);
+			case INZAGE_PERSOONSGEGEVENS -> ScreenitSession.get().checkPermission(Recht.MEDEWERKER_AANVRAAG_OVERDRACHT_PERSOONSGEGEVENS, Actie.AANPASSEN);
 			case TIJDELIJK_ADRES -> ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_GEGEVENS, Actie.AANPASSEN);
 			case OPNIEUW_AANVRAGEN_CLIENTGEGEVENS -> ScreenitSession.get().checkPermission(Recht.MEDEWERKER_GBA_AANVRAGEN, Actie.AANPASSEN);
 			case CERVIX_HERAANMELDEN -> ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_CERVIX_HERAANMELDEN, Actie.AANPASSEN);
 			case MAMMA_DOELGROEP_WIJZIGEN -> ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_MAMMA_DOELGROEP_WIJZIGEN, Actie.AANPASSEN);
+			case CERVIX_AFMELDEN -> ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_CERVIX_AFMELDEN, Actie.AANPASSEN);
+			case CERVIX_UITSTEL -> ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CLIENT_UITSTEL, Actie.AANPASSEN);
+			case CERVIX_HERDRUK -> ScreenitSession.get().checkPermission(Recht.MEDEWERKER_CERVIX_CLIENT_HERDRUK, Actie.TOEVOEGEN);
 			default -> true;
 		};
 	}
@@ -286,6 +296,68 @@ public class ContactActiesController extends BaseController
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		}
 		contactService.heraanmeldenCervix(client, dto.getNotitie(), getIngelogdeGebruiker());
+		return ResponseEntity.ok().build();
+	}
+
+	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_UITSTEL, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.CERVIX })
+	@Operation(summary = "Haal het huidige uitstel baarmoederhalskanker op", description = "Geeft het lopende uitstel van de client terug, zodat dit als standaardwaarde getoond kan worden.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Huidig uitstel (type en datum zijn leeg zonder lopend uitstel)"),
+		@ApiResponse(responseCode = "404", description = "Client niet gevonden"),
+		@ApiResponse(responseCode = "409", description = "Uitstel BMHK is voor deze client niet beschikbaar"),
+	})
+	@GetMapping("/{clientId}/uitstel-baarmoederhalskanker")
+	public ResponseEntity<CervixUitstelDto> getUitstelBaarmoederhalskanker(@PathVariable Long clientId)
+	{
+		var client = getClientOfGooiNotFoundException(clientId);
+		if (!contactService.getAvailableActies(client).contains(ClientContactActieType.CERVIX_UITSTEL))
+		{
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+		return ResponseEntity.ok(cervixUitstelService.getHuidigUitstel(client));
+	}
+
+	@SecurityConstraint(actie = Actie.AANPASSEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_UITSTEL, bevolkingsonderzoekScopes = {
+		Bevolkingsonderzoek.CERVIX })
+	@Operation(summary = "Uitstel baarmoederhalskanker aanvragen", description = "Legt het (gewijzigde) uitstel vast als client contact en annuleert de ZAS-aanvraag, herinnering en openstaande brief.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Uitstel aangevraagd"),
+		@ApiResponse(responseCode = "422", description = "Ongeldige reden of datum; de melding staat in het message-veld van de response"),
+		@ApiResponse(responseCode = "404", description = "Client niet gevonden"),
+		@ApiResponse(responseCode = "409", description = "Uitstel BMHK is voor deze client niet beschikbaar"),
+	})
+	@PostMapping("/{clientId}/uitstel-baarmoederhalskanker")
+	public ResponseEntity<Void> vraagUitstelBaarmoederhalskankerAan(@PathVariable Long clientId, @RequestBody CervixUitstelAanvragenDto dto)
+		throws ValidatieException
+	{
+		var client = getClientOfGooiNotFoundException(clientId);
+		if (!contactService.getAvailableActies(client).contains(ClientContactActieType.CERVIX_UITSTEL))
+		{
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+		cervixUitstelService.valideerUitstel(client, dto.getUitstelType(), dto.getDatum());
+		contactService.uitstelAanvragenCervix(client, cervixUitstelService.maakUitstel(client, dto), dto.getNotitie(), getIngelogdeGebruiker());
+		return ResponseEntity.ok().build();
+	}
+
+	@SecurityConstraint(actie = Actie.TOEVOEGEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CERVIX_CLIENT_HERDRUK,
+		bevolkingsonderzoekScopes = { Bevolkingsonderzoek.CERVIX })
+	@Operation(summary = "Nieuwe uitnodiging baarmoederhalskanker aanvragen", description = "Legt de aanvraag vast als client contact en maakt direct een nieuwe uitnodiging aan op basis van de laatst verstuurde uitnodiging.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Nieuwe uitnodiging aangemaakt"),
+		@ApiResponse(responseCode = "404", description = "Client niet gevonden"),
+		@ApiResponse(responseCode = "409", description = "Aanmaken nieuwe uitnodiging BMHK is voor deze client niet beschikbaar"),
+	})
+	@PostMapping("/{clientId}/nieuwe-uitnodiging-baarmoederhalskanker")
+	public ResponseEntity<Void> vraagNieuweUitnodigingBaarmoederhalskankerAan(@PathVariable Long clientId, @RequestBody BaseClientContactDto dto)
+	{
+		var client = getClientOfGooiNotFoundException(clientId);
+		if (!contactService.getAvailableActies(client).contains(ClientContactActieType.CERVIX_HERDRUK))
+		{
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+		contactService.nieuweUitnodigingAanvragenCervix(client, dto.getNotitie(), getIngelogdeGebruiker());
 		return ResponseEntity.ok().build();
 	}
 }

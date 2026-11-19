@@ -35,6 +35,7 @@ import nl.rivm.screenit.repository.algemeen.MessageRepository;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.MessageService;
 import nl.rivm.screenit.specification.algemeen.MessageSpecification;
+import nl.rivm.screenit.util.ScreenitObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,7 +45,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static nl.rivm.screenit.specification.algemeen.MessageSpecification.heeftTypeEnContext;
 
@@ -62,14 +62,8 @@ public class MessageServiceImpl implements MessageService
 	@Autowired
 	private MessageRepository messageRepository;
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
-
-	@Override
-	@Transactional
-	public Message queueMessage(MessageType type, Serializable content)
-	{
-		return queueMessage(type, content, null);
-	}
+	@Autowired
+	private ScreenitObjectMapper objectMapper;
 
 	@Override
 	@Transactional

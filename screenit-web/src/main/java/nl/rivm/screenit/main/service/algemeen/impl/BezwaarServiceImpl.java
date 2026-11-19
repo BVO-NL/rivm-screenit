@@ -228,13 +228,13 @@ public class BezwaarServiceImpl implements BezwaarService
 		return bezwaren.stream().filter(bezwaar -> BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER != bezwaar.getType()).toList();
 	}
 
-	private static void valideerPdfBestand(MultipartFile briefBestand)
+	private static void valideerPdfBestand(MultipartFile briefBestand) throws IOException
 	{
 		if (briefBestand == null || briefBestand.isEmpty())
 		{
 			throw new IllegalStateException("error.bestand.verplicht");
 		}
-		if (!FileType.PDF.getAllowedContentTypes().contains(briefBestand.getContentType()))
+		if (!FileType.PDF.isGeldigBestand(briefBestand.getOriginalFilename(), briefBestand.getContentType(), briefBestand.getBytes()))
 		{
 			throw new IllegalStateException("error.bestandtype.niet.toegestaan");
 		}

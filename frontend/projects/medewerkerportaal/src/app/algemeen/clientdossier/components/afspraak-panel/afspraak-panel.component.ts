@@ -19,20 +19,21 @@
  * =========================LICENSE_END==================================
  */
 import { Component, computed, inject, input, output } from '@angular/core'
-import { faCalendar } from '@fortawesome/pro-solid-svg-icons'
-import { DsBadgeComponent, DsButtonComponent, DsCardComponent, DsFooterActionsLeftDirective, DsFooterActionsRightDirective } from '@topicus-rgp-ds/web'
-import { EmptyStatePanelComponent } from '@shared/components/empty-state-panel/empty-state-panel.component'
-import { DatumTijdPipe } from '@shared/pipes/datum-tijd/datum-tijd.pipe'
-import { DatumNaarWeekPipe } from '@shared/pipes/datum-naar-week/datum-naar-week.pipe'
-import { NL_LONG_DATE_FORMAT, TIME_FORMAT } from '@shared/constants'
+import {
+  DsButtonComponent,
+  DsCardComponent,
+  DsEmptyState,
+  DsEmptyStateComponent,
+  DsEmptyStateStatus,
+  DsFooterActionsLeftDirective,
+  DsFooterActionsRightDirective,
+} from '@topicus-rgp-ds/web'
 import { ClientAfspraakEnActies } from '@shared/types/algemeen/client-afspraak-en-acties'
 import { ClientAfspraakDto } from '@shared/types/algemeen/dto/client-afspraak.dto'
 import { Bevolkingsonderzoek, bevolkingsonderzoekLabels } from '@shared/types/bevolkingsonderzoek'
 import { ColonIntakeafspraakDto } from '@shared/types/colon/dto/colon-intakeafspraak.dto'
 import { AfspraakActie } from '@shared/types/algemeen/enum/afspraak-actie'
-import { MammaAfspraakDto } from '@shared/types/mamma/dto/mamma-afspraak.dto'
 import { StringsService } from '@shared/strings'
-import { LegeWaardePipe } from '@shared/pipes/lege-waarde/lege-waarde.pipe'
 import { SecurityConstraint } from '@shared/types/autorisatie/security-constraint'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
@@ -42,21 +43,17 @@ import { Dialog } from '@angular/cdk/dialog'
 import { ClientService } from '@algemeen/services/client/client.service'
 import { filter, take } from 'rxjs'
 import { AutorisatieDirective } from '@/autorisatie/directive/autorisatie.directive'
-
-type AfspraakEnActies = ClientAfspraakEnActies<ColonIntakeafspraakDto> | ClientAfspraakEnActies<MammaAfspraakDto>
+import { AfspraakGegevensComponent } from '@algemeen/clientdossier/components/afspraak-gegevens/afspraak-gegevens.component'
 
 @Component({
   selector: 'app-afspraak-panel',
   imports: [
-    DatumNaarWeekPipe,
-    DatumTijdPipe,
-    DsBadgeComponent,
+    AfspraakGegevensComponent,
     DsButtonComponent,
     DsCardComponent,
-    EmptyStatePanelComponent,
+    DsEmptyStateComponent,
     DsFooterActionsLeftDirective,
     DsFooterActionsRightDirective,
-    LegeWaardePipe,
     AutorisatieDirective,
   ],
   templateUrl: './afspraak-panel.component.html',
@@ -66,7 +63,7 @@ export class AfspraakPanel {
   private readonly dialog = inject(Dialog)
   private readonly clientId = inject(ClientService).clientId()
 
-  afspraakEnActies = input<AfspraakEnActies | null>(null)
+  afspraakEnActies = input<ClientAfspraakEnActies<ColonIntakeafspraakDto> | null>(null)
   bvo = input.required<Bevolkingsonderzoek>()
 
   tijdstipWijzigen = output<ClientAfspraakDto>()
@@ -74,26 +71,16 @@ export class AfspraakPanel {
   afspraakMaken = output<void>()
   afspraakAfgezegd = output<void>()
 
-  protected readonly colonIntakeafspraak = computed(() => {
-    const afspraakEnActies = this.afspraakEnActies()
-    return this.isColonIntakeafspraak(afspraakEnActies) ? afspraakEnActies.afspraak : null
-  })
-  protected readonly afspraak = computed(() => this.afspraakEnActies()?.afspraak as ColonIntakeafspraakDto)
+  protected readonly afspraak = computed(() => this.afspraakEnActies()?.afspraak ?? null)
   protected readonly magNieuweAfspraakMaken = computed(() => this.afspraakEnActies()?.acties?.includes(AfspraakActie.MAKEN) ?? false)
   protected readonly magTijdstipWijzigen = computed(() => this.afspraakEnActies()?.acties?.includes(AfspraakActie.VERPLAATSEN) ?? false)
   protected readonly magLocatieWijzigen = computed(() => this.afspraakEnActies()?.acties?.includes(AfspraakActie.LOCATIE_WIJZIGEN) ?? false)
   protected readonly titel = computed(() => bevolkingsonderzoekLabels[this.bvo()])
   protected readonly strings = inject(StringsService).getStrings()
-
-  protected readonly faCalendar = faCalendar
-  protected readonly NL_LONG_DATE_FORMAT = NL_LONG_DATE_FORMAT
-  protected readonly TIME_FORMAT = TIME_FORMAT
-
-  private readonly afspraakAanpassenConstraint: SecurityConstraint = {
-    recht: [Recht.MEDEWERKER_CLIENT_SR_INTAKEAFSPRAAKGEMAAKT],
-    actie: Actie.AANPASSEN,
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON],
-    required: Required.ANY,
+  protected readonly geenAfspraakState: DsEmptyState = {
+    title: this.strings.algemeen.afspraken.geenAfspraak.titel,
+    subtitle: this.strings.algemeen.afspraken.geenAfspraak.subtitel,
+    status: DsEmptyStateStatus.Info,
   }
 
   private readonly afspraakAfzeggenConstraint: SecurityConstraint = {
@@ -111,9 +98,5 @@ export class AfspraakPanel {
         filter((afgezegd) => afgezegd === true),
       )
       .subscribe(() => this.afspraakAfgezegd.emit())
-  }
-
-  private isColonIntakeafspraak(afspraakEnActies: AfspraakEnActies | null): afspraakEnActies is ClientAfspraakEnActies<ColonIntakeafspraakDto> {
-    return afspraakEnActies?.type === Bevolkingsonderzoek.COLON
   }
 }

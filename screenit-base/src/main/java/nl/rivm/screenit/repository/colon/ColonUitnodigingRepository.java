@@ -22,6 +22,7 @@ package nl.rivm.screenit.repository.colon;
  */
 
 import java.util.Date;
+import java.util.List;
 
 import nl.rivm.screenit.model.colon.ColonUitnodiging;
 import nl.rivm.screenit.repository.BaseJpaRepository;
@@ -34,4 +35,8 @@ public interface ColonUitnodigingRepository extends BaseJpaRepository<ColonUitno
 	@Modifying
 	@Query("update ColonUitnodiging set verstuurd = true, verstuurdDatum = :now where verstuurd = false")
 	int markeerNogNietNaarInpakcentrumVerstuurdeUitnodigingenAlsVerstuurd(Date now);
+
+	@Modifying
+	@Query("update ColonUitnodiging set verstuurdDatum = :verstuurdDatum where id in :ids")
+	void updateVerstuurdDatum(List<Long> ids, Date verstuurdDatum);
 }

@@ -49,7 +49,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RestController
@@ -60,13 +59,13 @@ public class TransactionController extends AuthorizedController
 {
 	private final OrganisatieMedewerkerRepository organisatieMedewerkerRepository;
 
-	private final ObjectMapper objectMapper;
+	private final SeObjectMapper seObjectMapper;
 
 	private final SeTransactionService transactionService;
 
 	private final MammaScreeningsEenheidService screeningsEenheidService;
 
-	private final DubbeleTijdValidator dubbeleTijdValidator = new DubbeleTijdValidator();
+	private final DubbeleTijdValidator dubbeleTijdValidator;
 
 	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -76,7 +75,7 @@ public class TransactionController extends AuthorizedController
 	{
 		try
 		{
-			var transactionDto = objectMapper.readValue(transactionString, TransactionDto.class);
+			var transactionDto = seObjectMapper.readValue(transactionString, TransactionDto.class);
 			var seCode = request.getHeader("SE_CODE");
 			var se = screeningsEenheidService.getActieveScreeningsEenheidByCode(seCode);
 			var organisatieMedewerkerId = transactionDto.getOrganisatieMedewerkerId();
@@ -101,12 +100,12 @@ public class TransactionController extends AuthorizedController
 
 	private List<ActionDto> getActies(String transactionString) throws IOException
 	{
-		var transactionNode = objectMapper.readValue(transactionString, ObjectNode.class);
-		var actionNodes = objectMapper.treeToValue(transactionNode.get("actions"), ObjectNode[].class);
+		var transactionNode = seObjectMapper.readValue(transactionString, ObjectNode.class);
+		var actionNodes = seObjectMapper.treeToValue(transactionNode.get("actions"), ObjectNode[].class);
 		List<ActionDto> acties = new ArrayList<>();
 		for (var actie : actionNodes)
 		{
-			var actionDto = objectMapper.readValue(actie.toString(), ActionDto.class);
+			var actionDto = seObjectMapper.readValue(actie.toString(), ActionDto.class);
 			actionDto.setNodeText(actie.toString());
 			acties.add(actionDto);
 		}

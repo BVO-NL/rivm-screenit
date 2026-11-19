@@ -20,9 +20,10 @@
  */
 import { inject, Injectable } from '@angular/core'
 import { map, Observable } from 'rxjs'
-import { ColonFeestdag, ColonFeestdagDto } from '@shared/types/colon/colon-feestdag'
+import { ColonFeestdagDto } from '@shared/types/colon/colon-feestdag'
 import { ApiService } from '@shared/services/api/api.service'
-import { formatDate, parseDate } from '@shared/utils/date-utils'
+import { NotPersisted } from '@shared/types/not-presisted'
+import { normaliseerNaarDate } from '@shared/utils/date-utils'
 
 @Injectable({
   providedIn: 'root',
@@ -31,30 +32,29 @@ export class FeestdagenService {
   private apiService: ApiService = inject(ApiService)
   private baseUrl = '/api/colon/feestdag'
 
-  getFeestdagen(): Observable<ColonFeestdag[]> {
+  getFeestdagen(): Observable<ColonFeestdagDto[]> {
     return this.apiService.get<ColonFeestdagDto[]>(this.baseUrl).pipe(
-      map((feestdagen: ColonFeestdagDto[]) =>
-        feestdagen.map((feestdag: ColonFeestdagDto) => ({
+      map((feestdagen) =>
+        feestdagen.map((feestdag) => ({
           ...feestdag,
-          datum: parseDate(feestdag.datum),
+          datum: normaliseerNaarDate(feestdag.datum)!,
         })),
       ),
     )
   }
 
-  createFeestdag(feestdag: ColonFeestdag): Observable<ColonFeestdagDto> {
-    return this.apiService.post<ColonFeestdagDto>(this.baseUrl, {
+  createFeestdag(feestdag: NotPersisted<ColonFeestdagDto>): Observable<void> {
+    return this.apiService.post<void>(this.baseUrl, {
       ...feestdag,
       actief: true,
-      datum: formatDate(feestdag.datum),
     })
   }
 
-  updateFeestdag(feestdag: ColonFeestdag): Observable<ColonFeestdagDto> {
-    return this.apiService.put<ColonFeestdagDto>(`${this.baseUrl}/${feestdag.id}`, { ...feestdag, datum: formatDate(feestdag.datum) })
+  updateFeestdag(feestdag: ColonFeestdagDto): Observable<void> {
+    return this.apiService.put<void>(`${this.baseUrl}/${feestdag.id}`, feestdag)
   }
 
-  removeFeestdag(feestdag: ColonFeestdag): Observable<void> {
+  removeFeestdag(feestdag: ColonFeestdagDto): Observable<void> {
     return this.apiService.del(`${this.baseUrl}/${feestdag.id}`)
   }
 }

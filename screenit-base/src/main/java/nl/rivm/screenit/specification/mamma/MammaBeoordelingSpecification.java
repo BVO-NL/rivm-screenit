@@ -213,13 +213,13 @@ public class MammaBeoordelingSpecification
 			.and(heeftNietBeoordeeldSindsSubquery(peilMoment).with(MammaBeoordeling_.tweedeLezing, JoinType.LEFT));
 	}
 
-	public static ExtendedSpecification<MammaBeoordeling> isDoorgevoerdDoorMedewerker(OrganisatieMedewerker organisatieMedewerker)
+	public static ExtendedSpecification<MammaBeoordeling> isDoorgevoerdDoorMedewerkers(List<OrganisatieMedewerker> organisatieMedewerkers)
 	{
 		return (r, q, cb) ->
 		{
 			var onderzoekJoin = join(r, MammaBeoordeling_.onderzoek);
 			var mammografieJoin = join(onderzoekJoin, MammaOnderzoek_.mammografie);
-			return cb.equal(mammografieJoin.get(MammaMammografie_.afgerondDoor), organisatieMedewerker);
+			return mammografieJoin.get(MammaMammografie_.afgerondDoor).in(organisatieMedewerkers);
 		};
 	}
 

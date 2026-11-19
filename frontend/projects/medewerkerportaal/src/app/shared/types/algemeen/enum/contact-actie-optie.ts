@@ -84,7 +84,7 @@ export const contactActieOptieLabels: Record<ContactActieOptie, string> = {
   [ContactActieOptie.CERVIX_HERAANMELDEN]: 'Heraanmelden baarmoederhalskanker',
   [ContactActieOptie.CERVIX_UITSTEL]: 'Uitstel baarmoederhalskanker',
   [ContactActieOptie.CERVIX_ZAS_AANVRAGEN]: 'Aanvraag ZAS',
-  [ContactActieOptie.CERVIX_HERDRUK]: 'Aanmaken nieuwe uitnodiging baarmoederhalskanker',
+  [ContactActieOptie.CERVIX_HERDRUK]: 'Aanmaken nieuwe uitnodiging',
   [ContactActieOptie.CERVIX_FRISSE_START]: 'Frisse start baarmoederhalskanker',
   [ContactActieOptie.CERVIX_VERWIJDEREN_UITSLAG_BRIEF_AANVRAGEN]: 'Aanvraag verwijderen resultaten monster',
   [ContactActieOptie.MAMMA_RONDE_FORCEREN]: 'Ronde forceren',

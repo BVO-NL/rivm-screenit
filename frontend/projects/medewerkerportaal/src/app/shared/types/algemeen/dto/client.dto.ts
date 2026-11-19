@@ -40,6 +40,7 @@ export interface ClientDto extends PersoonDto {
   isTijdelijkAdres: boolean
   tijdelijkAdresVolledig?: string | null
   postadres?: string | null
+  emailadres?: string | null
   overlijdensdatum?: Date
   screeningsorganisatie?: string
   actief: boolean

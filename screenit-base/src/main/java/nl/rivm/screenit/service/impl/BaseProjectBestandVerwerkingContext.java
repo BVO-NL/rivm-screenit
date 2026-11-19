@@ -21,6 +21,7 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.util.CsvUtil;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -46,7 +47,7 @@ import nl.topicuszorg.util.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 import ca.uhn.hl7v2.util.StringUtil;
 
 @Slf4j
@@ -81,8 +82,8 @@ public abstract class BaseProjectBestandVerwerkingContext implements AutoCloseab
 		CSVReader testReader = null;
 		try
 		{
-			testReader = new CSVReader(new FileReader(file), ',');
-			huidigeRegel = testReader.readNext();
+			testReader = CsvUtil.maakReader(new FileReader(file), ',');
+			huidigeRegel = CsvUtil.leesRegel(testReader);
 			if (huidigeRegel != null && Arrays.asList(huidigeRegel).size() >= 2)
 			{
 				reader = testReader;
@@ -91,8 +92,8 @@ public abstract class BaseProjectBestandVerwerkingContext implements AutoCloseab
 			{
 				testReader.close();
 				huidigeRegel = null;
-				testReader = new CSVReader(new FileReader(file), ';');
-				huidigeRegel = testReader.readNext();
+				testReader = CsvUtil.maakReader(new FileReader(file), ';');
+				huidigeRegel = CsvUtil.leesRegel(testReader);
 				if (huidigeRegel != null && Arrays.asList(huidigeRegel).size() >= 2)
 				{
 					reader = testReader;
@@ -178,7 +179,7 @@ public abstract class BaseProjectBestandVerwerkingContext implements AutoCloseab
 
 	public boolean volgendeRegel() throws IOException
 	{
-		huidigeRegel = reader.readNext();
+		huidigeRegel = CsvUtil.leesRegel(reader);
 		if (huidigeRegel != null)
 		{
 			huidigeRegelnummer++;

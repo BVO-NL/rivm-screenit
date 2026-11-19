@@ -21,9 +21,14 @@ package nl.rivm.screenit.repository.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Optional;
+
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
 public interface OverdrachtPersoonsgegevensRepository extends BaseJpaRepository<OverdrachtPersoonsgegevens>
 {
+	Optional<OverdrachtPersoonsgegevens> findByOntvangenAanvraagbriefId(Long documentId);
+
+	Optional<OverdrachtPersoonsgegevens> findByGegenereerdeDataDumpId(Long documentId);
 }

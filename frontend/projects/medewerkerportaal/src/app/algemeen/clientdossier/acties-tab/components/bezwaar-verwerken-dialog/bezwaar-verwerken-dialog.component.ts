@@ -40,7 +40,7 @@ import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
 import { Required } from '@shared/types/autorisatie/required'
-import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { alleBevolkingsonderzoeken } from '@shared/types/bevolkingsonderzoek'
 import { BezwaarKeuze, BezwaarVerwerkenDto } from '@shared/types/algemeen/dto/bezwaar-verwerken.dto'
 import { extensieValidator } from '@shared/validators/file/file.validator'
 import { bevatBezwaar, zijnBezwarenGelijk } from '@shared/utils/bezwaar-utils'
@@ -159,7 +159,7 @@ export class BezwaarVerwerkenDialogComponent {
           recht: [recht],
           actie: Actie.VERWIJDEREN,
           required: Required.ANY,
-          bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+          bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
         }),
       )
       .map(([, bezwaarType]) => bezwaarType)

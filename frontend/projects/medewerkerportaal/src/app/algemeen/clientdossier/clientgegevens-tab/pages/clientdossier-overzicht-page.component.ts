@@ -31,6 +31,7 @@ import { BrpPanelComponent } from '@algemeen/clientdossier/components/brp-panel/
 import { ClientInfoPanelComponent } from '@algemeen/clientdossier/components/client-info-panel/client-info-panel.component'
 import { VerwijderdeOnderzoeksresultatenPanelComponent } from '@algemeen/clientdossier/components/verwijderde-onderzoeksresultaten-panel/verwijderde-onderzoeksresultaten-panel.component'
 import { BezwaarPanelComponent } from '@/algemeen/clientdossier/bezwaar/components/bezwaar-panel/bezwaar-panel.component'
+import { OverdrachtPersoonsgegevensPanelComponent } from '@algemeen/clientdossier/components/overdracht-persoonsgegevens-panel/overdracht-persoonsgegevens-panel.component'
 import { StringsService } from '@shared/strings'
 
 @Component({
@@ -46,6 +47,7 @@ import { StringsService } from '@shared/strings'
     ClientInfoPanelComponent,
     VerwijderdeOnderzoeksresultatenPanelComponent,
     BezwaarPanelComponent,
+    OverdrachtPersoonsgegevensPanelComponent,
   ],
   templateUrl: 'clientdossier-overzicht-page.component.html',
   styleUrl: 'clientdossier-overzicht-page.component.scss',

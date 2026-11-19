@@ -36,7 +36,7 @@ import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
 import { Required } from '@shared/types/autorisatie/required'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
-import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { alleBevolkingsonderzoeken } from '@shared/types/bevolkingsonderzoek'
 import { StringsService } from '@shared/strings'
 import { MAX_KARAKTERS } from '@shared/constants'
 
@@ -62,7 +62,7 @@ export class BrpInfoBewerkenModalComponent implements OnInit {
     actie: Actie.VERWIJDEREN,
     required: Required.ANY,
     level: ToegangLevel.LANDELIJK,
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+    bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
   }
 
   brpGegevensForm: FormGroup = this.formBuilder.group({

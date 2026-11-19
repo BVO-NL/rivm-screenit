@@ -25,11 +25,6 @@ import { take } from 'rxjs'
 import { DsButtonComponent, DsCardComponent, DsFooterActionsRightDirective } from '@topicus-rgp-ds/web'
 import { StringsService } from '@shared/strings'
 
-export { Component, inject, input } from '@angular/core'
-export { take } from 'rxjs'
-export { Dense2Service } from '@/mamma/mamma-dense2-uitwisseling-page/services/dense2/dense2.service'
-export { NotificationService } from '@shared/services/notification/notification.service'
-
 @Component({
   selector: 'app-dense2-export',
   imports: [DsCardComponent, DsButtonComponent, DsFooterActionsRightDirective],

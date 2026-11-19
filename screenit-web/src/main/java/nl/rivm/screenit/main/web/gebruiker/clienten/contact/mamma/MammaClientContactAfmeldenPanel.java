@@ -31,6 +31,7 @@ import nl.rivm.screenit.model.AfmeldingType;
 import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.ClientContactActie;
 import nl.rivm.screenit.model.ClientContactManier;
+import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.mamma.MammaAfmelding;
 import nl.rivm.screenit.model.mamma.enums.MammaAfmeldingReden;
 import nl.topicuszorg.wicket.hibernate.util.ModelUtil;
@@ -108,6 +109,6 @@ public class MammaClientContactAfmeldenPanel extends AbstractClientContactAfmeld
 	@Override
 	protected List<AfmeldingType> getAvailableAfmeldopties(IModel<Client> client)
 	{
-		return clientContactService.getAvailableAfmeldoptiesMamma(client.getObject(), false);
+		return clientContactService.getAvailableAfmeldopties(client.getObject(), Bevolkingsonderzoek.MAMMA, false);
 	}
 }

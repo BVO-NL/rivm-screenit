@@ -23,9 +23,6 @@ package nl.rivm.screenit.huisartsenportaal.dto;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-@JsonSerialize
 public class OvereenkomstDto extends AbstractDtoReferenceObject
 {
 	private String path;

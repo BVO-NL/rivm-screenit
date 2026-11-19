@@ -24,9 +24,6 @@ package nl.rivm.screenit.huisartsenportaal.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-@JsonSerialize
 @Getter
 @Setter
 public class AanvraagStatistiekenDto

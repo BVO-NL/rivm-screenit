@@ -55,7 +55,11 @@ public class MammaUitnodigenTasklet implements Tasklet
 	public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext)
 	{
 		var restApi = RestApiFactory.create();
-		var rapportageId = restApi.postForEntity(planningBkRestUrl + PlanningRestConstants.C_UITNODIGEN, null, Long.class).getBody();
+		var rapportageId = restApi
+			.post()
+			.uri(planningBkRestUrl + PlanningRestConstants.C_UITNODIGEN)
+			.retrieve()
+			.body(Long.class);
 
 		var jobExecution = chunkContext.getStepContext().getStepExecution().getJobExecution();
 

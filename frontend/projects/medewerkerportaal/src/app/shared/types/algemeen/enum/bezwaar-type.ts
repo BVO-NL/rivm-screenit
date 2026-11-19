@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * =========================LICENSE_END==================================
  */
-import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { alleBevolkingsonderzoeken, Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 
 export enum BezwaarType {
   GEEN_WETENSCHAPPELIJK_ONDERZOEK = 'GEEN_WETENSCHAPPELIJK_ONDERZOEK',
@@ -71,7 +71,7 @@ export const bezwaarTypeBevolkingsonderzoeken: Record<BezwaarType, Bevolkingsond
   [BezwaarType.GEEN_REGISTRATIE_GEBOORTELAND]: [],
   [BezwaarType.GEEN_OPNAME_UIT_BPR]: [],
   [BezwaarType.GEEN_UITWISSELING_MET_DE_HUISARTS]: [Bevolkingsonderzoek.COLON],
-  [BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER]: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+  [BezwaarType.VERZOEK_TOT_VERWIJDERING_DOSSIER]: alleBevolkingsonderzoeken,
 }
 
 export const algemeneBezwaarTypes: BezwaarType[] = [

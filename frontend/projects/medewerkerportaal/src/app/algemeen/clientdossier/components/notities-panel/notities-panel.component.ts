@@ -22,6 +22,7 @@ import { Component, computed, inject, signal, viewChild, WritableSignal } from '
 import {
   DsButtonComponent,
   DsCardComponent,
+  DsCardConfig,
   DsCardHeaderContentDirective,
   DsCell,
   DsCellDef,
@@ -96,6 +97,7 @@ export class NotitiesPanelComponent {
   protected readonly NaamTransform = NaamTransform
   protected readonly faFile = faFile
   protected readonly strings = inject(StringsService).getStrings()
+  protected readonly cardConfig = new DsCardConfig({ noPaddingContent: true })
 
   private readonly dialog = inject(Dialog)
   private readonly sort = viewChild(MatSort)

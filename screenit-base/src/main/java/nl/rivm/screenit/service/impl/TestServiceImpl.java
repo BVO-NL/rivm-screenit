@@ -41,6 +41,7 @@ import java.util.Scanner;
 
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.util.CsvUtil;
 import nl.rivm.screenit.model.BMHKLaboratorium;
 import nl.rivm.screenit.model.BagAdres;
 import nl.rivm.screenit.model.Client;
@@ -79,8 +80,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Charsets;
-
-import au.com.bytecode.opencsv.CSVParser;
 
 import static nl.rivm.screenit.specification.algemeen.GemeenteSpecification.heeftScreeningOrganisatie;
 
@@ -427,7 +426,7 @@ public class TestServiceImpl implements TestService
 			var headersIndex = new HashMap<String, Integer>();
 			try
 			{
-				var csvParser = new CSVParser(';');
+				var csvParser = CsvUtil.maakParser(';');
 
 				var first = true;
 				while (scanner.hasNextLine())

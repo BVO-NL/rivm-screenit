@@ -21,10 +21,6 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
  * =========================LICENSE_END==================================
  */
 
-import java.io.IOException;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 import jakarta.servlet.http.HttpSession;
 
 import nl.rivm.screenit.mamma.se.proxy.services.LogischeSessieService;
@@ -42,7 +38,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api/putTransactionToScreenItCentraal")
@@ -58,25 +53,21 @@ public class TransactionProxyController
 	private LogischeSessieService logischeSessieService;
 
 	@RequestMapping(method = RequestMethod.PUT)
-	public ResponseEntity<String> putTransactionToScreenItCentraal(@RequestBody String transactionJSON, HttpSession httpSession,
-		@RequestHeader("YubikeyIdentificatie") String yubikeyIdentificatie) throws IOException
+	public ResponseEntity<String> putTransactionToScreenItCentraal(@RequestBody JsonNode transacties, HttpSession httpSession,
+		@RequestHeader("YubikeyIdentificatie") String yubikeyIdentificatie)
 	{
 		if (!logischeSessieService.geldigeYubikey(yubikeyIdentificatie))
 		{
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
-		if (transactionJSON.startsWith("["))
+
+		if (transacties.isArray())
 		{
-			final var jsonNode = new ObjectMapper().readTree(transactionJSON);
-			var transacties = StreamSupport.stream(jsonNode.spliterator(), false).map(JsonNode::toString).collect(Collectors.toList());
-			for (var transactie : transacties)
-			{
-				doTransaction(transactie);
-			}
+			transacties.forEach(transactie -> doTransaction(transactie.toString()));
 		}
 		else
 		{
-			doTransaction(transactionJSON);
+			doTransaction(transacties.toString());
 		}
 		return ResponseEntity.ok().build();
 	}

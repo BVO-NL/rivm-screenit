@@ -22,6 +22,7 @@ package nl.rivm.screenit.main.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.util.CsvUtil;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -55,8 +56,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import au.com.bytecode.opencsv.CSVReader;
-
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)
 public class ProefBvoServiceImpl implements ProefBvoService
@@ -88,9 +87,9 @@ public class ProefBvoServiceImpl implements ProefBvoService
 		var totaalAantal = 0;
 		var start = System.currentTimeMillis();
 
-		try (var csvReader = new CSVReader(new FileReader(fileClientenBestand), ';'))
+		try (var csvReader = CsvUtil.maakReader(new FileReader(fileClientenBestand), ';'))
 		{
-			var allLines = csvReader.readAll();
+			var allLines = CsvUtil.leesAlleRegels(csvReader);
 			totaalAantal = allLines.size();
 			for (var line : allLines)
 			{
@@ -168,10 +167,10 @@ public class ProefBvoServiceImpl implements ProefBvoService
 		var regelNr = 0;
 		var totaalAantal = 0;
 		UploadDocument handtekeningDoc = null;
-		try (var csvReader = new CSVReader(new FileReader(fileClientenBestand), ';'))
+		try (var csvReader = CsvUtil.maakReader(new FileReader(fileClientenBestand), ';'))
 		{
 
-			var allLines = csvReader.readAll();
+			var allLines = CsvUtil.leesAlleRegels(csvReader);
 			totaalAantal = allLines.size();
 			for (var line : allLines)
 			{

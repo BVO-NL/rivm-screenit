@@ -35,7 +35,7 @@ import { berekenLeeftijd } from '@shared/utils/date-utils'
 import { aanspreekvormLabel } from '@shared/types/algemeen/enum/aanspreekvorm'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
-import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { alleBevolkingsonderzoeken } from '@shared/types/bevolkingsonderzoek'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'
@@ -73,7 +73,7 @@ export class ClientInfoPanelComponent implements OnInit {
   protected readonly bewerkenConstraint: SecurityConstraint = {
     recht: [Recht.MEDEWERKER_CLIENT_GEGEVENS],
     actie: Actie.AANPASSEN,
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+    bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
     level: ToegangLevel.LANDELIJK,
     organisatieTypeScopes: [OrganisatieType.RIVM],
     required: Required.ANY,
@@ -81,7 +81,7 @@ export class ClientInfoPanelComponent implements OnInit {
   protected readonly genderIdentiteitConstraint: SecurityConstraint = {
     recht: [Recht.MEDEWERKER_TOON_GENDERINDETITEIT],
     actie: Actie.INZIEN,
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+    bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
     level: ToegangLevel.LANDELIJK,
     required: Required.ANY,
   }

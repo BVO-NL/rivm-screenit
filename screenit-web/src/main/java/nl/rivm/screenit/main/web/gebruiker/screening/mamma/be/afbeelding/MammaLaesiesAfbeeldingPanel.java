@@ -61,7 +61,8 @@ public class MammaLaesiesAfbeeldingPanel extends MammaBaseAfbeeldingPanel<List<L
 
 	private final MammaAmputatie amputatie;
 
-	private LaesieDtoMapper laesieDtoMapper = new LaesieDtoMapper();
+	@SpringBean
+	private LaesieDtoMapper laesieDtoMapper;
 
 	private final AbstractDefaultAjaxBehavior updateLaesiesBehavior;
 

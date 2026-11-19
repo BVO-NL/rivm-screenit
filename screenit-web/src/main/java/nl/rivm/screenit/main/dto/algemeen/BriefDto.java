@@ -22,7 +22,6 @@ package nl.rivm.screenit.main.dto.algemeen;
  */
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -49,5 +48,5 @@ public class BriefDto
 
 	private BriefDto herdrukBrief;
 
-	private Date creatieDatum;
+	private LocalDateTime creatieDatum;
 }

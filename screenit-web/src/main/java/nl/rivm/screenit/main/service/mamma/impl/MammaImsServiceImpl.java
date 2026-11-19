@@ -29,6 +29,7 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
+import nl.rivm.screenit.util.ScreenitObjectMapper;
 import nl.rivm.screenit.PreferenceKey;
 import nl.rivm.screenit.main.model.mamma.MammaImsErrorType;
 import nl.rivm.screenit.main.service.mamma.MammaImsService;
@@ -65,14 +66,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true) 
 @RequiredArgsConstructor
 public class MammaImsServiceImpl implements MammaImsService
 {
-	private static final ObjectMapper mapper = new ObjectMapper();
+	private final ScreenitObjectMapper objectMapper;
 
 	private final HibernateService hibernateService;
 
@@ -123,7 +123,7 @@ public class MammaImsServiceImpl implements MammaImsService
 	@Override
 	public FhirUserSession parseFhirMessage(String json) throws IOException
 	{
-		return mapper.readValue(json, FhirUserSession.class);
+		return objectMapper.readValue(json, FhirUserSession.class);
 	}
 
 	@Override
@@ -308,7 +308,6 @@ public class MammaImsServiceImpl implements MammaImsService
 	{
 		try
 		{
-			var objectMapper = new ObjectMapper();
 			return objectMapper.writeValueAsString(userSession);
 		}
 		catch (JsonProcessingException e)

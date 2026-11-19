@@ -38,9 +38,12 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class MammaVerslagRondePanel extends AbstractMammaRondePanel
 {
+	@SpringBean
+	private LaesieDtoMapper laesieDtoMapper;
 
 	private MammaVerslagVerfijnenPanel verslagVerfijnenPanel;
 
@@ -85,8 +88,7 @@ public class MammaVerslagRondePanel extends AbstractMammaRondePanel
 
 	void koppelNieuweLaesiesAanLezing(IModel<MammaLezing> lezingModel, List<LaesieDto> laesieDtos)
 	{
-		var mapper = new LaesieDtoMapper();
-		mapper.koppelNieuweLaesiesAanLezing(mapper.laesieDtosToMammaLaesies(laesieDtos), lezingModel.getObject());
+		laesieDtoMapper.koppelNieuweLaesiesAanLezing(laesieDtoMapper.laesieDtosToMammaLaesies(laesieDtos), lezingModel.getObject());
 	}
 
 	public void replaceRonde(AjaxRequestTarget target, WebMarkupContainer verslagVerfijnenPanel)

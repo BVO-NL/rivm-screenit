@@ -29,9 +29,6 @@ import lombok.Setter;
 
 import nl.rivm.screenit.huisartsenportaal.model.enums.Recht;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-@JsonSerialize
 @Getter
 @Setter
 public class MedewerkerDto

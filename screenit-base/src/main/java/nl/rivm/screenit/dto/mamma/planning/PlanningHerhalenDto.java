@@ -32,15 +32,15 @@ public class PlanningHerhalenDto extends PlanningDto
 
 	public Long screeningsEenheidIdNaar;
 
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonSerialize(using = LocalDateSerializer.class)
+	@JsonDeserialize(using = PlanningLocalDateDeserializer.class)
+	@JsonSerialize(using = PlanningLocalDateSerializer.class)
 	public LocalDate teHerhalenWeek;
 
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonSerialize(using = LocalDateSerializer.class)
+	@JsonDeserialize(using = PlanningLocalDateDeserializer.class)
+	@JsonSerialize(using = PlanningLocalDateSerializer.class)
 	public LocalDate herhalenTotEnMet;
 
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonSerialize(using = LocalDateSerializer.class)
+	@JsonDeserialize(using = PlanningLocalDateDeserializer.class)
+	@JsonSerialize(using = PlanningLocalDateSerializer.class)
 	public LocalDate herhalenVanaf;
 }

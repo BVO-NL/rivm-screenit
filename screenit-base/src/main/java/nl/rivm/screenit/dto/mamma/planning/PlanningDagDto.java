@@ -29,8 +29,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class PlanningDagDto implements Serializable
 {
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonSerialize(using = LocalDateSerializer.class)
+	@JsonDeserialize(using = PlanningLocalDateDeserializer.class)
+	@JsonSerialize(using = PlanningLocalDateSerializer.class)
 	public LocalDate datum;
 
 	public Long totaalAantalOnderzoeken;

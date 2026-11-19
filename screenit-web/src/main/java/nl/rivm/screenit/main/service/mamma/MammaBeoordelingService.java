@@ -79,7 +79,7 @@ public interface MammaBeoordelingService
 
 	void logBeoordelingIngezien(MammaBeoordeling beoordeling, OrganisatieMedewerker ingelogdeOrganisatieMedewerker, boolean isCoordinerendRadioloog);
 
-	List<Long> getBeoordelingIdsVanMedewerker(OrganisatieMedewerker medewerker, Range<LocalDate> datumRange);
+	List<Long> getBeoordelingIdsVanMedewerkers(List<OrganisatieMedewerker> organisatieMedewerkers, Range<LocalDate> datumRange);
 
 	MammaBeoordeling getById(Long id);
 }

@@ -37,7 +37,7 @@ public class PlanningScreeningsEenheidMetaDataDto extends PlanningDto
 
 	public BigDecimal intervalMaanden;
 
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonSerialize(using = LocalDateSerializer.class)
+	@JsonDeserialize(using = PlanningLocalDateDeserializer.class)
+	@JsonSerialize(using = PlanningLocalDateSerializer.class)
 	public LocalDate herhalingsWeek;
 }

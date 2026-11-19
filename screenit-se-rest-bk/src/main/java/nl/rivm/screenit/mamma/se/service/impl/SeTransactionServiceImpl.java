@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.dto.mamma.se.MammaKwaliteitsopnameDto;
+import nl.rivm.screenit.mamma.se.controller.SeObjectMapper;
 import nl.rivm.screenit.mamma.se.dto.ErrorDto;
 import nl.rivm.screenit.mamma.se.dto.actions.ActionDto;
 import nl.rivm.screenit.mamma.se.dto.actions.AfrondenDto;
@@ -89,14 +90,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class SeTransactionServiceImpl implements SeTransactionService
 {
-	private final ObjectMapper objectMapper;
+	private final SeObjectMapper seObjectMapper;
 
 	private final InschrijvenService inschrijvenService;
 
@@ -361,7 +361,7 @@ public class SeTransactionServiceImpl implements SeTransactionService
 
 	private <T> T getActionBody(ActionDto actionDto, Class<T> valueType) throws JsonProcessingException
 	{
-		return objectMapper.readValue(actionDto.getNodeText(), valueType);
+		return seObjectMapper.readValue(actionDto.getNodeText(), valueType);
 	}
 
 	private void afspraakDoorvoeren(ActionDto actionDto, LocalDateTime transactieDatumTijd, OrganisatieMedewerker transactieOrganisatieMedewerker,

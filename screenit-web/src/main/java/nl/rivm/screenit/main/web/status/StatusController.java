@@ -32,8 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -63,13 +61,13 @@ public class StatusController
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "Applicatiestatus succesvol opgehaald")
 	})
-	protected String getStatus()
+	protected StatusResponse getStatus()
 	{
 		LOG.debug("Er is een GET verzoek binnengekomen op de Status pagina");
 		return maakResponse();
 	}
 
-	private String maakResponse()
+	private StatusResponse maakResponse()
 	{
 
 		var prefItemCount = preferenceItemRepository.count();
@@ -78,11 +76,10 @@ public class StatusController
 		var applicatieVersie = environmentInfoService.getVersion();
 		applicatieVersie = StringUtils.isBlank(applicatieVersie) ? ONBEKEND : applicatieVersie;
 
-		var node = new ObjectMapper().createObjectNode();
-		node.put("versie", applicatieVersie);
-		node.put("instantie", applicationInstance);
-		node.put("databaseStatus", databaseStatus);
+		return new StatusResponse(applicatieVersie, applicationInstance, databaseStatus);
+	}
 
-		return node.toString();
+	private record StatusResponse(String versie, String instantie, String databaseStatus)
+	{
 	}
 }

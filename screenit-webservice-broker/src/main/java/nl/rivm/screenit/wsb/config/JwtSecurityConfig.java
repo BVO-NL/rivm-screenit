@@ -82,7 +82,7 @@ public class JwtSecurityConfig
 			{
 				if (heeftIdpIssuer)
 				{
-					authz.requestMatchers("/services/**").permitAll()
+					authz.requestMatchers("/services/**", "/health/**").permitAll()
 						.requestMatchers("/api/rest/dvabron/fhir/**").hasRole("databroker-dva")
 						.requestMatchers("/api/rest/dvabron/v1/**").hasRole("databroker-dva")
 						.requestMatchers("/api/inpakcentrum/v2/**").hasRole("screenit_app")

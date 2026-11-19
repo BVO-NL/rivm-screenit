@@ -21,6 +21,8 @@ package nl.rivm.screenit.util;
  * =========================LICENSE_END==================================
  */
 
+import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
@@ -35,6 +37,13 @@ import nl.rivm.screenit.model.ScreeningRonde;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AfmeldingUtil
 {
+	public static void valideerAfmeldType(AfmeldingType afmeldingType, List<AfmeldingType> beschikbareAfmeldopties)
+	{
+		if (afmeldingType == null || !beschikbareAfmeldopties.contains(afmeldingType))
+		{
+			throw new IllegalStateException("error.afmelden.type.niet.mogelijk");
+		}
+	}
 
 	public static boolean isEenmaligOfDefinitiefAfgemeld(Dossier<?, ?> dossier)
 	{

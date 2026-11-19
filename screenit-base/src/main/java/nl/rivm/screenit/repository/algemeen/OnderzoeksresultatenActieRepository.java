@@ -21,9 +21,12 @@ package nl.rivm.screenit.repository.algemeen;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Optional;
+
 import nl.rivm.screenit.model.OnderzoeksresultatenActie;
 import nl.rivm.screenit.repository.BaseJpaRepository;
 
 public interface OnderzoeksresultatenActieRepository extends BaseJpaRepository<OnderzoeksresultatenActie>
 {
+	Optional<OnderzoeksresultatenActie> findByGetekendeBriefId(Long getekendeBriefId);
 }

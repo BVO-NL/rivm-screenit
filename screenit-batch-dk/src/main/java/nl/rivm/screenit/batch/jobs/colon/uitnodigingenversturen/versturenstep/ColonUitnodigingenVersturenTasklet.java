@@ -47,6 +47,7 @@ import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.preference.service.SimplePreferenceService;
+import nl.rivm.screenit.repository.colon.ColonUitnodigingRepository;
 import nl.rivm.screenit.service.ClientService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
@@ -76,6 +77,8 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 	private ClientService clientService;
 
 	private OrganisatieService organisatieService;
+
+	private ColonUitnodigingRepository uitnodigingRepository;
 
 	@Override
 	protected List<Long> getUitnodigingen()
@@ -223,17 +226,13 @@ public class ColonUitnodigingenVersturenTasklet extends AbstractUitnodigingenVer
 	@Override
 	protected ColonUitnodiging getUitnodigingById(Long uitnodigingId)
 	{
-		return hibernateService.get(ColonUitnodiging.class, uitnodigingId);
+		return uitnodigingRepository.getReferenceById(uitnodigingId);
 	}
 
 	@Override
 	protected void setUitnodigingVersturenTijd(List<Long> uitnodigingIds)
 	{
-		var uitnodigingUpdate = "UPDATE colon.uitnodiging SET verstuurd_datum = :datum WHERE id in ( :uitnodigingIds )";
-		hibernateService.getHibernateSession().createNativeQuery(uitnodigingUpdate)
-			.setParameter("datum", currentDateSupplier.getDate())
-			.setParameter("uitnodigingIds", uitnodigingIds)
-			.executeUpdate();
+		uitnodigingRepository.updateVerstuurdDatum(uitnodigingIds, currentDateSupplier.getDate());
 	}
 
 	private Client getClientVanUitnodiging(ColonUitnodiging uitnodiging)

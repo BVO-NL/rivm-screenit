@@ -42,7 +42,6 @@ import { dagenSelectieCheckboxValidator } from '@shared/validators/dagen-selecti
 import { DsCheckboxComponent, DsDatepickerComponent, DsDropdownComponent, DsWeekdaySelectorComponent } from '@topicus-rgp-ds/web'
 import { WeekdagOptie } from '@shared/types/weekdag-optie'
 import { addDays, addMonths, addWeeks, isValid } from 'date-fns'
-import { formatDate } from '@shared/utils/date-utils'
 import { StringsService } from '@shared/strings'
 import { DateService } from '@shared/services/date/date.service'
 
@@ -255,7 +254,7 @@ export class BulkAanmakenFormComponent implements ControlValueAccessor, Validato
     const dagen: WeekdagOptie[] = rawValue.dagen ?? []
     const herhaling = {
       ...rawValue,
-      eindDatum: rawValue.eindDatum != null ? formatDate(rawValue.eindDatum) : null,
+      eindDatum: rawValue.eindDatum ?? null,
       dagen: dagen.filter((dag: WeekdagOptie) => dag.selected).map((dag: WeekdagOptie) => dag.value),
     }
 

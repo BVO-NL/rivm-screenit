@@ -18,7 +18,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   =========================LICENSE_END==================================
   -->
-<ds-card cardTitle="Historie contacten" class="no-padding">
+<ds-card cardTitle="Historie contacten" [config]="cardConfig">
   <table ds-table [dataSource]="dataSource()" matSort matSortActive="datumTijd" matSortDirection="desc" [fullWidth]="true">
     <ng-container dsColumnDef="datumTijd">
       <th *dsHeaderCellDef ds-header-cell mat-sort-header="datumTijd">{{ strings.algemeen.labels.datumTijd }}</th>

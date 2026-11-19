@@ -21,19 +21,16 @@ package nl.rivm.screenit.huisartsenportaal.dto;
  * =========================LICENSE_END==================================
  */
 
-import lombok.Getter;
-import lombok.Setter;
-
-import nl.rivm.screenit.huisartsenportaal.ICervixHuisartsLocatie;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-@JsonSerialize
+import lombok.Getter;
+import lombok.Setter;
+
+import nl.rivm.screenit.huisartsenportaal.ICervixHuisartsLocatie;
+
 @Getter
 @Setter
 public class LocatieDto extends AbstractDtoReferenceObject implements ICervixHuisartsLocatie

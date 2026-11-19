@@ -29,6 +29,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.main.controller.BaseController;
+import nl.rivm.screenit.main.service.algemeen.DocumentAutorisatieService;
 import nl.rivm.screenit.main.web.security.SecurityConstraint;
 import nl.rivm.screenit.model.enums.Actie;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
@@ -41,6 +42,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,6 +67,8 @@ public class DocumentController extends BaseController
 
 	private final LogService logService;
 
+	private final DocumentAutorisatieService documentAutorisatieService;
+
 	@GetMapping("{id}")
 	@Operation(summary = "Download een document", description = "Levert een documentbestand terug op basis van het document-id.")
 	@ApiResponses(value = {
@@ -79,6 +83,10 @@ public class DocumentController extends BaseController
 		if (document == null)
 		{
 			return ResponseEntity.notFound().build();
+		}
+		if (!documentAutorisatieService.magDownloaden(document, getIngelogdeGebruiker()))
+		{
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 		var file = uploadDocumentService.load(document);
 		try

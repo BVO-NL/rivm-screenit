@@ -122,17 +122,19 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import static nl.rivm.screenit.specification.algemeen.OverdrachtPersoonsgegevensSpecification.heeftClient;
@@ -144,6 +146,8 @@ import static nl.rivm.screenit.specification.algemeen.OverdrachtPersoonsgegevens
 public class BaseOverdrachtPersoonsgegevensServiceImpl implements BaseOverdrachtPersoonsgegevensService
 {
 	private static final Comparator<ScreeningRonde<?, ?, ?, ?>> SORTEER_OP_CREATIE_DATUM = Comparator.comparing(ScreeningRonde::getCreatieDatum);
+
+	private static final ObjectWriter VERSLAG_CONTENT_WRITER = maakVerslagContentWriter();
 
 	@Autowired
 	private OverdrachtPersoonsgegevensRepository repository;
@@ -251,6 +255,22 @@ public class BaseOverdrachtPersoonsgegevensServiceImpl implements BaseOverdracht
 		try (var workbook = bouwWorkbook(overdrachtPersoonsgegevens))
 		{
 			WorkbookPdfUtil.schrijfAlsPdf(workbook, outputStream);
+			logService.logGebeurtenis(LogGebeurtenis.CLIENT_OVERDRACHT_PERSOONSGEGEVENS_GEDOWNLOAD, account, overdrachtPersoonsgegevens.getClient());
+		}
+		catch (Exception e)
+		{
+			LOG.error(e.getMessage(), e);
+			throw new IllegalStateException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	@Transactional
+	public void maakExcel(OverdrachtPersoonsgegevens overdrachtPersoonsgegevens, OutputStream outputStream, Account account)
+	{
+		try (var workbook = bouwWorkbook(overdrachtPersoonsgegevens))
+		{
+			workbook.write(outputStream);
 			logService.logGebeurtenis(LogGebeurtenis.CLIENT_OVERDRACHT_PERSOONSGEGEVENS_GEDOWNLOAD, account, overdrachtPersoonsgegevens.getClient());
 		}
 		catch (Exception e)
@@ -689,21 +709,7 @@ public class BaseOverdrachtPersoonsgegevensServiceImpl implements BaseOverdracht
 				{
 					ontvangen = ontvangenBericht.getOntvangen();
 				}
-				var mapper = new ObjectMapper();
-				mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-				mapper.addMixInAnnotations(Object.class, MixInByPropName.class);
-				mapper.setSerializationInclusion(Include.NON_EMPTY);
-				mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-				mapper.setPropertyNamingStrategy(new ReplaceNamingStrategy());
-				var simpleModule = new SimpleModule("SimpleModule", Version.unknownVersion());
-				simpleModule.addSerializer(Date.class, new DateJsonSerializer());
-				simpleModule.addSerializer(Boolean.class, new BooleanJsonSerializer());
-				simpleModule.addSerializer(Quantity.class, new QuantityJsonSerializer());
-				simpleModule.addSerializer(NullFlavourQuantity.class, new NullFlavourQuantityJsonSerializer());
-				mapper.registerModule(simpleModule);
-				var writer = mapper.writerWithDefaultPrettyPrinter();
-
-				addRow(sheet, label, writer.writeValueAsString(Hibernate.unproxy(verslagContent)), ontvangen,
+				addRow(sheet, label, VERSLAG_CONTENT_WRITER.writeValueAsString(Hibernate.unproxy(verslagContent)), ontvangen,
 					cellStyleDateTime);
 			}
 			catch (JsonProcessingException e)
@@ -711,6 +717,25 @@ public class BaseOverdrachtPersoonsgegevensServiceImpl implements BaseOverdracht
 				LOG.error("fout bij maken json van verslag {}", verslag.getId(), e);
 			}
 		}
+	}
+
+	private static ObjectWriter maakVerslagContentWriter()
+	{
+		var simpleModule = new SimpleModule("SimpleModule", Version.unknownVersion());
+		simpleModule.addSerializer(Date.class, new DateJsonSerializer());
+		simpleModule.addSerializer(Boolean.class, new BooleanJsonSerializer());
+		simpleModule.addSerializer(Quantity.class, new QuantityJsonSerializer());
+		simpleModule.addSerializer(NullFlavourQuantity.class, new NullFlavourQuantityJsonSerializer());
+		return JsonMapper.builder()
+			.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+			.enable(SerializationFeature.INDENT_OUTPUT)
+			.addMixIn(Object.class, MixInByPropName.class)
+			.defaultPropertyInclusion(JsonInclude.Value.construct(Include.NON_EMPTY, Include.NON_EMPTY))
+			.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+			.propertyNamingStrategy(new ReplaceNamingStrategy())
+			.addModule(simpleModule)
+			.build()
+			.writer();
 	}
 
 	private void addMammaFollowUpRadiologieverslagRow(CellStyle cellStyleDateTime, Sheet sheet, MammaFollowUpRadiologieVerslag radiologieVerslag)

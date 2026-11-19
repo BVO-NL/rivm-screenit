@@ -22,6 +22,9 @@ package nl.rivm.screenit.main.service.algemeen.impl;
  */
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 
@@ -29,21 +32,27 @@ import nl.rivm.screenit.main.service.algemeen.OverdrachtPersoonsgegevensService;
 import nl.rivm.screenit.model.AanvraagBriefStatus;
 import nl.rivm.screenit.model.Account;
 import nl.rivm.screenit.model.Client;
+import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.UploadDocument;
 import nl.rivm.screenit.model.algemeen.OverdrachtPersoonsgegevens;
+import nl.rivm.screenit.model.algemeen.OverdrachtType;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.repository.algemeen.OverdrachtPersoonsgegevensRepository;
 import nl.rivm.screenit.service.BaseBriefService;
+import nl.rivm.screenit.service.BaseOverdrachtPersoonsgegevensService;
 import nl.rivm.screenit.service.HibernateService;
 import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.LogService;
 import nl.rivm.screenit.service.UploadDocumentService;
 import nl.rivm.screenit.specification.algemeen.OverdrachtPersoonsgegevensSpecification;
 
+import static nl.rivm.screenit.specification.HibernateObjectSpecification.heeftId;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -62,10 +71,55 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 
 	private final OverdrachtPersoonsgegevensRepository overdrachtPersoonsgegevensRepository;
 
+	private final BaseOverdrachtPersoonsgegevensService baseOverdrachtPersoonsgegevensService;
+
 	@Override
 	public boolean heeftOpenstaandVerzoek(Client client)
 	{
 		return overdrachtPersoonsgegevensRepository.exists(OverdrachtPersoonsgegevensSpecification.heeftOpenstaandVerzoek(client));
+	}
+
+	@Override
+	public Optional<OverdrachtPersoonsgegevens> findOpenstaandVerzoek(Client client)
+	{
+		return overdrachtPersoonsgegevensRepository.findOne(OverdrachtPersoonsgegevensSpecification.heeftOpenstaandVerzoek(client));
+	}
+
+	@Override
+	public Optional<OverdrachtPersoonsgegevens> findOverdracht(Client client, Long overdrachtId)
+	{
+		return overdrachtPersoonsgegevensRepository.findOne(OverdrachtPersoonsgegevensSpecification.heeftClient(client).and(heeftId(overdrachtId)));
+	}
+
+	@Override
+	public List<OverdrachtPersoonsgegevens> findOverdrachten(Client client)
+	{
+		return overdrachtPersoonsgegevensRepository.findAll(OverdrachtPersoonsgegevensSpecification.heeftClient(client));
+	}
+
+	@Override
+	@Transactional(rollbackFor = IOException.class)
+	public void verwerkKeuzesViaClientportaal(Client client, OverdrachtPersoonsgegevens keuzes, OrganisatieMedewerker medewerker) throws IOException
+	{
+		keuzes.setType(OverdrachtType.CLIENTPORTAAL);
+		baseOverdrachtPersoonsgegevensService.maakOverdrachtVerzoek(client, keuzes, medewerker);
+		logService.logGebeurtenis(LogGebeurtenis.CLIENT_OVERDRACHT_PERSOONSGEGEVENS_GEUPLOAD, medewerker, client);
+	}
+
+	@Override
+	public void verwerkKeuzesViaMedewerker(OverdrachtPersoonsgegevens openstaandVerzoek, OverdrachtPersoonsgegevens keuzes, MultipartFile bestand, OrganisatieMedewerker medewerker)
+		throws IOException
+	{
+		openstaandVerzoek.setBkGegevens(keuzes.getBkGegevens());
+		openstaandVerzoek.setBkBeelden(keuzes.getBkBeelden());
+		openstaandVerzoek.setBmhkGegevens(keuzes.getBmhkGegevens());
+		openstaandVerzoek.setDkGegevens(keuzes.getDkGegevens());
+		if (bestand != null)
+		{
+			var uploadDocument = uploadDocumentService.multipartToUploadDocument(bestand);
+			slaOntvangenFormulierOp(openstaandVerzoek, uploadDocument, medewerker);
+		}
+		hibernateService.saveOrUpdate(openstaandVerzoek);
 	}
 
 	@Override
@@ -114,5 +168,17 @@ public class OverdrachtPersoonsgegevensServiceImpl implements OverdrachtPersoons
 		overdrachtPersoonsgegevens.setStatus(AanvraagBriefStatus.VERWERKT);
 		overdrachtPersoonsgegevens.setStatusDatum(currentDateSupplier.getDate());
 		hibernateService.saveOrUpdate(overdrachtPersoonsgegevens);
+	}
+
+	@Override
+	public void vervangFormulier(OverdrachtPersoonsgegevens overdracht, MultipartFile bestand, Account account) throws IOException
+	{
+		slaOntvangenFormulierOp(overdracht, uploadDocumentService.multipartToUploadDocument(bestand), account);
+	}
+
+	@Override
+	public void maakExcel(OverdrachtPersoonsgegevens overdracht, OutputStream outputStream, Account account)
+	{
+		baseOverdrachtPersoonsgegevensService.maakExcel(overdracht, outputStream, account);
 	}
 }

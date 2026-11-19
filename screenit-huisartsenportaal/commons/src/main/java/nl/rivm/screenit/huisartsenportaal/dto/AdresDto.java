@@ -21,14 +21,11 @@ package nl.rivm.screenit.huisartsenportaal.dto;
  * =========================LICENSE_END==================================
  */
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-@JsonSerialize
 public class AdresDto extends AbstractDtoReferenceObject
 {
 	@NotNull(message = "Straat is verplicht.")

@@ -40,7 +40,7 @@ export class ConfirmationDialogComponent {
   protected readonly titel = this.dialogData.title ? this.dialogData.title : this.dialogData.body
   protected readonly body = this.titel !== this.dialogData.body ? saneerHtml(inject(DomSanitizer), this.dialogData.body) : undefined
   protected readonly neutraleKnoppen = this.dialogData.neutraal ?? false
-  protected readonly neeButtonTekst = this.dialogData.neeButtonTekst ?? this.strings.algemeen.labels.nee
+  protected readonly neeButtonTekst = this.dialogData.neeButtonTekst ?? this.strings.algemeen.dialogs.bevestiging.neeButtonTekst
   protected readonly jaButtonTekst = this.dialogData.jaButtonTekst ?? this.strings.algemeen.labels.ja
   protected readonly faClose = faClose
 

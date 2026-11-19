@@ -21,6 +21,7 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.util.CsvUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -50,7 +51,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
@@ -76,7 +77,7 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 	public void importHandmatigAdresboek(InputStream csvStream, Boolean ediAdresOverschrijven)
 	{
 		LOG.info("Zorgmail adresboek import is gestart. (EDI-adres overschrijven: " + ediAdresOverschrijven + ")");
-		var reader = new CSVReader(new InputStreamReader(csvStream), ',');
+		var reader = CsvUtil.maakReader(new InputStreamReader(csvStream), ',');
 		var voortgang = verwerkCsv(reader, ediAdresOverschrijven);
 		enovationHuisartsService.verwijderdeHuisartsenOntkoppelen();
 
@@ -98,7 +99,7 @@ public class ZorgmailImportServiceImpl implements ZorgmailImportService
 		{
 			var lineNumber = 0;
 			ZorgmailImportMapping mapping = null;
-			for (var line : reader.readAll())
+			for (var line : CsvUtil.leesAlleRegels(reader))
 			{
 				lineNumber++;
 				try

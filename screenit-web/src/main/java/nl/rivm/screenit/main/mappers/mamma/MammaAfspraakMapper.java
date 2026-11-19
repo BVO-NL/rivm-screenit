@@ -21,13 +21,14 @@ package nl.rivm.screenit.main.mappers.mamma;
  * =========================LICENSE_END==================================
  */
 
-import nl.rivm.screenit.main.dto.algemeen.AfspraakDto;
 import nl.rivm.screenit.main.dto.algemeen.AfspraakLocatieDto;
+import nl.rivm.screenit.main.dto.mamma.MammaAfspraakDto;
 import nl.rivm.screenit.main.mappers.algemeen.AdresMapper;
 import nl.rivm.screenit.mappers.config.ScreenitMapperConfig;
 import nl.rivm.screenit.model.mamma.MammaAfspraak;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsLocatie;
+import nl.rivm.screenit.util.DateUtil;
 
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -44,9 +45,12 @@ public interface MammaAfspraakMapper
 		@Mapping(target = "locatie", ignore = true),
 		@Mapping(target = "locatieBeschrijving", source = "locatie.locatieBeschrijving"),
 		@Mapping(target = "digitaal", constant = "false"),
-		@Mapping(target = "verlopenZonderConclusie", constant = "false")
+		@Mapping(target = "verlopenZonderConclusie", constant = "false"),
+		@Mapping(target = "tijdelijkeLocatieVanaf", ignore = true),
+		@Mapping(target = "tijdelijkeLocatieTotEnMet", ignore = true),
+		@Mapping(target = "bevestigingsbriefAangevraagdOp", ignore = true)
 	})
-	AfspraakDto afspraakNaarDto(MammaAfspraak afspraak, MammaStandplaatsLocatie locatie);
+	MammaAfspraakDto afspraakNaarDto(MammaAfspraak afspraak, MammaStandplaatsLocatie locatie);
 
 	@Mapping(target = "id", source = "standplaats.id")
 	@Mapping(target = "naam", source = "standplaats.naam")
@@ -54,9 +58,14 @@ public interface MammaAfspraakMapper
 	AfspraakLocatieDto afspraakLocatieNaarDto(MammaStandplaats standplaats, MammaStandplaatsLocatie locatie);
 
 	@AfterMapping
-	default void voegLocatieToe(MammaAfspraak afspraak, MammaStandplaatsLocatie locatie, @MappingTarget AfspraakDto afspraakDto)
+	default void voegLocatieToe(MammaAfspraak afspraak, MammaStandplaatsLocatie locatie, @MappingTarget MammaAfspraakDto afspraakDto)
 	{
 		var standplaats = afspraak.getStandplaatsPeriode().getStandplaatsRonde().getStandplaats();
 		afspraakDto.setLocatie(afspraakLocatieNaarDto(standplaats, locatie));
+		if (Boolean.TRUE.equals(locatie.getTijdelijk()))
+		{
+			afspraakDto.setTijdelijkeLocatieVanaf(DateUtil.toLocalDate(locatie.getStartDatum()));
+			afspraakDto.setTijdelijkeLocatieTotEnMet(DateUtil.toLocalDate(locatie.getEindDatum()));
+		}
 	}
 }

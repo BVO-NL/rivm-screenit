@@ -40,8 +40,6 @@ import nl.rivm.screenit.model.Dossier;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 @Entity
 @Table(schema = "colon", name = "dossier")
 @Audited
@@ -50,7 +48,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 public class ColonDossier extends Dossier<ColonScreeningRonde, ColonAfmelding>
 {
 	@OneToOne(mappedBy = "colonDossier", optional = false)
-	@JsonBackReference
 	private Client client;
 
 	@OneToOne(cascade = CascadeType.ALL)

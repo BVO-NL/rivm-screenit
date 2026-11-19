@@ -72,14 +72,12 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -96,7 +94,9 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 
 	private static final int SESSIE_TIMEOUT = 1800; 
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final ObjectMapper objectMapper = JsonMapper.builder()
+		.addMixIn(Object.class, MixInByPropName.class)
+		.build();
 
 	private static final long ZORG_ID_CONNECTION_TIME = 300L;
 
@@ -139,15 +139,12 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 	{
 		if (doInit)
 		{
-			objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-			objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE);
-			objectMapper.addMixIn(Object.class, MixInByPropName.class);
 			LOG.info("doInit");
 			databaseRunner.runInNewTransaction(() ->
 			{
 				try
 				{
-					this.zorgidClient = zorgidClient(zorgidClientTemplate());
+					this.zorgidClient = zorgidClient(zorgidRestClient());
 				}
 				catch (Exception e)
 				{
@@ -444,7 +441,7 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 		}
 	}
 
-	private RestTemplate zorgidClientTemplate()
+	private RestClient zorgidRestClient()
 	{
 		var maxConnPerRoute = zorgidClientMaxConnections();
 		var socketConfig = SocketConfig.custom()
@@ -465,15 +462,15 @@ public class ZorgIdSessieServiceImpl implements ZorgIdSessieService, Application
 			.build();
 		var httpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		httpRequestFactory.setConnectionRequestTimeout(Duration.ofMillis(zorgidClientConnectTimeout()));
-		return new RestTemplate(httpRequestFactory);
+		return RestClient.builder().requestFactory(httpRequestFactory).build();
 	}
 
-	private ZorgidClient zorgidClient(RestTemplate zorgidClientTemplate)
+	private ZorgidClient zorgidClient(RestClient zorgidRestClient)
 	{
 		var zorgidCallbackUrl = zorgidCallbackUrl();
 		LOG.info("Opgestart met zorgidCallbackUrl: {}", zorgidCallbackUrl);
 		Supplier<String> oAuthTokenSupplier = this::getIdpAccesssTokenVoorZorgId;
-		return new ZorgidClientImpl(zorgidServerUrl(), zorgidCallbackUrl, zorgidClientTemplate, oAuthTokenSupplier);
+		return new ZorgidClientImpl(zorgidServerUrl(), zorgidCallbackUrl, zorgidRestClient, oAuthTokenSupplier);
 	}
 
 	private String getIdpAccesssTokenVoorZorgId()

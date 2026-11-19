@@ -21,14 +21,15 @@ package nl.rivm.screenit.main.web;
  * =========================LICENSE_END==================================
  */
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.time.Instant;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import nl.rivm.screenit.Constants;
@@ -99,6 +100,8 @@ import org.slf4j.LoggerFactory;
 
 import com.github.jennybrown8.wicketsource.WicketSource;
 import com.googlecode.wicket.jquery.ui.settings.JQueryUILibrarySettings;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @org.springframework.stereotype.Component
 public class ScreenitApplication extends WebApplication
@@ -241,32 +244,25 @@ public class ScreenitApplication extends WebApplication
 					{
 						try
 						{
-							String bestandspad;
-							if (metSubmap)
+							var naam = attributes.getParameters().get("name").toString();
+							var bestandspad = metSubmap ? attributes.getParameters().get("dir").toString() + "/" + naam : naam;
+							var bestand = bepaalBestandBinnenResourceLocatie(resourceLocation, bestandspad);
+							if (bestand.isEmpty())
 							{
-								var dir = attributes.getParameters().get("dir").toString();
-								var name = attributes.getParameters().get("name").toString();
-								bestandspad = dir + "/" + name;
+								var nietGevondenResponse = new ResourceResponse();
+								nietGevondenResponse.setError(HttpServletResponse.SC_NOT_FOUND);
+								return nietGevondenResponse;
 							}
-							else
-							{
-								bestandspad = attributes.getParameters().get("name").toString();
-							}
-							var bestand = new File(resourceLocation + bestandspad);
-							var resourceResponse = createResourceResponse(attributes, FileSystemResourceReference.getPath(bestand.toURI()));
+							var resourceResponse = createResourceResponse(attributes, bestand.get());
 							if (isMedewerkerportaalEntryScript(bestandspad))
 							{
-								resourceResponse.setLastModified(Instant.ofEpochMilli(bestand.lastModified()));
+								resourceResponse.setLastModified(Files.getLastModifiedTime(bestand.get()).toInstant());
 							}
 							return resourceResponse;
 						}
 						catch (IOException e)
 						{
 							throw new WicketRuntimeException("Fout bij het lezen van het bestand.", e);
-						}
-						catch (URISyntaxException e)
-						{
-							throw new WicketRuntimeException("Fout bij het opbouwen van het URI.", e);
 						}
 					}
 
@@ -283,6 +279,28 @@ public class ScreenitApplication extends WebApplication
 				};
 			}
 		};
+	}
+
+	private static Optional<Path> bepaalBestandBinnenResourceLocatie(String resourceLocation, String bestandspad)
+	{
+		if (bestandspad == null)
+		{
+			return Optional.empty();
+		}
+		try
+		{
+			var basismap = Path.of(resourceLocation).toRealPath();
+			var bestand = basismap.resolve(bestandspad).normalize();
+			if (!bestand.startsWith(basismap) || !Files.isRegularFile(bestand) || !bestand.toRealPath().startsWith(basismap))
+			{
+				return Optional.empty();
+			}
+			return Optional.of(bestand);
+		}
+		catch (InvalidPathException | IOException _)
+		{
+			return Optional.empty();
+		}
 	}
 
 	private static boolean isMedewerkerportaalEntryScript(String bestandspad)

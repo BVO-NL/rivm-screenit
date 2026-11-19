@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.annotation.PostConstruct;
@@ -71,9 +72,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -264,29 +262,45 @@ public class MammaBaseKansberekeningServiceImpl implements MammaBaseKansberekeni
 	@Override
 	public void fitDossierClassifier()
 	{
-		var restTemplate = RestApiFactory.create(KANSBEREKENING_LONG_READTIMEOUT);
-		restTemplate.getForObject(kansberekeningServiceUrl + "fit_dossier_classifier", String.class);
+		var restApi = RestApiFactory.create(KANSBEREKENING_LONG_READTIMEOUT);
+		restApi
+			.get()
+			.uri(kansberekeningServiceUrl + "fit_dossier_classifier")
+			.retrieve()
+			.body(String.class);
 	}
 
 	@Override
 	public void fitAfsprakenClassifier()
 	{
-		var restTemplate = RestApiFactory.create(KANSBEREKENING_LONG_READTIMEOUT);
-		restTemplate.getForObject(kansberekeningServiceUrl + "fit_afspraak_classifier", String.class);
+		var restApi = RestApiFactory.create(KANSBEREKENING_LONG_READTIMEOUT);
+		restApi
+			.get()
+			.uri(kansberekeningServiceUrl + "fit_afspraak_classifier")
+			.retrieve()
+			.body(String.class);
 	}
 
 	@Override
 	public void predictDossiers()
 	{
-		var restTemplate = RestApiFactory.create(KANSBEREKENING_LONG_READTIMEOUT);
-		restTemplate.getForObject(kansberekeningServiceUrl + "predict_dossiers", String.class);
+		var restApi = RestApiFactory.create(KANSBEREKENING_LONG_READTIMEOUT);
+		restApi
+			.get()
+			.uri(kansberekeningServiceUrl + "predict_dossiers")
+			.retrieve()
+			.body(String.class);
 	}
 
 	@Override
 	public void predictAfspraken()
 	{
-		var restTemplate = RestApiFactory.create(KANSBEREKENING_LONG_READTIMEOUT);
-		restTemplate.getForObject(kansberekeningServiceUrl + "predict_afspraken", String.class);
+		var restApi = RestApiFactory.create(KANSBEREKENING_LONG_READTIMEOUT);
+		restApi
+			.get()
+			.uri(kansberekeningServiceUrl + "predict_afspraken")
+			.retrieve()
+			.body(String.class);
 	}
 
 	@Override
@@ -294,12 +308,14 @@ public class MammaBaseKansberekeningServiceImpl implements MammaBaseKansberekeni
 	{
 		if (mayUseKansberekening())
 		{
-			var restTemplate = RestApiFactory.create(KANSBEREKENING_SHORT_READTIMEOUT);
+			var restApi = RestApiFactory.create(KANSBEREKENING_SHORT_READTIMEOUT);
 
 			try
 			{
-				var opkomstkans = new BigDecimal(
-					restTemplate.postForObject(kansberekeningServiceUrl + "predict_afspraak", "[" + new AfspraakEventDto(afspraak) + "]", String.class));
+				var opkomstkans = new BigDecimal(restApi.post().uri(kansberekeningServiceUrl + "predict_afspraak")
+					.body(List.of(new AfspraakEventDto(afspraak)))
+					.retrieve()
+					.body(String.class));
 				return opkomstkans.compareTo(MINIMUM_OPKOMSTKANS) >= 0 ? opkomstkans : MINIMUM_OPKOMSTKANS;
 			}
 			catch (RuntimeException ex)
@@ -462,6 +478,7 @@ public class MammaBaseKansberekeningServiceImpl implements MammaBaseKansberekeni
 		}
 	}
 
+	@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 	private class AfspraakEventDto implements Serializable
 	{
 		private BigDecimal landelijk_gem_deelname_afgelopen10jaar;
@@ -726,19 +743,6 @@ public class MammaBaseKansberekeningServiceImpl implements MammaBaseKansberekeni
 			event_ronde_geforceerd = afspraakEvent.getRondeGeforceerd();
 			event_uur = afspraakEvent.getUur();
 			event_verzetten_reden = afspraakEvent.getVerzettenReden();
-		}
-
-		@Override
-		public String toString()
-		{
-			try
-			{
-				return new ObjectMapper().setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY).writeValueAsString(this);
-			}
-			catch (JsonProcessingException e)
-			{
-				throw new RuntimeException(e);
-			}
 		}
 	}
 

@@ -22,6 +22,7 @@ package nl.rivm.screenit.batch;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.util.CsvUtil;
 import java.io.Closeable;
 import java.io.IOException;
 import java.text.ParseException;
@@ -46,7 +47,7 @@ import org.springframework.batch.infrastructure.item.ItemStream;
 import org.springframework.batch.infrastructure.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 @Slf4j
 public abstract class BaseCsvFileReader<T> implements ItemReader<T>, ItemStream
@@ -165,7 +166,7 @@ public abstract class BaseCsvFileReader<T> implements ItemReader<T>, ItemStream
 		if (current != null)
 		{
 			String[] line = null;
-			while ((line = current.readNext()) != null)
+			while ((line = CsvUtil.leesRegel(current)) != null)
 			{
 				regelnummer++;
 				try

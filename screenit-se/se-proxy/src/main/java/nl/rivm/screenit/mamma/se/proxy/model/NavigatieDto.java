@@ -21,8 +21,11 @@ package nl.rivm.screenit.mamma.se.proxy.model;
  * =========================LICENSE_END==================================
  */
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 public class NavigatieDto
 {
+	@JsonAlias("type")
 	private NavigatieType navigatieType;
 
 	private String subPagina;

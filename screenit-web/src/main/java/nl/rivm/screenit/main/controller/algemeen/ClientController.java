@@ -129,7 +129,7 @@ public class ClientController extends BaseController
 	public ResponseEntity<ClientDto> getClient(@PathVariable Long clientId)
 	{
 		var client = getClientOfGooiNotFoundException(clientId);
-		return ResponseEntity.ok(clientMapper.clientToClientDto(client, clientService, bezwaarService));
+		return ResponseEntity.ok(clientMapper.clientToClientDto(client, clientService, bezwaarService, dossierService, currentDateSupplier));
 	}
 
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {
@@ -144,7 +144,7 @@ public class ClientController extends BaseController
 	{
 		logZoekenGebeurtenis(filter);
 		var clienten = clientZoekenService.zoekClienten(filter);
-		return ResponseEntity.ok(clienten.stream().map(client -> clientMapper.clientToClientDto(client, clientService, bezwaarService)).toList());
+		return ResponseEntity.ok(clienten.stream().map(client -> clientMapper.clientToClientDto(client, clientService, bezwaarService, dossierService, currentDateSupplier)).toList());
 	}
 
 	@SecurityConstraint(actie = Actie.INZIEN, checkScope = true, constraint = ShiroConstraint.HasPermission, recht = Recht.MEDEWERKER_CLIENT_GEGEVENS, bevolkingsonderzoekScopes = {

@@ -109,7 +109,7 @@ public class BezwaarController extends BaseController
 			throw new IllegalStateException("error.client.niet.gevonden");
 		}
 
-		var geboortedatumClient = DateUtil.formatShortDate(client.getPersoon().getGeboortedatum());
+		var geboortedatumClient = DateUtil.toLocalDate(client.getPersoon().getGeboortedatum());
 		if (!geboortedatumClient.equals(herstellenDto.getGeboortedatum()))
 		{
 			throw new IllegalStateException("error.client.niet.gevonden");
@@ -128,13 +128,13 @@ public class BezwaarController extends BaseController
 		return ResponseEntity.ok().build();
 	}
 
-	private MultipartFile valideerPdfBestand(MultipartFile briefBestand)
+	private MultipartFile valideerPdfBestand(MultipartFile briefBestand) throws IOException
 	{
-		if (briefBestand == null)
+		if (briefBestand == null || briefBestand.isEmpty())
 		{
 			throw new IllegalStateException("error.bestand.verplicht");
 		}
-		if (!FileType.PDF.getAllowedContentTypes().contains(briefBestand.getContentType()))
+		if (!FileType.PDF.isGeldigBestand(briefBestand.getOriginalFilename(), briefBestand.getContentType(), briefBestand.getBytes()))
 		{
 			throw new IllegalStateException("error.bestandtype.niet.toegestaan");
 		}

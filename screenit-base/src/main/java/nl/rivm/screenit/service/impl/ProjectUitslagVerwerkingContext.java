@@ -21,6 +21,7 @@ package nl.rivm.screenit.service.impl;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.util.CsvUtil;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -33,7 +34,7 @@ import nl.topicuszorg.util.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 public class ProjectUitslagVerwerkingContext
 {
@@ -76,8 +77,8 @@ public class ProjectUitslagVerwerkingContext
 		CSVReader testReader = null;
 		try
 		{
-			testReader = new CSVReader(new FileReader(file), ',');
-			huidigeLine = testReader.readNext();
+			testReader = CsvUtil.maakReader(new FileReader(file), ',');
+			huidigeLine = CsvUtil.leesRegel(testReader);
 			if (huidigeLine != null && Arrays.asList(huidigeLine).size() >= 2)
 			{
 				reader = testReader;
@@ -86,8 +87,8 @@ public class ProjectUitslagVerwerkingContext
 			{
 				testReader.close();
 				huidigeLine = null;
-				testReader = new CSVReader(new FileReader(file), ';');
-				huidigeLine = testReader.readNext();
+				testReader = CsvUtil.maakReader(new FileReader(file), ';');
+				huidigeLine = CsvUtil.leesRegel(testReader);
 				if (huidigeLine != null && Arrays.asList(huidigeLine).size() >= 2)
 				{
 					reader = testReader;
@@ -188,7 +189,7 @@ public class ProjectUitslagVerwerkingContext
 
 	public boolean isErEenNieuweRegel() throws IOException
 	{
-		huidigeLine = reader.readNext();
+		huidigeLine = CsvUtil.leesRegel(reader);
 		if (huidigeLine != null)
 		{
 			regelnummer++;

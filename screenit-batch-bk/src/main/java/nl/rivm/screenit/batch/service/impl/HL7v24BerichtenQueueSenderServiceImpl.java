@@ -49,14 +49,13 @@ import nl.rivm.screenit.repository.algemeen.ClientRepository;
 import nl.rivm.screenit.repository.mamma.MammaHL7v24MessageRepository;
 import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.util.ScreenitObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.hl7v2.HL7Exception;
 
@@ -85,7 +84,8 @@ public class HL7v24BerichtenQueueSenderServiceImpl implements HL7v24BerichtenQue
 	@Autowired
 	private DatabaseRunner databaseRunner;
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	@Autowired
+	private ScreenitObjectMapper objectMapper;
 
 	private static final int MAMMA_IMS_QUEUE_VERWERK_SIZE = 500;
 

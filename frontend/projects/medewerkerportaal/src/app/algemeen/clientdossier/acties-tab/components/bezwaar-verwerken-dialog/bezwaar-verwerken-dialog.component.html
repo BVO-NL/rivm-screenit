@@ -20,7 +20,7 @@
   -->
 <app-base-dialog [titel]="titel" size="xl">
   <div body>
-    <form [formGroup]="bezwaarForm" class="form-in-modal" novalidate>
+    <form [formGroup]="bezwaarForm" novalidate>
       <app-bezwaar-lijst
         formControlName="bezwaren"
         [bezwaarMoment]="actiefBezwaarMoment()"

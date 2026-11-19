@@ -43,7 +43,9 @@ import nl.rivm.screenit.model.OrganisatieMedewerker;
 import nl.rivm.screenit.model.RedenGbaVraag;
 import nl.rivm.screenit.model.ScreeningRonde;
 import nl.rivm.screenit.model.TijdelijkAdres;
+import nl.rivm.screenit.model.cervix.CervixUitstel;
 import nl.rivm.screenit.model.colon.ColonDossier;
+import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.BriefType;
 import nl.rivm.screenit.model.enums.ColonNieuwFitResultaat;
 import nl.rivm.screenit.model.enums.ExtraOpslaanKey;
@@ -100,17 +102,21 @@ public interface ClientContactService
 	void vraagKeuzeGebruikGegevensBriefAan(Client client, BriefType briefType, boolean handtekeningVergeten, String notitie,
 		OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
+	void vraagInzageAanvraagformulierAan(Client client, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
 	void wijzigTijdelijkAdres(Client client, TijdelijkAdres tijdelijkAdres, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
 	void heraanmeldenCervix(Client client, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
+	void uitstelAanvragenCervix(Client client, CervixUitstel uitstel, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
+	void nieuweUitnodigingAanvragenCervix(Client client, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
+
 	<A extends Afmelding<?, ?, ?>> Optional<A> zoekAfmeldingOmHeraanTeMelden(Dossier<? extends ScreeningRonde<?, ?, ? extends A, ?>, ? extends A> dossier);
 
-	List<AfmeldingType> getAvailableAfmeldoptiesColon(Client client, boolean viaPortaalGevraagd);
+	void afmelden(Client client, Afmelding<?, ?, ?> afmelding, String notitie, OrganisatieMedewerker ingelogdeOrganisatieMedewerker);
 
-	List<AfmeldingType> getAvailableAfmeldoptiesMamma(Client object, boolean viaPortaalGevraagd);
-
-	List<AfmeldingType> getAvailableAfmeldoptiesCervix(Client client, boolean viaPortaalGevraagd);
+	List<AfmeldingType> getAvailableAfmeldopties(Client client, Bevolkingsonderzoek bevolkingsonderzoek, boolean viaPortaalGevraagd);
 
 	boolean magNieuweUitnodigingAanvragen(Dossier dossier, boolean isHeraanmelding);
 

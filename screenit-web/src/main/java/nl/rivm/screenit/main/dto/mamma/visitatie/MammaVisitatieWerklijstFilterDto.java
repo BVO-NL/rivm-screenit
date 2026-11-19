@@ -23,7 +23,6 @@ package nl.rivm.screenit.main.dto.mamma.visitatie;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import lombok.Getter;
@@ -42,16 +41,25 @@ public class MammaVisitatieWerklijstFilterDto
 {
 	@Schema(description = "Te tonen visitatiestatussen")
 	private List<MammaVisitatieStatus> statussen = new ArrayList<>();
+
 	private List<Long> beoordelingsEenheidIds = new ArrayList<>();
+
 	private List<Long> centraleEenheidIds = new ArrayList<>();
-	private Date geboortedatum;
+
+	private LocalDate geboortedatum;
 
 	@Schema(description = "Ondergrens vanaf wanneer gezocht wordt")
 	private LocalDate vanaf;
+
 	private String bsn;
+
 	private String postcode;
+
 	private Integer huisnummer;
+
 	private MammaOnderzoekType onderzoekType;
+
 	private List<Long> screeningseenheidIds = new ArrayList<>();
+
 	private List<MammaBeoordelingStatus> beoordelingStatussen = new ArrayList<>();
 }

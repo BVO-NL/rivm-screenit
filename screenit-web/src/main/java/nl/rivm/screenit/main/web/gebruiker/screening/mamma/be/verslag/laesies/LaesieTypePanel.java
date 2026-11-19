@@ -40,7 +40,8 @@ class LaesieTypePanel extends GenericPanel<LaesieDto>
 
 	private final List<LaesieDto> alleLaesies;
 
-	private final LaesieDtoMapper mapper = new LaesieDtoMapper();
+	@SpringBean
+	private LaesieDtoMapper laesieDtoMapper;
 
 	LaesieTypePanel(String id, IModel<LaesieDto> model, List<LaesieDto> alleLaesies)
 	{
@@ -65,8 +66,8 @@ class LaesieTypePanel extends GenericPanel<LaesieDto>
 	private String volgnummerPostfix()
 	{
 		var laesie = getModelObject();
-		var mammaLaesie = mapper.laesieDtoToMammaLaesie(laesie);
-		final var mammaLaesieList = alleLaesies.stream().map(mapper::laesieDtoToMammaLaesie).toList();
+		var mammaLaesie = laesieDtoMapper.laesieDtoToMammaLaesie(laesie);
+		final var mammaLaesieList = alleLaesies.stream().map(laesieDtoMapper::laesieDtoToMammaLaesie).toList();
 		return laesieService.isVolgnummerNodig(mammaLaesieList, mammaLaesie) ? " - " + laesie.getNummer() : "";
 	}
 

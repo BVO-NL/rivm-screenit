@@ -41,11 +41,13 @@ class LaesieLocatiePanel extends GenericPanel<LaesieDto>
 	@SpringBean
 	private MammaLaesieLocatieService laesieTypeService;
 
+	@SpringBean
+	private LaesieDtoMapper laesieDtoMapper;
+
 	LaesieLocatiePanel(String id, IModel<LaesieDto> model)
 	{
 		super(id, model);
-		var mapper = new LaesieDtoMapper();
-		var laesie = mapper.laesieDtoToMammaLaesie(getModelObject());
+		var laesie = laesieDtoMapper.laesieDtoToMammaLaesie(getModelObject());
 		var laesieGrootteContainer = new WebMarkupContainer("laesieGrootteContainer");
 		var laesieGrootteInCm = new BigDecimalField("laesieGrootteInCm", 1, BigDecimal.valueOf(1, 1), BigDecimal.valueOf(100));
 		laesieGrootteContainer.add(laesieGrootteInCm);

@@ -36,7 +36,7 @@ import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
 import { Required } from '@shared/types/autorisatie/required'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
-import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { alleBevolkingsonderzoeken } from '@shared/types/bevolkingsonderzoek'
 import { LegeWaardePipe } from '@shared/pipes/lege-waarde/lege-waarde.pipe'
 import { StringsService } from '@shared/strings'
 import { NL_DATE_FORMAT } from '@shared/constants'
@@ -71,7 +71,7 @@ export class BrpPanelComponent implements OnInit {
     actie: Actie.INZIEN,
     required: Required.ANY,
     level: ToegangLevel.LANDELIJK,
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+    bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
   }
 
   protected readonly wijzigenConstraint: SecurityConstraint = {
@@ -79,7 +79,7 @@ export class BrpPanelComponent implements OnInit {
     actie: Actie.AANPASSEN,
     required: Required.ANY,
     level: ToegangLevel.LANDELIJK,
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+    bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
   }
 
   ngOnInit() {

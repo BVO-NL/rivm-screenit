@@ -21,7 +21,7 @@ package nl.rivm.screenit.main.dto.algemeen;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import lombok.Getter;
@@ -38,9 +38,9 @@ public class OrganisatieMedewerkerRolDto extends EntityDto
 
 	private List<Bevolkingsonderzoek> bevolkingsonderzoeken;
 
-	private Date beginDatum;
+	private LocalDate beginDatum;
 
-	private Date eindDatum;
+	private LocalDate eindDatum;
 
 	private Boolean actief;
 

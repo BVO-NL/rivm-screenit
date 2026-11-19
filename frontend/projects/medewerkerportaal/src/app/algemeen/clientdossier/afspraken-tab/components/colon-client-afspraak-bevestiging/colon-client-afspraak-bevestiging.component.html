@@ -22,6 +22,9 @@
   <h2 class="mb-3 text-bold">{{ strings.algemeen.afspraken.verplaatsenDialog.bevestigingStep.titel }}</h2>
   <form [formGroup]="form">
     <h4 class="pagina-sectie-header">{{ strings.algemeen.labels.brief }}</h4>
+    @if (toonBriefAdres()) {
+      <app-brief-adres-informatiebalk [postadres]="postadres()" class="display-block my-3"/>
+    }
     <ds-radiobutton [columnCount]="1" [items]="brieven()" formControlName="briefType" [label]="strings.algemeen.afspraken.verplaatsenDialog.bevestigingStep.briefKeuze"
                     data-testid="briefType-radiobutton"/>
 

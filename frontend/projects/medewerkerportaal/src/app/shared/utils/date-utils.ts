@@ -84,6 +84,11 @@ export function formatDateAsISO(date: Date) {
   return format(date, ISO_DATE_FORMAT)
 }
 
+export function formatLokaleDatumOfDatumTijd(date: Date): string {
+  const heeftTijd = date.getHours() !== 0 || date.getMinutes() !== 0 || date.getSeconds() !== 0 || date.getMilliseconds() !== 0
+  return format(date, heeftTijd ? ISO_DATE_FORMAT : DATE_FORMAT)
+}
+
 export function formatDateStringAsTime(dateString: string): string {
   return format(new Date(dateString), TIME_FORMAT)
 }
@@ -179,8 +184,8 @@ export function normaliseerNaarDate(datumWaarde: unknown): Date | null {
   return null
 }
 
-export function isEinddatumVerlopen(einddatum: string | null | undefined): boolean {
-  return !!einddatum && isBefore(startOfDay(new Date(einddatum)), startOfDay(DateService.nu()))
+export function isEinddatumVerlopen(einddatum: Date | null | undefined): boolean {
+  return !!einddatum && isBefore(startOfDay(einddatum), startOfDay(DateService.nu()))
 }
 
 export function berekenLeeftijd(geboortedatum: Date | string | null | undefined): number | undefined {

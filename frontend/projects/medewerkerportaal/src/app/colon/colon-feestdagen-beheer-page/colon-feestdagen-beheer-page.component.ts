@@ -20,7 +20,8 @@
  */
 import { Component, computed, inject, signal, viewChild } from '@angular/core'
 import { filter, iif, map, switchMap, take } from 'rxjs'
-import { ColonFeestdag } from '@shared/types/colon/colon-feestdag'
+import { ColonFeestdagDto } from '@shared/types/colon/colon-feestdag'
+import { NotPersisted } from '@shared/types/not-presisted'
 import { Dialog } from '@angular/cdk/dialog'
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component'
 import { ReactiveFormsModule } from '@angular/forms'
@@ -85,7 +86,7 @@ import { StringsService } from '@shared/strings'
   templateUrl: './colon-feestdagen-beheer-page.component.html',
 })
 export class ColonFeestdagenBeheerPageComponent {
-  feestdagen = signal<ColonFeestdag[]>([])
+  feestdagen = signal<ColonFeestdagDto[]>([])
   dataSource = computed(() => {
     const source = new DsTableDataSource(this.feestdagen())
     source.sort = this.sort()
@@ -135,19 +136,21 @@ export class ColonFeestdagenBeheerPageComponent {
     this.feestdagenService
       .getFeestdagen()
       .pipe(take(1))
-      .subscribe((feestdagen: ColonFeestdag[]) => {
+      .subscribe((feestdagen: ColonFeestdagDto[]) => {
         this.feestdagen.set(feestdagen)
       })
   }
 
-  openFeestdagDialog(feestdag?: ColonFeestdag) {
+  openFeestdagDialog(feestdag?: ColonFeestdagDto) {
     this.dialogService
       .open(FeestdagBewerkenDialogComponent, { data: feestdag })
       .closed.pipe(
         take(1),
         filter((result: unknown) => !!result),
-        map((result: unknown) => result as ColonFeestdag),
-        switchMap((feestdag: ColonFeestdag) => iif(() => feestdag.id == null, this.feestdagenService.createFeestdag(feestdag), this.feestdagenService.updateFeestdag(feestdag))),
+        map((result: unknown) => result as NotPersisted<ColonFeestdagDto>),
+        switchMap((feestdag: NotPersisted<ColonFeestdagDto>) =>
+          iif(() => feestdag.id == null, this.feestdagenService.createFeestdag(feestdag), this.feestdagenService.updateFeestdag(feestdag as ColonFeestdagDto)),
+        ),
       )
       .subscribe({
         next: () => this.getFeestdagen(),
@@ -161,7 +164,7 @@ export class ColonFeestdagenBeheerPageComponent {
       })
   }
 
-  confirmDeleteFeestdag(feestdag: ColonFeestdag) {
+  confirmDeleteFeestdag(feestdag: ColonFeestdagDto) {
     this.dialogService
       .open(ConfirmationDialogComponent, {
         data: {
@@ -179,7 +182,7 @@ export class ColonFeestdagenBeheerPageComponent {
       })
   }
 
-  private removeFeestdag(feestdag: ColonFeestdag) {
+  private removeFeestdag(feestdag: ColonFeestdagDto) {
     this.feestdagenService
       .removeFeestdag(feestdag)
       .pipe(take(1))

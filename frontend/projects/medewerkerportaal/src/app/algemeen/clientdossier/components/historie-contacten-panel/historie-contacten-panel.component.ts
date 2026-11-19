@@ -23,6 +23,7 @@ import { filter, take } from 'rxjs'
 import {
   DsButtonComponent,
   DsCardComponent,
+  DsCardConfig,
   DsCell,
   DsCellDef,
   DsColumnDef,
@@ -99,6 +100,7 @@ export class HistorieContactenPanelComponent {
   protected readonly bevolkingsonderzoekLabels = bevolkingsonderzoekAfkortingLabels
   protected readonly clientContactActieLabel = clientContactActieLabel
   protected readonly strings = inject(StringsService).getStrings()
+  protected readonly cardConfig = new DsCardConfig({ noPaddingContent: true })
   protected displayedColumns = ['datumTijd', 'uitgevoerdeActies', 'notitie', 'medewerker', 'bevolkingsonderzoeken']
   protected bewerkenToegestaan = false
   protected inzienToegestaan = false

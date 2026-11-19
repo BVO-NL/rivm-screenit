@@ -54,7 +54,9 @@ public class SecurityConfig
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception
 	{
 		http.csrf(AbstractHttpConfigurer::disable)
-			.authorizeHttpRequests(requests -> requests.anyRequest().authenticated())
+			.authorizeHttpRequests(requests -> requests
+				.requestMatchers("/health/**").permitAll()
+				.anyRequest().authenticated())
 			.httpBasic(withDefaults());
 		return http.build();
 	}

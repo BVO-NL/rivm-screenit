@@ -21,6 +21,7 @@
 import { ClientAfspraakDto } from '@shared/types/algemeen/dto/client-afspraak.dto'
 import { maakAdres } from '@/test/adres-test-util'
 import { ColonIntakeafspraakDto } from '@shared/types/colon/dto/colon-intakeafspraak.dto'
+import { MammaAfspraakDto } from '@shared/types/mamma/dto/mamma-afspraak.dto'
 
 export const maakClientAfspraak = (overrides: Partial<ClientAfspraakDto> = {}): ClientAfspraakDto => ({
   id: 7,
@@ -32,6 +33,22 @@ export const maakClientAfspraak = (overrides: Partial<ClientAfspraakDto> = {}): 
   },
   locatieBeschrijving: null,
   verlopenZonderConclusie: false,
+  ...overrides,
+})
+
+export const maakMammaAfspraak = (overrides: Partial<MammaAfspraakDto> = {}): MammaAfspraakDto => ({
+  id: 8,
+  vanaf: '2026-05-28T10:00:00',
+  locatie: {
+    id: 3,
+    naam: 'Standplaats Goes',
+    adres: maakAdres({ straat: "'s Gravenpolderseweg", huisnummer: 114, postcode: '4462 RA', plaats: 'Goes' }),
+  },
+  locatieBeschrijving: null,
+  verlopenZonderConclusie: false,
+  tijdelijkeLocatieVanaf: null,
+  tijdelijkeLocatieTotEnMet: null,
+  bevestigingsbriefAangevraagdOp: null,
   ...overrides,
 })
 

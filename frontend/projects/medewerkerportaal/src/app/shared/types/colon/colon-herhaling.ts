@@ -23,6 +23,6 @@ import { ColonHerhalingsfrequentie } from '@shared/types/colon/colon-herhaling-f
 export interface ColonHerhaling {
   frequentie: ColonHerhalingsfrequentie
   alleenWerkdagen?: boolean
-  eindDatum?: string
+  eindDatum?: Date
   dagen?: number[]
 }

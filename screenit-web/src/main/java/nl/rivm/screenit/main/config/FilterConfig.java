@@ -72,7 +72,7 @@ public class FilterConfig
 		filter.setName(WICKET_FILTER_NAME);
 		filter.addInitParameter(WicketFilter.APP_FACT_PARAM, SpringWebApplicationFactory.class.getName());
 		filter.addInitParameter(WicketFilter.FILTER_MAPPING_PARAM, "/*");
-		filter.addInitParameter(WicketFilter.IGNORE_PATHS_PARAM, "api,rest,assets");
+		filter.addInitParameter(WicketFilter.IGNORE_PATHS_PARAM, "api,rest,assets,health,favicon.ico");
 		filter.addUrlPatterns("/*");
 		filter.setOrder(FilterOrder.WICKET.ordinal());
 		return filter;

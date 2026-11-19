@@ -60,6 +60,7 @@ import nl.rivm.screenit.model.cervix.facturatie.CervixLabTarief;
 import nl.rivm.screenit.model.cervix.facturatie.CervixTarief;
 import nl.rivm.screenit.model.cervix.facturatie.CervixTarief_;
 import nl.rivm.screenit.model.cervix.facturatie.CervixVerrichting_;
+import nl.rivm.screenit.model.enums.BatchApplicationType;
 import nl.rivm.screenit.model.enums.BestandStatus;
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.FileStoreLocation;
@@ -118,7 +119,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 {
 	private File template;
 
-	private ExecutorService executorService;
+	private final ExecutorService executorService;
 
 	@Autowired
 	private ICurrentDateSupplier currentDateSupplier;
@@ -294,7 +295,8 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 			}
 			melding += baseBetalingService.getTariefString(oudeTarief);
 			messageService.queueMessage(MessageType.HERINDEXATIE,
-				new CervixHerindexatieDto(oudeTarief.getId(), nieuweTarief.getId(), CervixTariefType.isHuisartsTarief(nieuweTarief)));
+				new CervixHerindexatieDto(oudeTarief.getId(), nieuweTarief.getId(), CervixTariefType.isHuisartsTarief(nieuweTarief)),
+				BatchApplicationType.CERVIX.name());
 		}
 		return melding;
 	}
@@ -599,7 +601,7 @@ public class CervixBetalingServiceImpl implements CervixBetalingService
 		hibernateService.saveOrUpdate(betaalopdracht);
 
 		messageService.queueMessage(MessageType.VERWIJDER_BETAAL_OPDRACHT,
-			new VerwijderBetaalOpdrachtDto(betaalopdracht.getId()));
+			new VerwijderBetaalOpdrachtDto(betaalopdracht.getId()), BatchApplicationType.CERVIX.name());
 	}
 
 	@Override

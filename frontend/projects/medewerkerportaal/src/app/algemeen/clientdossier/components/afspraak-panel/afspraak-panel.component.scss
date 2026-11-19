@@ -27,35 +27,10 @@ ds-card:has(.geen-afspraak) {
   min-height: 200px;
 }
 
-.afspraak-gegevens {
-  display: grid;
-  gap: 1rem;
-}
-
-.afspraak-gegevens-rij {
-  display: grid;
-  gap: 0.25rem;
-}
-
-.afspraak-gegevens-kop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.afspraak-gegevens-label {
-  color: var(--ds-secondary-text-color);
-}
-
 .geen-afspraak {
   display: grid;
   justify-items: center;
   align-content: center;
   gap: 1rem;
   min-height: 200px;
-
-  app-empty-state-panel {
-    position: static;
-    transform: none;
-  }
 }

@@ -61,36 +61,10 @@ public class FileValidator implements IValidator<List<FileUpload>>
 
 		for (var file : files)
 		{
-			FileType fileTypeMatch = null;
 			var fileName = file.getClientFileName();
-			for (var fileType : fileTypes)
-			{
-				if (fileType.getAllowedContentTypes().contains(file.getContentType())
-					&& fileType.getFileExtensies().stream().anyMatch(fileName::endsWith))
-				{
-					var magicNumber = fileType.getMagicNumber();
-					if (magicNumber != null)
-					{
-						var offset = fileType.getOffset();
-						if (file.getBytes().length >= offset + magicNumber.length)
-						{
-							var magicNumberUpload = Arrays.copyOfRange(file.getBytes(), offset, offset + magicNumber.length);
-							if (Arrays.equals(magicNumberUpload, magicNumber))
-							{
-								fileTypeMatch = fileType;
-								break;
-							}
-						}
-					}
-					else
-					{
-						fileTypeMatch = fileType;
-						break;
-					}
-				}
-			}
+			var isGeldig = Arrays.stream(fileTypes).anyMatch(fileType -> fileType.isGeldigBestand(fileName, file.getContentType(), file.getBytes()));
 
-			if (fileTypeMatch == null)
+			if (!isGeldig)
 			{
 				var error = new ValidationError();
 				error.setVariable("filename", fileName);

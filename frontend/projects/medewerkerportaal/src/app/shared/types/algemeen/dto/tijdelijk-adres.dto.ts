@@ -22,6 +22,6 @@ import { AdresDto } from '@shared/types/algemeen/dto/adres.dto'
 
 export interface TijdelijkAdresDto extends AdresDto {
   clientId: string
-  begindatum?: string | null
-  einddatum?: string | null
+  begindatum?: Date | null
+  einddatum?: Date | null
 }

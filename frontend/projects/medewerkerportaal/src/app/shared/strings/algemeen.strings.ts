@@ -50,6 +50,10 @@ export const ALGEMEEN_STRINGS = {
     begrepen: 'Begrepen',
     aanvragen: 'Aanvragen',
     heraanmelden: 'Heraanmelden',
+    uitstellen: 'Uitstellen',
+    verzetten: 'Verzetten',
+    afronden: 'Afronden',
+    versturen: 'Versturen',
   },
   dialogs: {
     bevestiging: {
@@ -140,6 +144,10 @@ export const ALGEMEEN_STRINGS = {
     laatstBijgewerktOp: 'Laatst bijgewerkt op',
     acties: 'Acties',
     documentnaam: 'Documentnaam',
+    ronde: 'Ronde',
+    gebeurtenis: 'Gebeurtenis',
+    monsterId: 'Monster-id',
+    uitnodigingId: 'Uitnodigings-id',
   },
   placeholders: {
     geboortedatum: 'DD-MM-JJJJ',
@@ -238,6 +246,17 @@ export const ALGEMEEN_STRINGS = {
         cervix: 'Baarmoederhalskanker',
         mamma: 'Borstkanker',
       },
+      cervixAfmelden: {
+        dialogTitle: 'Afmelden baarmoederhalskanker',
+        typeAfmelden: 'Type van afmelden',
+        typeAfmeldenPlaceholder: 'Kies een type',
+        manierAfmelden: 'Manier van afmelden',
+        manierAfmeldenPlaceholder: 'Kies een manier',
+        alleenPdf: 'Alleen PDF-bestanden zijn toegestaan.',
+        notifications: {
+          succes: 'Cliënt succesvol afgemeld',
+        },
+      },
       aanhefWijzigen: {
         dialogTitle: 'Aanhef wijzigen',
         aanspreekvormPlaceholder: 'Kies een aanspreekvorm',
@@ -252,6 +271,54 @@ export const ALGEMEEN_STRINGS = {
         handtekeningVergeten: 'Handtekening vergeten',
         notifications: {
           succes: 'Brief succesvol aangevraagd',
+        },
+      },
+      overdrachtPersoonsgegevens: {
+        keuzeDialog: {
+          titel: 'Inzage/overdracht persoonsgegevens',
+          vraag: 'Wat wilt u doen?',
+          buttons: {
+            aanvraagformulier: 'Aanvraagformulier',
+            keuzeVerwerken: 'Keuze verwerken',
+          },
+        },
+        aanvraagformulierDialog: {
+          titel: 'Aanvraagformulier inzage/overdracht persoonsgegevens',
+          tekst: 'Het aanvraagformulier voor inzage/overdracht persoonsgegevens wordt aangevraagd voor de cliënt.',
+          notifications: {
+            succes: 'Formulier succesvol aangevraagd',
+          },
+        },
+        keuzesVerwerkenDialog: {
+          titel: 'Verwerken inzage/overdracht persoonsgegevens',
+          titelAfgerond: 'Afgerond inzage/overdracht persoonsgegevens',
+          overdrachtVia: 'Overdracht via',
+          clientportaal: 'Cliëntportaal',
+          medewerker: 'Medewerker',
+          verstuurdeBrieven: 'Verstuurde brieven',
+          keuzes: 'Keuzes',
+          bkGegevens: 'Borstkanker - dossier',
+          bkBeelden: 'Borstkanker - beelden',
+          bmhkGegevens: 'Baarmoederhalskanker - dossier',
+          dkGegevens: 'Darmkanker - dossier',
+          aanvraagformulier: 'Ondertekend aanvraagformulier',
+          vervangenFormulier: 'Nieuw ondertekend aanvraagformulier',
+          geenHandtekening: 'Geen handtekening?',
+          afrondenDialog: {
+            titel: 'Aanvraag afronden',
+            vraag: 'Weet u zeker dat u deze aanvraag wilt afronden?',
+            jaButtonTekst: 'Ja, afronden',
+          },
+          notifications: {
+            succes: 'Keuzes succesvol verwerkt',
+            opgeslagen: 'Wijzigingen succesvol opgeslagen',
+            geenHandtekeningSucces: 'Brief zonder handtekening succesvol aangevraagd',
+            afgerondSucces: 'Aanvraag succesvol afgerond',
+            vervangenSucces: 'Document succesvol vervangen',
+          },
+        },
+        errors: {
+          openstaandVerzoek: 'Er loopt al een aanvraag inzage/overdracht persoonsgegevens voor deze cliënt die nog niet is afgerond.',
         },
       },
       bezwaar: {
@@ -281,6 +348,36 @@ export const ALGEMEEN_STRINGS = {
         uitnodigingMelding: 'Er wordt automatisch een uitnodiging gestuurd.',
         notifications: {
           succes: 'Cliënt succesvol heraangemeld.',
+        },
+      },
+      nieuweUitnodigingBmhk: {
+        dialogTitle: 'Aanvragen nieuwe uitnodiging baarmoederhalskanker',
+        gegevensTitel: 'Gegevens laatste klaargezette/afgedrukte uitnodiging',
+        wachtOpBrpGegevens: 'Deze aanvraag wordt afgerond wanneer de nieuwe BRP-gegevens binnen zijn.',
+        bevestigingTitel: 'Nieuwe uitnodiging baarmoederhalskanker versturen?',
+        bevestigingBody: 'Na het versturen van deze uitnodiging wordt direct een nieuwe uitnodiging aangemaakt en zo snel mogelijk naar de cliënt verstuurd.',
+        bevestigingJaButtonTekst: 'Ja, uitnodiging versturen',
+        notifications: {
+          succes: 'Nieuwe uitnodigingsbrief succesvol aangemaakt',
+        },
+      },
+      uitstelBmhk: {
+        dialogTitle: 'Uitstellen baarmoederhalskanker',
+        bevestigingTitel: 'Weet u zeker dat u onderstaande keuze wilt maken?',
+        bevestigingUitstelTot: (datum: string) => `Uitstel tot ${datum}`,
+        bevestigingZasGeannuleerd: 'Aanvraag ZAS wordt geannuleerd',
+        bevestigingJaButtonTekst: 'Ja, uitstellen',
+        redenPlaceholder: 'Kies een reden',
+        datumLabels: {
+          ZWANGERSCHAP: '(Vermoedelijke) bevallingsdatum',
+          ANDERS: 'Uitstellen tot',
+        },
+        errors: {
+          zwangerschapTeOud: (dagen: number) => `De (vermoedelijke) bevallingsdatum mag niet meer dan ${dagen} dagen oud zijn`,
+          teVerInToekomst: 'De (vermoedelijke) bevallingsdatum mag niet meer dan 9 maanden in de toekomst liggen',
+        },
+        notifications: {
+          succes: 'Uitstel baarmoederhalskanker succesvol aangevraagd',
         },
       },
       deelnameBuitenBvoBmhk: {
@@ -336,6 +433,16 @@ export const ALGEMEEN_STRINGS = {
       vervolgIndicatie: 'Vervolg indicatie',
     },
     volgendeUitnodiging: (datum: string) => `Volgende uitnodiging op ${datum}`,
+  },
+  overdrachtPersoonsgegevens: {
+    cardTitle: 'Inzage/overdracht persoonsgegevens',
+    status: {
+      aangevraagd: 'Aangevraagd',
+      beschikbaarViaAanvraagformulier: 'Beschikbaar via getekend aanvraagformulier',
+      afgerond: 'Afgerond',
+      afgerondViaClientportaal: 'Afgerond via cliëntportaal',
+      onbekend: 'Onbekend',
+    },
   },
   projecten: {
     cardTitle: 'Projecten',
@@ -457,9 +564,29 @@ export const ALGEMEEN_STRINGS = {
       afspraakMaken: 'Maak afspraak',
       afspraakAfzeggen: 'Afspraak afzeggen',
     },
-    geenAfspraken: {
-      titel: 'Geen afspraak gevonden',
-      subtitel: 'De cliënt kan een afspraak maken voor het onderzoek.',
+    geenAfspraak: {
+      titel: 'Geen afspraak',
+      subtitel: 'Er is nog geen afspraak gepland.',
+    },
+    mamma: {
+      uitstelIngediend: {
+        titel: 'Verzoek tot uitstel ingediend',
+        subtitel: (streefDatum: string, standplaats: string, plaats: string) => `Er is uitstel aangevraagd met streefdatum ${streefDatum} op locatie ${standplaats} in ${plaats}`,
+      },
+      tijdelijkeLocatie: (vanaf: string, totEnMet: string) => `(Tijdelijke locatie: Vanaf ${vanaf} t/m ${totEnMet})`,
+      afspraakbevestigingDialog: {
+        titel: 'Afspraakbevestiging sturen',
+        keuze: 'Hoe wil de cliënt een afspraakbevestiging ontvangen?',
+        briefAlVerstuurd: (datum: string) => `Er is al een bevestigingsbrief verstuurd op ${datum}`,
+        notifications: {
+          briefAangemaakt: 'Brief succesvol aangemaakt',
+          emailVerstuurd: 'E-mail succesvol verstuurd',
+        },
+      },
+      buttons: {
+        afspraakbevestigingSturen: 'Afspraakbevestiging sturen',
+        afspraakMaken: 'Afspraak maken',
+      },
     },
     verplaatsenDialog: {
       titelTijdstipWijzigen: 'Tijdstip wijzigen',
@@ -475,6 +602,8 @@ export const ALGEMEEN_STRINGS = {
         titel: 'Afspraakbevestiging',
         briefKeuze: 'Kies een afspraakbevestiging voor de cliënt:',
         geenBevestigingsbrief: 'Geen bevestigingsbrief versturen',
+        briefAdresMelding: (adres: string, postcode: string | null, plaats: string | null) =>
+          `De brief wordt verstuurd naar "${adres}${postcode ? `, ${postcode}` : ''}${plaats ? ` in ${plaats}` : ''}"`,
         medischeVerwijzing: {
           titel: 'Medische verwijzing',
           vraag: 'Gaat dit om een medische verwijzing?',

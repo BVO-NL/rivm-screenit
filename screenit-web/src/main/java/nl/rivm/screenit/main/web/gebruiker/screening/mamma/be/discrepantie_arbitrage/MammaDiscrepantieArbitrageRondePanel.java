@@ -51,6 +51,9 @@ public class MammaDiscrepantieArbitrageRondePanel extends AbstractMammaRondePane
 	@SpringBean
 	private MammaBaseBeoordelingService baseBeoordelingService;
 
+	@SpringBean
+	private LaesieDtoMapper laesieDtoMapper;
+
 	private MammaBeLezerSoort lezerSoort;
 
 	private DiscrepantieArbitrageLezingenContainer biradsPanel;
@@ -107,8 +110,7 @@ public class MammaDiscrepantieArbitrageRondePanel extends AbstractMammaRondePane
 
 	private void koppelNieuweLaesiesAanLezing(MammaLezing lezing, List<LaesieDto> laesieDtos)
 	{
-		var mapper = new LaesieDtoMapper();
-		mapper.koppelNieuweLaesiesAanLezing(mapper.laesieDtosToMammaLaesies(laesieDtos), lezing);
+		laesieDtoMapper.koppelNieuweLaesiesAanLezing(laesieDtoMapper.laesieDtosToMammaLaesies(laesieDtos), lezing);
 	}
 
 	void beoordelingNaarArbitrageEnOpslaan(MammaLezing discrepantieLezing, AjaxRequestTarget target)

@@ -27,6 +27,7 @@ import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.Session;
 
+import nl.rivm.screenit.huisartsenportaal.config.HuisartsenportaalObjectMapper;
 import nl.rivm.screenit.huisartsenportaal.dto.AanvraagDto;
 import nl.rivm.screenit.huisartsenportaal.dto.AdresDto;
 import nl.rivm.screenit.huisartsenportaal.dto.HuisartsDto;
@@ -50,7 +51,6 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class SynchronisatieServiceImpl implements SynchronisatieService
@@ -66,7 +66,8 @@ public class SynchronisatieServiceImpl implements SynchronisatieService
 	@Value("${app.activemqListener}")
 	private String destination;
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	@Autowired
+	private HuisartsenportaalObjectMapper objectMapper;
 
 	@Override
 	public void syncHuisarts(Huisarts huisarts)

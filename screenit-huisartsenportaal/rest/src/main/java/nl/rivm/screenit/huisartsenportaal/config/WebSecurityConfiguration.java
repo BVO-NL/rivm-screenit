@@ -64,7 +64,7 @@ public class WebSecurityConfiguration
 			)
 			.exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(new CsrfCustomAccessDeniedHandler()))
 			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers("/auth/**", "/build", "/status")
+				.requestMatchers("/auth/**", "/build", "/status", "/health/**")
 				.permitAll()
 				.anyRequest()
 				.authenticated()

@@ -41,14 +41,23 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class MammaOnderzoekDto
 {
 	private Long clientId;
+
 	private String naam;
+
 	private LocalDate geboortedatum;
+
 	private LocalDate onderzoeksdatum;
+
 	private String bsn;
+
 	private String medewerker;
+
 	private List<MammaLaesieType> redenFotobesprekingDoorMbber;
+
 	private List<MammaLezingRedenenFotobesprekingMbber> redenFotobesprekingMetMbber;
+
 	private List<MammaLezingRedenenFotobesprekingRadioloog> redenFotobesprekingDoorRadioloog;
+
 	private MammaOnderzoekRedenFotobespreking redenDoorverwijzing;
 
 	@Schema(description = "Geeft aan of er sprake is van discrepantie")

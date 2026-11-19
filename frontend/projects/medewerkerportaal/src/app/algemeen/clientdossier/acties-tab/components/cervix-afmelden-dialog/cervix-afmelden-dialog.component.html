@@ -1,0 +1,77 @@
+<!--
+  ========================LICENSE_START=================================
+  medewerkerportaal
+  %%
+  Copyright (C) 2012 - 2026 Facilitaire Samenwerking Bevolkingsonderzoek
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  =========================LICENSE_END==================================
+  -->
+<app-base-dialog [titel]="afmeldenStrings.dialogTitle">
+  <div body>
+    <form [formGroup]="afmeldForm" class="form-in-modal" novalidate>
+      <ds-dropdown
+        formControlName="type"
+        [label]="afmeldenStrings.typeAfmelden"
+        [placeholder]="afmeldenStrings.typeAfmeldenPlaceholder"
+        [items]="typeOpties()"
+        bindLabel="naam"
+        bindValue="waarde"
+        appendTo=".ds-modal"
+        [clearable]="false"
+        [required]="true"
+        [errorMessage]="{ required: strings.algemeen.errors.verplicht(afmeldenStrings.typeAfmelden) }"
+        data-testid="type_dropdown"
+      />
+      @if (isDefinitief()) {
+        <ds-dropdown
+          formControlName="manier"
+          [label]="afmeldenStrings.manierAfmelden"
+          [placeholder]="afmeldenStrings.manierAfmeldenPlaceholder"
+          [items]="manierOpties"
+          bindLabel="naam"
+          bindValue="waarde"
+          appendTo=".ds-modal"
+          [clearable]="false"
+          [required]="true"
+          [errorMessage]="{ required: strings.algemeen.errors.verplicht(afmeldenStrings.manierAfmelden) }"
+          data-testid="manier_dropdown"
+        />
+      }
+      @if (isDirect()) {
+        <app-single-file-selector formControlName="bestand" acceptedExtensie="pdf" [required]="true" data-testid="bestand_input"/>
+        <ds-dropdown
+          formControlName="reden"
+          [label]="strings.algemeen.labels.reden"
+          [placeholder]="strings.algemeen.placeholders.kiesReden"
+          [items]="redenOpties"
+          bindLabel="naam"
+          bindValue="waarde"
+          appendTo=".ds-modal"
+          [clearable]="false"
+          [required]="true"
+          [errorMessage]="{ required: strings.algemeen.errors.verplicht(strings.algemeen.labels.reden) }"
+          data-testid="reden_dropdown"
+        />
+      }
+      <app-notitie-aanmaken-veld formControlName="notitie" data-testid="notitie_veld"/>
+    </form>
+  </div>
+  <ng-container buttons>
+    <button (click)="annuleren()" data-testid="btn_annuleren" ds-button-tertiary type="button">{{ strings.algemeen.buttons.annuleren }}</button>
+    <button (click)="bevestigen()" [disabled]="afmeldForm.invalid" data-testid="btn_bevestigen" ds-button-primary type="button">
+      {{ strings.algemeen.buttons.bevestigen }}
+    </button>
+  </ng-container>
+</app-base-dialog>

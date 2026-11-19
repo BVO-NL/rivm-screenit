@@ -68,6 +68,7 @@ import nl.rivm.screenit.service.ICurrentDateSupplier;
 import nl.rivm.screenit.service.MailService;
 import nl.rivm.screenit.service.OrganisatieService;
 import nl.rivm.screenit.service.UploadDocumentService;
+import nl.rivm.screenit.util.ScreenitObjectMapper;
 import nl.rivm.screenit.util.ZipUtil;
 
 import org.apache.commons.io.FileUtils;
@@ -84,7 +85,6 @@ import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 @Slf4j
@@ -134,6 +134,9 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 
 	@Autowired
 	private DatabaseRunner databaseRunner;
+
+	@Autowired
+	private ScreenitObjectMapper objectMapper;
 
 	private ConcurrentLinkedQueue<UploadDocument> inpakcentrumBrieven;
 
@@ -345,15 +348,14 @@ public abstract class AbstractUitnodigingenVersturenTasklet<U extends InpakbareU
 		var dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT_YYYYMMDDHHMMSS);
 		var filename = bvoAfkorting + "_mergedata" + dateFormat.format(currentDateSupplier.getDate()) + ".json";
 
-		var mapper = new ObjectMapper();
-		var content = mapper.createArrayNode();
+		var content = objectMapper.createArrayNode();
 		gegenereerdeUitnodigingen.forEach(uitnodiging ->
 		{
 			var contentNode = content.addObject();
 			uitnodiging.getMergeFields().forEach(field ->
 				contentNode.put(field.getName(), field.getValue()));
 		});
-		var jsonBytes = mapper.writeValueAsBytes(content);
+		var jsonBytes = objectMapper.writeValueAsBytes(content);
 
 		var response = inpakcentrumRestApplicatie.upload("json", filename, jsonBytes);
 		var versturenGeslaagd = response.isUploadSucceeded();

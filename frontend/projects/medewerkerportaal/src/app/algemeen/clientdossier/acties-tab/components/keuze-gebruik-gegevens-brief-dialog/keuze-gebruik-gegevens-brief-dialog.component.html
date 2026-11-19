@@ -20,7 +20,7 @@
   -->
 <app-base-dialog [titel]="strings.algemeen.clientDossier.acties.keuzeGebruikGegevensBrief.dialogTitle">
   <div body>
-    <form [formGroup]="briefForm" class="form-in-modal" novalidate>
+    <form [formGroup]="briefForm" novalidate>
       <ds-dropdown
         formControlName="briefType"
         [label]="strings.algemeen.labels.kiesEenBrief"

@@ -25,7 +25,7 @@ import { Actie } from '@shared/types/autorisatie/actie'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { Required } from '@shared/types/autorisatie/required'
 import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
-import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { alleBevolkingsonderzoeken } from '../shared/types/bevolkingsonderzoek'
 
 export const algemeenRoutes: Routes = [
   {
@@ -46,7 +46,7 @@ export const algemeenRoutes: Routes = [
             level: ToegangLevel.LANDELIJK,
             required: Required.ANY,
             organisatieTypeScopes: [OrganisatieType.RIVM, OrganisatieType.SCREENINGSORGANISATIE],
-            bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+            bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
           }),
         ],
       },
@@ -57,7 +57,7 @@ export const algemeenRoutes: Routes = [
           autorisatieGuard({
             recht: [Recht.MEDEWERKER_CLIENT_BEZWAAR],
             level: ToegangLevel.LANDELIJK,
-            bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+            bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
             actie: Actie.INZIEN,
             required: Required.ALL,
           }),
@@ -73,7 +73,7 @@ export const algemeenRoutes: Routes = [
             level: ToegangLevel.LANDELIJK,
             required: Required.ANY,
             organisatieTypeScopes: [OrganisatieType.RIVM, OrganisatieType.SCREENINGSORGANISATIE],
-            bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+            bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
           }),
         ],
         children: [

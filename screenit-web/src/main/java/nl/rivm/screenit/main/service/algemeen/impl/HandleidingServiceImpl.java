@@ -175,7 +175,7 @@ public class HandleidingServiceImpl implements HandleidingService
 
 	private void slaHandleidingOp(MultipartFile bestand, String bestandsnaam) throws IOException
 	{
-		if (!FileType.PDF.getAllowedContentTypes().contains(bestand.getContentType()))
+		if (!FileType.PDF.isGeldigBestand(bestand.getOriginalFilename(), bestand.getContentType(), bestand.getBytes()))
 		{
 			LOG.warn("{} is geen PDF (content type: {})", bestandsnaam, bestand.getContentType());
 			throw new OngeldigeBestandsTypeException(bestandsnaam + " is geen PDF-bestand");

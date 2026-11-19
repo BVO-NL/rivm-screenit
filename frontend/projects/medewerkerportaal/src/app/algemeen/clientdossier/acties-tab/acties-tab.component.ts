@@ -20,11 +20,17 @@
  */
 import { Component, computed, inject } from '@angular/core'
 import { Dialog } from '@angular/cdk/dialog'
-import { filter, switchMap, take } from 'rxjs'
+import { HttpErrorResponse } from '@angular/common/http'
+import { catchError, filter, of, switchMap, take, throwError } from 'rxjs'
 import { DsActionCardComponent } from '@topicus-rgp-ds/web'
 import { ClientPaspoortComponent } from '@algemeen/components/client-paspoort/client-paspoort.component'
 import { AanhefWijzigenDialogComponent } from '@algemeen/clientdossier/acties-tab/components/aanhef-wijzigen-dialog/aanhef-wijzigen-dialog.component'
 import { DeelnamewensenDialogComponent, DeelnamewensenDialogData } from '@algemeen/clientdossier/acties-tab/components/deelnamewensen-dialog/deelnamewensen-dialog.component'
+import { OverdrachtPersoonsgegevensAanvraagformulierDialogComponent } from '@algemeen/clientdossier/acties-tab/components/overdracht-persoonsgegevens-aanvraagformulier-dialog/overdracht-persoonsgegevens-aanvraagformulier-dialog.component'
+import {
+  OverdrachtPersoonsgegevensKeuzesVerwerkenDialogComponent,
+  OverdrachtPersoonsgegevensKeuzesVerwerkenDialogData,
+} from '@algemeen/clientdossier/acties-tab/components/overdracht-persoonsgegevens-keuzes-verwerken-dialog/overdracht-persoonsgegevens-keuzes-verwerken-dialog.component'
 import { KeuzeGebruikGegevensBriefDialogComponent } from '@algemeen/clientdossier/acties-tab/components/keuze-gebruik-gegevens-brief-dialog/keuze-gebruik-gegevens-brief-dialog.component'
 import {
   AdresgegevensBewerkenModalComponent,
@@ -32,11 +38,21 @@ import {
 } from '@algemeen/clientdossier/components/adresgegevens-panel/adresgegevens-bewerken-modal/adresgegevens-bewerken-modal.component'
 import { OpnieuwAanvragenClientgegevensDialogComponent } from '@algemeen/clientdossier/acties-tab/components/opnieuw-aanvragen-clientgegevens-dialog/opnieuw-aanvragen-clientgegevens-dialog.component'
 import { HeraanmeldenBaarmoederhalskankerDialogComponent } from '@algemeen/clientdossier/acties-tab/components/heraanmelden-baarmoederhalskanker-dialog/heraanmelden-baarmoederhalskanker-dialog.component'
+import {
+  UitstelBaarmoederhalskankerDialogComponent,
+  UitstelBaarmoederhalskankerDialogData,
+} from '@algemeen/clientdossier/acties-tab/components/uitstel-baarmoederhalskanker-dialog/uitstel-baarmoederhalskanker-dialog.component'
+import {
+  NieuweUitnodigingBaarmoederhalskankerDialogComponent,
+  NieuweUitnodigingBaarmoederhalskankerDialogData,
+} from '@algemeen/clientdossier/acties-tab/components/nieuwe-uitnodiging-baarmoederhalskanker-dialog/nieuwe-uitnodiging-baarmoederhalskanker-dialog.component'
 import { ClientService } from '@algemeen/services/client/client.service'
 import { ContactActiesService } from '@algemeen/services/contact-acties/contact-acties.service'
+import { CervixUitnodigingService } from '@cervix/services/cervix-uitnodiging.service'
 import { ContactActieOptie } from '@shared/types/algemeen/enum/contact-actie-optie'
 import { NotificationService } from '@shared/services/notification/notification.service'
 import { BezwaarVerwerkenDialogComponent } from '@algemeen/clientdossier/acties-tab/components/bezwaar-verwerken-dialog/bezwaar-verwerken-dialog.component'
+import { CervixAfmeldenDialogComponent } from '@algemeen/clientdossier/acties-tab/components/cervix-afmelden-dialog/cervix-afmelden-dialog.component'
 import { AutorisatieService } from '@/autorisatie/service/autorisatie.service'
 import { Recht } from '@shared/types/autorisatie/recht'
 import { Actie } from '@shared/types/autorisatie/actie'
@@ -54,6 +70,7 @@ import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
 export class ActiesTabComponent {
   private readonly clientService = inject(ClientService)
   private readonly contactActiesService = inject(ContactActiesService)
+  private readonly cervixUitnodigingService = inject(CervixUitnodigingService)
   private readonly dialog = inject(Dialog)
   private readonly autorisatieService = inject(AutorisatieService)
   private readonly strings = inject(StringsService).getStrings()
@@ -88,6 +105,12 @@ export class ActiesTabComponent {
       case ContactActieOptie.CERVIX_HERAANMELDEN:
         this.openCervixHeraanmelden()
         break
+      case ContactActieOptie.CERVIX_UITSTEL:
+        this.openCervixUitstel()
+        break
+      case ContactActieOptie.CERVIX_HERDRUK:
+        this.openCervixNieuweUitnodiging()
+        break
       case ContactActieOptie.TIJDELIJK_ADRES:
         this.openTijdelijkAdresWijzigen()
         break
@@ -100,9 +123,74 @@ export class ActiesTabComponent {
       case ContactActieOptie.KEUZE_GEBRUIK_GEGEVENS_VERWERKEN:
         this.openBezwaarVerwerken()
         break
+      case ContactActieOptie.INZAGE_PERSOONSGEGEVENS:
+        this.openOverdrachtPersoonsgegevens()
+        break
+      case ContactActieOptie.CERVIX_AFMELDEN:
+        this.openCervixAfmelden()
+        break
       default:
         this.notificationService.warning(this.strings.algemeen.clientDossier.acties.nietOndersteund)
     }
+  }
+
+  private openOverdrachtPersoonsgegevens() {
+    this.contactActiesService
+      .heeftOpenstaandInzageVerzoek(this.clientId)
+      .pipe(take(1))
+      .subscribe((heeftOpenstaandVerzoek) => {
+        if (heeftOpenstaandVerzoek) {
+          this.openInzageKeuzesVerwerken()
+          return
+        }
+        this.openInzageKeuzeDialog()
+      })
+  }
+
+  private openInzageKeuzeDialog() {
+    const inzageStrings = this.strings.algemeen.clientDossier.acties.overdrachtPersoonsgegevens
+    this.dialog
+      .open<boolean>(ConfirmationDialogComponent, {
+        data: {
+          title: inzageStrings.keuzeDialog.titel,
+          body: inzageStrings.keuzeDialog.vraag,
+          jaButtonTekst: inzageStrings.keuzeDialog.buttons.keuzeVerwerken,
+          neeButtonTekst: inzageStrings.keuzeDialog.buttons.aanvraagformulier,
+          neutraal: true,
+        },
+        hasBackdrop: true,
+      })
+      .closed.pipe(take(1))
+      .subscribe((keuzesVerwerken) => {
+        if (keuzesVerwerken === true) {
+          this.openInzageKeuzesVerwerken()
+        } else if (keuzesVerwerken === false) {
+          this.openInzageAanvraagformulier()
+        }
+      })
+  }
+
+  private openInzageAanvraagformulier() {
+    this.contactActiesService
+      .heeftOpenstaandInzageVerzoek(this.clientId)
+      .pipe(take(1))
+      .subscribe((heeftOpenstaandVerzoek) => {
+        if (heeftOpenstaandVerzoek) {
+          this.notificationService.error(this.strings.algemeen.clientDossier.acties.overdrachtPersoonsgegevens.errors.openstaandVerzoek)
+          return
+        }
+        this.dialog.open(OverdrachtPersoonsgegevensAanvraagformulierDialogComponent, { data: this.clientId })
+      })
+  }
+
+  private openInzageKeuzesVerwerken() {
+    this.contactActiesService
+      .getInzageVerwerkenGegevens(this.clientId)
+      .pipe(take(1))
+      .subscribe((gegevens) => {
+        const data: OverdrachtPersoonsgegevensKeuzesVerwerkenDialogData = { clientId: this.clientId, gegevens }
+        this.dialog.open(OverdrachtPersoonsgegevensKeuzesVerwerkenDialogComponent, { data })
+      })
   }
 
   private openBezwaarVerwerken() {
@@ -146,6 +234,10 @@ export class ActiesTabComponent {
       .subscribe((contactgegevens) => this.dialog.open(AanhefWijzigenDialogComponent, { data: contactgegevens }))
   }
 
+  private openCervixAfmelden() {
+    this.dialog.open(CervixAfmeldenDialogComponent, { data: this.clientId })
+  }
+
   private openDeelnameBuitenBvoBmhk() {
     const actiesStrings = this.strings.algemeen.clientDossier.acties
     this.dialog
@@ -153,7 +245,6 @@ export class ActiesTabComponent {
         data: {
           title: actiesStrings.deelnameBuitenBvoBmhk.dialogTitle,
           body: actiesStrings.deelnameBuitenBvoBmhk.dialogBody,
-          neeButtonTekst: this.strings.algemeen.dialogs.bevestiging.neeButtonTekst,
           jaButtonTekst: actiesStrings.deelnameBuitenBvoBmhk.registrerenButton,
         },
         hasBackdrop: true,
@@ -202,5 +293,28 @@ export class ActiesTabComponent {
 
   private openCervixHeraanmelden(): void {
     this.dialog.open(HeraanmeldenBaarmoederhalskankerDialogComponent, { data: this.clientId })
+  }
+
+  private openCervixUitstel(): void {
+    this.contactActiesService
+      .getUitstelBaarmoederhalskanker(this.clientId)
+      .pipe(take(1))
+      .subscribe((uitstel) => {
+        const data: UitstelBaarmoederhalskankerDialogData = { clientId: this.clientId, uitstel }
+        this.dialog.open<boolean>(UitstelBaarmoederhalskankerDialogComponent, { data })
+      })
+  }
+
+  private openCervixNieuweUitnodiging(): void {
+    this.cervixUitnodigingService
+      .getLaatstVerstuurdeUitnodiging(this.clientId)
+      .pipe(
+        take(1),
+        catchError((error: HttpErrorResponse) => (error.status === 404 ? of(null) : throwError(() => error))),
+      )
+      .subscribe((laatsteUitnodiging) => {
+        const data: NieuweUitnodigingBaarmoederhalskankerDialogData = { clientId: this.clientId, laatsteUitnodiging }
+        this.dialog.open<boolean>(NieuweUitnodigingBaarmoederhalskankerDialogComponent, { data })
+      })
   }
 }

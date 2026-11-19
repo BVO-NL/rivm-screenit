@@ -35,8 +35,8 @@ public class PlanningDagKopierenDto extends PlanningDto
 
 	public Long doelScreeningsEenheidId;
 
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonSerialize(using = LocalDateSerializer.class)
+	@JsonDeserialize(using = PlanningLocalDateDeserializer.class)
+	@JsonSerialize(using = PlanningLocalDateSerializer.class)
 	public LocalDate bronDatum;
 
 	@JsonDeserialize(using = LocalTimeDeserializer.class)
@@ -47,7 +47,7 @@ public class PlanningDagKopierenDto extends PlanningDto
 	@JsonSerialize(using = LocalTimeSerializer.class)
 	public LocalTime bronTotTijd;
 
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonSerialize(using = LocalDateSerializer.class)
+	@JsonDeserialize(using = PlanningLocalDateDeserializer.class)
+	@JsonSerialize(using = PlanningLocalDateSerializer.class)
 	public LocalDate doelDatum;
 }

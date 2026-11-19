@@ -21,11 +21,11 @@ package nl.rivm.screenit.mamma.se.proxy.controller;
  * =========================LICENSE_END==================================
  */
 
+import java.util.Map;
+
 import nl.rivm.screenit.mamma.se.proxy.services.LogischeSessieService;
 import nl.rivm.screenit.mamma.se.proxy.services.MedewerkerStoreService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,17 +34,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @RestController
 @RequestMapping("/api/seMedewerker")
 public class SeMedewerkersController
 {
-	private static final Logger LOG = LoggerFactory.getLogger(SeMedewerkersController.class);
-
-	private final ObjectMapper objectMapper = new ObjectMapper();
-
 	@Autowired
 	private MedewerkerStoreService medewerkerStoreService;
 
@@ -52,22 +45,13 @@ public class SeMedewerkersController
 	private LogischeSessieService logischeSessieService;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<String> getSeMedewerkers(@RequestHeader("YubikeyIdentificatie") String yubikeyIdentificatie)
+	public ResponseEntity<Map<Long, String>> getSeMedewerkers(@RequestHeader("YubikeyIdentificatie") String yubikeyIdentificatie)
 	{
 		if (!logischeSessieService.geldigeYubikey(yubikeyIdentificatie))
 		{
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 
-		try
-		{
-			var organisatieMedewerkers = medewerkerStoreService.getSeOrganisatieMedewerkers();
-			return ResponseEntity.ok(objectMapper.writeValueAsString(organisatieMedewerkers));
-		}
-		catch (JsonProcessingException e)
-		{
-			LOG.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+		return ResponseEntity.ok(medewerkerStoreService.getSeOrganisatieMedewerkers());
 	}
 }

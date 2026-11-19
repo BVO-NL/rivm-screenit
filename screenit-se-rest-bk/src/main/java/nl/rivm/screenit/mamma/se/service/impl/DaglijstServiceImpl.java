@@ -24,15 +24,17 @@ package nl.rivm.screenit.mamma.se.service.impl;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.PreferenceKey;
-import nl.rivm.screenit.mamma.se.dao.MammaAfsprakenDao;
 import nl.rivm.screenit.mamma.se.dto.AfspraakSeDto;
+import nl.rivm.screenit.mamma.se.dto.ClientIdentificatie;
 import nl.rivm.screenit.mamma.se.dto.ClientSeDto;
 import nl.rivm.screenit.mamma.se.dto.onderzoek.VorigOnderzoekDto;
+import nl.rivm.screenit.mamma.se.repository.MammaAfspraakRepository;
 import nl.rivm.screenit.mamma.se.service.DaglijstService;
 import nl.rivm.screenit.mamma.se.service.dtomapper.AfspraakDtoMapper;
 import nl.rivm.screenit.mamma.se.service.dtomapper.VorigOnderzoekDtoMapper;
@@ -75,7 +77,7 @@ public class DaglijstServiceImpl implements DaglijstService
 	private final VorigOnderzoekDtoMapper vorigOnderzoekDtoMapper = new VorigOnderzoekDtoMapper();
 
 	@Autowired
-	private MammaAfsprakenDao afsprakenDao;
+	private MammaAfspraakRepository afspraakRepository;
 
 	@Autowired
 	private MammaBaseAfspraakService afspraakService;
@@ -243,7 +245,8 @@ public class DaglijstServiceImpl implements DaglijstService
 		var clientIds = afspraakDtos.stream().map(afspraakDto -> afspraakDto.getClient().getId()).collect(Collectors.toList());
 		if (!clientIds.isEmpty())
 		{
-			var laatsteIdentificaties = afsprakenDao.readLaatsteIdentificatieVanClienten(clientIds);
+			var laatsteIdentificaties = afspraakRepository.findLaatsteIdentificatieVanClienten(clientIds).stream()
+				.collect(Collectors.toMap(ClientIdentificatie::getClientId, Function.identity()));
 			for (var afspraakDto : afspraakDtos)
 			{
 				var laatsteIdentificatie = laatsteIdentificaties.get(afspraakDto.getClient().getId());

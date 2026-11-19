@@ -28,25 +28,24 @@ import nl.rivm.screenit.batch.service.CervixAnalogeLabformulierS3VerwerkenServic
 import nl.rivm.screenit.model.enums.Bevolkingsonderzoek;
 import nl.rivm.screenit.model.enums.LogGebeurtenis;
 import nl.rivm.screenit.service.LogService;
+import nl.rivm.screenit.util.ScreenitObjectMapper;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.awspring.cloud.sqs.annotation.SqsListener;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 @Profile("!test")
+@RequiredArgsConstructor
 public class CervixLabformulierS3Listener
 {
-	private static final ObjectMapper objectMapper = new ObjectMapper();
-
 	private final CervixAnalogeLabformulierS3VerwerkenService analogeLabformulierenS3VerwerkenService;
 
 	private final LogService logService;
+
+	private final ScreenitObjectMapper objectMapper;
 
 	@SqsListener(queueNames = "#{queueNameTextract}", factory = "textractSqsListenerContainerFactory")
 	protected void verwerkLabformulierSqsBericht(String sqsBericht)

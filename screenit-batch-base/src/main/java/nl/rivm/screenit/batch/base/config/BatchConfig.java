@@ -79,14 +79,11 @@ public class BatchConfig
 	@Bean
 	public ExecutionContextSerializer executionContextSerializer()
 	{
-		var objectMapper = JsonMapper.builder();
-		objectMapper.addModule(new JavaTimeModule());
-		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-		var serializer = new Jackson2ExecutionContextStringSerializer(
-			"nl.rivm.screenit.model.logging.IntakeMakenLogEvent",
-			"nl.rivm.screenit.model.colon.IntakeMakenLogEventRegel",
-			"nl.rivm.screenit.batch.model.dto.MammaIlmRetryDto"
-		);
+		var objectMapper = JsonMapper.builder()
+			.addModule(new JavaTimeModule())
+			.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+		var serializer = new Jackson2ExecutionContextStringSerializer();
 		serializer.setObjectMapper(objectMapper.build());
 		return serializer;
 	}

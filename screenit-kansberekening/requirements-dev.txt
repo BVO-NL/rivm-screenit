@@ -1,0 +1,4 @@
+# Alleen nodig voor de test- en analysescripts in src/main/resources/test, niet voor de service zelf
+# en niet voor de Docker image.
+-r requirements.txt
+seaborn==0.13.2

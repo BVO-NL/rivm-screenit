@@ -25,6 +25,7 @@ import java.time.LocalDate;
 
 import jakarta.servlet.http.HttpSession;
 
+import nl.rivm.screenit.mamma.se.proxy.configuration.SeProxyObjectMapper;
 import nl.rivm.screenit.mamma.se.proxy.model.DaglijstMetMutatiesDto;
 import nl.rivm.screenit.mamma.se.proxy.services.CleanUpService;
 import nl.rivm.screenit.mamma.se.proxy.services.LogischeSessieService;
@@ -41,7 +42,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api/daglijst")
@@ -56,7 +56,7 @@ public class DaglijstProxyController
 	@Autowired
 	private CleanUpService cleanUpService;
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final SeProxyObjectMapper objectMapper = new SeProxyObjectMapper();
 
 	@RequestMapping(value = "/{datum}", method = RequestMethod.GET)
 	public ResponseEntity<String> readDaglijst(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate datum,

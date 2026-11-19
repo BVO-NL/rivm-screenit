@@ -20,10 +20,8 @@
   -->
 <app-base-dialog [titel]="strings.algemeen.clientDossier.acties.heraanmeldenBmhk.dialogTitle">
   <div body>
-    <div class="form-in-modal">
-      <p data-testid="uitnodiging_melding">{{ strings.algemeen.clientDossier.acties.heraanmeldenBmhk.uitnodigingMelding }}</p>
-      <app-notitie-aanmaken-veld [formControl]="notitie" data-testid="notitie_veld"/>
-    </div>
+    <p data-testid="uitnodiging_melding">{{ strings.algemeen.clientDossier.acties.heraanmeldenBmhk.uitnodigingMelding }}</p>
+    <app-notitie-aanmaken-veld [formControl]="notitie" data-testid="notitie_veld"/>
   </div>
   <ng-container buttons>
     <button (click)="annuleren()" data-testid="btn_annuleren" ds-button-tertiary type="button">{{ strings.algemeen.buttons.annuleren }}</button>

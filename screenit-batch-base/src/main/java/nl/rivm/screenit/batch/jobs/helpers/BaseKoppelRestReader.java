@@ -24,7 +24,6 @@ package nl.rivm.screenit.batch.jobs.helpers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import nl.rivm.screenit.batch.service.BarcodeValiderenService;
 import nl.rivm.screenit.batch.service.InpakcentrumRestApplicatie;
+import nl.rivm.screenit.exceptions.OngeldigeKoppelDataException;
 import nl.rivm.screenit.model.algemeen.KoppelData;
 import nl.rivm.screenit.model.enums.JobStartParameter;
 import nl.rivm.screenit.model.enums.Level;
@@ -39,6 +39,7 @@ import nl.rivm.screenit.model.inpakcentrum.vaninpakcentrum.InpakcentrumKoppelDat
 import nl.rivm.screenit.model.logging.LogEvent;
 import nl.rivm.screenit.service.DatabaseRunner;
 import nl.rivm.screenit.service.HibernateService;
+import nl.rivm.screenit.service.inpakcentrum.InpakcentrumKoppelDataParser;
 
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.core.step.StepExecution;
@@ -46,9 +47,6 @@ import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.batch.infrastructure.item.ItemStream;
 import org.springframework.batch.infrastructure.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Slf4j
 public abstract class BaseKoppelRestReader implements ItemStream
@@ -65,6 +63,9 @@ public abstract class BaseKoppelRestReader implements ItemStream
 
 	@Autowired
 	private HibernateService hibernateService;
+
+	@Autowired
+	private InpakcentrumKoppelDataParser koppelDataParser;
 
 	private StepExecution stepExecution;
 
@@ -122,6 +123,12 @@ public abstract class BaseKoppelRestReader implements ItemStream
 					voorkomVerwerkingKoppeldata(koppeldataLijst);
 				}
 				koppeldata = koppeldataLijst.iterator();
+			}
+			catch (OngeldigeKoppelDataException e)
+			{
+				logEvent.setLevel(Level.ERROR);
+				logEvent.setMelding("De ontvangen koppeldata is ongeldig, neem contact op met de helpdesk.");
+				throw new ItemStreamException(e);
 			}
 			catch (IOException e)
 			{
@@ -189,13 +196,9 @@ public abstract class BaseKoppelRestReader implements ItemStream
 		return csvStream;
 	}
 
-	protected List<InpakcentrumKoppelDataDto> getKoppeldataLijst() throws IOException
+	private List<InpakcentrumKoppelDataDto> getKoppeldataLijst() throws OngeldigeKoppelDataException
 	{
-		var koppelData = getKoppelData();
-		var objectMapper = new ObjectMapper();
-		return objectMapper.readValue(Base64.getDecoder().decode(koppelData.getKoppelData()), new TypeReference<>()
-		{
-		});
+		return koppelDataParser.leesKoppelData(getKoppelData().getKoppelData());
 	}
 
 	private KoppelData getKoppelData()

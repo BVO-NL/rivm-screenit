@@ -23,7 +23,7 @@ import { TypeGebeurtenis } from '@shared/types/algemeen/enum/type-gebeurtenis'
 import { BriefType } from '@shared/types/algemeen/enum/brief-type'
 
 export interface ScreeningRondeGebeurtenisDto {
-  datum: Date
+  datumTijd: Date
   gebeurtenis: TypeGebeurtenis
   bron: GebeurtenisBron
   briefId: number

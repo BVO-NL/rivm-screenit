@@ -21,15 +21,18 @@ package nl.rivm.screenit.main.web.gebruiker.algemeen.batch.parameterpopuppanel;
  * =========================LICENSE_END==================================
  */
 
+import nl.rivm.screenit.util.ScreenitObjectMapper;
+
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class AbstractParameterPopupPanel<T> extends GenericPanel<T> implements BatchParameterPopupPanel
 {
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	@SpringBean
+	private ScreenitObjectMapper objectMapper;
 
 	protected AbstractParameterPopupPanel(String id)
 	{

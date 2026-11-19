@@ -21,7 +21,7 @@ package nl.rivm.screenit.main.dto.mamma.visitatie;
  * =========================LICENSE_END==================================
  */
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -39,11 +39,11 @@ public class MammaVisitatieDto extends EntityDto
 {
 	private String omschrijving;
 
-	private Date gestartOp;
+	private LocalDateTime gestartOp;
 
-	private Date afgerondOp;
+	private LocalDateTime afgerondOp;
 
-	private Date aangemaaktOp;
+	private LocalDateTime aangemaaktOp;
 
 	@Schema(description = "Naam van de medewerker die de visitatie heeft aangemaakt")
 	private String aangemaaktDoor;

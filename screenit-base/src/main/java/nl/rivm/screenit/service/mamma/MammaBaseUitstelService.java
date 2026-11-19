@@ -23,8 +23,10 @@ package nl.rivm.screenit.service.mamma;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Optional;
 
 import nl.rivm.screenit.model.Account;
+import nl.rivm.screenit.model.Client;
 import nl.rivm.screenit.model.mamma.MammaScreeningRonde;
 import nl.rivm.screenit.model.mamma.MammaStandplaats;
 import nl.rivm.screenit.model.mamma.MammaStandplaatsPeriode;
@@ -41,4 +43,6 @@ public interface MammaBaseUitstelService
     void uitstelAfzeggen(MammaUitstel uitstel, MammaUitstelGeannuleerdReden uitstelGeannuleerdReden, Date geannuleerdOp);
 
     String valideerStandplaatsPeriode(MammaStandplaatsPeriode standplaatsPeriode, LocalDate streefdatum);
+
+	Optional<MammaUitstel> findActiefUitstel(Client client);
 }

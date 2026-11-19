@@ -25,16 +25,21 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.mamma.se.dto.actions.ActionDto;
 import nl.rivm.screenit.mamma.se.dto.actions.MaakDubbeleTijdDto;
 import nl.rivm.screenit.mamma.se.dto.actions.MaakDubbeleTijdRedenDto;
 import nl.rivm.screenit.mamma.se.dto.actions.SEActieType;
+import nl.rivm.screenit.util.ScreenitObjectMapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public class DubbeleTijdValidator extends Validator
 {
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final ScreenitObjectMapper objectMapper;
 
 	@Override
 	protected List<SEActieType> actieTypes()

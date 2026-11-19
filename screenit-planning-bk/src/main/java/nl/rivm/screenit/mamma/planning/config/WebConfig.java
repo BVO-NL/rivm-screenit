@@ -21,17 +21,26 @@ package nl.rivm.screenit.mamma.planning.config;
  * =========================LICENSE_END==================================
  */
 
+import lombok.RequiredArgsConstructor;
+
 import nl.rivm.screenit.mamma.planning.filter.PlanningControllerLoggingFilter;
 import nl.rivm.screenit.mamma.planning.filter.PlanningControllerSynchronizedRequestFilter;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverters;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class WebConfig
+@RequiredArgsConstructor
+public class WebConfig implements WebMvcConfigurer
 {
+
+	private final Jackson2ObjectMapperBuilder jacksonBuilder;
 
 	@Bean
 	public FilterRegistrationBean<PlanningControllerSynchronizedRequestFilter> synchronizedFilter()
@@ -67,4 +76,9 @@ public class WebConfig
 		return registrationBean;
 	}
 
+	@Override
+	public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder)
+	{
+		builder.withJsonConverter(new MappingJackson2HttpMessageConverter(jacksonBuilder.build()));
+	}
 }

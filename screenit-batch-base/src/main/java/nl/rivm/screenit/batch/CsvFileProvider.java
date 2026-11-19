@@ -1,4 +1,3 @@
-
 package nl.rivm.screenit.batch;
 
 /*-
@@ -26,23 +25,47 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Iterator;
+import java.util.List;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
+import com.opencsv.exceptions.CsvValidationException;
+
+import nl.rivm.screenit.util.CsvUtil;
 
 public interface CsvFileProvider
 {
-
 	Iterator<CSVReader> getReaders() throws Exception;
 
 	class CSVFileReader extends CSVReader
 	{
-
 		private final String sourceFileNaam;
+
+		private final CSVReader delegate;
 
 		public CSVFileReader(Reader reader, char separator, String sourceFileNaam)
 		{
-			super(reader, separator);
+			super(reader);
+			this.delegate = CsvUtil.maakReader(reader, separator);
 			this.sourceFileNaam = sourceFileNaam;
+		}
+
+		@Override
+		public String[] readNext() throws IOException, CsvValidationException
+		{
+			return delegate.readNext();
+		}
+
+		@Override
+		public List<String[]> readAll() throws IOException, CsvException
+		{
+			return delegate.readAll();
+		}
+
+		@Override
+		public void close() throws IOException
+		{
+			delegate.close();
 		}
 
 		String getFileNaam()
@@ -54,7 +77,6 @@ public interface CsvFileProvider
 
 	class CSVReaderIterator implements Iterator<CSVReader>, Closeable
 	{
-
 		private final Iterator<CSVReader> readers;
 
 		private CSVReader current;

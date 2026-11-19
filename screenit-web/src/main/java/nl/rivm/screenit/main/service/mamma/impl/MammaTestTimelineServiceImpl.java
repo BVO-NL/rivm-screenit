@@ -113,6 +113,7 @@ import nl.rivm.screenit.service.mamma.MammaBaseTestTimelineTimeService;
 import nl.rivm.screenit.service.mamma.MammaVolgendeUitnodigingService;
 import nl.rivm.screenit.service.mamma.enums.MammaTestTimeLineDossierTijdstip;
 import nl.rivm.screenit.util.AutorisatieUtil;
+import nl.rivm.screenit.util.CsvUtil;
 import nl.rivm.screenit.util.mamma.MammaScreeningRondeUtil;
 import nl.topicuszorg.patientregistratie.persoonsgegevens.model.Geslacht;
 import nl.topicuszorg.util.bsn.BsnUtils;
@@ -124,8 +125,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import au.com.bytecode.opencsv.CSVParser;
-import au.com.bytecode.opencsv.CSVReader;
 import ca.uhn.hl7v2.HL7Exception;
 
 import static nl.rivm.screenit.specification.algemeen.PersoonSpecification.filterBsn;
@@ -214,7 +213,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 		var aantal = 0;
 		try (var scanner = new Scanner(inputStream, StandardCharsets.UTF_8))
 		{
-			var parser = new CSVParser(';');
+			var parser = CsvUtil.maakParser(';');
 			Map<String, Integer> columnMap = new HashMap<>();
 
 			var columns = parser.parseLine(scanner.nextLine());
@@ -781,11 +780,11 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 	{
 		var klaarzettenPlanning = importPocOpties.equals(ImportPocOpties.KLAARZETTEN_VOOR_PLANNING);
 		var aantal = 0;
-		try (var reader = new CSVReader(new FileReader(file), ';'))
+		try (var reader = CsvUtil.maakReader(new FileReader(file), ';'))
 		{
-			reader.readNext(); 
+			CsvUtil.leesRegel(reader); 
 			String[] vorigeLine = null;
-			var huidigeLine = reader.readNext();
+			var huidigeLine = CsvUtil.leesRegel(reader);
 			var formatGeboortedatum = new SimpleDateFormat("yyyy-MM-dd");
 			while (huidigeLine != null)
 			{
@@ -863,7 +862,7 @@ public class MammaTestTimelineServiceImpl implements MammaTestTimelineService
 				}
 
 				vorigeLine = huidigeLine;
-				huidigeLine = reader.readNext();
+				huidigeLine = CsvUtil.leesRegel(reader);
 				aantal++;
 			}
 

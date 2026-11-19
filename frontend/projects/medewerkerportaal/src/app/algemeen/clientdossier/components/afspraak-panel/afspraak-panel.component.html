@@ -21,31 +21,7 @@
 
 @if (afspraak(); as afspraak) {
   <ds-card [cardTitle]="titel()">
-    <div class="afspraak-gegevens" data-testid="geplande_afspraak">
-      <div class="afspraak-gegevens-rij">
-        <div class="afspraak-gegevens-kop">
-          <span class="afspraak-gegevens-label">{{ strings.algemeen.labels.datumTijd }}</span>
-          @if (colonIntakeafspraak()?.digitaal) {
-            <ds-badge data-testid="digitale_afspraak_badge" type="category" categoryColor=var(--digitaal-badge-color) [label]="strings.algemeen.afspraken.digitaal"/>
-          }
-        </div>
-        @if (colonIntakeafspraak()?.digitaal) {
-          <span>{{ afspraak.vanaf | datumNaarWeek }}</span>
-        } @else {
-          <span>{{ afspraak.vanaf | datumTijd: NL_LONG_DATE_FORMAT : TIME_FORMAT : strings.algemeen.labels.uur }}</span>
-        }
-      </div>
-      <div class="afspraak-gegevens-rij">
-        <span class="afspraak-gegevens-label">{{ strings.algemeen.labels.locatie }}</span>
-        <span>{{ afspraak.locatie.naam }}</span>
-        <span>{{ afspraak.locatie.adres.straat }} {{ afspraak.locatie.adres.huisnummer }}</span>
-        <span>{{ afspraak.locatie.adres.postcode }} {{ afspraak.locatie.adres.plaats }}</span>
-      </div>
-      <div class="afspraak-gegevens-rij">
-        <span class="afspraak-gegevens-label">{{ strings.algemeen.labels.locatiebeschrijving }}</span>
-        <span>{{ afspraak.locatieBeschrijving | legeWaarde }}</span>
-      </div>
-    </div>
+    <app-afspraak-gegevens [afspraak]="afspraak" [digitaal]="afspraak.digitaal"/>
     <ng-template ds-footer-actions-right>
       @if (magTijdstipWijzigen()) {
         <button data-testid="tijdstip_wijzigen" ds-button-tertiary (click)="tijdstipWijzigen.emit(afspraak)">
@@ -67,11 +43,7 @@
 } @else {
   <ds-card [cardTitle]="titel()">
     <div class="geen-afspraak" data-testid="geen_afspraak">
-      <app-empty-state-panel
-        [icon]="faCalendar"
-        [titel]="strings.algemeen.afspraken.geenAfspraken.titel"
-        [subtekst]="magNieuweAfspraakMaken() ? strings.algemeen.afspraken.geenAfspraken.subtitel : ''"
-      />
+      <ds-empty-state [emptyStateModel]="geenAfspraakState"/>
       @if (magNieuweAfspraakMaken()) {
         <button data-testid="maak_afspraak_button" ds-button-primary (click)="afspraakMaken.emit()">{{ strings.algemeen.afspraken.buttons.afspraakMaken }}</button>
       }

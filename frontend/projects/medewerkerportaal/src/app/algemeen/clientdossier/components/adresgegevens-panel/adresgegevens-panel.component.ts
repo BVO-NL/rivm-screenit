@@ -31,7 +31,7 @@ import { filter, switchMap, take } from 'rxjs'
 import { ToegangLevel } from '@shared/types/autorisatie/toegang-level'
 import { OrganisatieType } from '@shared/types/algemeen/organisatie-type'
 import { Required } from '@shared/types/autorisatie/required'
-import { Bevolkingsonderzoek } from '@shared/types/bevolkingsonderzoek'
+import { alleBevolkingsonderzoeken } from '@shared/types/bevolkingsonderzoek'
 import { LegeWaardePipe } from '@shared/pipes/lege-waarde/lege-waarde.pipe'
 import { StringsService } from '@shared/strings'
 import { AdresgegevensBewerkenModalComponent } from '@algemeen/clientdossier/components/adresgegevens-panel/adresgegevens-bewerken-modal/adresgegevens-bewerken-modal.component'
@@ -50,7 +50,7 @@ export class AdresgegevensPanelComponent {
   protected readonly adresgegevensWijzigenConstraint: SecurityConstraint = {
     recht: [Recht.MEDEWERKER_CLIENT_GEGEVENS],
     actie: Actie.AANPASSEN,
-    bevolkingsonderzoekScopes: [Bevolkingsonderzoek.COLON, Bevolkingsonderzoek.CERVIX, Bevolkingsonderzoek.MAMMA],
+    bevolkingsonderzoekScopes: alleBevolkingsonderzoeken,
     level: ToegangLevel.LANDELIJK,
     organisatieTypeScopes: [OrganisatieType.RIVM],
     required: Required.ANY,

@@ -21,6 +21,7 @@ package nl.rivm.screenit.mamma.se.proxy.services.impl;
  * =========================LICENSE_END==================================
  */
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.time.LocalDate;
@@ -30,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.extern.slf4j.Slf4j;
 
+import nl.rivm.screenit.mamma.se.proxy.configuration.SeProxyObjectMapper;
 import nl.rivm.screenit.mamma.se.proxy.model.CacheProxyActie;
 import nl.rivm.screenit.mamma.se.proxy.model.RequestTypeCentraal;
 import nl.rivm.screenit.mamma.se.proxy.services.EnvironmentInfoService;
@@ -49,10 +51,10 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
@@ -72,20 +74,21 @@ public class ProxyServiceImpl implements ProxyService
 	@Autowired
 	private EnvironmentInfoService environmentInfoService;
 
+	private final SeProxyObjectMapper objectMapper = new SeProxyObjectMapper();
+
 	private String userAgent;
 
 	private final static int requestTimeoutInMS = 30000;
 
-	private RestTemplate restTemplate;
+	private RestClient restClient;
 
 	@Override
 	public void init()
 	{
-		restTemplate = new RestTemplate();
 		var requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setReadTimeout(requestTimeoutInMS);
 		requestFactory.setConnectTimeout(requestTimeoutInMS);
-		restTemplate.setRequestFactory(requestFactory);
+		restClient = RestClient.builder().requestFactory(requestFactory).build();
 		seRestUrl = StringUtils.removeEnd(seRestUrl, "/") + "/api";
 		userAgent = "SE-Proxy/" + environmentInfoService.getVersion();
 	}
@@ -170,7 +173,7 @@ public class ProxyServiceImpl implements ProxyService
 		var requestBody = (String) responseEntity.getBody();
 		try
 		{
-			isEmptyResponse = new ObjectMapper().readTree(requestBody).isEmpty();
+			isEmptyResponse = objectMapper.readTree(requestBody).isEmpty();
 		}
 		catch (JsonProcessingException ex)
 		{
@@ -193,7 +196,7 @@ public class ProxyServiceImpl implements ProxyService
 
 	private void deleteRequest(RequestTypeCentraal pathPostfix)
 	{
-		restTemplate.delete(requestUrl(pathPostfix));
+		restClient.delete().uri(requestUrl(pathPostfix)).retrieve().toBodilessEntity();
 	}
 
 	@Override
@@ -229,7 +232,7 @@ public class ProxyServiceImpl implements ProxyService
 			{
 				return createNoConnectionSeRestBkResponse();
 			}
-			var response = restTemplate.exchange(requestEntity, responseType);
+			var response = verstuurRequest(requestEntity, responseType);
 			return responseEntityVanProxyRequest(response);
 		}
 		catch (ResourceAccessException ex)
@@ -272,6 +275,29 @@ public class ProxyServiceImpl implements ProxyService
 			}
 			LOG.error("Bericht werd niet goed verwerkt door de centrale server: Exception: ", e);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	private <T> ResponseEntity<T> verstuurRequest(RequestEntity<?> requestEntity, Class<T> responseType)
+	{
+		var request = restClient.method(requestEntity.getMethod())
+			.uri(requestEntity.getUrl())
+			.headers(headers -> headers.addAll(requestEntity.getHeaders()));
+		if (requestEntity.getBody() != null)
+		{
+			request.body(requestEntity.getBody());
+		}
+		try
+		{
+			return request.retrieve().toEntity(responseType);
+		}
+		catch (RestClientException ex)
+		{
+			if (ex.getCause() instanceof IOException ioException)
+			{
+				throw new ResourceAccessException(ex.getMessage(), ioException);
+			}
+			throw ex;
 		}
 	}
 

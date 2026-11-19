@@ -23,7 +23,7 @@ package nl.rivm.screenit.clientportaal.rest;
 
 import lombok.AllArgsConstructor;
 
-import nl.rivm.screenit.clientportaal.rest.mapping.CustomObjectMapper;
+import nl.rivm.screenit.clientportaal.rest.mapping.ClientportaalObjectMapper;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -40,7 +40,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer
 {
 
-	private final CustomObjectMapper customObjectMapper;
+	private final ClientportaalObjectMapper objectMapper;
 
 	@Bean
 	public FilterRegistrationBean<OpenEntityManagerInViewFilter> openEntityManagerInViewFilter()
@@ -55,6 +55,6 @@ public class WebConfig implements WebMvcConfigurer
 	public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder)
 	{
 
-		builder.withJsonConverter(new MappingJackson2HttpMessageConverter(customObjectMapper));
+		builder.withJsonConverter(new MappingJackson2HttpMessageConverter(objectMapper));
 	}
 }

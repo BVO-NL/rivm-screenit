@@ -36,10 +36,11 @@ import { ColonIntakeafspraakAanmakenType } from '@shared/types/colon/enum/colon-
 import { StringsService } from '@shared/strings'
 import { ColonClientAfspraakDialogMode } from '@algemeen/clientdossier/afspraken-tab/components/colon-client-afspraak-dialog/colon-client-afspraak-dialog.component'
 import { ClientService } from '@algemeen/services/client/client.service'
+import { BriefAdresInformatiebalkComponent } from '@shared/components/brief-adres-informatiebalk/brief-adres-informatiebalk.component'
 
 @Component({
   selector: 'app-colon-client-afspraak-bevestiging',
-  imports: [NotitieAanmakenVeldComponent, ReactiveFormsModule, DsRadiobuttonComponent, DsButtongroupComponent],
+  imports: [NotitieAanmakenVeldComponent, ReactiveFormsModule, DsRadiobuttonComponent, DsButtongroupComponent, BriefAdresInformatiebalkComponent],
   templateUrl: './colon-client-afspraak-bevestiging.component.html',
 })
 export class ColonClientAfspraakBevestigingComponent {
@@ -107,6 +108,10 @@ export class ColonClientAfspraakBevestigingComponent {
     const afspraakslot = this.afspraakslot()
     return huidigeAfspraak != null && afspraakslot != null && huidigeAfspraak.verlopenZonderConclusie && huidigeAfspraak.locatie.id !== afspraakslot.intakelocatie.id
   })
+
+  protected readonly toonBriefAdres = computed(() => this.formWaarde().briefType != null)
+
+  protected readonly postadres = computed(() => this.clientService.select('client')()?.postadres ?? null)
 
   toonValidatiefouten() {
     this.form.markAllAsTouched()
